@@ -16,14 +16,14 @@
 }
 
 .shahrazad-playmat-grid {
-    background-color: white; /* Base color */
+    background-color: white;
     background-image: linear-gradient(
             to right,
             rgba(0, 0, 0, 0.027) 1px,
             transparent 1px
         ),
         linear-gradient(to bottom, rgba(0, 0, 0, 0.027) 1px, transparent 1px);
-    background-size: 20px 20px; /* Size of the grid squares */
+    background-size: 20px 20px;
     height: 100%;
 }
 
