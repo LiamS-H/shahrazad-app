@@ -1,3 +1,4 @@
+"use client";
 import { ShahrazadGame } from "../../../types/interfaces/game";
 import Playmat from "../playmat";
 import { ShahrazadGameProvider } from "../../../contexts/game";
