@@ -8,7 +8,7 @@ export type GameMoveApplier = (move: ShahrazadAction.ANY) => void;
 // TO DO: Remove side effects :( create copies when modifying such as in card Zone.
 export function applyMove(
     game: ShahrazadGame,
-    move: ShahrazadAction.ANY,
+    move: ShahrazadAction.ANY
 ): ShahrazadGame | null {
     console.log("applying move:", move);
     switch (move.type) {
@@ -51,7 +51,7 @@ export function applyMove(
             switch (move.mode) {
                 case "BOTTOM":
                     source_cards = game.zones[move.source].cards.slice(
-                        move.amount,
+                        move.amount
                     );
                     game.zones[move.source].cards = game.zones[
                         move.source
@@ -60,7 +60,7 @@ export function applyMove(
                     break;
                 case "TOP":
                     source_cards = game.zones[move.source].cards.slice(
-                        -move.amount,
+                        -move.amount
                     );
                     game.zones[move.source].cards = game.zones[
                         move.source
@@ -99,10 +99,17 @@ export function applyMove(
 
                     const old_cards = [...game.zones[move.dest].cards];
                     const cardsSet = new Set(move.cards);
+
                     game.zones[move.src].cards = game.zones[
                         move.src
                     ].cards.filter((cardID) => !cardsSet.has(cardID));
-
+                    if (
+                        game.zones[move.dest].cards.some((cardID) =>
+                            cardsSet.has(cardID)
+                        )
+                    ) {
+                        return null;
+                    }
                     if (move.index == -1) {
                         move.index = game.zones[move.dest].cards.length + 1;
                     }
@@ -110,7 +117,7 @@ export function applyMove(
                     const new_cards = game.zones[move.dest].cards.toSpliced(
                         move.index,
                         0,
-                        ...move.cards,
+                        ...move.cards
                     );
                     modified = !compareList(old_cards, new_cards);
                     game.zones[move.dest].cards = new_cards;
