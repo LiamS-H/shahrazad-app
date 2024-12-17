@@ -41,6 +41,10 @@ export default function Card(props: {
                 ...draggableStyle,
                 width: "fit-content",
                 cursor: "grab",
+                filter:
+                    isDragging && props.noDragTranslate
+                        ? "grayscale(100%)"
+                        : undefined,
             }}
         >
             <Scrycard
