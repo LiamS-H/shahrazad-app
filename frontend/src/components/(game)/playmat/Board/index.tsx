@@ -1,32 +1,10 @@
 import { useDroppable } from "@dnd-kit/core";
 import { useShahrazadGameContext } from "../../../../contexts/game";
 import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
-import Card from "../../card";
-import {
-    ShahrazadCard,
-    ShahrazadCardId,
-} from "../../../../types/interfaces/card";
-import type { ReactNode } from "react";
 import { IDroppableData } from "../../../../types/interfaces/dnd";
+import { BoardCard } from "./board-card";
 
-const GRID_SIZE = 20;
-
-function BoardCard(cardId: ShahrazadCardId, card: ShahrazadCard): ReactNode {
-    const left = (card.x ?? 0) * GRID_SIZE;
-    const top = (card.y ?? 0) * GRID_SIZE;
-    return (
-        <Card
-            key={cardId}
-            divStyle={{
-                position: "absolute",
-                left,
-                top,
-            }}
-            noDragTranslate
-            id={cardId}
-        />
-    );
-}
+export const GRID_SIZE = 20;
 
 export default function Board(props: { id: ShahrazadZoneId }) {
     const { getZone, getCard } = useShahrazadGameContext();
