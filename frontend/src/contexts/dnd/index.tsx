@@ -148,7 +148,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         if (start_zone_id != end_zone_id) {
             console.log("dragging between zones");
             console.log(
-                `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`,
+                `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
             );
             applyMove({
                 type: "CARD",
@@ -157,7 +157,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 dest: end_zone_id,
                 src: start_zone_id,
                 state: { x, y, face_down: false },
-                index: over_data.sortable ? -1 : 0,
+                index: -1,
             });
         }
     }, []);
@@ -168,7 +168,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
-        }),
+        })
     );
 
     return (

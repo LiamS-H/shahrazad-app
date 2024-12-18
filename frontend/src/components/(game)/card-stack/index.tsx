@@ -23,23 +23,23 @@ export default function StackZone(props: {
         dispCards.push(
             <Card
                 divStyle={{ position: "absolute" }}
-                key={props.cards[0]}
-                id={props.cards[0]}
+                key={props.cards[props.cards.length - 1]}
+                id={props.cards[props.cards.length - 1]}
             />
         );
     } else if (deckSize > 1) {
         dispCards.push(
             <Card
                 divStyle={{ position: "absolute" }}
-                key={props.cards[1]}
-                id={props.cards[1]}
+                key={props.cards[props.cards.length - 2]}
+                id={props.cards[props.cards.length - 2]}
             />
         );
         dispCards.push(
             <Card
                 divStyle={{ position: "absolute" }}
-                key={props.cards[0]}
-                id={props.cards[0]}
+                key={props.cards[props.cards.length - 1]}
+                id={props.cards[props.cards.length - 1]}
             />
         );
     }

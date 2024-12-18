@@ -39,7 +39,7 @@ export default function VerticalZone(props: {
                             transform: "translateY(-126px)",
                         }}
                     >
-                        {zone.cards.toReversed().map((id, index) => {
+                        {zone.cards.map((id, index) => {
                             const isHovered = id == hoveredItem;
                             const isBottom = index === zone.cards.length - 1;
                             return (
