@@ -31,7 +31,20 @@ pub struct ShahrazadPlaymat {
 use crate::types::action::ShahrazadAction;
 
 impl ShahrazadGame {
-    fn apply_move(action: ShahrazadAction, game: &mut ShahrazadGame) -> Option<&mut ShahrazadGame> {
+    pub fn new() -> Self {
+        Self {
+            zone_count: 0,
+            card_count: 0,
+            cards: HashMap::new(),
+            zones: HashMap::new(),
+            playmats: Vec::new(),
+        }
+    }
+
+    pub fn apply_action(
+        action: ShahrazadAction,
+        game: &mut ShahrazadGame,
+    ) -> Option<&mut ShahrazadGame> {
         match action {
             ShahrazadAction::DrawBottom {
                 amount,
@@ -105,8 +118,7 @@ impl ShahrazadGame {
                 // could potentially check if src contains card first (not just assume is does)
                 {
                     // remove cards from src
-                    &game
-                        .zones
+                    game.zones
                         .get_mut(&src)?
                         .cards
                         .retain(|id| !cards_set.contains(id));
