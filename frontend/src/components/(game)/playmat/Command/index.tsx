@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useShahrazadGameContext } from "../../../../contexts/game";
 import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
 import VerticalZone from "../vertical-zone";
+import { ArrowDownToLine } from "lucide-react";
 
 export default function Command(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
@@ -33,7 +34,7 @@ export default function Command(props: { id: ShahrazadZoneId }) {
                     }}
                     onClick={() => setOpened(false)}
                 >
-                    collapse
+                    <ArrowDownToLine />
                 </button>
             )}
         </div>
