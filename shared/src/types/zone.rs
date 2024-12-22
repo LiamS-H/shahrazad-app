@@ -1,13 +1,12 @@
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
+use type_reflect::*;
 
 use crate::{branded_string, types::card::ShahrazadCardId};
 
 // zone.rs
 branded_string!(ShahrazadZoneId);
 
-#[derive(TS, Serialize, Deserialize, Clone, Debug)]
-#[ts(export)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
 pub struct ShahrazadZone {
     pub cards: Vec<ShahrazadCardId>,
 }

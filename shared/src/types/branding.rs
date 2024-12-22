@@ -1,8 +1,7 @@
 #[macro_export]
 macro_rules! branded_string {
     ($name:ident) => {
-        #[derive(TS, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Debug)]
-        #[ts(export)]
+        #[derive(Reflect, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Debug)]
         pub struct $name(String);
 
         impl $name {

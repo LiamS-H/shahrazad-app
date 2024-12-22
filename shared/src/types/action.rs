@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
+use type_reflect::*;
 
 use super::{card::*, zone::*};
 
-#[derive(TS, Serialize, Deserialize, Clone, Debug)]
-#[ts(export)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
+#[serde(tag = "type")]
 pub enum ShahrazadAction {
     DrawBottom {
         amount: usize,
