@@ -23,7 +23,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
     MouseSensor.ShahContext = ShahContext;
     const shahref = useRef(ShahContext);
     shahref.current = ShahContext;
-    const { applyMove } = ShahContext;
+    const { applyAction } = ShahContext;
     const [activeId, setActiveId] = useState<string | null>(null);
 
     const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -61,7 +61,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             } else {
                 console.log("dropping sortable from within");
             }
-            applyMove({
+            applyAction({
                 type: "CARD",
                 mode: "ZONE",
                 src: active_data.zone,
@@ -136,7 +136,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         }
         if (start_zone_id == end_zone_id) {
             console.log("dragging to same draggable");
-            applyMove({
+            applyAction({
                 type: "CARD",
                 mode: "STATE",
                 cards: [event.active.id.toString()],
@@ -150,7 +150,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             console.log(
                 `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
             );
-            applyMove({
+            applyAction({
                 type: "CARD",
                 mode: "ZONE",
                 cards: [event.active.id.toString()],

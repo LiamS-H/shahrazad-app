@@ -1,12 +1,11 @@
 use std::collections::{HashMap, HashSet};
 
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
+use type_reflect::*;
 
 use super::{card::*, zone::*};
 
-#[derive(TS, Serialize, Deserialize, Clone, Debug)]
-#[ts(export)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
 pub struct ShahrazadGame {
     zone_count: u8,
     card_count: u8,
@@ -17,8 +16,7 @@ pub struct ShahrazadGame {
 
 use super::zone::ShahrazadZoneId;
 
-#[derive(TS, Serialize, Deserialize, Clone, Debug)]
-#[ts(export)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
 pub struct ShahrazadPlaymat {
     library: ShahrazadZoneId,
     hand: ShahrazadZoneId,
@@ -150,7 +148,7 @@ impl ShahrazadGame {
             ShahrazadAction::Shuffle { zone, seed } => todo!(),
             ShahrazadAction::ZoneImport { zone, cards } => {
                 for card in cards {
-                    let card_name = CardName::new(card);
+                    let card_name = ShahrazadCardName::new(card);
                     game.zone_count += 1;
                     let card_id: ShahrazadCardId =
                         ShahrazadCardId::new(format!("CARD_{}", game.zone_count));

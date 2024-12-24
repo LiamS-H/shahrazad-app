@@ -7,11 +7,11 @@ import { ShahrazadGame } from "../types/interfaces/game";
 export interface IShahrazadGameContext {
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
     getZone: (arg0: ShahrazadZoneId) => ShahrazadZone;
-    applyMove: GameMoveApplier;
+    applyAction: GameMoveApplier;
 }
 
 export const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(
-    null,
+    null
 );
 
 export function ShahrazadGameProvider(props: {
@@ -31,7 +31,7 @@ export function ShahrazadGameProvider(props: {
             value={{
                 getCard,
                 getZone,
-                applyMove: props.applier,
+                applyAction: props.applier,
             }}
         >
             {props.children}

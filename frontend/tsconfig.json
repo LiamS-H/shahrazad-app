@@ -12,6 +12,7 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "jsx": "preserve",
+        "typeRoots": ["./src/types/modules"],
         "incremental": true,
         "plugins": [
             {

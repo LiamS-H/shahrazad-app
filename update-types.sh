@@ -3,7 +3,9 @@ FRONTEND_DIR="frontend/src/types"
 BINDING_NAME="bindings"
 
 echo "Generating TypeScript definitions..."
-cargo test export_bindings --manifest-path shared/Cargo.toml -q || { echo "Rust export failed"; exit 1; }
+cd shared
+cargo run export_all || { echo "Rust export failed"; exit 1; }
+cd ..
 
 GENERATED_FOLDER="$SHARED_CRATE_DIR/$BINDING_NAME"
 if [ ! -d "$GENERATED_FOLDER" ]; then

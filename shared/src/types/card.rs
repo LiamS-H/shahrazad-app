@@ -1,13 +1,12 @@
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
+use type_reflect::*;
 
 use crate::{branded_string, types::zone::ShahrazadZoneId};
 
 branded_string!(ShahrazadCardId);
-branded_string!(CardName);
+branded_string!(ShahrazadCardName);
 
-#[derive(TS, Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
-#[ts(export)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct ShahrazadCardOptions {
     pub inverted: Option<bool>,
     pub flipped: Option<bool>,
@@ -39,12 +38,11 @@ impl ShahrazadCardOptions {
     }
 }
 
-#[derive(TS, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-#[ts(export)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ShahrazadCard {
     #[serde(flatten)]
     pub state: ShahrazadCardOptions,
-    pub card_name: CardName,
+    pub card_name: ShahrazadCardName,
     pub location: ShahrazadZoneId,
 }
 

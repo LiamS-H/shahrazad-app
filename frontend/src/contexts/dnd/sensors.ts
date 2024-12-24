@@ -16,7 +16,7 @@ export class MouseSensor extends LibMouseSensor {
                 if (cur instanceof HTMLElement && cur.dataset.shahcard) {
                     const id = cur.dataset.shahcard;
                     const shah_card = MouseSensor.ShahContext.getCard(id);
-                    MouseSensor.ShahContext.applyMove({
+                    MouseSensor.ShahContext.applyAction({
                         type: "CARD",
                         mode: "STATE",
                         cards: [id],

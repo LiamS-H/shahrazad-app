@@ -1,14 +1,39 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+// use serde::{Deserialize, Serialize};
+use shared::types::{action, game};
+use wasm_bindgen::prelude::*;
+
+// #[wasm_bindgen(typescript_custom_section)]
+// const TS_APPEND_CONTENT: &'static str = r#"
+// import type { ShahrazadAction, ShahrazadGame } from '../shared/bindings';
+
+// export class GameState {
+//     constructor();
+//     apply_action(action: ShahrazadAction): ShahrazadGame | null;
+// }
+// "#;
+
+#[wasm_bindgen]
+pub struct GameState {
+    inner: game::ShahrazadGame,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[wasm_bindgen]
+impl GameState {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        Self {
+            inner: game::ShahrazadGame::new(),
+        }
+    }
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    #[wasm_bindgen]
+    pub fn apply_action(&mut self, action: JsValue) -> Result<JsValue, JsValue> {
+        let action: action::ShahrazadAction = serde_wasm_bindgen::from_value(action)?;
+
+        if let Some(updated_game) = game::ShahrazadGame::apply_action(action, &mut self.inner) {
+            Ok(serde_wasm_bindgen::to_value(&updated_game)?)
+        } else {
+            Ok(JsValue::NULL)
+        }
     }
 }
