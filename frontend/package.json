@@ -30,7 +30,8 @@
         "react-dom": "^19.0.0",
         "react-scrycards": "^1.4.1",
         "tailwind-merge": "^2.5.5",
-        "tailwindcss-animate": "^1.0.7"
+        "tailwindcss-animate": "^1.0.7",
+        "shahrazad-wasm": "../wasm/pkg"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",

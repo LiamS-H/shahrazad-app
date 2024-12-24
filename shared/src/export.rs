@@ -53,7 +53,7 @@ pub fn export_all() {
             TypeScript(
                 "./bindings/game.ts"
                 prefix: "\
-                import {ShahrazadCardId,SharazadCard} from './card';\
+                import {ShahrazadCardId,ShahrazadCard} from './card';\
                 import {ShahrazadZoneId,ShahrazadZone} from './zone';\
                 import {ShahrazadPlaymat} from './playmat';
                 ",
