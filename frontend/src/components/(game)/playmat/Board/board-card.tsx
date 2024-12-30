@@ -1,8 +1,5 @@
 import Card from "../../card";
-import {
-    ShahrazadCard,
-    ShahrazadCardId,
-} from "../../../../types/interfaces/card";
+import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import type { ReactNode } from "react";
 import { GRID_SIZE } from ".";
 
@@ -10,8 +7,8 @@ export function BoardCard(
     cardId: ShahrazadCardId,
     card: ShahrazadCard
 ): ReactNode {
-    const left = (card.x ?? 0) * GRID_SIZE;
-    const top = (card.y ?? 0) * GRID_SIZE;
+    const left = (card.state.x ?? 0) * GRID_SIZE;
+    const top = (card.state.y ?? 0) * GRID_SIZE;
     return (
         <Card
             key={cardId}

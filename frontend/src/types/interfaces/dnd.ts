@@ -1,4 +1,4 @@
-import { ShahrazadZoneId } from "./zone";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 
 export interface IDraggableData {
     zone: ShahrazadZoneId;

@@ -1,5 +1,5 @@
 import { useShahrazadGameContext } from "../../../../contexts/game";
-import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 import {
     horizontalListSortingStrategy,
     SortableContext,
@@ -7,7 +7,7 @@ import {
 import SortableCard from "./sortable";
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { IDroppableData } from "../../../../types/interfaces/dnd";
+import { IDroppableData } from "@/types/interfaces/dnd";
 
 export default function HorizontalZone(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();

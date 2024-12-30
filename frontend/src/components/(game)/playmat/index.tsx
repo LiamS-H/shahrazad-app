@@ -1,6 +1,6 @@
 import "./playmat.css";
 import Deck from "./Deck";
-import { ShahrazadPlaymat } from "../../../types/interfaces/playmat";
+import { ShahrazadPlaymat } from "@/types/bindings/playmat";
 import Board from "./Board";
 import Hand from "./Hand";
 import Graveyard from "./Graveyard";

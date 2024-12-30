@@ -1,8 +1,8 @@
 import { createContext, ReactNode, useContext } from "react";
-import { ShahrazadCard, ShahrazadCardId } from "../types/interfaces/card";
-import { ShahrazadZone, ShahrazadZoneId } from "../types/interfaces/zone";
-import { GameMoveApplier } from "../types/reducers/game";
-import { ShahrazadGame } from "../types/interfaces/game";
+import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
+import { ShahrazadZone, ShahrazadZoneId } from "@/types/bindings/zone";
+import { GameMoveApplier } from "@/types/reducers/game";
+import { ShahrazadGame } from "@/types/bindings/game";
 
 export interface IShahrazadGameContext {
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;

@@ -24,3 +24,7 @@ if [ ! -d "$FRONTEND_DIR" ]; then
 fi
 
 echo "TypeScript definitions successfully copied to frontend!"
+
+echo "Copying Wasm Lib"
+
+cp -r wasm/pkg/* frontend/node_modules/shahrazad-wasm/

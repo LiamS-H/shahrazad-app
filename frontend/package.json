@@ -20,6 +20,7 @@
         "@radix-ui/react-slot": "^1.1.1",
         "@radix-ui/react-switch": "^1.1.2",
         "@radix-ui/react-tabs": "^1.1.2",
+        "@tanstack/react-query": "",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "input-otp": "^1.4.1",
@@ -29,9 +30,9 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-scrycards": "^1.4.1",
+        "shahrazad-wasm": "node_modules/shahrazad-wasm",
         "tailwind-merge": "^2.5.5",
-        "tailwindcss-animate": "^1.0.7",
-        "shahrazad-wasm": "../wasm/pkg"
+        "tailwindcss-animate": "^1.0.7"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",

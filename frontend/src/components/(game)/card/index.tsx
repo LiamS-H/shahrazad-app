@@ -1,10 +1,10 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { ShahrazadCardId } from "../../../types/interfaces/card";
+import { ShahrazadCardId } from "@/types/bindings/card";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import { CSSProperties } from "react";
-import { IDraggableData } from "../../../types/interfaces/dnd";
+import { IDraggableData } from "@/types/interfaces/dnd";
 
 export default function Card(props: {
     id: ShahrazadCardId;
@@ -50,9 +50,9 @@ export default function Card(props: {
             <Scrycard
                 card={card}
                 symbol_text_renderer={ScryNameCardText}
-                flipped={shah_card.flipped}
-                tapped={shah_card.tapped}
-                faceDown={shah_card.face_down}
+                flipped={shah_card.state.flipped}
+                tapped={shah_card.state.tapped}
+                faceDown={shah_card.state.face_down}
             />
         </div>
     );

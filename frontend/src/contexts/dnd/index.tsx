@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useRef, useState } from "react";
-import { IDraggableData, IDroppableData } from "../../types/interfaces/dnd";
+import { IDraggableData, IDroppableData } from "@/types/interfaces/dnd";
 import {
     DndContext,
     DragEndEvent,
@@ -14,9 +14,10 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { useShahrazadGameContext } from "../game";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { DraggableOverlay } from "./overlay";
-import { GameMoveApplier } from "../../types/reducers/game";
+import { GameMoveApplier } from "@/types/reducers/game";
 import { MouseSensor } from "./sensors";
-import { ShahrazadCardId } from "../../types/interfaces/card";
+import { ShahrazadCardId } from "@/types/bindings/card";
+import { ShahrazadActionCase } from "@/types/bindings/action";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
@@ -62,13 +63,12 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 console.log("dropping sortable from within");
             }
             applyAction({
-                type: "CARD",
-                mode: "ZONE",
-                src: active_data.zone,
-                dest: over_data.zone,
+                type: ShahrazadActionCase.CardZone,
+                source: active_data.zone,
+                destination: over_data.zone,
                 index: index,
                 cards: [event.active.id.toString()],
-                state: { x: null, y: null },
+                state: { x: undefined, y: undefined },
             });
             return;
         }
@@ -84,8 +84,8 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         const card_height = event.active.rect.current.translated?.height ?? 0;
         const card_width = event.active.rect.current.translated?.width ?? 0;
 
-        let x: null | number = null;
-        let y: null | number = null;
+        let x: undefined | number;
+        let y: undefined | number;
         if (end_zone_gridsize) {
             // active.rect.current.initial gets reset to null and this goes back to 0
             // let start_x = shah_card.x
@@ -137,8 +137,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         if (start_zone_id == end_zone_id) {
             console.log("dragging to same draggable");
             applyAction({
-                type: "CARD",
-                mode: "STATE",
+                type: ShahrazadActionCase.CardState,
                 cards: [event.active.id.toString()],
                 state: { x, y },
             });
@@ -151,11 +150,10 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
             );
             applyAction({
-                type: "CARD",
-                mode: "ZONE",
+                type: ShahrazadActionCase.CardZone,
                 cards: [event.active.id.toString()],
-                dest: end_zone_id,
-                src: start_zone_id,
+                destination: end_zone_id,
+                source: start_zone_id,
                 state: { x, y, face_down: false },
                 index: -1,
             });

@@ -1,7 +1,7 @@
 import { useDroppable } from "@dnd-kit/core";
 import { useShahrazadGameContext } from "../../../../contexts/game";
-import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
-import { IDroppableData } from "../../../../types/interfaces/dnd";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
+import { IDroppableData } from "@/types/interfaces/dnd";
 import { BoardCard } from "./board-card";
 
 export const GRID_SIZE = 20;
@@ -12,14 +12,14 @@ export default function Board(props: { id: ShahrazadZoneId }) {
     const cards = zone.cards
         .map((id) => ({ card: getCard(id), id: id }))
         .toSorted(({ card: card1 }, { card: card2 }) => {
-            card1.x ??= 0;
-            card1.y ??= 0;
-            card2.x ??= 0;
-            card2.y ??= 0;
-            if (card1.y != card2.y) {
-                return card1.y - card2.y;
+            card1.state.x ??= 0;
+            card1.state.y ??= 0;
+            card2.state.x ??= 0;
+            card2.state.y ??= 0;
+            if (card1.state.y != card2.state.y) {
+                return card1.state.y - card2.state.y;
             }
-            return card1.x - card2.x;
+            return card1.state.x - card2.state.x;
         });
 
     const data: IDroppableData = {

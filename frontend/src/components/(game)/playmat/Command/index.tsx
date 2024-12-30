@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useShahrazadGameContext } from "../../../../contexts/game";
-import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 import VerticalZone from "../vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
 

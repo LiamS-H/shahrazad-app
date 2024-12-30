@@ -1,4 +1,4 @@
-import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useShahrazadGameContext } from "../../../../contexts/game";
 import { useDroppable } from "@dnd-kit/core";
 import HorizontalZone from "../horizontal-zone";

@@ -1,8 +1,7 @@
 "use client";
+import { ShahrazadActionCase } from "@/types/bindings/action";
 import { useEffect, useState } from "react";
-import init, { GameState } from "shahrazad-wasm/shahrazad_wasm";
-import type { ShahrazadAction } from "@/types/bindings/action";
-import type { ShahrazadGame } from "@/types/bindings/game";
+import init, { GameState } from "shahrazad-wasm";
 
 export default function Test() {
     const [loaded, setLoaded] = useState(false);
@@ -13,9 +12,12 @@ export default function Test() {
 
         const game = new GameState();
 
-        game.apply_action("AddPlayer");
-        game.apply_action({});
-        const result = game.apply_action({});
+        const result = game.apply_action({
+            type: ShahrazadActionCase.AddPlayer,
+        });
+
+        // game.apply_action({});
+        // const result = game.apply_action({});
         console.log(result);
     }
 

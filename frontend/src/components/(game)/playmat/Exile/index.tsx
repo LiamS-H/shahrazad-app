@@ -1,8 +1,8 @@
-import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useShahrazadGameContext } from "../../../../contexts/game";
 import { useDroppable } from "@dnd-kit/core";
 import StackZone from "../../card-stack";
-import { IDroppableData } from "../../../../types/interfaces/dnd";
+import { IDroppableData } from "@/types/interfaces/dnd";
 
 export default function Exile(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();

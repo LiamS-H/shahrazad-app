@@ -1,8 +1,8 @@
-import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useShahrazadGameContext } from "../../../../contexts/game";
 import { useDroppable } from "@dnd-kit/core";
 import StackZone from "../../card-stack";
-import { IDroppableData } from "../../../../types/interfaces/dnd";
+import { IDroppableData } from "@/types/interfaces/dnd";
 import { Scrycard } from "react-scrycards";
 
 export default function Deck(props: { id: ShahrazadZoneId }) {

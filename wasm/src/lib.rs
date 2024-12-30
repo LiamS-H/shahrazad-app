@@ -1,5 +1,8 @@
 // use serde::{Deserialize, Serialize};
-use shared::types::{action, game};
+use shared::types::{
+    action,
+    game::{self, ShahrazadGame},
+};
 use wasm_bindgen::prelude::*;
 
 // #[wasm_bindgen(typescript_custom_section)]
@@ -35,5 +38,13 @@ impl GameState {
         } else {
             Ok(JsValue::NULL)
         }
+    }
+
+    #[wasm_bindgen]
+    pub fn set_state(&mut self, game: JsValue) -> Result<JsValue, JsValue> {
+        let game: game::ShahrazadGame = serde_wasm_bindgen::from_value(game)?;
+        self.inner = game;
+
+        return Ok(serde_wasm_bindgen::to_value(&self.inner)?);
     }
 }

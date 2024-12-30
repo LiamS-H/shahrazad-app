@@ -1,4 +1,4 @@
-import { ShahrazadCard, ShahrazadCardId } from "../types/interfaces/card";
+import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 
 export function compareCards(card1: ShahrazadCard, card2: ShahrazadCard) {
     const keys1 = Object.keys(card1) as (keyof ShahrazadCard)[];
@@ -19,7 +19,7 @@ export function compareCards(card1: ShahrazadCard, card2: ShahrazadCard) {
 
 export function compareList(
     list1: ShahrazadCardId[],
-    list2: ShahrazadCardId[],
+    list2: ShahrazadCardId[]
 ) {
     if (list1.length != list2.length) {
         return false;

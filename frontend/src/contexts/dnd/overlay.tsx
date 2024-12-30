@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import { useShahrazadGameContext } from "../game";
-import { ShahrazadCardId } from "../../types/interfaces/card";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
     const { getCard } = useShahrazadGameContext();
@@ -23,9 +23,9 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
             <Scrycard
                 card={card}
                 symbol_text_renderer={ScryNameCardText}
-                flipped={shah_card.flipped}
-                faceDown={shah_card.face_down}
-                tapped={shah_card.tapped}
+                flipped={shah_card.state.flipped}
+                faceDown={shah_card.state.face_down}
+                tapped={shah_card.state.tapped}
             />
         </div>
     );

@@ -6,6 +6,7 @@ import {
 
 import type { IShahrazadGameContext } from "../game";
 import { MouseEvent, TouchEvent } from "react";
+import { ShahrazadActionCase } from "@/types/bindings/action";
 
 export class MouseSensor extends LibMouseSensor {
     public static ShahContext: IShahrazadGameContext;
@@ -17,10 +18,9 @@ export class MouseSensor extends LibMouseSensor {
                     const id = cur.dataset.shahcard;
                     const shah_card = MouseSensor.ShahContext.getCard(id);
                     MouseSensor.ShahContext.applyAction({
-                        type: "CARD",
-                        mode: "STATE",
+                        type: ShahrazadActionCase.CardState,
                         cards: [id],
-                        state: { tapped: !shah_card.tapped },
+                        state: { tapped: !shah_card.state.tapped },
                     });
                     return false;
                 }

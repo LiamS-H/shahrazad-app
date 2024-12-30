@@ -1,5 +1,5 @@
 import { Scrydeck } from "react-scrycards";
-import { ShahrazadCardId } from "../../../types/interfaces/card";
+import { ShahrazadCardId } from "@/types/bindings/card";
 import Card from "../card";
 import type { ReactNode } from "react";
 

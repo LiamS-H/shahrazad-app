@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
-import { IDraggableData } from "../../../../types/interfaces/dnd";
+import { IDraggableData } from "@/types/interfaces/dnd";
 import { useShahrazadGameContext } from "../../../../contexts/game";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
-import { ShahrazadCardId } from "../../../../types/interfaces/card";
+import { ShahrazadCardId } from "@/types/bindings/card";
 import { useDraggable } from "@dnd-kit/core";
 
 export default function CollapseableCard(props: {
@@ -42,11 +42,7 @@ export default function CollapseableCard(props: {
             onFocus={() => props.setHovered(props.id)}
             onBlur={() => props.setHovered(null)}
         >
-            <Scrycard
-                card={card}
-                symbol_text_renderer={ScryNameCardText}
-                flippable
-            />
+            <Scrycard card={card} symbol_text_renderer={ScryNameCardText} />
         </div>
     );
 }

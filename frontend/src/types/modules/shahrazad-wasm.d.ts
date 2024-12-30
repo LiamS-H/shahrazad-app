@@ -1,5 +1,5 @@
-import { ShahrazadAction } from "@types/bindings/action";
-import { ShahrazadGame } from "@types/bindings/game";
+import { ShahrazadAction } from "@@/types/bindings//action";
+import { ShahrazadGame } from "@@/types/bindings//game";
 
 declare module "shahrazad-wasm" {
     // export class GameState {

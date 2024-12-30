@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { useShahrazadGameContext } from "../../../../contexts/game";
-import { ShahrazadZoneId } from "../../../../types/interfaces/zone";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import Card from "../../card";
 import StackZone from "../../card-stack";
-import { IDroppableData } from "../../../../types/interfaces/dnd";
+import { IDroppableData } from "@/types/interfaces/dnd";
 import CollapseableCard from "./collapsable";
 
 export default function VerticalZone(props: {
