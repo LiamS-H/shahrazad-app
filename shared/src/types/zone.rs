@@ -6,7 +6,7 @@ use crate::{branded_string, types::card::ShahrazadCardId};
 // zone.rs
 branded_string!(ShahrazadZoneId);
 
-#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadZone {
     pub cards: Vec<ShahrazadCardId>,
 }

@@ -5,7 +5,7 @@ use type_reflect::*;
 
 use super::{card::*, zone::*};
 
-#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadGame {
     zone_count: u8,
     card_count: u8,
@@ -16,7 +16,7 @@ pub struct ShahrazadGame {
 
 use super::zone::ShahrazadZoneId;
 
-#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadPlaymat {
     library: ShahrazadZoneId,
     hand: ShahrazadZoneId,
@@ -205,6 +205,8 @@ impl ShahrazadGame {
                     exile: zone_ids[4].clone(),
                     command: zone_ids[5].clone(),
                 };
+
+                game.zone_count += 6;
 
                 game.playmats.push(new_playmat);
 
