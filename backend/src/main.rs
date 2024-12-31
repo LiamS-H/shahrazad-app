@@ -137,7 +137,9 @@ async fn join_game(
 
     // Broadcast that a new player has joined
     let update = GameUpdate {
-        action: Some(ShahrazadAction::AddPlayer),
+        action: Some(ShahrazadAction::AddPlayer {
+            uuid: player_id.to_string(),
+        }),
         player_id,
         game_id,
     };

@@ -11,10 +11,13 @@ pub struct ShahrazadGame {
     card_count: u8,
     cards: HashMap<ShahrazadCardId, ShahrazadCard>,
     zones: HashMap<ShahrazadZoneId, ShahrazadZone>,
-    playmats: Vec<ShahrazadPlaymat>,
+    playmats: HashMap<ShahrazadPlaymatId, ShahrazadPlaymat>,
+    players: Vec<ShahrazadPlaymatId>,
 }
 
 use super::zone::ShahrazadZoneId;
+
+branded_string!(ShahrazadPlaymatId);
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadPlaymat {
@@ -26,6 +29,7 @@ pub struct ShahrazadPlaymat {
     command: ShahrazadZoneId,
 }
 
+use crate::branded_string;
 use crate::types::action::ShahrazadAction;
 
 impl ShahrazadGame {
@@ -35,7 +39,8 @@ impl ShahrazadGame {
             card_count: 0,
             cards: HashMap::new(),
             zones: HashMap::new(),
-            playmats: Vec::new(),
+            playmats: HashMap::new(),
+            players: Vec::new(),
         }
     }
 
@@ -48,7 +53,7 @@ impl ShahrazadGame {
                 amount,
                 source,
                 destination,
-            } => todo!(),
+            } => todo!("{}{}{}", amount, source, destination),
             ShahrazadAction::DrawTop {
                 amount,
                 source,
@@ -145,13 +150,13 @@ impl ShahrazadGame {
 
                 return Some(game);
             }
-            ShahrazadAction::Shuffle { zone, seed } => todo!(),
+            ShahrazadAction::Shuffle { zone, seed } => todo!("{}{}", zone, seed),
             ShahrazadAction::ZoneImport { zone, cards } => {
                 for card in cards {
                     let card_name = ShahrazadCardName::new(card);
-                    game.zone_count += 1;
+                    game.card_count += 1;
                     let card_id: ShahrazadCardId =
-                        ShahrazadCardId::new(format!("CARD_{}", game.zone_count));
+                        ShahrazadCardId::new(format!("CARD_{}", game.card_count));
                     game.cards.insert(
                         card_id,
                         ShahrazadCard {
@@ -173,8 +178,8 @@ impl ShahrazadGame {
             ShahrazadAction::DeckImport {
                 deck_uri,
                 player_idx,
-            } => todo!(),
-            ShahrazadAction::AddPlayer => {
+            } => todo!("{}{}", deck_uri, player_idx),
+            ShahrazadAction::AddPlayer { uuid } => {
                 let zone_types = [
                     "library",
                     "hand",
@@ -208,7 +213,11 @@ impl ShahrazadGame {
 
                 game.zone_count += 6;
 
-                game.playmats.push(new_playmat);
+                let player_uuid = ShahrazadPlaymatId::new(uuid);
+
+                game.playmats.insert(player_uuid.clone(), new_playmat);
+
+                game.players.push(player_uuid.clone());
 
                 return Some(game);
             }

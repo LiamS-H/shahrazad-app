@@ -6,7 +6,7 @@ macro_rules! branded_string {
 
         impl $name {
             pub fn new(value: String) -> Self {
-                Self(value)
+                Self(value.clone())
             }
         }
 
@@ -26,7 +26,7 @@ macro_rules! branded_string {
 
         impl From<String> for $name {
             fn from(value: String) -> Self {
-                Self(value)
+                Self(value.clone())
             }
         }
 

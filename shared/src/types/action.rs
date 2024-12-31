@@ -39,5 +39,7 @@ pub enum ShahrazadAction {
         deck_uri: String,
         player_idx: u16,
     },
-    AddPlayer,
+    AddPlayer {
+        uuid: String,
+    },
 }

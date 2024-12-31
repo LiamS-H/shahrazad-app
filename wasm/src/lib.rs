@@ -1,7 +1,7 @@
 // use serde::{Deserialize, Serialize};
 use shared::types::{
     action,
-    game::{self, ShahrazadGame},
+    game::{self},
 };
 use wasm_bindgen::prelude::*;
 

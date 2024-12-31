@@ -1,27 +1,31 @@
 import "./playmat.css";
 import Deck from "./Deck";
-import { ShahrazadPlaymat } from "@/types/bindings/playmat";
+import type { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import Board from "./Board";
 import Hand from "./Hand";
 import Graveyard from "./Graveyard";
 import Exile from "./Exile";
 import Command from "./Command";
+import { useShahrazadGameContext } from "@/contexts/game";
 
-export default function Playmat(props: { playmat: ShahrazadPlaymat }) {
+export default function Playmat(props: { player: ShahrazadPlaymatId }) {
+    const { getPlaymat } = useShahrazadGameContext();
+    const playmat = getPlaymat(props.player);
+
     return (
         <div className="shahrazad-playmat">
             <div className="shahrazad-playmat-board">
-                <Board id={props.playmat.battlefield} />
+                <Board id={playmat.battlefield} />
             </div>
             <div
                 className="shahrazad-playmat-tray"
                 style={{ position: "relative" }}
             >
-                <Graveyard id={props.playmat.graveyard} />
-                <Deck id={props.playmat.library} />
-                <Exile id={props.playmat.exile} />
-                <Command id={props.playmat.command} />
-                <Hand id={props.playmat.hand} />
+                <Graveyard id={playmat.graveyard} />
+                <Deck id={playmat.library} />
+                <Exile id={playmat.exile} />
+                <Command id={playmat.command} />
+                <Hand id={playmat.hand} />
             </div>
         </div>
     );

@@ -3,7 +3,7 @@ use type_reflect::*;
 use crate::types::{
     action::ShahrazadAction,
     card::{ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardOptions},
-    game::{ShahrazadGame, ShahrazadPlaymat},
+    game::{ShahrazadGame, ShahrazadPlaymat, ShahrazadPlaymatId},
     zone::{ShahrazadZone, ShahrazadZoneId},
 };
 
@@ -55,7 +55,7 @@ pub fn export_all() {
                 prefix: "\
                 import {ShahrazadCardId,ShahrazadCard} from './card';\
                 import {ShahrazadZoneId,ShahrazadZone} from './zone';\
-                import {ShahrazadPlaymat} from './playmat';
+                import {ShahrazadPlaymat,ShahrazadPlaymatId} from './playmat';
                 ",
                 tab_size: 4,
             ),
@@ -66,6 +66,7 @@ pub fn export_all() {
     export_types! {
         types: [
             ShahrazadPlaymat,
+            ShahrazadPlaymatId,
         ],
         destinations: [
             TypeScript(

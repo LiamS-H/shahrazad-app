@@ -14,8 +14,9 @@ export default function GamePage() {
         zone_count: 0,
         card_count: 0,
         cards: {},
-        playmats: [],
+        playmats: {},
         zones: {},
+        players: [],
     });
 
     async function loadWasm() {

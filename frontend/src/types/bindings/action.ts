@@ -63,6 +63,7 @@ export type ShahrazadActionCaseDeckImport = {
 
 export type ShahrazadActionCaseAddPlayer = {
     type: ShahrazadActionCase.AddPlayer;
+    uuid: string;
 };
 
 export type ShahrazadAction =
