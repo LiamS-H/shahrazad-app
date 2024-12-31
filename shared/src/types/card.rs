@@ -40,7 +40,6 @@ impl ShahrazadCardOptions {
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ShahrazadCard {
-    #[serde(flatten)]
     pub state: ShahrazadCardOptions,
     pub card_name: ShahrazadCardName,
     pub location: ShahrazadZoneId,

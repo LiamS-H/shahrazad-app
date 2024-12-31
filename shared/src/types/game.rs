@@ -152,11 +152,13 @@ impl ShahrazadGame {
             }
             ShahrazadAction::Shuffle { zone, seed } => todo!("{}{}", zone, seed),
             ShahrazadAction::ZoneImport { zone, cards } => {
+                let mut card_ids = Vec::new();
                 for card in cards {
                     let card_name = ShahrazadCardName::new(card);
                     game.card_count += 1;
                     let card_id: ShahrazadCardId =
                         ShahrazadCardId::new(format!("CARD_{}", game.card_count));
+                    card_ids.push(card_id.clone());
                     game.cards.insert(
                         card_id,
                         ShahrazadCard {
@@ -173,6 +175,7 @@ impl ShahrazadGame {
                         },
                     );
                 }
+                game.zones.get_mut(&zone)?.cards.append(&mut card_ids);
                 return Some(game);
             }
             ShahrazadAction::DeckImport {
