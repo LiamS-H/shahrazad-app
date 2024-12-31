@@ -1,13 +1,13 @@
 import { createContext, ReactNode, useContext } from "react";
 import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import { ShahrazadZone, ShahrazadZoneId } from "@/types/bindings/zone";
-import { GameMoveApplier } from "@/types/reducers/game";
 import { ShahrazadGame } from "@/types/bindings/game";
+import { ShahrazadAction } from "@/types/bindings/action";
 
 export interface IShahrazadGameContext {
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
     getZone: (arg0: ShahrazadZoneId) => ShahrazadZone;
-    applyAction: GameMoveApplier;
+    applyAction: (action: ShahrazadAction) => void;
 }
 
 export const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(
@@ -16,7 +16,7 @@ export const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(
 
 export function ShahrazadGameProvider(props: {
     game: ShahrazadGame;
-    applier: GameMoveApplier;
+    applier: (action: ShahrazadAction) => void;
     children: ReactNode;
 }) {
     function getCard(card: ShahrazadCardId): ShahrazadCard {

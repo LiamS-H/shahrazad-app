@@ -2,12 +2,12 @@
 import { ShahrazadGame } from "@/types/bindings/game";
 import Playmat from "../playmat";
 import { ShahrazadGameProvider } from "@/contexts/game";
-import { GameMoveApplier } from "@/types/reducers/game";
 import ShahrazadDND from "@/contexts/dnd";
+import { ShahrazadAction } from "@/types/bindings/action";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
-    applyMove: GameMoveApplier;
+    applyMove: (action: ShahrazadAction) => void;
 };
 
 export default function Game(props: ShahrazadProps) {

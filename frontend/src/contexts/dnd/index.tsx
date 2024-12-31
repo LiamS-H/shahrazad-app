@@ -14,9 +14,7 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { useShahrazadGameContext } from "../game";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { DraggableOverlay } from "./overlay";
-import { GameMoveApplier } from "@/types/reducers/game";
 import { MouseSensor } from "./sensors";
-import { ShahrazadCardId } from "@/types/bindings/card";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
