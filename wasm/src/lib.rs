@@ -1,19 +1,19 @@
-// use serde::{Deserialize, Serialize};
+use serde::Serialize;
+use serde_wasm_bindgen::Serializer;
 use shared::types::{
     action,
     game::{self},
 };
 use wasm_bindgen::prelude::*;
 
-// #[wasm_bindgen(typescript_custom_section)]
-// const TS_APPEND_CONTENT: &'static str = r#"
-// import type { ShahrazadAction, ShahrazadGame } from '../shared/bindings';
-
-// export class GameState {
-//     constructor();
-//     apply_action(action: ShahrazadAction): ShahrazadGame | null;
-// }
-// "#;
+// Configure serialization options
+fn to_js_value<T>(value: &T) -> Result<JsValue, JsValue>
+where
+    T: Serialize,
+{
+    let serializer = Serializer::new().serialize_maps_as_objects(true);
+    value.serialize(&serializer).map_err(|e| e.into())
+}
 
 #[wasm_bindgen]
 pub struct GameState {
@@ -34,7 +34,7 @@ impl GameState {
         let action: action::ShahrazadAction = serde_wasm_bindgen::from_value(action)?;
 
         if let Some(updated_game) = game::ShahrazadGame::apply_action(action, &mut self.inner) {
-            Ok(serde_wasm_bindgen::to_value(&updated_game)?)
+            to_js_value(&updated_game)
         } else {
             Ok(JsValue::NULL)
         }
@@ -45,6 +45,6 @@ impl GameState {
         let game: game::ShahrazadGame = serde_wasm_bindgen::from_value(game)?;
         self.inner = game;
 
-        return Ok(serde_wasm_bindgen::to_value(&self.inner)?);
+        to_js_value(&self.inner)
     }
 }

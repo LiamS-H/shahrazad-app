@@ -42,12 +42,14 @@ export default function GamePage() {
         // };
         // game_ref.current.set_state(newGame);
 
-        let newGame = game_ref.current.apply_action({
+        let newGame: ShahrazadGame = game_ref.current.apply_action({
             type: ShahrazadActionCase.AddPlayer,
+            uuid: "1",
         });
         console.log(newGame);
         newGame = game_ref.current.apply_action({
             type: ShahrazadActionCase.AddPlayer,
+            uuid: "2",
         });
         console.log(newGame);
         newGame = game_ref.current.apply_action({
@@ -57,14 +59,15 @@ export default function GamePage() {
                 "Opt",
                 "Mental Misstep",
             ],
-            zone: newGame.playmats[0].library,
+            zone: newGame.playmats["1"].library,
         });
         console.log(newGame);
         const game = game_ref.current.apply_action({
             type: ShahrazadActionCase.ZoneImport,
             cards: ["Akki Lavarunner // Tok-Tok, Volcano Born"],
-            zone: newGame.playmats[1].library,
+            zone: newGame.playmats["2"].library,
         });
+        console.log(game);
         setGame(game);
     }, [wasmLoaded]);
 
