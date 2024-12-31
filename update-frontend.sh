@@ -1,45 +1,56 @@
 SHARED_CRATE_DIR="shared"
-FRONTEND_DIR="frontend/src/types"
-BINDING_NAME="bindings"
+FRONTEND_TYPE_DIR="frontend/src/types"
+FRONTEND_BINDING_DIR="bindings"
+
+WASM_PKG_DIR="wasm/pkg"
+FRONTEND_MODULES_DIR="frontend/node_modules"
+FRONTEND_WASM_DIR="shahrazad-wasm"
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+RESET='\033[0m'
 
 echo "Generating TypeScript definitions..."
 
-rm -rf "$SHARED_CRATE_DIR/$BINDING_NAME"
-mkdir -p "$SHARED_CRATE_DIR/$BINDING_NAME"
+rm -rf "$SHARED_CRATE_DIR/$FRONTEND_BINDING_DIR"
+mkdir -p "$SHARED_CRATE_DIR/$FRONTEND_BINDING_DIR"
 
 cd shared
-cargo run export_all || { echo "Rust export failed"; exit 1; }
+cargo run export_all || { echo "${RED}❌Rust export failed"; exit 1; }
 cd ..
 
-GENERATED_FOLDER="$SHARED_CRATE_DIR/$BINDING_NAME"
+GENERATED_FOLDER="$SHARED_CRATE_DIR/$FRONTEND_BINDING_DIR"
 if [ ! -d "$GENERATED_FOLDER" ]; then
-    echo "TypeScript definitions not found at: $GENERATED_FOLDER"
+    echo "${RED}❌TypeScript definitions not found at: $GENERATED_FOLDER"
     exit 1
 fi
 
-rm -rf "$FRONTEND_DIR/$BINDING_NAME"
+rm -rf "$FRONTEND_TYPE_DIR/$FRONTEND_BINDING_DIR"
 
-echo "Copying generated TypeScript definitions: $FRONTEND_DIR"
-cp -r "$GENERATED_FOLDER" "$FRONTEND_DIR" || { echo "Failed to copy folder"; exit 1; }
+echo "Copying generated TypeScript definitions: $FRONTEND_TYPE_DIR"
+cp -r "$GENERATED_FOLDER" "$FRONTEND_TYPE_DIR" || { echo "${RED}❌Failed to copy folder"; exit 1; }
 
-if [ ! -d "$FRONTEND_DIR" ]; then
-    echo "Failed to copy definitions at: $GENERATED_FOLDER $FRONTEND_DIR"
+if [ ! -d "$FRONTEND_TYPE_DIR" ]; then
+    echo "Failed to copy definitions at: $GENERATED_FOLDER $FRONTEND_TYPE_DIR"
     exit 1
 fi
 
-echo "TypeScript definitions successfully copied to frontend!"
+echo "${GREEN}TypeScript definitions successfully copied to frontend!"
 
-echo "Building wasm..."
+echo "${RESET}\nBuilding wasm..."
 
 cd wasm
-wasm-pack build --target "web" || { echo "wasm build failed"; exit 1;}
+wasm-pack build --target "web" || { echo "${RED}❌wasm build failed"; exit 1;}
 cd ..
 
 echo "Copying wasm to frontend..."
 
+rm -rf "$FRONTEND_MODULES_DIR/$FRONTEND_WASM_DIR/*" 
+
 mkdir -p frontend/node_modules/shahrazad-wasm
-cp -r wasm/pkg/* frontend/node_modules/shahrazad-wasm || { echo "failed to copy wasm"; exit 1;}
+cp -r $WASM_PKG_DIR/* "$FRONTEND_MODULES_DIR/$FRONTEND_WASM_DIR" || { echo "${RED}❌failed to copy wasm"; exit 1;}
 
-echo "wasm successfully copied to frontend!"
+echo  "${GREEN}wasm module successfully copied to frontend!"
 
-echo "\nFrontend updated 😎"
+echo  "${BLUE}\nFrontend updated 😎"
