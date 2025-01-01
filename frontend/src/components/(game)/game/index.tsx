@@ -7,7 +7,7 @@ import { ShahrazadAction } from "@/types/bindings/action";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
-    applyMove: (action: ShahrazadAction) => void;
+    applyAction: (action: ShahrazadAction) => void;
 };
 
 export default function Game(props: ShahrazadProps) {
@@ -16,7 +16,7 @@ export default function Game(props: ShahrazadProps) {
     ));
 
     return (
-        <ShahrazadGameProvider game={props.game} applier={props.applyMove}>
+        <ShahrazadGameProvider game={props.game} applier={props.applyAction}>
             <ShahrazadDND>
                 <div
                     style={{
