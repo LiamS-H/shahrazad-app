@@ -2,13 +2,24 @@
 import { ShahrazadGame } from "@/types/bindings/game";
 // import { GameState } from "shahrazad-wasm";
 
-export async function fetchGame(uuid: string): Promise<{
+export async function fetchGame(
+    uuid: string,
+    player_id?: string
+): Promise<{
     game: ShahrazadGame;
     game_id: string;
     player_id: string;
     reconnected: false;
 }> {
-    const res = await fetch(`/api/join_game/${uuid}`);
+    const url = `/api/join_game/${uuid}`;
+    //to do replace with local storage fetch to get potential player id
+    // const url = new URL(`/api/join_game/${uuid}`); // relative path doesn't work with URL
+    // if (player_id) {
+    //     url.searchParams.append("payerd_id", player_id);
+    // }
+    const res = await fetch(url, {
+        method: "GET",
+    });
     if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
     }
