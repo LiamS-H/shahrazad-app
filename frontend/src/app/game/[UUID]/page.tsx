@@ -1,9 +1,12 @@
 "use server";
 import Game from "./game";
-import { useParams } from "next/navigation";
 
-export default async function GamePage() {
-    const { uuid: game_uuid } = useParams<{ uuid: string }>();
+export default async function GamePage({
+    params,
+}: {
+    params: Promise<{ UUID: string }>;
+}) {
+    const { UUID } = await params;
 
-    return <Game uuid={game_uuid} />;
+    return <Game uuid={UUID} />;
 }

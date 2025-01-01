@@ -21,8 +21,12 @@ import {
     InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Slider } from "@/components/ui/slider";
+import { createGame } from "@/lib/createGame";
+import { useRouter } from "next/navigation";
 
 export default function GameForm() {
+    const { push: pushRoute } = useRouter();
+
     const [isClient, setIsClient] = useState(false);
     const [startingLife, setStartingLife] = useState("20");
     const [freeMulligans, setFreeMulligans] = useState(1);
@@ -70,12 +74,18 @@ export default function GameForm() {
         }
     }, [startingLife, freeMulligans, scryRule, isClient]);
 
-    const handleCreateGame = () => {
+    const handleCreateGame = async () => {
         console.log("Creating game with:", {
             startingLife,
             freeMulligans,
             scryRule,
         });
+        const { game_id } = await createGame({
+            startingLife,
+            freeMulligans,
+            scryRule,
+        });
+        pushRoute(`game/${game_id}`);
     };
 
     const handleJoinGame = () => {

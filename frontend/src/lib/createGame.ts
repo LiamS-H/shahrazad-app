@@ -1,14 +1,13 @@
-// import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
-import { ShahrazadGame } from "@/types/bindings/game";
-// import { GameState } from "shahrazad-wasm";
-
-export async function fetchGame(uuid: string): Promise<{
-    game: ShahrazadGame;
+"use client";
+export async function createGame(settings: any): Promise<{
     game_id: string;
-    player_id: string;
-    reconnected: false;
+    playerd_id: string;
 }> {
-    const res = await fetch(`/api/join_game/${uuid}`);
+    // set local storage player_uuid
+    const res = await fetch("api/create_game", {
+        method: "POST",
+        body: JSON.stringify(settings),
+    });
     if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
     }

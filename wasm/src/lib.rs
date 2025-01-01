@@ -2,7 +2,7 @@ use serde::Serialize;
 use serde_wasm_bindgen::Serializer;
 use shared::types::{
     action,
-    game::{self},
+    game::{self, ShahrazadGame},
 };
 use wasm_bindgen::prelude::*;
 
@@ -23,9 +23,11 @@ pub struct GameState {
 #[wasm_bindgen]
 impl GameState {
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self {
-            inner: game::ShahrazadGame::new(),
+    pub fn new(game: JsValue) -> Self {
+        if let Ok(game) = serde_wasm_bindgen::from_value::<ShahrazadGame>(game) {
+            Self { inner: game }
+        } else {
+            panic!("Error loading game")
         }
     }
 

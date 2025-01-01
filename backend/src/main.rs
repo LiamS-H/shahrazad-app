@@ -66,6 +66,7 @@ async fn main() {
         .route("/create_game", post(create_game))
         .route("/join_game/:game_id", get(join_game))
         .route("/ws/game/:game_id/player/:player_id", get(game_handler))
+        .fallback(fallback)
         .layer(cors)
         .with_state(state);
 
@@ -75,11 +76,15 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
+async fn fallback() -> impl IntoResponse {
+    "route not found".to_string()
+}
+
 async fn create_game(State(state): State<Arc<AppState>>) -> impl IntoResponse {
     let game_id = Uuid::new_v4();
     let host_id = Uuid::new_v4();
 
-    let (tx, _) = broadcast::channel(100);
+    let (tx, _) = broadcast::channel(10);
 
     let game_state = GameState {
         game: ShahrazadGame::new(),
@@ -108,7 +113,7 @@ async fn join_game(
 ) -> impl IntoResponse {
     let game_id = match Uuid::parse_str(&game_id) {
         Ok(id) => id,
-        Err(_) => return "Invalid game ID".to_string(),
+        Err(_) => return format!("{}:invalid_id", game_id),
     };
 
     if !state.games.contains_key(&game_id) {
@@ -145,9 +150,12 @@ async fn join_game(
     };
     let _ = game_state.tx.send(update);
 
+    let game = &game_state.game;
+
     serde_json::json!({
         "game_id": game_id,
         "player_id": player_id,
+        "game": game,
         "reconnected": false
     })
     .to_string()

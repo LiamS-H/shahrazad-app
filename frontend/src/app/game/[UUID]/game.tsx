@@ -4,28 +4,28 @@ import { fetchGame } from "@/lib/fetchGame";
 import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef } from "react";
-// import { useEffect } from "react";
 import "react-scrycards/dist/index.css";
 import init, { GameState } from "shahrazad-wasm";
 
 export default function GamePage(props: { uuid: string }) {
     const game_ref = useRef<GameState>(null);
     const [isGameLoaded, setGameLoaded] = useState(false);
-    const [game, setGame] = useState<ShahrazadGame>({
-        zone_count: 0,
-        card_count: 0,
-        cards: {},
-        playmats: {},
-        zones: {},
-        players: [],
-    });
+    const [game, setGame] = useState<ShahrazadGame | null>(null);
+    const [playerUUID, setPlayerUUID] = useState<string | null>(null);
 
     async function loadWasm() {
-        await init();
-        game_ref.current = new GameState();
+        //load wasm and api request at once
+        const [fetchResult, _] = await Promise.all([
+            fetchGame(props.uuid),
+            init(),
+        ]);
 
-        let state: ShahrazadGame = fetchGame();
-        game_ref.current.set_state(state);
+        const { player_id: playerUUID, game: initialState } = fetchResult;
+        setPlayerUUID(playerUUID);
+
+        game_ref.current = new GameState(initialState);
+        game_ref.current.set_state(initialState);
+        setGame(initialState);
 
         setGameLoaded(true);
     }
@@ -34,47 +34,13 @@ export default function GamePage(props: { uuid: string }) {
         loadWasm();
     }, []);
 
-    useEffect(() => {
-        if (game_ref.current == null) return;
-        if (!isGameLoaded) return;
-
-        // const newGame: ShahrazadGame = {
-        //     zone_count: 0,
-        //     card_count: 0,
-        //     cards: {},
-        //     playmats: [],
-        //     zones: {},
-        // };
-        // game_ref.current.set_state(newGame);
-
-        let newGame: ShahrazadGame = game_ref.current.apply_action({
-            type: ShahrazadActionCase.AddPlayer,
-            uuid: "2",
-        });
-
-        console.log(newGame);
-        newGame = game_ref.current.apply_action({
-            type: ShahrazadActionCase.ZoneImport,
-            cards: [
-                "Akki Lavarunner // Tok-Tok, Volcano Born",
-                "Opt",
-                "Mental Misstep",
-            ],
-            zone: newGame.playmats["1"].library,
-        });
-        console.log(newGame);
-        const game = game_ref.current.apply_action({
-            type: ShahrazadActionCase.ZoneImport,
-            cards: ["Akki Lavarunner // Tok-Tok, Volcano Born"],
-            zone: newGame.playmats["2"].library,
-        });
-        console.log(game);
-        setGame(game);
-    }, [isGameLoaded]);
+    if (!game) return null;
+    if (!playerUUID) return null;
 
     return (
         <Game
             game={game}
+            player_uuid={playerUUID}
             applyAction={(a: ShahrazadAction) => {
                 setGame((game) => {
                     if (!game_ref.current) {
