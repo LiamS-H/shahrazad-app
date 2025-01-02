@@ -1,0 +1,15 @@
+{
+  "name": "shahrazad-wasm",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "shahrazad_wasm_bg.wasm",
+    "shahrazad_wasm.js",
+    "shahrazad_wasm.d.ts"
+  ],
+  "main": "shahrazad_wasm.js",
+  "types": "shahrazad_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

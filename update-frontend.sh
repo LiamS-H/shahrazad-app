@@ -3,7 +3,7 @@ FRONTEND_TYPE_DIR="frontend/src/types"
 FRONTEND_BINDING_DIR="bindings"
 
 WASM_PKG_DIR="wasm/pkg"
-FRONTEND_MODULES_DIR="frontend/node_modules"
+FRONTEND_MODULES_DIR="frontend/src/lib"
 FRONTEND_WASM_DIR="shahrazad-wasm"
 
 GREEN='\033[0;32m'
@@ -48,7 +48,7 @@ echo "Copying wasm to frontend..."
 
 rm -rf "$FRONTEND_MODULES_DIR/$FRONTEND_WASM_DIR/*" 
 
-mkdir -p frontend/node_modules/shahrazad-wasm
+mkdir -p "$FRONTEND_MODULES_DIR/$FRONTEND_WASM_DIR"
 cp -r $WASM_PKG_DIR/* "$FRONTEND_MODULES_DIR/$FRONTEND_WASM_DIR" || { echo "${RED}❌failed to copy wasm"; exit 1;}
 
 echo  "${GREEN}wasm module successfully copied to frontend!"
