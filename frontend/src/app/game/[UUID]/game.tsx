@@ -10,7 +10,7 @@ import init, { GameState } from "shahrazad-wasm";
 export default function GamePage(props: { uuid: string }) {
     const game_ref = useRef<GameState>(null);
     const socket_ref = useRef<WebSocket>(null);
-    const [isGameLoaded, setGameLoaded] = useState(false);
+    const init_ref = useRef<boolean>(false);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
 
@@ -24,8 +24,9 @@ export default function GamePage(props: { uuid: string }) {
         }
     }
 
-    async function connectToGame() {
-        if (isGameLoaded) return;
+    async function initGame() {
+        if (init_ref.current) return;
+        init_ref.current = true;
 
         const stored_player = localStorage.getItem("saved-player") || undefined;
         //load wasm and api request at once
@@ -39,7 +40,6 @@ export default function GamePage(props: { uuid: string }) {
         localStorage.setItem("saved-player", playerUUID);
 
         game_ref.current = new GameState(initialState);
-        game_ref.current.set_state(initialState);
         setGame(initialState);
 
         socket_ref.current = new WebSocket(
@@ -79,8 +79,6 @@ export default function GamePage(props: { uuid: string }) {
             socket_ref.current?.close();
         };
 
-        setGameLoaded(true);
-
         return;
     }
 
@@ -101,7 +99,7 @@ export default function GamePage(props: { uuid: string }) {
     }
 
     useEffect(() => {
-        connectToGame();
+        initGame();
         return cleanup;
     }, []);
 
