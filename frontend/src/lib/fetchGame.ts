@@ -11,12 +11,10 @@ export async function fetchGame(
     player_id: string;
     reconnected: false;
 }> {
-    const url = `/api/join_game/${uuid}`;
-    //to do replace with local storage fetch to get potential player id
-    // const url = new URL(`/api/join_game/${uuid}`); // relative path doesn't work with URL
-    // if (player_id) {
-    //     url.searchParams.append("payerd_id", player_id);
-    // }
+    const params = player_id
+        ? `?player_id=${encodeURIComponent(player_id)}`
+        : "";
+    const url = `/api/join_game/${uuid}${params}`;
     const res = await fetch(url, {
         method: "GET",
     });

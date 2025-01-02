@@ -1,7 +1,7 @@
 "use client";
 export async function createGame(settings: any): Promise<{
     game_id: string;
-    playerd_id: string;
+    player_id: string;
 }> {
     // set local storage player_uuid
     const res = await fetch("api/create_game", {
@@ -11,7 +11,9 @@ export async function createGame(settings: any): Promise<{
     if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
     }
-    return await res.json();
+    const data = await res.json();
+    console.log("createGame", data);
+    return data;
 
     // return {
     //     game: {

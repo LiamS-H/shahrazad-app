@@ -9,29 +9,100 @@ import init, { GameState } from "shahrazad-wasm";
 
 export default function GamePage(props: { uuid: string }) {
     const game_ref = useRef<GameState>(null);
+    const socket_ref = useRef<WebSocket>(null);
     const [isGameLoaded, setGameLoaded] = useState(false);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
 
-    async function loadWasm() {
+    function cleanup() {
+        if (game_ref.current) {
+            game_ref.current.free();
+        }
+        if (socket_ref.current) {
+            //gracefull shutdown code
+            socket_ref.current.close(1000);
+        }
+    }
+
+    async function connectToGame() {
+        if (isGameLoaded) return;
+
+        const stored_player = localStorage.getItem("saved-player") || undefined;
         //load wasm and api request at once
         const [fetchResult, _] = await Promise.all([
-            fetchGame(props.uuid),
+            fetchGame(props.uuid, stored_player),
             init(),
         ]);
 
         const { player_id: playerUUID, game: initialState } = fetchResult;
         setPlayerUUID(playerUUID);
+        localStorage.setItem("saved-player", playerUUID);
 
         game_ref.current = new GameState(initialState);
         game_ref.current.set_state(initialState);
         setGame(initialState);
 
+        socket_ref.current = new WebSocket(
+            `/api/ws/game/${props.uuid}/player/${playerUUID}`
+        );
+        socket_ref.current.onopen = (event) => {
+            console.log("[ws] connected.");
+        };
+
+        socket_ref.current.onmessage = (event) => {
+            if (!game_ref.current) {
+                console.error("[ws] recieved connection before wasm loaded.");
+                return;
+            }
+            try {
+                const {
+                    action,
+                    game,
+                }: { action?: ShahrazadAction; game?: ShahrazadGame } =
+                    JSON.parse(event.data);
+
+                let new_game: null | ShahrazadGame = null;
+                if (action) {
+                    new_game = game_ref.current.apply_action(action);
+                    console.log("[ws] recieved action:", action);
+                } else if (game) {
+                    new_game = game_ref.current.set_state(game);
+                    console.log("[ws] recieved game:", game);
+                }
+                setGame((game) => new_game || game);
+            } catch (error) {
+                console.error("[ws] trouble applying recieved data:\n", error);
+            }
+        };
+        socket_ref.current.onerror = (error) => {
+            console.error("[ws] connection error:\n", error);
+            socket_ref.current?.close();
+        };
+
         setGameLoaded(true);
+
+        return;
+    }
+
+    function broadCastAction(action: ShahrazadAction) {
+        console.log("broadcasting action", action);
+        if (!socket_ref.current) {
+            console.error("broadcasted before sockect connected.");
+            return;
+        }
+        if (socket_ref.current.readyState !== WebSocket.OPEN) {
+            console.error(
+                "broadcasted before socket is ready. state:",
+                socket_ref.current.readyState
+            );
+            return;
+        }
+        socket_ref.current.send(JSON.stringify(action));
     }
 
     useEffect(() => {
-        loadWasm();
+        connectToGame();
+        return cleanup;
     }, []);
 
     if (!game) return null;
@@ -42,19 +113,16 @@ export default function GamePage(props: { uuid: string }) {
             game={game}
             player_uuid={playerUUID}
             applyAction={(a: ShahrazadAction) => {
-                setGame((game) => {
-                    if (!game_ref.current) {
-                        console.error("attempted action with empty game ref");
-                        return game;
-                    }
-                    const new_game = game_ref.current.apply_action(a);
-                    if (!new_game) {
-                        console.log("game state same");
-                        return game;
-                    }
-                    console.log("resulting game:", new_game);
-                    return new_game;
-                });
+                console.log("applying action:", a);
+                const new_game: ShahrazadGame | null =
+                    game_ref.current?.apply_action(a) || null;
+                if (!new_game) {
+                    console.log("game state same");
+                    return;
+                }
+                console.log("resulting game:", new_game);
+                setGame(new_game);
+                broadCastAction(a);
             }}
         />
     );

@@ -75,16 +75,17 @@ export default function GameForm() {
     }, [startingLife, freeMulligans, scryRule, isClient]);
 
     const handleCreateGame = async () => {
-        console.log("Creating game with:", {
+        // console.log("Creating game with:", {
+        //     startingLife,
+        //     freeMulligans,
+        //     scryRule,
+        // });
+        const { game_id, player_id } = await createGame({
             startingLife,
             freeMulligans,
             scryRule,
         });
-        const { game_id } = await createGame({
-            startingLife,
-            freeMulligans,
-            scryRule,
-        });
+        localStorage.setItem("saved-player", player_id);
         pushRoute(`game/${game_id}`);
     };
 
