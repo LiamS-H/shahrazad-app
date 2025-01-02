@@ -20,11 +20,9 @@ use tokio::sync::broadcast;
 use tower_http::cors::CorsLayer;
 use uuid::Uuid;
 
-const PORT: u16 = 5000;
-
 #[derive(Clone, Serialize, Deserialize)]
 struct GameUpdate {
-    action: Option<ShahrazadAction>,
+    action: ShahrazadAction,
     player_id: Uuid,
     game_id: Uuid,
 }
@@ -55,6 +53,8 @@ struct JoinGameQuery {
     player_id: Option<String>,
 }
 
+const PORT: u16 = 5000;
+
 #[tokio::main]
 async fn main() {
     let state = Arc::new(AppState {
@@ -79,24 +79,39 @@ async fn main() {
 async fn fallback() -> impl IntoResponse {
     "route not found".to_string()
 }
-
 async fn create_game(State(state): State<Arc<AppState>>) -> impl IntoResponse {
     let game_id = Uuid::new_v4();
     let host_id = Uuid::new_v4();
-
-    let (tx, _) = broadcast::channel(10);
+    let (tx, _rx) = broadcast::channel(10);
 
     let game_state = GameState {
         game: ShahrazadGame::new(),
         host_id,
         players: DashMap::new(),
-        tx,
+        tx: tx.clone(),
     };
 
     game_state
         .players
         .insert(host_id, PlayerConnection { connected: false });
+
     state.games.insert(game_id, game_state);
+
+    // Add host to game
+    let add_player = ShahrazadAction::AddPlayer {
+        uuid: host_id.to_string(),
+    };
+
+    if let Some(mut game_ref) = state.games.get_mut(&game_id) {
+        if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_ref.game) {
+            let update = GameUpdate {
+                action: add_player,
+                player_id: host_id,
+                game_id,
+            };
+            let _ = game_ref.tx.send(update);
+        }
+    }
 
     let response = CreateGameResponse {
         game_id,
@@ -120,52 +135,54 @@ async fn join_game(
         return "Game not found".to_string();
     }
 
-    let game_state = state.games.get(&game_id).unwrap();
-
+    // Handle reconnection case first
     if let Some(player_id_str) = params.player_id {
         if let Ok(player_id) = Uuid::parse_str(&player_id_str) {
-            if game_state.players.contains_key(&player_id) {
-                return serde_json::json!({
-                    "game_id": game_id,
-                    "player_id": player_id,
-                    "reconnected": true
-                })
-                .to_string();
+            if let Some(game_ref) = state.games.get(&game_id) {
+                if game_ref.players.contains_key(&player_id) {
+                    return serde_json::json!({
+                        "game_id": game_id,
+                        "player_id": player_id,
+                        "game": &game_ref.game,
+                        "reconnected": true
+                    })
+                    .to_string();
+                }
             }
         }
     }
 
     let player_id = Uuid::new_v4();
-    game_state
-        .players
-        .insert(player_id, PlayerConnection { connected: false });
 
-    // Broadcast that a new player has joined
-    let update = GameUpdate {
-        action: Some(ShahrazadAction::AddPlayer {
+    {
+        let mut game_ref = state.games.get_mut(&game_id).unwrap();
+        game_ref
+            .players
+            .insert(player_id, PlayerConnection { connected: false });
+
+        let add_player = ShahrazadAction::AddPlayer {
             uuid: player_id.to_string(),
-        }),
-        player_id,
-        game_id,
-    };
-    let _ = game_state.tx.send(update);
+        };
 
-    let game = &game_state.game;
+        if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_ref.game) {
+            let update = GameUpdate {
+                action: add_player,
+                player_id,
+                game_id,
+            };
+            let _ = game_ref.tx.send(update);
+        }
+    }
 
+    // Get immutable reference for the response
+    let game_ref = state.games.get(&game_id).unwrap();
     serde_json::json!({
         "game_id": game_id,
         "player_id": player_id,
-        "game": game,
+        "game": &game_ref.game,
         "reconnected": false
     })
     .to_string()
-}
-
-#[derive(Serialize)]
-struct GameStateResponse<'a> {
-    game: &'a ShahrazadGame,
-    host_id: Uuid,
-    player_count: usize,
 }
 
 async fn handle_socket(
@@ -179,46 +196,52 @@ async fn handle_socket(
         _ => return,
     };
 
-    let game_state = match state.games.get(&game_id) {
+    let game_ref = match state.games.get(&game_id) {
         Some(gs) => gs,
         None => return,
     };
 
-    if !game_state.players.contains_key(&player_id) {
+    if !game_ref.players.contains_key(&player_id) {
         return;
     }
 
-    if let Some(mut player) = game_state.players.get_mut(&player_id) {
+    // Update connection status
+    if let Some(mut player) = game_ref.players.get_mut(&player_id) {
         player.connected = true;
     }
 
     let (mut sender, mut receiver) = socket.split();
-    let mut rx = game_state.tx.subscribe();
+    let mut rx = game_ref.tx.subscribe();
+    let tx = game_ref.tx.clone();
 
     // Send initial game state
-    {
-        let initial_state = GameStateResponse {
-            game: &game_state.game,
-            host_id: game_state.host_id,
-            player_count: game_state.players.len(),
-        };
+    let initial_state = serde_json::json!({
+        "game": &game_ref.game,
+    });
 
-        if let Ok(json) = serde_json::to_string(&initial_state) {
-            let _ = sender.send(Message::Text(json)).await;
-        }
+    if let Ok(json) = serde_json::to_string(&initial_state) {
+        let _ = sender.send(Message::Text(json)).await;
     }
+
+    // Drop the game_ref so it's not held during the async tasks
+    drop(game_ref);
 
     // Handle incoming game updates
     let send_task = tokio::spawn({
         let state = state.clone();
         async move {
             while let Ok(update) = rx.recv().await {
-                if let Some(game_state) = state.games.get(&update.game_id) {
-                    let response = GameStateResponse {
-                        game: &game_state.game,
-                        host_id: game_state.host_id,
-                        player_count: game_state.players.len(),
-                    };
+                if let Some(game_ref) = state.games.get_mut(&update.game_id) {
+                    // updating clients solely based on actions means that that race conditions are possible
+                    // (clients apply conflicting moves at same time)
+                    // the smaller packets would be better, IF we handle the race conditions (we currently do not)
+                    // if we can detect conlicts, we rarely need to return full game and can mostly return actions
+                    // let response = serde_json::json!({
+                    //     "action": update.action,
+                    // });
+                    let response = serde_json::json!({
+                        "game": &game_ref.game,
+                    });
 
                     if let Ok(json) = serde_json::to_string(&response) {
                         if sender.send(Message::Text(json)).await.is_err() {
@@ -235,25 +258,16 @@ async fn handle_socket(
         let state = state.clone();
         async move {
             while let Some(Ok(Message::Text(text))) = receiver.next().await {
-                let action: ShahrazadAction = match serde_json::from_str(&text) {
-                    Ok(action) => action,
-                    Err(_) => continue,
-                };
-
-                if let Some(mut game_state) = state.games.get_mut(&game_id) {
-                    let is_host = player_id == game_state.host_id;
-
-                    if let Some(_) =
-                        ShahrazadGame::apply_action(action.clone(), &mut game_state.game)
-                    {
-                        // Send update with just the action and IDs
-                        let update = GameUpdate {
-                            action: Some(action),
-                            player_id,
-                            game_id,
-                        };
-                        let _ = game_state.tx.send(update);
+                if let Ok(action) = serde_json::from_str::<ShahrazadAction>(&text) {
+                    let update = GameUpdate {
+                        action,
+                        player_id,
+                        game_id,
+                    };
+                    if let Some(mut game_ref) = state.games.get_mut(&update.game_id) {
+                        ShahrazadGame::apply_action(update.action.clone(), &mut game_ref.game);
                     }
+                    let _ = tx.send(update);
                 }
             }
         }
@@ -264,9 +278,12 @@ async fn handle_socket(
         _ = receive_task => {},
     }
 
-    if let Some(mut player) = game_state.players.get_mut(&player_id) {
-        player.connected = false;
-    };
+    // Update connection status at disconnect
+    if let Some(game_ref) = state.games.get(&game_id) {
+        if let Some(mut player) = game_ref.players.get_mut(&player_id) {
+            player.connected = false;
+        }
+    }
 }
 
 async fn game_handler(
