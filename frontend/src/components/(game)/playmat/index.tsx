@@ -7,6 +7,7 @@ import Graveyard from "./Graveyard";
 import Exile from "./Exile";
 import Command from "./Command";
 import { useShahrazadGameContext } from "@/contexts/game";
+import { ImportDeckButton } from "./ImportDeckButton";
 
 export default function Playmat(props: { player: ShahrazadPlaymatId }) {
     const { getPlaymat } = useShahrazadGameContext();
@@ -26,6 +27,7 @@ export default function Playmat(props: { player: ShahrazadPlaymatId }) {
                 <Exile id={playmat.exile} />
                 <Command id={playmat.command} />
                 <Hand id={playmat.hand} />
+                <ImportDeckButton player_uuid={props.player} />
             </div>
         </div>
     );
