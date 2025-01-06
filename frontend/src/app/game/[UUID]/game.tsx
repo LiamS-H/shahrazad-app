@@ -11,6 +11,7 @@ export default function GamePage(props: { uuid: string }) {
     const game_ref = useRef<GameState>(null);
     const socket_ref = useRef<WebSocket>(null);
     const init_ref = useRef<boolean>(false);
+    const move_count_ref = useRef<number>(0);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
 
@@ -19,7 +20,7 @@ export default function GamePage(props: { uuid: string }) {
             game_ref.current.free();
         }
         if (socket_ref.current) {
-            //gracefull shutdown code
+            //graceful shutdown status code
             socket_ref.current.close(1000);
         }
     }
@@ -51,27 +52,33 @@ export default function GamePage(props: { uuid: string }) {
 
         socket_ref.current.onmessage = (event) => {
             if (!game_ref.current) {
-                console.error("[ws] recieved connection before wasm loaded.");
+                console.error("[ws] received connection before wasm loaded.");
                 return;
             }
             try {
                 const {
                     action,
                     game,
-                }: { action?: ShahrazadAction; game?: ShahrazadGame } =
-                    JSON.parse(event.data);
+                    sequence_number,
+                }: {
+                    action?: ShahrazadAction;
+                    game?: ShahrazadGame;
+                    sequence_number: number;
+                } = JSON.parse(event.data);
+                console.log("[ws] message received:", JSON.parse(event.data));
+                move_count_ref.current = sequence_number;
 
                 let new_game: null | ShahrazadGame = null;
                 if (action) {
                     new_game = game_ref.current.apply_action(action);
-                    console.log("[ws] recieved action:", action);
+                    console.log("[ws] received action:", action);
                 } else if (game) {
                     new_game = game_ref.current.set_state(game);
-                    console.log("[ws] recieved game:", game);
+                    console.log("[ws] received game:", game);
                 }
                 setGame((game) => new_game || game);
             } catch (error) {
-                console.error("[ws] trouble applying recieved data:\n", error);
+                console.error("[ws] trouble applying received data:\n", error);
             }
         };
         socket_ref.current.onerror = (error) => {
@@ -83,9 +90,8 @@ export default function GamePage(props: { uuid: string }) {
     }
 
     function broadCastAction(action: ShahrazadAction) {
-        console.log("broadcasting action", action);
         if (!socket_ref.current) {
-            console.error("broadcasted before sockect connected.");
+            console.error("broadcasted before socket connected.");
             return;
         }
         if (socket_ref.current.readyState !== WebSocket.OPEN) {
@@ -95,7 +101,11 @@ export default function GamePage(props: { uuid: string }) {
             );
             return;
         }
-        socket_ref.current.send(JSON.stringify(action));
+        move_count_ref.current += 1;
+        const req = { action, sequenceNumber: move_count_ref.current };
+        console.log("broadcasting action", req);
+
+        socket_ref.current.send(JSON.stringify(req));
     }
 
     useEffect(() => {
