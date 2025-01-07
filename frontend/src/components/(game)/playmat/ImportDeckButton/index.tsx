@@ -7,7 +7,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { importFromStr } from "@/lib/importDeck";
-import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { Plus } from "lucide-react";
 import { useState } from "react";
