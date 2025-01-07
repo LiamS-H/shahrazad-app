@@ -5,6 +5,7 @@ import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { ClientAction, ServerUpdate } from "@/types/bindings/ws";
 import { useState, useEffect, useRef } from "react";
+import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
 import init, { GameState } from "shahrazad-wasm";
 
@@ -15,6 +16,7 @@ export default function GamePage(props: { uuid: string }) {
     const move_count_ref = useRef<number>(0);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
+    const { preloadCards } = useScrycardsContext();
 
     function cleanup() {
         if (game_ref.current) {
@@ -24,6 +26,27 @@ export default function GamePage(props: { uuid: string }) {
             //graceful shutdown status code
             socket_ref.current.close(1000);
         }
+    }
+
+    function apply_action(action: ShahrazadAction): void {
+        if (!game_ref.current) {
+            console.error("[client] tried to take action before game loaded.");
+            return;
+        }
+        const new_name = game_ref.current.apply_action(action);
+        if (action.type == ShahrazadActionCase.ZoneImport) {
+            preloadCards(action.cards);
+        }
+        setGame((game) => new_name || game);
+    }
+
+    function set_game(game: ShahrazadGame): void {
+        if (!game_ref.current) {
+            console.error("[client] tried to take action before game loaded.");
+            return;
+        }
+        const new_name = game_ref.current.set_state(game);
+        setGame((game) => new_name || game);
     }
 
     async function initGame() {
@@ -59,18 +82,15 @@ export default function GamePage(props: { uuid: string }) {
             try {
                 const { action, game, sequence_number }: ServerUpdate =
                     JSON.parse(event.data);
-                console.log("[ws] message received:", JSON.parse(event.data));
                 move_count_ref.current = sequence_number;
 
-                let new_game: null | ShahrazadGame = null;
                 if (action) {
-                    new_game = game_ref.current.apply_action(action);
+                    apply_action(action);
                     console.log("[ws] received action:", action);
                 } else if (game) {
-                    new_game = game_ref.current.set_state(game);
+                    set_game(game);
                     console.log("[ws] received game:", game);
                 }
-                setGame((game) => new_game || game);
             } catch (error) {
                 console.error("[ws] trouble applying received data:\n", error);
             }
@@ -118,15 +138,16 @@ export default function GamePage(props: { uuid: string }) {
             game={game}
             player_uuid={playerUUID}
             applyAction={(a: ShahrazadAction) => {
-                console.log("applying action:", a);
-                const new_game: ShahrazadGame | null =
-                    game_ref.current?.apply_action(a) || null;
-                if (!new_game) {
-                    console.log("game state same");
-                    return;
-                }
-                console.log("resulting game:", new_game);
-                setGame(new_game);
+                apply_action(a);
+                // console.log("applying action:", a);
+                // const new_game: ShahrazadGame | null =
+                //     game_ref.current?.apply_action(a) || null;
+                // if (!new_game) {
+                //     console.log("game state same");
+                //     return;
+                // }
+                // console.log("resulting game:", new_game);
+                // setGame(new_game);
                 broadCastAction(a);
             }}
         />
