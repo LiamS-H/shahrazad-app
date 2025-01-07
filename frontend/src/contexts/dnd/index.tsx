@@ -20,8 +20,8 @@ import { ShahrazadActionCase } from "@/types/bindings/action";
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
     MouseSensor.ShahContext = ShahContext;
-    const shahref = useRef(ShahContext);
-    shahref.current = ShahContext;
+    const shah_ref = useRef(ShahContext);
+    shah_ref.current = ShahContext;
     const { applyAction } = ShahContext;
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -71,7 +71,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             return;
         }
 
-        const shah_card = shahref.current.getCard(event.active.id.toString());
+        const shah_card = shah_ref.current.getCard(event.active.id.toString());
 
         const start_zone_id = active_data.zone;
         const end_zone_id = event.over.id.toString();
