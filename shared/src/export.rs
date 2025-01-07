@@ -20,7 +20,7 @@ pub fn export_all() {
                 prefix: "\
                 import {ShahrazadCardId,ShahrazadCardOptions} from './card';
                 import {ShahrazadZoneId} from './zone';
-
+                import { ShahrazadPlaymatId } from './playmat';
                 type usize = number;
                 ",
                 tab_size: 4,

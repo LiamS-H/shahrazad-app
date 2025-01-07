@@ -1,6 +1,6 @@
 import { ShahrazadCardId, ShahrazadCardOptions } from './card';
+import { ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
-
 type usize = number;
 
 export enum ShahrazadActionCase {
