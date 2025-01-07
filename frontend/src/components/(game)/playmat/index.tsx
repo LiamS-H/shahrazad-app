@@ -10,7 +10,10 @@ import { useShahrazadGameContext } from "@/contexts/game";
 import { ImportDeckButton } from "./ImportDeckButton";
 import Player from "./Player";
 
-export default function Playmat(props: { player: ShahrazadPlaymatId }) {
+export default function Playmat(props: {
+    player: ShahrazadPlaymatId;
+    active: boolean;
+}) {
     const { getPlaymat } = useShahrazadGameContext();
     const playmat = getPlaymat(props.player);
 
@@ -25,12 +28,12 @@ export default function Playmat(props: { player: ShahrazadPlaymatId }) {
             >
                 <Graveyard id={playmat.graveyard} />
                 <Deck id={playmat.library} />
+
                 <Exile id={playmat.exile} />
                 <Command id={playmat.command} />
-                <Hand id={playmat.hand} />
+                <Hand id={playmat.hand} active={props.active} />
                 <Player player_id={props.player} />
                 <ImportDeckButton
-                    player_uuid={props.player}
                     deckId={playmat.library}
                     commandId={playmat.command}
                 />

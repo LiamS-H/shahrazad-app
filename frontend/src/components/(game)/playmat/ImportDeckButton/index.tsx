@@ -8,15 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { importFromStr } from "@/lib/importDeck";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { Plus } from "lucide-react";
+import { Import } from "lucide-react";
 import { useState } from "react";
 
 export function ImportDeckButton({
-    player_uuid,
     deckId,
     commandId,
 }: {
-    player_uuid: string;
     deckId: ShahrazadZoneId;
     commandId: ShahrazadZoneId;
 }) {
@@ -26,7 +24,7 @@ export function ImportDeckButton({
         <Popover>
             <PopoverTrigger asChild>
                 <Button variant="outline" size="icon">
-                    <Plus className="h-[1.2rem] w-[1.2rem]" />
+                    <Import className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent>

@@ -13,7 +13,11 @@ export type ShahrazadProps = {
 
 export default function Game(props: ShahrazadProps) {
     const playmat_components = props.game.players.map((player) => (
-        <Playmat player={player} key={player} />
+        <Playmat
+            active={player == props.player_uuid}
+            player={player}
+            key={player}
+        />
     ));
 
     return (
