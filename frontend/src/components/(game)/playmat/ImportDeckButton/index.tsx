@@ -6,11 +6,21 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { useShahrazadGameContext } from "@/contexts/game";
+import { importFromStr } from "@/lib/importDeck";
 import { ShahrazadActionCase } from "@/types/bindings/action";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
-export function ImportDeckButton({ player_uuid }: { player_uuid: string }) {
+export function ImportDeckButton({
+    player_uuid,
+    deckId,
+    commandId,
+}: {
+    player_uuid: string;
+    deckId: ShahrazadZoneId;
+    commandId: ShahrazadZoneId;
+}) {
     const [input, setInput] = useState<string>("");
     const { applyAction, getPlaymat } = useShahrazadGameContext();
     return (
@@ -27,12 +37,13 @@ export function ImportDeckButton({ player_uuid }: { player_uuid: string }) {
                 />
                 <Button
                     onClick={() => {
-                        console.log("importing deck");
-                        applyAction({
-                            type: ShahrazadActionCase.ZoneImport,
-                            cards: ["opt"],
-                            zone: getPlaymat(player_uuid).library,
-                        });
+                        const actions = importFromStr(input, deckId, commandId);
+                        actions.forEach((a) => applyAction(a));
+                        // applyAction({
+                        //     type: ShahrazadActionCase.ZoneImport,
+                        //     cards: ["opt"],
+                        //     zone: getPlaymat(player_uuid).library,
+                        // });
                     }}
                 >
                     Import

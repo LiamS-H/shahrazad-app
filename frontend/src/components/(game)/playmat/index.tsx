@@ -27,7 +27,11 @@ export default function Playmat(props: { player: ShahrazadPlaymatId }) {
                 <Exile id={playmat.exile} />
                 <Command id={playmat.command} />
                 <Hand id={playmat.hand} />
-                <ImportDeckButton player_uuid={props.player} />
+                <ImportDeckButton
+                    player_uuid={props.player}
+                    deckId={playmat.library}
+                    commandId={playmat.command}
+                />
             </div>
         </div>
     );
