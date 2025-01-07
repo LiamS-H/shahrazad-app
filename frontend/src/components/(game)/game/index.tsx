@@ -12,7 +12,7 @@ export type ShahrazadProps = {
 };
 
 export default function Game(props: ShahrazadProps) {
-    const playmay_components = props.game.players.map((player) => (
+    const playmat_components = props.game.players.map((player) => (
         <Playmat player={player} key={player} />
     ));
 
@@ -31,7 +31,7 @@ export default function Game(props: ShahrazadProps) {
                         flexFlow: "row wrap",
                     }}
                 >
-                    {playmay_components}
+                    {playmat_components}
                 </div>
             </ShahrazadDND>
         </ShahrazadGameProvider>
