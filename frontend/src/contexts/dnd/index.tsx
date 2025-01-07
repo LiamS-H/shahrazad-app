@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { IDraggableData, IDroppableData } from "@/types/interfaces/dnd";
 import {
     DndContext,
@@ -85,32 +85,6 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         let x: undefined | number;
         let y: undefined | number;
         if (end_zone_gridsize) {
-            // active.rect.current.initial gets reset to null and this goes back to 0
-            // let start_x = shah_card.x
-            //     ? shah_card.x * end_zone_gridsize
-            //     : undefined;
-            // if (start_x === undefined) {
-            //     console.log(
-            //         "shah card had no start position, trying:",
-            //         event.active.rect.current.initial,
-            //     );
-            // }
-            // start_x ??= event.active.rect.current.initial?.left;
-            // if (start_x === undefined) {
-            //     console.log("shah card had no initial rect");
-            // }
-            // let start_y = shah_card.y
-            //     ? shah_card.y * end_zone_gridsize
-            //     : undefined;
-            // start_y ??= event.active.rect.current.initial?.top;
-
-            // if (!start_x || !start_y) {
-            //     x = event.active.rect.current.translated?.left || 0;
-            //     y = event.active.rect.current.translated?.bottom || 0;
-            // } else {
-            //     x = start_x + event.delta.x;
-            //     y = start_y + event.delta.y;
-            // }
             x = event.active.rect.current.translated?.left || 0;
             y = event.active.rect.current.translated?.top || 0;
 
