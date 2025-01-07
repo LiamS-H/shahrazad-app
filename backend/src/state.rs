@@ -54,7 +54,7 @@ impl GameStateManager {
 
         // Add host to game
         let add_player = ShahrazadAction::AddPlayer {
-            uuid: host_id.to_string(),
+            player_id: host_id.to_string(),
         };
 
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
@@ -84,7 +84,7 @@ impl GameStateManager {
             .insert(player_id, PlayerConnection { connected: false });
 
         let add_player = ShahrazadAction::AddPlayer {
-            uuid: player_id.to_string(),
+            player_id: player_id.to_string(),
         };
 
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_ref.game) {

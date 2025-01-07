@@ -12,7 +12,7 @@ fn create_game() {
 fn add_player() {
     let mut game = ShahrazadGame::new();
     {
-        let action = ShahrazadAction::AddPlayer { uuid: "1".into() };
+        let action = ShahrazadAction::AddPlayer { player_id: "1".into() };
         let mutation = ShahrazadGame::apply_action(action, &mut game).is_some();
         assert!(mutation == true);
     }
@@ -21,7 +21,7 @@ fn add_player() {
 fn init_game() {
     let mut game = ShahrazadGame::new();
     {
-        let action = ShahrazadAction::AddPlayer { uuid: "1".into() };
+        let action = ShahrazadAction::AddPlayer { player_id: "1".into() };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
         let Some(new_state) = mutation else { panic!() };

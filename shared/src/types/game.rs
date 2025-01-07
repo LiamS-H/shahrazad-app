@@ -27,6 +27,7 @@ pub struct ShahrazadPlaymat {
     battlefield: ShahrazadZoneId,
     exile: ShahrazadZoneId,
     command: ShahrazadZoneId,
+    life: u32,
 }
 
 use crate::branded_string;
@@ -78,7 +79,7 @@ impl ShahrazadGame {
                 return Some(game);
             }
             ShahrazadAction::CardState { cards, state } => {
-                let mut mutatated = false;
+                let mut mutated = false;
                 for card_id in &cards {
                     let old_card = game.cards.get(&card_id)?;
                     let mut new_card = ShahrazadCard { ..old_card.clone() };
@@ -87,10 +88,10 @@ impl ShahrazadGame {
                     if *old_card == new_card {
                         continue;
                     };
-                    mutatated = true;
+                    mutated = true;
                     game.cards.insert(card_id.clone(), new_card);
                 }
-                if !mutatated {
+                if !mutated {
                     return None;
                 }
                 return Some(game);
@@ -102,7 +103,7 @@ impl ShahrazadGame {
                 destination: dest,
                 index,
             } => {
-                let mut mutatated = false;
+                let mut mutated = false;
                 for card_id in &cards {
                     let old_card = game.cards.get(&card_id)?;
 
@@ -113,7 +114,7 @@ impl ShahrazadGame {
                     if *old_card == new_card {
                         continue;
                     };
-                    mutatated = true;
+                    mutated = true;
                     game.cards.insert(card_id.clone(), new_card);
                 }
 
@@ -140,9 +141,9 @@ impl ShahrazadGame {
                 let mut new_cards = old_cards.clone();
                 new_cards.splice(idx..idx, cards_set);
 
-                mutatated = mutatated || old_cards != new_cards;
+                mutated = mutated || old_cards != new_cards;
 
-                if !mutatated {
+                if !mutated {
                     return None;
                 }
 
@@ -182,7 +183,7 @@ impl ShahrazadGame {
                 deck_uri,
                 player_idx,
             } => todo!("{}{}", deck_uri, player_idx),
-            ShahrazadAction::AddPlayer { uuid } => {
+            ShahrazadAction::AddPlayer { player_id } => {
                 let zone_types = [
                     "library",
                     "hand",
@@ -212,17 +213,23 @@ impl ShahrazadGame {
                     battlefield: zone_ids[3].clone(),
                     exile: zone_ids[4].clone(),
                     command: zone_ids[5].clone(),
+                    life: 20,
                 };
 
                 game.zone_count += 6;
 
-                let player_uuid = ShahrazadPlaymatId::new(uuid);
+                let player_uuid = ShahrazadPlaymatId::new(player_id);
 
                 game.playmats.insert(player_uuid.clone(), new_playmat);
 
                 game.players.push(player_uuid.clone());
 
                 return Some(game);
+            }
+            ShahrazadAction::SetLife { player_id, life } => {
+                let playmat = game.playmats.get_mut(&player_id)?;
+                playmat.life = life;
+                Some(game)
             }
         }
     }

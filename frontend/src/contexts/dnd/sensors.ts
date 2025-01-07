@@ -10,7 +10,11 @@ import { ShahrazadActionCase } from "@/types/bindings/action";
 
 export class MouseSensor extends LibMouseSensor {
     public static ShahContext: IShahrazadGameContext;
-    static handler({ nativeEvent: event }: MouseEvent) {
+    static mouseDownHandler({ nativeEvent: event }: MouseEvent) {
+        if (event.button == 2) {
+            return false;
+        }
+
         if (event.detail >= 2 && event.detail % 2 == 0) {
             let cur: EventTarget | null = event.target;
             while (cur && cur instanceof Element) {
@@ -44,7 +48,7 @@ export class MouseSensor extends LibMouseSensor {
     static activators = [
         {
             eventName: "onMouseDown",
-            handler: MouseSensor.handler,
+            handler: MouseSensor.mouseDownHandler,
         },
     ] as (typeof LibMouseSensor)["activators"];
 }
