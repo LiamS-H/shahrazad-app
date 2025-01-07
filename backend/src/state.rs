@@ -1,31 +1,11 @@
 use dashmap::DashMap;
-use serde::{Deserialize, Serialize};
-use shared::types::action::ShahrazadAction;
 use shared::types::game::ShahrazadGame;
+use shared::types::{
+    action::ShahrazadAction,
+    ws::{ClientAction, ServerUpdate},
+};
 use tokio::sync::broadcast;
 use uuid::Uuid;
-
-#[derive(Clone, Serialize, Deserialize)]
-pub struct ClientSocketRequest {
-    pub action: ShahrazadAction,
-    pub sequence_number: u64,
-}
-
-#[derive(Clone, Serialize, Deserialize)]
-pub struct ClientAction {
-    pub action: ShahrazadAction,
-    pub sequence_number: u64,
-    pub player_id: Uuid,
-    pub game_id: Uuid,
-}
-
-#[derive(Clone, Serialize, Deserialize)]
-pub struct ServerUpdate {
-    pub action: Option<ShahrazadAction>,
-    pub game: Option<ShahrazadGame>,
-    pub sequence_number: u64,
-    pub player_id: Uuid,
-}
 
 #[derive(Clone)]
 pub struct GameInfo {
@@ -185,12 +165,11 @@ impl GameStateManager {
 
     pub async fn process_action(
         &self,
+        player_id: Uuid,
+        game_id: Uuid,
         client_action: ClientAction,
     ) -> Result<ServerUpdate, String> {
-        let mut game_ref = self
-            .games
-            .get_mut(&client_action.game_id)
-            .ok_or("Game not found")?;
+        let mut game_ref = self.games.get_mut(&game_id).ok_or("Game not found")?;
 
         if let Some(_) =
             ShahrazadGame::apply_action(client_action.action.clone(), &mut game_ref.game)
@@ -205,14 +184,14 @@ impl GameStateManager {
                     action: None,
                     game: Some(game_ref.game.clone()),
                     sequence_number: game_ref.sequence_number,
-                    player_id: client_action.player_id,
+                    player_id: player_id,
                 };
                 let _ = game_ref.tx.send(update.clone());
                 let update = ServerUpdate {
                     action: Some(client_action.action),
                     game: None,
                     sequence_number: game_ref.sequence_number,
-                    player_id: client_action.player_id,
+                    player_id: player_id,
                 };
                 let _ = game_ref.tx.send(update.clone());
                 return Ok(update);
@@ -222,7 +201,7 @@ impl GameStateManager {
                 action: Some(client_action.action),
                 game: None,
                 sequence_number: game_ref.sequence_number,
-                player_id: client_action.player_id,
+                player_id: player_id,
             };
 
             let _ = game_ref.tx.send(update.clone());
@@ -233,7 +212,7 @@ impl GameStateManager {
                 action: None,
                 game: Some(game_ref.game.clone()),
                 sequence_number: game_ref.sequence_number,
-                player_id: client_action.player_id,
+                player_id: player_id,
             })
         }
     }

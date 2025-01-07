@@ -9,24 +9,16 @@ use axum::{
 };
 use backend::state::*;
 use futures::{SinkExt, StreamExt};
-use serde::{Deserialize, Serialize};
 use serde_json;
+use shared::types::{
+    api::{CreateGameResponse, JoinGameQuery, JoinGameResponse},
+    ws::ClientAction,
+};
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower_http::cors::CorsLayer;
 use uuid::Uuid;
-
-#[derive(Deserialize)]
-struct JoinGameQuery {
-    player_id: Option<String>,
-}
-
-#[derive(Serialize)]
-struct CreateGameResponse {
-    game_id: Uuid,
-    player_id: Uuid,
-}
 
 const PORT: u16 = 5000;
 
@@ -59,8 +51,8 @@ async fn create_game(State(state): State<Arc<GameStateManager>>) -> impl IntoRes
 
     if let Ok(game_info) = (*state).create_game(game_id, host_id).await {
         let response = CreateGameResponse {
-            game_id: game_info.game_id,
-            player_id: game_info.host_id,
+            game_id: game_info.game_id.into(),
+            player_id: game_info.host_id.into(),
         };
         serde_json::to_string(&response).unwrap()
     } else {
@@ -82,11 +74,11 @@ async fn join_game(
     if let Some(player_id_str) = params.player_id {
         if let Ok(player_id) = Uuid::parse_str(&player_id_str) {
             if let Ok(game_info) = (*state).reconnect_player(game_id, player_id).await {
-                return serde_json::json!({
-                    "game_id": game_info.game_id,
-                    "player_id": player_id,
-                    "game": game_info.game,
-                    "reconnected": true
+                return serde_json::json!(JoinGameResponse {
+                    game_id: game_info.game_id.into(),
+                    player_id: player_id.into(),
+                    game: game_info.game,
+                    reconnected: true
                 })
                 .to_string();
             }
@@ -96,11 +88,11 @@ async fn join_game(
     // Handle new player joining
     let player_id = Uuid::new_v4();
     match (*state).add_player(game_id, player_id).await {
-        Ok(game_info) => serde_json::json!({
-            "game_id": game_info.game_id,
-            "player_id": player_id,
-            "game": game_info.game,
-            "reconnected": false
+        Ok(game_info) => serde_json::json!(JoinGameResponse {
+            game_id: game_info.game_id.into(),
+            player_id: player_id.into(),
+            game: game_info.game,
+            reconnected: false
         })
         .to_string(),
         Err(_) => "Game not found".to_string(),
@@ -157,19 +149,10 @@ async fn handle_socket(
             let state = state.clone();
             async move {
                 while let Some(Ok(Message::Text(text))) = receiver.next().await {
-                    if let Ok(ClientSocketRequest {
-                        action,
-                        sequence_number,
-                    }) = serde_json::from_str::<ClientSocketRequest>(&text)
-                    {
-                        let client_action = ClientAction {
-                            action,
-                            sequence_number,
-                            player_id,
-                            game_id,
-                        };
-
-                        let _ = (*state).process_action(client_action).await;
+                    if let Ok(client_action) = serde_json::from_str::<ClientAction>(&text) {
+                        let _ = (*state)
+                            .process_action(player_id, game_id, client_action)
+                            .await;
                     }
                 }
             }

@@ -3,6 +3,7 @@ import Game from "@/components/(game)/game";
 import { fetchGame } from "@/lib/fetchGame";
 import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
+import { ClientAction, ServerUpdate } from "@/types/bindings/ws";
 import { useState, useEffect, useRef } from "react";
 import "react-scrycards/dist/index.css";
 import init, { GameState } from "shahrazad-wasm";
@@ -56,15 +57,8 @@ export default function GamePage(props: { uuid: string }) {
                 return;
             }
             try {
-                const {
-                    action,
-                    game,
-                    sequence_number,
-                }: {
-                    action?: ShahrazadAction;
-                    game?: ShahrazadGame;
-                    sequence_number: number;
-                } = JSON.parse(event.data);
+                const { action, game, sequence_number }: ServerUpdate =
+                    JSON.parse(event.data);
                 console.log("[ws] message received:", JSON.parse(event.data));
                 move_count_ref.current = sequence_number;
 
@@ -102,7 +96,10 @@ export default function GamePage(props: { uuid: string }) {
             return;
         }
         move_count_ref.current += 1;
-        const req = { action, sequenceNumber: move_count_ref.current };
+        const req: ClientAction = {
+            action,
+            sequence_number: move_count_ref.current,
+        };
         console.log("broadcasting action", req);
 
         socket_ref.current.send(JSON.stringify(req));
