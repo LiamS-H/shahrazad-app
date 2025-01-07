@@ -8,5 +8,5 @@ export default async function GamePage({
 }) {
     const { UUID } = await params;
 
-    return <Game uuid={UUID} />;
+    return <Game game_id={UUID} />;
 }

@@ -9,7 +9,7 @@ import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
 import init, { GameState } from "shahrazad-wasm";
 
-export default function GamePage(props: { uuid: string }) {
+export default function GamePage(props: { game_id: string }) {
     const game_ref = useRef<GameState>(null);
     const socket_ref = useRef<WebSocket>(null);
     const init_ref = useRef<boolean>(false);
@@ -56,7 +56,7 @@ export default function GamePage(props: { uuid: string }) {
         const stored_player = localStorage.getItem("saved-player") || undefined;
         //load wasm and api request at once
         const [fetchResult, _] = await Promise.all([
-            fetchGame(props.uuid, stored_player),
+            fetchGame(props.game_id, stored_player),
             init(),
         ]);
 
@@ -68,7 +68,7 @@ export default function GamePage(props: { uuid: string }) {
         setGame(initialState);
 
         socket_ref.current = new WebSocket(
-            `/api/ws/game/${props.uuid}/player/${playerUUID}`
+            `/api/ws/game/${props.game_id}/player/${playerUUID}`
         );
         socket_ref.current.onopen = (event) => {
             console.log("[ws] connected.");
@@ -139,6 +139,7 @@ export default function GamePage(props: { uuid: string }) {
             player_uuid={playerUUID}
             applyAction={(a: ShahrazadAction) => {
                 apply_action(a);
+
                 // console.log("applying action:", a);
                 // const new_game: ShahrazadGame | null =
                 //     game_ref.current?.apply_action(a) || null;
