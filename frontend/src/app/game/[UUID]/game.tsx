@@ -120,7 +120,7 @@ export default function GamePage(props: { game_id: string }) {
             action,
             sequence_number: move_count_ref.current,
         };
-        console.log("broadcasting action", req);
+        console.log("[ws] broadcasting action", req);
 
         socket_ref.current.send(JSON.stringify(req));
     }

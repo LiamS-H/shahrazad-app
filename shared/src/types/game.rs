@@ -1,5 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
+use rand::seq::SliceRandom;
+use rand::SeedableRng;
+use rand_chacha::ChaCha8Rng;
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
@@ -151,7 +154,26 @@ impl ShahrazadGame {
 
                 return Some(game);
             }
-            ShahrazadAction::Shuffle { zone, seed } => todo!("{}{}", zone, seed),
+            ShahrazadAction::Shuffle { zone, seed } => {
+                let zone_ref = game.zones.get_mut(&zone)?;
+                let mut rng = ChaCha8Rng::seed_from_u64(seed.parse::<u64>().unwrap_or(0));
+                let mut cards = zone_ref.cards.clone();
+                cards.shuffle(&mut rng);
+                for card_id in &cards {
+                    let card = game.cards.get_mut(card_id)?;
+                    card.state.apply(&ShahrazadCardOptions {
+                        face_down: Some(true),
+                        inverted: Some(false),
+                        flipped: Some(false),
+                        tapped: Some(false),
+                        x: None,
+                        y: None,
+                    });
+                }
+
+                zone_ref.cards = cards;
+                Some(game)
+            }
             ShahrazadAction::ZoneImport { zone, cards } => {
                 let mut card_ids = Vec::new();
                 for card in cards {
@@ -166,7 +188,7 @@ impl ShahrazadGame {
                             card_name,
                             location: zone.clone(),
                             state: ShahrazadCardOptions {
-                                face_down: Some(true),
+                                face_down: Some(false),
                                 inverted: Some(false),
                                 flipped: Some(false),
                                 tapped: Some(false),

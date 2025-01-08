@@ -47,7 +47,7 @@ export type ShahrazadActionCaseCardZone = {
 export type ShahrazadActionCaseShuffle = {
     type: ShahrazadActionCase.Shuffle;
     zone: ShahrazadZoneId;
-    seed: number;
+    seed: string;
 };
 
 export type ShahrazadActionCaseZoneImport = {

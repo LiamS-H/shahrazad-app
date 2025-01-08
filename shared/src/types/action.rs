@@ -29,7 +29,7 @@ pub enum ShahrazadAction {
     },
     Shuffle {
         zone: ShahrazadZoneId,
-        seed: f32,
+        seed: String,
     },
     ZoneImport {
         zone: ShahrazadZoneId,
