@@ -7,8 +7,8 @@ export async function fetchGame(
 ): Promise<JoinGameResponse> {
     const params = player_id
         ? `?player_id=${encodeURIComponent(player_id)}`
-        : "";
-    const url = `/api/join_game/${uuid}${params}`;
+        : ``;
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/join_game/${uuid}${params}`;
     const res = await fetch(url, {
         method: "GET",
     });

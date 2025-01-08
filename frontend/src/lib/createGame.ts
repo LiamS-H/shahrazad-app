@@ -3,7 +3,9 @@
 import { CreateGameResponse } from "@/types/bindings/api";
 
 export async function createGame(settings: any): Promise<CreateGameResponse> {
-    const res = await fetch("api/create_game", {
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/create_game`;
+    console.log(url);
+    const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify(settings),
     });
