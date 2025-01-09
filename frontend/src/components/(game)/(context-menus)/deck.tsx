@@ -1,21 +1,20 @@
 import {
     ContextMenu,
-    ContextMenuCheckboxItem,
+    // ContextMenuCheckboxItem,
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuLabel,
-    ContextMenuRadioGroup,
-    ContextMenuRadioItem,
+    // ContextMenuRadioGroup,
+    // ContextMenuRadioItem,
     ContextMenuSeparator,
     ContextMenuShortcut,
-    ContextMenuSub,
-    ContextMenuSubContent,
-    ContextMenuSubTrigger,
+    // ContextMenuSub,
+    // ContextMenuSubContent,
+    // ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { getRandomValues } from "crypto";
 import { type ReactNode, useState } from "react";
 import { randomU64 } from "@/lib/random";
 export default function DeckContextMenu({
@@ -39,7 +38,7 @@ export default function DeckContextMenu({
                         applyAction({
                             type: ShahrazadActionCase.Shuffle,
                             zone: zoneId,
-                            seed: randomU64().toString(),
+                            seed: randomU64(),
                         });
                     }}
                 >

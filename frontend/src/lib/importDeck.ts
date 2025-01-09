@@ -11,7 +11,7 @@ function parseLine(str: string): {
     const match = str.match(/^(\d+) (.*?)(?: \((\w+)\))? ?(\d+)? ?(\*F\*)?$/);
     console.log(match);
     if (!match) return null;
-    const [_, amount_str, name, set, collector_str, foil_str] = match;
+    const [amount_str, name, set, collector_str, foil_str] = match.slice(1);
     const amount = Number(amount_str);
     if (!amount) return null;
     const collector = Number(collector_str) || undefined;

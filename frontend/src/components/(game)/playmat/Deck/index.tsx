@@ -9,7 +9,6 @@ import DeckContextMenu from "../../(context-menus)/deck";
 export default function Deck(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
     const zone = getZone(props.id);
-    const deckSize = zone.cards.length;
     const data: IDroppableData = {};
     const { setNodeRef } = useDroppable({ id: props.id, data });
 

@@ -2,7 +2,9 @@
 
 import { CreateGameResponse } from "@/types/bindings/api";
 
-export async function createGame(settings: any): Promise<CreateGameResponse> {
+export async function createGame(
+    settings: unknown
+): Promise<CreateGameResponse> {
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/create_game`;
     console.log(url);
     const res = await fetch(url, {

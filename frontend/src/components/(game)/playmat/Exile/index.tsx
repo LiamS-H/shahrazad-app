@@ -7,7 +7,6 @@ import { IDroppableData } from "@/types/interfaces/dnd";
 export default function Exile(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
     const zone = getZone(props.id);
-    const exileSize = zone.cards.length;
     const data: IDroppableData = {};
     const { setNodeRef } = useDroppable({ id: props.id, data });
 

@@ -4,7 +4,7 @@ import { fetchGame } from "@/lib/fetchGame";
 import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { ClientAction, ServerUpdate } from "@/types/bindings/ws";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
 import init, { GameState } from "shahrazad-wasm";
@@ -49,59 +49,68 @@ export default function GamePage(props: { game_id: string }) {
         setGame((game) => new_name || game);
     }
 
-    async function initGame() {
-        if (init_ref.current) return;
-        init_ref.current = true;
+    const initGame = useCallback(
+        async function () {
+            if (init_ref.current) return;
+            init_ref.current = true;
 
-        const stored_player = localStorage.getItem("saved-player") || undefined;
-        //load wasm and api request at once
-        const [fetchResult, _] = await Promise.all([
-            fetchGame(props.game_id, stored_player),
-            init(),
-        ]);
+            const stored_player =
+                localStorage.getItem("saved-player") || undefined;
+            //load wasm and api request at once
+            const [fetchResult] = await Promise.all([
+                fetchGame(props.game_id, stored_player),
+                init(),
+            ]);
 
-        const { player_id: playerUUID, game: initialState } = fetchResult;
-        setPlayerUUID(playerUUID);
-        localStorage.setItem("saved-player", playerUUID);
+            const { player_id: playerUUID, game: initialState } = fetchResult;
+            setPlayerUUID(playerUUID);
+            localStorage.setItem("saved-player", playerUUID);
 
-        game_ref.current = new GameState(initialState);
-        setGame(initialState);
+            game_ref.current = new GameState(initialState);
+            setGame(initialState);
 
-        socket_ref.current = new WebSocket(
-            `/api/ws/game/${props.game_id}/player/${playerUUID}`
-        );
-        socket_ref.current.onopen = (event) => {
-            console.log("[ws] connected.");
-        };
+            socket_ref.current = new WebSocket(
+                `/api/ws/game/${props.game_id}/player/${playerUUID}`
+            );
+            socket_ref.current.onopen = (event) => {
+                console.log("[ws] connected.", event);
+            };
 
-        socket_ref.current.onmessage = (event) => {
-            if (!game_ref.current) {
-                console.error("[ws] received connection before wasm loaded.");
-                return;
-            }
-            try {
-                const { action, game, sequence_number }: ServerUpdate =
-                    JSON.parse(event.data);
-                move_count_ref.current = sequence_number;
-
-                if (action) {
-                    apply_action(action);
-                    console.log("[ws] received action:", action);
-                } else if (game) {
-                    set_game(game);
-                    console.log("[ws] received game:", game);
+            socket_ref.current.onmessage = (event) => {
+                if (!game_ref.current) {
+                    console.error(
+                        "[ws] received connection before wasm loaded."
+                    );
+                    return;
                 }
-            } catch (error) {
-                console.error("[ws] trouble applying received data:\n", error);
-            }
-        };
-        socket_ref.current.onerror = (error) => {
-            console.error("[ws] connection error:\n", error);
-            socket_ref.current?.close();
-        };
+                try {
+                    const { action, game, sequence_number }: ServerUpdate =
+                        JSON.parse(event.data);
+                    move_count_ref.current = sequence_number;
 
-        return;
-    }
+                    if (action) {
+                        apply_action(action);
+                        console.log("[ws] received action:", action);
+                    } else if (game) {
+                        set_game(game);
+                        console.log("[ws] received game:", game);
+                    }
+                } catch (error) {
+                    console.error(
+                        "[ws] trouble applying received data:\n",
+                        error
+                    );
+                }
+            };
+            socket_ref.current.onerror = (error) => {
+                console.error("[ws] connection error:\n", error);
+                socket_ref.current?.close();
+            };
+
+            return;
+        },
+        [props.game_id]
+    );
 
     function broadCastAction(action: ShahrazadAction) {
         if (!socket_ref.current) {
@@ -128,7 +137,7 @@ export default function GamePage(props: { game_id: string }) {
     useEffect(() => {
         initGame();
         return cleanup;
-    }, []);
+    }, [initGame]);
 
     if (!game) return null;
     if (!playerUUID) return null;

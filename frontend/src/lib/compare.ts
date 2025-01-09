@@ -8,7 +8,7 @@ export function compareCards(card1: ShahrazadCard, card2: ShahrazadCard) {
         return false;
     }
 
-    for (let key of keys1) {
+    for (const key of keys1) {
         if (card1[key] !== card2[key]) {
             return false;
         }

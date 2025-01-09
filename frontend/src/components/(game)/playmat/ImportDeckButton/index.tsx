@@ -19,7 +19,7 @@ export function ImportDeckButton({
     commandId: ShahrazadZoneId;
 }) {
     const [input, setInput] = useState<string>("");
-    const { applyAction, getPlaymat } = useShahrazadGameContext();
+    const { applyAction } = useShahrazadGameContext();
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -29,6 +29,7 @@ export function ImportDeckButton({
             </PopoverTrigger>
             <PopoverContent>
                 <Textarea
+                    className="min-h-24"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                 />
@@ -36,11 +37,6 @@ export function ImportDeckButton({
                     onClick={() => {
                         const actions = importFromStr(input, deckId, commandId);
                         actions.forEach((a) => applyAction(a));
-                        // applyAction({
-                        //     type: ShahrazadActionCase.ZoneImport,
-                        //     cards: ["opt"],
-                        //     zone: getPlaymat(player_uuid).library,
-                        // });
                     }}
                 >
                     Import

@@ -1,11 +1,12 @@
 import {
     MouseSensor as LibMouseSensor,
-    TouchSensor as LibTouchSensor,
-    PointerSensor as LibPointerSensor,
+    // TouchSensor as LibTouchSensor,
+    // PointerSensor as LibPointerSensor,
 } from "@dnd-kit/core";
 
 import type { IShahrazadGameContext } from "../game";
-import { MouseEvent, TouchEvent } from "react";
+import type { MouseEvent } from "react";
+// import type { TouchEvent } from "react";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 
 export class MouseSensor extends LibMouseSensor {

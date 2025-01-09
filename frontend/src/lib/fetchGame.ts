@@ -1,5 +1,4 @@
 import { JoinGameResponse } from "@/types/bindings/api";
-import { ShahrazadGame } from "@/types/bindings/game";
 
 export async function fetchGame(
     uuid: string,

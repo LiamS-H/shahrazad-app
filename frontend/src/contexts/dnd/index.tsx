@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 import { IDraggableData, IDroppableData } from "@/types/interfaces/dnd";
 import {
     DndContext,
@@ -30,107 +30,113 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         setActiveId(event.active.id.toString());
     }, []);
 
-    const handleDragEnd = useCallback((event: DragEndEvent) => {
-        setActiveId(null);
+    const handleDragEnd = useCallback(
+        (event: DragEndEvent) => {
+            setActiveId(null);
 
-        if (event.over == undefined) {
-            console.log("draggable is over nothing");
-            return;
-        }
-        if (!event.active.data.current) {
-            console.log("active draggable has no data");
-            return;
-        }
-
-        if (!("zone" in event.active.data.current)) {
-            console.error("active draggable has no zone");
-            return;
-        }
-
-        const over_data: IDraggableData | IDroppableData = event.over.data
-            .current as any;
-
-        const active_data: IDraggableData = event.active.data.current as any;
-
-        if ("zone" in over_data) {
-            const index = over_data.index ?? -1;
-
-            if (over_data.zone != active_data.zone) {
-                console.log("dropping sortable from outside");
-            } else {
-                console.log("dropping sortable from within");
+            if (event.over == undefined) {
+                console.log("draggable is over nothing");
+                return;
             }
-            applyAction({
-                type: ShahrazadActionCase.CardZone,
-                source: active_data.zone,
-                destination: over_data.zone,
-                index: index,
-                cards: [event.active.id.toString()],
-                state: { x: undefined, y: undefined },
-            });
-            return;
-        }
-
-        const shah_card = shah_ref.current.getCard(event.active.id.toString());
-
-        const start_zone_id = active_data.zone;
-        const end_zone_id = event.over.id.toString();
-        const end_zone_gridsize: undefined | number = over_data
-            ? over_data.grid
-            : undefined;
-
-        const card_height = event.active.rect.current.translated?.height ?? 0;
-        const card_width = event.active.rect.current.translated?.width ?? 0;
-
-        let x: undefined | number;
-        let y: undefined | number;
-        if (end_zone_gridsize) {
-            x = event.active.rect.current.translated?.left || 0;
-            y = event.active.rect.current.translated?.top || 0;
-
-            if (y > event.over.rect.bottom - card_height) {
-                y = event.over.rect.bottom - card_height;
+            if (!event.active.data.current) {
+                console.log("active draggable has no data");
+                return;
             }
-            if (y < event.over.rect.top) {
-                y = event.over.rect.top;
-            }
-            if (x > event.over.rect.right - card_width) {
-                x = event.over.rect.right - card_width;
-            }
-            if (x < event.over.rect.left) {
-                x = event.over.rect.left;
-            }
-            x -= event.over.rect.left;
-            y -= event.over.rect.top;
-            x = Math.max(Math.round(x / end_zone_gridsize), 0);
 
-            y = Math.max(Math.round(y / end_zone_gridsize), 0);
-        }
-        if (start_zone_id == end_zone_id) {
-            console.log("dragging to same draggable");
-            applyAction({
-                type: ShahrazadActionCase.CardState,
-                cards: [event.active.id.toString()],
-                state: { x, y },
-            });
-        }
+            if (!("zone" in event.active.data.current)) {
+                console.error("active draggable has no zone");
+                return;
+            }
 
-        const target_id = event.active.id.toString();
-        if (start_zone_id != end_zone_id) {
-            console.log("dragging between zones");
-            console.log(
-                `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
-            );
-            applyAction({
-                type: ShahrazadActionCase.CardZone,
-                cards: [event.active.id.toString()],
-                destination: end_zone_id,
-                source: start_zone_id,
-                state: { x, y, face_down: false },
-                index: -1,
-            });
-        }
-    }, []);
+            const over_data = event.over.data.current as
+                | IDraggableData
+                | IDroppableData
+                | undefined;
+
+            const active_data = event.active.data.current as IDraggableData;
+
+            if (over_data && "zone" in over_data) {
+                const index = over_data.index ?? -1;
+
+                if (over_data.zone != active_data.zone) {
+                    console.log("dropping sortable from outside");
+                } else {
+                    console.log("dropping sortable from within");
+                }
+                applyAction({
+                    type: ShahrazadActionCase.CardZone,
+                    source: active_data.zone,
+                    destination: over_data.zone,
+                    index: index,
+                    cards: [event.active.id.toString()],
+                    state: { x: undefined, y: undefined },
+                });
+                return;
+            }
+
+            // const shah_card = shah_ref.current.getCard(event.active.id.toString());
+
+            const start_zone_id = active_data.zone;
+            const end_zone_id = event.over.id.toString();
+            const end_zone_gridsize: undefined | number = over_data
+                ? over_data.grid
+                : undefined;
+
+            const card_height =
+                event.active.rect.current.translated?.height ?? 0;
+            const card_width = event.active.rect.current.translated?.width ?? 0;
+
+            let x: undefined | number;
+            let y: undefined | number;
+            if (end_zone_gridsize) {
+                x = event.active.rect.current.translated?.left || 0;
+                y = event.active.rect.current.translated?.top || 0;
+
+                if (y > event.over.rect.bottom - card_height) {
+                    y = event.over.rect.bottom - card_height;
+                }
+                if (y < event.over.rect.top) {
+                    y = event.over.rect.top;
+                }
+                if (x > event.over.rect.right - card_width) {
+                    x = event.over.rect.right - card_width;
+                }
+                if (x < event.over.rect.left) {
+                    x = event.over.rect.left;
+                }
+                x -= event.over.rect.left;
+                y -= event.over.rect.top;
+                x = Math.max(Math.round(x / end_zone_gridsize), 0);
+
+                y = Math.max(Math.round(y / end_zone_gridsize), 0);
+            }
+            if (start_zone_id == end_zone_id) {
+                console.log("dragging to same draggable");
+                applyAction({
+                    type: ShahrazadActionCase.CardState,
+                    cards: [event.active.id.toString()],
+                    state: { x, y },
+                });
+            }
+
+            const target_id = event.active.id.toString();
+            if (start_zone_id != end_zone_id) {
+                console.log("dragging between zones");
+                console.log(
+                    `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
+                );
+                applyAction({
+                    type: ShahrazadActionCase.CardZone,
+                    cards: [event.active.id.toString()],
+                    destination: end_zone_id,
+                    source: start_zone_id,
+                    state: { x, y, face_down: false },
+                    index: -1,
+                });
+            }
+        },
+        [applyAction]
+    );
 
     const sensors = useSensors(
         // useSensor(MouseSensor),

@@ -5,7 +5,6 @@ import {
     SortableContext,
 } from "@dnd-kit/sortable";
 import SortableCard from "./sortable";
-import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
 
