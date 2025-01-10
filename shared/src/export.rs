@@ -3,7 +3,9 @@ use type_reflect::*;
 use crate::types::{
     action::ShahrazadAction,
     api::{CreateGameResponse, JoinGameQuery, JoinGameResponse},
-    card::{ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardOptions},
+    card::{
+        ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardOptions, ShahrazadCounter,
+    },
     game::{ShahrazadGame, ShahrazadPlaymat, ShahrazadPlaymatId},
     ws::{ClientAction, ServerUpdate},
     zone::{ShahrazadZone, ShahrazadZoneId},
@@ -35,6 +37,7 @@ pub fn export_all() {
             ShahrazadCardId,
             ShahrazadCardName,
             ShahrazadCardOptions,
+            ShahrazadCounter
         ],
         destinations: [
             TypeScript(

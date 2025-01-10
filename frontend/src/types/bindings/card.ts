@@ -4,4 +4,6 @@ export type ShahrazadCard = { state: ShahrazadCardOptions;
 export type ShahrazadCardId = string;
 export type ShahrazadCardName = string;
 export type ShahrazadCardOptions = { inverted?: boolean; flipped?: boolean;
-    tapped?: boolean; face_down?: boolean; x?: number; y?: number };
+    tapped?: boolean; face_down?: boolean; x?: number; y?: number;
+    counters?: Array<ShahrazadCounter> };
+export type ShahrazadCounter = { amount: number };
