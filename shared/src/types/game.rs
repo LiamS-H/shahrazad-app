@@ -66,19 +66,18 @@ impl ShahrazadGame {
                 if amount == 0 {
                     return None;
                 }
-                let src_range = ..&game.zones.get(&source)?.cards.len() - amount;
+                let src_len = game.zones.get(&source)?.cards.len();
+                let src_range = (src_len - amount)..; // Take the last 'amount' cards
                 let mut drawn_cards: Vec<ShahrazadCardId> = game
                     .zones
                     .get_mut(&source)?
                     .cards
                     .drain(src_range)
                     .collect();
-
                 game.zones
                     .get_mut(&destination)?
                     .cards
                     .append(&mut drawn_cards);
-
                 return Some(game);
             }
             ShahrazadAction::CardState { cards, state } => {
@@ -107,50 +106,45 @@ impl ShahrazadGame {
                 index,
             } => {
                 let mut mutated = false;
-                for card_id in &cards {
-                    let old_card = game.cards.get(&card_id)?;
 
-                    let mut new_card = ShahrazadCard { ..old_card.clone() };
+                let cards_set: HashSet<ShahrazadCardId> = cards.iter().cloned().collect();
+                if game.zones[&dest]
+                    .cards
+                    .iter()
+                    .any(|id| cards_set.contains(id))
+                {
+                    return None;
+                }
+
+                for card_id in &cards {
+                    let old_card = game.cards.get(card_id)?;
+                    let mut new_card = ShahrazadCard::clone(old_card);
                     new_card.state.apply(&old_card.state);
                     new_card.state.apply(&state);
                     new_card.migrate(dest.clone());
-                    if *old_card == new_card {
-                        continue;
-                    };
-                    mutated = true;
-                    game.cards.insert(card_id.clone(), new_card);
+
+                    if *old_card != new_card {
+                        mutated = true;
+                        game.cards.insert(card_id.clone(), new_card);
+                    }
                 }
 
-                let cards_set: HashSet<ShahrazadCardId> = cards.into_iter().collect();
-                // could potentially check if src contains card first (not just assume is does)
-                {
-                    // remove cards from src
-                    game.zones
-                        .get_mut(&src)?
-                        .cards
-                        .retain(|id| !cards_set.contains(id));
-                }
-                let old_cards = game.zones[&dest].cards.clone();
+                let source_zone = game.zones.get_mut(&src)?;
+                let original_len = source_zone.cards.len();
+                source_zone.cards.retain(|id| !cards_set.contains(id));
+                mutated = mutated || source_zone.cards.len() != original_len;
 
-                if old_cards.iter().any(|id| cards_set.contains(id)) {
-                    return None;
-                }
+                let dest_zone = game.zones.get_mut(&dest)?;
                 let idx = if index == -1 {
-                    old_cards.len() as usize
+                    dest_zone.cards.len()
                 } else {
                     index as usize
                 };
 
-                let mut new_cards = old_cards.clone();
-                new_cards.splice(idx..idx, cards_set);
-
-                mutated = mutated || old_cards != new_cards;
-
+                dest_zone.cards.splice(idx..idx, cards_set);
                 if !mutated {
                     return None;
                 }
-
-                game.zones.get_mut(&dest)?.cards = new_cards;
 
                 return Some(game);
             }
@@ -168,6 +162,7 @@ impl ShahrazadGame {
                         tapped: Some(false),
                         x: None,
                         y: None,
+                        counters: Some(Vec::<ShahrazadCounter>::new()),
                     });
                 }
 
@@ -194,6 +189,7 @@ impl ShahrazadGame {
                                 tapped: Some(false),
                                 x: None,
                                 y: None,
+                                counters: Some(Vec::<ShahrazadCounter>::new()),
                             },
                         },
                     );

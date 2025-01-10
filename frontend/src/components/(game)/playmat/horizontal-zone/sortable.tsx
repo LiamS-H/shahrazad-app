@@ -5,6 +5,7 @@ import { IDraggableData } from "@/types/interfaces/dnd";
 import { useShahrazadGameContext } from "../../../../contexts/game";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import { ShahrazadCardId } from "@/types/bindings/card";
+import HandCardContextMenu from "../../(context-menus)/hand-card";
 
 export default function SortableCard(props: {
     id: ShahrazadCardId;
@@ -36,8 +37,10 @@ export default function SortableCard(props: {
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-            <Scrycard card={card} symbol_text_renderer={ScryNameCardText} />
-        </div>
+        <HandCardContextMenu cardId={props.id}>
+            <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+                <Scrycard card={card} symbol_text_renderer={ScryNameCardText} />
+            </div>
+        </HandCardContextMenu>
     );
 }

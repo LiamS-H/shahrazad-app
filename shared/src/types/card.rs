@@ -7,6 +7,11 @@ branded_string!(ShahrazadCardId);
 branded_string!(ShahrazadCardName);
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
+pub struct ShahrazadCounter {
+    pub amount: i16,
+}
+
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct ShahrazadCardOptions {
     pub inverted: Option<bool>,
     pub flipped: Option<bool>,
@@ -14,6 +19,7 @@ pub struct ShahrazadCardOptions {
     pub face_down: Option<bool>,
     pub x: Option<u8>, // Use f64 for floating-point numbers
     pub y: Option<u8>,
+    pub counters: Option<Vec<ShahrazadCounter>>,
 }
 impl ShahrazadCardOptions {
     pub fn apply(&mut self, other: &ShahrazadCardOptions) {
@@ -34,6 +40,9 @@ impl ShahrazadCardOptions {
         }
         if let Some(y) = other.y {
             self.y = Some(y);
+        }
+        if let Some(counters) = &other.counters {
+            self.counters = Some(counters.clone())
         }
     }
 }

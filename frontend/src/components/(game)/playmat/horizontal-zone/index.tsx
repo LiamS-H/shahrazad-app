@@ -41,12 +41,7 @@ export default function HorizontalZone(props: { id: ShahrazadZoneId }) {
         >
             <div
                 ref={setNodeRef}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    flexFlow: "row nowrap",
-                }}
+                className="w-full h-full flex flex-row flex-nowrap overflow-x-auto"
             >
                 {zone.cards.map((id, idx) => (
                     <SortableCard id={id} key={id} index={idx} />
