@@ -74,6 +74,14 @@ impl ShahrazadGame {
                     .cards
                     .drain(src_range)
                     .collect();
+
+                for card in &drawn_cards {
+                    let Some(card) = game.cards.get_mut(&card) else {
+                        continue;
+                    };
+                    card.migrate(destination.clone());
+                }
+
                 game.zones
                     .get_mut(&destination)?
                     .cards
@@ -107,15 +115,20 @@ impl ShahrazadGame {
             } => {
                 let mut mutated = false;
 
+                // Convert cards to HashSet for efficient lookup
                 let cards_set: HashSet<ShahrazadCardId> = cards.iter().cloned().collect();
-                if game.zones[&dest]
-                    .cards
-                    .iter()
-                    .any(|id| cards_set.contains(id))
+
+                // Only check for existing cards if source and destination are different
+                if src != dest
+                    && game.zones[&dest]
+                        .cards
+                        .iter()
+                        .any(|id| cards_set.contains(id))
                 {
                     return None;
                 }
 
+                // Update card states
                 for card_id in &cards {
                     let old_card = game.cards.get(card_id)?;
                     let mut new_card = ShahrazadCard::clone(old_card);
@@ -123,30 +136,66 @@ impl ShahrazadGame {
                     new_card.state.apply(&state);
                     new_card.migrate(dest.clone());
 
-                    if *old_card != new_card {
+                    if new_card != *old_card {
                         mutated = true;
                         game.cards.insert(card_id.clone(), new_card);
                     }
                 }
 
-                let source_zone = game.zones.get_mut(&src)?;
-                let original_len = source_zone.cards.len();
-                source_zone.cards.retain(|id| !cards_set.contains(id));
-                mutated = mutated || source_zone.cards.len() != original_len;
+                // Handle zone modifications
+                if src == dest {
+                    // Same zone - just reorder
+                    let zone = game.zones.get_mut(&src)?;
+                    let mut new_order: Vec<ShahrazadCardId> = zone
+                        .cards
+                        .iter()
+                        .filter(|id| !cards_set.contains(id))
+                        .cloned()
+                        .collect();
 
-                let dest_zone = game.zones.get_mut(&dest)?;
-                let idx = if index == -1 {
-                    dest_zone.cards.len()
+                    let insert_idx = if index == -1 {
+                        new_order.len()
+                    } else {
+                        index as usize
+                    };
+
+                    new_order.splice(insert_idx..insert_idx, cards_set.iter().cloned());
+
+                    if new_order != zone.cards {
+                        mutated = true;
+                        zone.cards = new_order;
+                    }
                 } else {
-                    index as usize
-                };
+                    // Different zones - remove from source and add to destination
+                    {
+                        let source_zone = game.zones.get_mut(&src)?;
+                        let original_len = source_zone.cards.len();
+                        source_zone.cards.retain(|id| !cards_set.contains(id));
+                        if source_zone.cards.len() != original_len {
+                            mutated = true;
+                        }
+                    }
 
-                dest_zone.cards.splice(idx..idx, cards_set);
-                if !mutated {
-                    return None;
+                    let dest_zone = game.zones.get_mut(&dest)?;
+                    let idx = if index == -1 {
+                        dest_zone.cards.len()
+                    } else {
+                        index as usize
+                    };
+
+                    let original_cards = dest_zone.cards.clone();
+                    dest_zone.cards.splice(idx..idx, cards_set.iter().cloned());
+
+                    if dest_zone.cards != original_cards {
+                        mutated = true;
+                    }
                 }
 
-                return Some(game);
+                if mutated {
+                    Some(game)
+                } else {
+                    None
+                }
             }
             ShahrazadAction::Shuffle { zone, seed } => {
                 let zone_ref = game.zones.get_mut(&zone)?;
