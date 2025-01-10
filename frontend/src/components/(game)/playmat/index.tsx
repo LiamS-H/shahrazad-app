@@ -10,6 +10,7 @@ import { useShahrazadGameContext } from "@/contexts/game";
 import { ImportDeckButton } from "./ImportDeckButton";
 import Player from "./Player";
 import { PlayerProvider } from "@/contexts/player";
+import UntapButton from "./UntapButton";
 
 export default function Playmat(props: {
     player: ShahrazadPlaymatId;
@@ -35,10 +36,13 @@ export default function Playmat(props: {
                     <Command id={playmat.command} />
                     <Hand id={playmat.hand} active={props.active} />
                     <Player player_id={props.player} />
-                    <ImportDeckButton
-                        deckId={playmat.library}
-                        commandId={playmat.command}
-                    />
+                    <div className="flex flex-col">
+                        <ImportDeckButton
+                            deckId={playmat.library}
+                            commandId={playmat.command}
+                        />
+                        <UntapButton board_id={playmat.battlefield} />
+                    </div>
                 </div>
             </div>
         </PlayerProvider>
