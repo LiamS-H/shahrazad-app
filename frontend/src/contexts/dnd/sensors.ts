@@ -16,6 +16,14 @@ export class MouseSensor extends LibMouseSensor {
             return false;
         }
 
+        let cur: EventTarget | null = event.target;
+        while (cur && cur instanceof Element) {
+            if (cur.tagName == "BUTTON") {
+                return false;
+            }
+            cur = cur.parentElement;
+        }
+
         if (event.detail >= 2 && event.detail % 2 == 0) {
             let cur: EventTarget | null = event.target;
             while (cur && cur instanceof Element) {
@@ -31,14 +39,6 @@ export class MouseSensor extends LibMouseSensor {
                 }
                 cur = cur.parentElement;
             }
-        }
-
-        let cur: EventTarget | null = event.target;
-        while (cur && cur instanceof Element) {
-            if (cur.tagName == "BUTTON") {
-                return false;
-            }
-            cur = cur.parentElement;
         }
 
         return true;
