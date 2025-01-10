@@ -68,9 +68,12 @@ export default function GamePage(props: { game_id: string }) {
 
             game_ref.current = new GameState(initialState);
             setGame(initialState);
+            preloadCards(
+                Object.values(initialState.cards).map((c) => c.card_name)
+            );
 
             socket_ref.current = new WebSocket(
-                `/api/ws/game/${props.game_id}/player/${playerUUID}`
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/ws/game/${props.game_id}/player/${playerUUID}`
             );
             socket_ref.current.onopen = (event) => {
                 console.log("[ws] connected.", event);
