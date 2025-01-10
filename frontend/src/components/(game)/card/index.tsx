@@ -3,15 +3,16 @@ import { CSS } from "@dnd-kit/utilities";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
-import { CSSProperties } from "react";
+import { CSSProperties, useMemo } from "react";
 import { IDraggableData } from "@/types/interfaces/dnd";
+import Counters from "../playmat/Board/counters";
 
 export default function Card(props: {
     id: ShahrazadCardId;
     noDragTranslate?: true;
     divStyle?: CSSProperties;
 }) {
-    const { getCard } = useShahrazadGameContext();
+    const { getCard, applyAction } = useShahrazadGameContext();
     const shah_card = getCard(props.id);
     const card = useScrycard(shah_card.card_name);
 
@@ -30,6 +31,7 @@ export default function Card(props: {
             ? undefined
             : CSS.Translate.toString(transform);
 
+    const counters = useMemo(() => <Counters id={props.id} />, [props.id]);
     return (
         <div
             data-shahcard={props.id}
@@ -54,6 +56,7 @@ export default function Card(props: {
                 tapped={shah_card.state.tapped}
                 faceDown={shah_card.state.face_down}
             />
+            {counters}
         </div>
     );
 }
