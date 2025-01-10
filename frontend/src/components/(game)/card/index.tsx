@@ -12,7 +12,7 @@ export default function Card(props: {
     noDragTranslate?: true;
     divStyle?: CSSProperties;
 }) {
-    const { getCard, applyAction } = useShahrazadGameContext();
+    const { getCard } = useShahrazadGameContext();
     const shah_card = getCard(props.id);
     const card = useScrycard(shah_card.card_name);
 
