@@ -115,10 +115,8 @@ impl ShahrazadGame {
             } => {
                 let mut mutated = false;
 
-                // Convert cards to HashSet for efficient lookup
                 let cards_set: HashSet<ShahrazadCardId> = cards.iter().cloned().collect();
 
-                // Only check for existing cards if source and destination are different
                 if src != dest
                     && game.zones[&dest]
                         .cards
@@ -128,7 +126,6 @@ impl ShahrazadGame {
                     return None;
                 }
 
-                // Update card states
                 for card_id in &cards {
                     let old_card = game.cards.get(card_id)?;
                     let mut new_card = ShahrazadCard::clone(old_card);
@@ -142,9 +139,7 @@ impl ShahrazadGame {
                     }
                 }
 
-                // Handle zone modifications
                 if src == dest {
-                    // Same zone - just reorder
                     let zone = game.zones.get_mut(&src)?;
                     let mut new_order: Vec<ShahrazadCardId> = zone
                         .cards
@@ -166,7 +161,6 @@ impl ShahrazadGame {
                         zone.cards = new_order;
                     }
                 } else {
-                    // Different zones - remove from source and add to destination
                     {
                         let source_zone = game.zones.get_mut(&src)?;
                         let original_len = source_zone.cards.len();
