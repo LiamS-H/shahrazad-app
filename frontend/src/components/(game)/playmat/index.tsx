@@ -9,6 +9,7 @@ import Command from "./Command";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ImportDeckButton } from "./ImportDeckButton";
 import Player from "./Player";
+import { PlayerProvider } from "@/contexts/player";
 
 export default function Playmat(props: {
     player: ShahrazadPlaymatId;
@@ -18,26 +19,28 @@ export default function Playmat(props: {
     const playmat = getPlaymat(props.player);
 
     return (
-        <div className="shahrazad-playmat">
-            <div className="shahrazad-playmat-board">
-                <Board id={playmat.battlefield} />
-            </div>
-            <div
-                className="shahrazad-playmat-tray"
-                style={{ position: "relative" }}
-            >
-                <Graveyard id={playmat.graveyard} />
-                <Deck id={playmat.library} />
+        <PlayerProvider player={props.player}>
+            <div className="shahrazad-playmat">
+                <div className="shahrazad-playmat-board">
+                    <Board id={playmat.battlefield} />
+                </div>
+                <div
+                    className="shahrazad-playmat-tray"
+                    style={{ position: "relative" }}
+                >
+                    <Graveyard id={playmat.graveyard} />
+                    <Deck id={playmat.library} />
 
-                <Exile id={playmat.exile} />
-                <Command id={playmat.command} />
-                <Hand id={playmat.hand} active={props.active} />
-                <Player player_id={props.player} />
-                <ImportDeckButton
-                    deckId={playmat.library}
-                    commandId={playmat.command}
-                />
+                    <Exile id={playmat.exile} />
+                    <Command id={playmat.command} />
+                    <Hand id={playmat.hand} active={props.active} />
+                    <Player player_id={props.player} />
+                    <ImportDeckButton
+                        deckId={playmat.library}
+                        commandId={playmat.command}
+                    />
+                </div>
             </div>
-        </div>
+        </PlayerProvider>
     );
 }

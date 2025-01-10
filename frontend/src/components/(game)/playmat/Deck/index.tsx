@@ -13,12 +13,12 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
     const { setNodeRef } = useDroppable({ id: props.id, data });
 
     return (
-        <DeckContextMenu zoneId={props.id}>
-            <div
-                className="shahrazad-deck"
-                style={{ width: "auto" }}
-                ref={(ref) => setNodeRef(ref)}
-            >
+        <div
+            className="shahrazad-deck"
+            style={{ width: "auto" }}
+            ref={(ref) => setNodeRef(ref)}
+        >
+            <DeckContextMenu zoneId={props.id}>
                 <StackZone
                     emptyMessage={() => (
                         <Scrycard
@@ -28,7 +28,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                     )}
                     cards={zone.cards}
                 />
-            </div>
-        </DeckContextMenu>
+            </DeckContextMenu>
+        </div>
     );
 }
