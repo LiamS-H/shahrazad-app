@@ -1,14 +1,17 @@
 "use client";
 
-import { CreateGameResponse } from "@/types/bindings/api";
+import { CreateGameResponse, CreateGameQuery } from "@/types/bindings/api";
 
 export async function createGame(
-    settings: unknown
+    settings: CreateGameQuery
 ): Promise<CreateGameResponse> {
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/create_game`;
     console.log(url);
     const res = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
         body: JSON.stringify(settings),
     });
     if (!res.ok) {
