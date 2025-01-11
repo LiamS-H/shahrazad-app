@@ -16,6 +16,7 @@ pub struct ShahrazadGame {
     zones: HashMap<ShahrazadZoneId, ShahrazadZone>,
     playmats: HashMap<ShahrazadPlaymatId, ShahrazadPlaymat>,
     players: Vec<ShahrazadPlaymatId>,
+    settings: ShahrazadGameSettings,
 }
 
 use super::zone::ShahrazadZoneId;
@@ -36,8 +37,15 @@ pub struct ShahrazadPlaymat {
 use crate::branded_string;
 use crate::types::action::ShahrazadAction;
 
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq)]
+pub struct ShahrazadGameSettings {
+    pub starting_life: u32,
+    pub free_mulligans: String,
+    pub scry_rule: bool,
+}
+
 impl ShahrazadGame {
-    pub fn new() -> Self {
+    pub fn new(settings: ShahrazadGameSettings) -> Self {
         Self {
             zone_count: 0,
             card_count: 0,
@@ -45,6 +53,7 @@ impl ShahrazadGame {
             zones: HashMap::new(),
             playmats: HashMap::new(),
             players: Vec::new(),
+            settings,
         }
     }
 
@@ -274,7 +283,7 @@ impl ShahrazadGame {
                     battlefield: zone_ids[3].clone(),
                     exile: zone_ids[4].clone(),
                     command: zone_ids[5].clone(),
-                    life: 20,
+                    life: game.settings.starting_life.clone(),
                 };
 
                 game.zone_count += 6;

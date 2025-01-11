@@ -1,5 +1,5 @@
 use dashmap::DashMap;
-use shared::types::game::ShahrazadGame;
+use shared::types::game::{ShahrazadGame, ShahrazadGameSettings};
 use shared::types::{
     action::ShahrazadAction,
     ws::{ClientAction, ServerUpdate},
@@ -37,11 +37,16 @@ impl GameStateManager {
         }
     }
 
-    pub async fn create_game(&self, game_id: Uuid, host_id: Uuid) -> Result<GameInfo, String> {
+    pub async fn create_game(
+        &self,
+        game_id: Uuid,
+        host_id: Uuid,
+        settings: ShahrazadGameSettings,
+    ) -> Result<GameInfo, String> {
         let (tx, _) = broadcast::channel(100);
 
         let mut game_state = GameState {
-            game: ShahrazadGame::new(),
+            game: ShahrazadGame::new(settings),
             host_id,
             sequence_number: 0,
             players: DashMap::new(),

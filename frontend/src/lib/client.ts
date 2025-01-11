@@ -29,7 +29,12 @@ export class GameClient {
         this.isConnecting = true;
 
         try {
-            const wsUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/ws/game/${this.gameId}/player/${this.playerUUID}`;
+            const backend = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+            const wsUrl = `${backend
+                .replace("http://", "ws://")
+                .replace("https://", "wss://")}/ws/game/${this.gameId}/player/${
+                this.playerUUID
+            }`;
             this.socket = new WebSocket(wsUrl);
 
             this.socket.onopen = this.handleOpen;

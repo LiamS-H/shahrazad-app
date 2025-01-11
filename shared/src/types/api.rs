@@ -1,11 +1,16 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
-use super::game::ShahrazadGame;
+use super::game::{ShahrazadGame, ShahrazadGameSettings};
 
 #[derive(Reflect, Deserialize, Serialize)]
 pub struct JoinGameQuery {
     pub player_id: Option<String>,
+}
+
+#[derive(Reflect, Deserialize, Serialize)]
+pub struct CreateGameQuery {
+    pub settings: ShahrazadGameSettings,
 }
 
 #[derive(Reflect, Serialize)]
