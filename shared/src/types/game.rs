@@ -306,6 +306,18 @@ impl ShahrazadGame {
                 playmat.life = life;
                 Some(game)
             }
+            ShahrazadAction::ClearBoard { player_id } => {
+                let mut remove: Vec<ShahrazadCardId> = Vec::new();
+                for (card_id, card) in &game.cards {
+                    if card.owner == player_id {
+                        remove.push(card_id.clone());
+                    }
+                }
+                for card_id in remove {
+                    game.cards.remove(&card_id);
+                }
+                Some(game)
+            }
         }
     }
 }

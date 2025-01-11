@@ -11,6 +11,7 @@ import { ImportDeckButton } from "./ImportDeckButton";
 import Player from "./Player";
 import { PlayerProvider } from "@/contexts/player";
 import UntapButton from "./UntapButton";
+import ClearBoardButton from "./ClearBoardButton";
 
 export default function Playmat(props: {
     player: ShahrazadPlaymatId;
@@ -43,6 +44,7 @@ export default function Playmat(props: {
                             playerId={props.player}
                         />
                         <UntapButton board_id={playmat.battlefield} />
+                        <ClearBoardButton playerId={props.player} />
                     </div>
                 </div>
             </div>

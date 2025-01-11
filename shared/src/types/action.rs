@@ -47,4 +47,7 @@ pub enum ShahrazadAction {
         player_id: ShahrazadPlaymatId,
         life: u32,
     },
+    ClearBoard {
+        player_id: ShahrazadPlaymatId,
+    },
 }
