@@ -42,7 +42,9 @@ pub fn export_all() {
         destinations: [
             TypeScript(
                 "./bindings/card.ts"
-                prefix: "import {ShahrazadZoneId} from './zone';
+                prefix: "\
+                import {ShahrazadZoneId} from './zone';
+                import {ShahrazadPlaymatId} from './playmat';
                 ",
                 tab_size: 4,
             ),
@@ -127,7 +129,8 @@ pub fn export_all() {
         destinations: [
             TypeScript(
                 "./bindings/ws.ts"
-                prefix: "import {ShahrazadGame} from './game';
+                prefix: "\
+                import {ShahrazadGame} from './game';
                 import {ShahrazadAction} from './action';
                 type Uuid = string;
                 "

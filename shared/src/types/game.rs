@@ -221,7 +221,11 @@ impl ShahrazadGame {
                 zone_ref.cards = cards;
                 Some(game)
             }
-            ShahrazadAction::ZoneImport { zone, cards } => {
+            ShahrazadAction::ZoneImport {
+                zone,
+                cards,
+                player_id,
+            } => {
                 let mut card_ids = Vec::new();
                 for card in cards {
                     let card_name = ShahrazadCardName::new(card);
@@ -243,6 +247,7 @@ impl ShahrazadGame {
                                 y: None,
                                 counters: Some(Vec::<ShahrazadCounter>::new()),
                             },
+                            owner: player_id.clone(),
                         },
                     );
                 }
@@ -251,7 +256,7 @@ impl ShahrazadGame {
             }
             ShahrazadAction::DeckImport {
                 deck_uri,
-                player_idx,
+                player_id: player_idx,
             } => todo!("{}{}", deck_uri, player_idx),
             ShahrazadAction::AddPlayer { player_id } => {
                 let zone_types = [

@@ -40,6 +40,7 @@ export default function Playmat(props: {
                         <ImportDeckButton
                             deckId={playmat.library}
                             commandId={playmat.command}
+                            playerId={props.player}
                         />
                         <UntapButton board_id={playmat.battlefield} />
                     </div>

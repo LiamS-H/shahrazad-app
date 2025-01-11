@@ -55,6 +55,7 @@ fn init_game() {
         let action = ShahrazadAction::ZoneImport {
             zone: "ZONE_1".into(),
             cards: ["Opt".into()].into(),
+            player_id: "1".into(),
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());

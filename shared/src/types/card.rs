@@ -3,6 +3,8 @@ use type_reflect::*;
 
 use crate::{branded_string, types::zone::ShahrazadZoneId};
 
+use super::game::ShahrazadPlaymatId;
+
 branded_string!(ShahrazadCardId);
 branded_string!(ShahrazadCardName);
 
@@ -52,6 +54,7 @@ pub struct ShahrazadCard {
     pub state: ShahrazadCardOptions,
     pub card_name: ShahrazadCardName,
     pub location: ShahrazadZoneId,
+    pub owner: ShahrazadPlaymatId,
 }
 
 impl ShahrazadCard {

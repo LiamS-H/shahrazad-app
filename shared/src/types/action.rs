@@ -34,10 +34,11 @@ pub enum ShahrazadAction {
     ZoneImport {
         zone: ShahrazadZoneId,
         cards: Vec<String>,
+        player_id: ShahrazadPlaymatId,
     },
     DeckImport {
         deck_uri: String,
-        player_idx: u16,
+        player_id: ShahrazadPlaymatId,
     },
     AddPlayer {
         player_id: String,

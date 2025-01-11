@@ -54,12 +54,13 @@ export type ShahrazadActionCaseZoneImport = {
     type: ShahrazadActionCase.ZoneImport;
     zone: ShahrazadZoneId;
     cards: Array<string>;
+    player_id: ShahrazadPlaymatId;
 };
 
 export type ShahrazadActionCaseDeckImport = {
     type: ShahrazadActionCase.DeckImport;
     deck_uri: string;
-    player_idx: number;
+    player_id: ShahrazadPlaymatId;
 };
 
 export type ShahrazadActionCaseAddPlayer = {
