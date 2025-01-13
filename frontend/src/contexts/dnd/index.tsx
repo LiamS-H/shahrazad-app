@@ -16,12 +16,12 @@ import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { DraggableOverlay } from "./overlay";
 import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
+import { useSelection } from "../selection";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
     MouseSensor.ShahContext = ShahContext;
-    const shah_ref = useRef(ShahContext);
-    shah_ref.current = ShahContext;
+    MouseSensor.SelectedContext = useSelection();
     const { applyAction } = ShahContext;
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -135,7 +135,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 });
             }
         },
-        [applyAction]
+        [applyAction, ShahContext]
     );
 
     const sensors = useSensors(

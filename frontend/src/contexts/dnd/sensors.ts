@@ -8,9 +8,11 @@ import type { IShahrazadGameContext } from "../game";
 import type { MouseEvent } from "react";
 // import type { TouchEvent } from "react";
 import { ShahrazadActionCase } from "@/types/bindings/action";
+import { ISelectionContext } from "../selection";
 
 export class MouseSensor extends LibMouseSensor {
     public static ShahContext: IShahrazadGameContext;
+    public static SelectedContext: ISelectionContext;
     static mouseDownHandler({ nativeEvent: event }: MouseEvent) {
         if (event.button == 2) {
             return false;
@@ -30,9 +32,16 @@ export class MouseSensor extends LibMouseSensor {
                 if (cur instanceof HTMLElement && cur.dataset.shahcard) {
                     const id = cur.dataset.shahcard;
                     const shah_card = MouseSensor.ShahContext.getCard(id);
+                    let selectedCards =
+                        MouseSensor.SelectedContext.selectedCards;
+                    if (!selectedCards.includes(id)) {
+                        MouseSensor.SelectedContext.selectCards([]);
+                        selectedCards = [id];
+                    }
+
                     MouseSensor.ShahContext.applyAction({
                         type: ShahrazadActionCase.CardState,
-                        cards: [id],
+                        cards: selectedCards,
                         state: { tapped: !shah_card.state.tapped },
                     });
                     return false;

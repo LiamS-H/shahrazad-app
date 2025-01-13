@@ -39,7 +39,6 @@ export default function Card(props: {
             {...listeners}
             {...attributes}
             style={{
-                ...props.divStyle,
                 ...draggableStyle,
                 width: "fit-content",
                 cursor: "grab",
@@ -47,6 +46,7 @@ export default function Card(props: {
                     isDragging && props.noDragTranslate
                         ? "grayscale(100%)"
                         : undefined,
+                ...props.divStyle,
             }}
         >
             <Scrycard
