@@ -53,4 +53,11 @@ cp -r $WASM_PKG_DIR/* "$FRONTEND_MODULES_DIR/$FRONTEND_WASM_DIR" || { echo "${RE
 
 echo  "${GREEN}wasm module successfully copied to frontend!"
 
+
+echo  "${RESET}installing wasm..."
+
+cd frontend
+bun install
+cd ..
+
 echo  "${BLUE}\nFrontend updated 😎"
