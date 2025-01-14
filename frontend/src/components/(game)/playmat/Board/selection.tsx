@@ -70,7 +70,7 @@ export default function Selection({
                 if (!bounds) {
                     return;
                 }
-                const selectedCards = cards.filter((card) => {
+                const new_selection = cards.filter((card) => {
                     if (!card.card.state.x || !card.card.state.y) return false;
 
                     const left = card.card.state.x * GRID_SIZE;
@@ -85,25 +85,24 @@ export default function Selection({
 
                     return true;
                 });
-                console.log(selectedCards);
-                selectCards(selectedCards.map((c) => c.id));
+                selectCards(new_selection.map((c) => c.id));
                 bounds_ref.current = null;
             };
 
             window.addEventListener("mousemove", handleMouseMove);
             window.addEventListener("mouseup", handleMouseUp);
         },
-        [cards]
+        [cards, node, selectCards]
     );
 
     useEffect(() => {
         if (!node.current) return;
-        node.current.addEventListener("mousedown", handleMouseDown);
+        const nodeRef = node.current;
+        nodeRef.addEventListener("mousedown", handleMouseDown);
         return () => {
-            if (!node.current) return;
-            node.current.removeEventListener("mousedown", handleMouseDown);
+            nodeRef.removeEventListener("mousedown", handleMouseDown);
         };
-    }, [cards]);
+    }, [cards, node, handleMouseDown]);
 
     if (!selectionBounds) return null;
 
