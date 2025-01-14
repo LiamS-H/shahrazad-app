@@ -13,13 +13,20 @@ export type ShahrazadProps = {
 };
 
 export default function Game(props: ShahrazadProps) {
-    const playmat_components = props.game.players.map((player) => (
-        <Playmat
-            active={player == props.player_uuid}
-            player={player}
-            key={player}
-        />
-    ));
+    const playmat_components = [];
+    const offset = props.game.players.indexOf(props.player_uuid);
+    const numPlayers = props.game.players.length;
+
+    for (let i = 0; i < numPlayers; i++) {
+        const player = props.game.players[(i + offset) % numPlayers];
+        playmat_components.push(
+            <Playmat
+                active={player == props.player_uuid}
+                player={player}
+                key={player}
+            />
+        );
+    }
 
     return (
         <ShahrazadGameProvider
