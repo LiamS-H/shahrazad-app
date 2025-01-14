@@ -1,8 +1,8 @@
-import Card from "../../card";
+import DraggableCard from "@/components/(game)/card-draggable";
 import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import type { CSSProperties, ReactNode } from "react";
 import { GRID_SIZE } from ".";
-import BoardCardContextMenu from "../../(context-menus)/board-card";
+import BoardCardContextMenu from "@/components/(game)/(context-menus)/board-card";
 
 const BLUE_TINT = `url('data:image/svg+xml,\
   <svg xmlns="http://www.w3.org/2000/svg">\
@@ -40,7 +40,7 @@ export function BoardCard({
     }
     return (
         <BoardCardContextMenu cardId={cardId}>
-            <Card divStyle={divStyle} noDragTranslate id={cardId} />
+            <DraggableCard divStyle={divStyle} noDragTranslate id={cardId} />
         </BoardCardContextMenu>
     );
 }

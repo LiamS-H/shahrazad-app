@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { useShahrazadGameContext } from "../../../../contexts/game";
+import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
-import StackZone from "../../card-stack";
+import CardStack from "../card-stack";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import CollapseableCard from "./collapsable";
+import CollapsableCard from "./collapsable";
 
 export default function VerticalZone(props: {
     id: ShahrazadZoneId;
@@ -22,13 +22,13 @@ export default function VerticalZone(props: {
     return (
         <div style={{ width: "100px" }} ref={(ref) => setNodeRef(ref)}>
             {props.hidden ? (
-                <StackZone
+                <CardStack
                     emptyMessage={props.emptyMessage}
                     cards={zone.cards}
                 />
             ) : (
                 <>
-                    <StackZone emptyMessage={props.emptyMessage} cards={[]} />
+                    <CardStack emptyMessage={props.emptyMessage} cards={[]} />
                     <div
                         style={{
                             display: "flex",
@@ -42,7 +42,7 @@ export default function VerticalZone(props: {
                             const isHovered = id == hoveredItem;
                             const isBottom = index === zone.cards.length - 1;
                             return (
-                                <CollapseableCard
+                                <CollapsableCard
                                     id={id}
                                     isBottom={isBottom}
                                     isHovered={isHovered}

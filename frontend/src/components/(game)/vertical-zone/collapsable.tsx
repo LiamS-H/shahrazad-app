@@ -1,11 +1,11 @@
 import { CSSProperties } from "react";
 import { IDraggableData } from "@/types/interfaces/dnd";
-import { useShahrazadGameContext } from "../../../../contexts/game";
-import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
+import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { useDraggable } from "@dnd-kit/core";
+import Card from "../card";
 
-export default function CollapseableCard(props: {
+export default function Collapsable(props: {
     id: ShahrazadCardId;
     isHovered: boolean;
     isBottom: boolean;
@@ -13,7 +13,6 @@ export default function CollapseableCard(props: {
 }) {
     const { getCard } = useShahrazadGameContext();
     const shah_card = getCard(props.id);
-    const card = useScrycard(shah_card.card_name);
 
     const data: IDraggableData = {
         zone: shah_card.location,
@@ -33,6 +32,7 @@ export default function CollapseableCard(props: {
 
     return (
         <div
+            data-shahcard={props.id}
             ref={setNodeRef}
             style={style}
             {...listeners}
@@ -42,7 +42,7 @@ export default function CollapseableCard(props: {
             onFocus={() => props.setHovered(props.id)}
             onBlur={() => props.setHovered(null)}
         >
-            <Scrycard card={card} symbol_text_renderer={ScryNameCardText} />
+            <Card id={props.id} />
         </div>
     );
 }

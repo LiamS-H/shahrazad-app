@@ -23,7 +23,7 @@ import {
     DrawerDescription,
     DrawerTitle,
 } from "@/components/(ui)/drawer";
-import HorizontalZone from "../playmat/horizontal-zone";
+import HorizontalZone from "../horizontal-zone";
 export default function DeckContextMenu({
     zoneId,
     children,

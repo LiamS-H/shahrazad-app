@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useShahrazadGameContext } from "../../../../contexts/game";
+import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import VerticalZone from "../vertical-zone";
+import VerticalZone from "@/components/(game)/vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
 
 export default function Command(props: { id: ShahrazadZoneId }) {

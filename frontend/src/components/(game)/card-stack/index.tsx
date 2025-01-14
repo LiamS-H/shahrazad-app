@@ -1,9 +1,9 @@
 import { Scrydeck } from "react-scrycards";
 import { ShahrazadCardId } from "@/types/bindings/card";
-import Card from "../card";
+import DraggableCard from "../card-draggable";
 import type { ReactNode } from "react";
 
-export default function StackZone(props: {
+export default function CardStack(props: {
     cards: ShahrazadCardId[];
     emptyMessage: string | (() => ReactNode);
 }) {
@@ -21,7 +21,7 @@ export default function StackZone(props: {
     );
     if (deckSize == 1) {
         dispCards.push(
-            <Card
+            <DraggableCard
                 divStyle={{ position: "absolute" }}
                 key={props.cards[props.cards.length - 1]}
                 id={props.cards[props.cards.length - 1]}
@@ -30,7 +30,7 @@ export default function StackZone(props: {
         );
     } else if (deckSize > 1) {
         dispCards.push(
-            <Card
+            <DraggableCard
                 divStyle={{ position: "absolute" }}
                 key={props.cards[props.cards.length - 2]}
                 id={props.cards[props.cards.length - 2]}
@@ -38,7 +38,7 @@ export default function StackZone(props: {
             />
         );
         dispCards.push(
-            <Card
+            <DraggableCard
                 divStyle={{ position: "absolute" }}
                 key={props.cards[props.cards.length - 1]}
                 id={props.cards[props.cards.length - 1]}

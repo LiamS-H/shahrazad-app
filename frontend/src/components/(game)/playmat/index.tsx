@@ -7,11 +7,11 @@ import Graveyard from "./Graveyard";
 import Exile from "./Exile";
 import Command from "./Command";
 import { useShahrazadGameContext } from "@/contexts/game";
-import { ImportDeckButton } from "./ImportDeckButton";
+import { ImportDeckButton } from "./(buttons)/ImportDeckButton";
 import Player from "./Player";
 import { PlayerProvider } from "@/contexts/player";
-import UntapButton from "./UntapButton";
-import ClearBoardButton from "./ClearBoardButton";
+import { UntapButton } from "./(buttons)/UntapButton";
+import { ClearBoardButton } from "./(buttons)/ClearBoardButton";
 
 export default function Playmat(props: {
     player: ShahrazadPlaymatId;

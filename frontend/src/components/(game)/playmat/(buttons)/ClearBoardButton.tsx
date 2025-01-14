@@ -4,7 +4,7 @@ import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { X } from "lucide-react";
 
-export default function ClearBoardButton({
+export function ClearBoardButton({
     playerId,
 }: {
     playerId: ShahrazadPlaymatId;

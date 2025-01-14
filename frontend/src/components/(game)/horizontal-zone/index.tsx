@@ -1,4 +1,4 @@
-import { useShahrazadGameContext } from "../../../../contexts/game";
+import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import {
     horizontalListSortingStrategy,
@@ -11,7 +11,6 @@ import { IDroppableData } from "@/types/interfaces/dnd";
 export default function HorizontalZone(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
     const zone = getZone(props.id);
-    // const items = zone.cards.length ? zone.cards : ["placeholder"];
     const items = [...zone.cards];
     const data: IDroppableData = { sortable: true };
 
