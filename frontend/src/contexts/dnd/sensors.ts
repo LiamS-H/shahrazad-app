@@ -35,7 +35,7 @@ export class MouseSensor extends LibMouseSensor {
                     let selectedCards =
                         MouseSensor.SelectedContext.selectedCards;
                     if (!selectedCards.includes(id)) {
-                        MouseSensor.SelectedContext.selectCards([]);
+                        MouseSensor.SelectedContext.selectCards(null);
                         selectedCards = [id];
                     }
 

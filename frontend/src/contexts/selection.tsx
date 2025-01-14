@@ -11,7 +11,7 @@ import {
 
 export interface ISelectionContext {
     selectedCards: ShahrazadCardId[];
-    selectCards: (cards: ShahrazadCardId[]) => void;
+    selectCards: (cards: ShahrazadCardId[] | null) => void;
 }
 
 const SelectionContext = createContext<ISelectionContext | null>(null);
@@ -33,7 +33,11 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
         document.addEventListener("keyup", handleKey);
     });
 
-    const selectCards = useCallback((cards: ShahrazadCardId[]) => {
+    const selectCards = useCallback((cards: ShahrazadCardId[] | null) => {
+        if (cards === null) {
+            setSelectedCards([]);
+            return;
+        }
         if (!shift_key_ref.current) {
             setSelectedCards(cards);
             return;
