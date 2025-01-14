@@ -135,7 +135,14 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     cards,
                     destination: end_zone_id,
                     source: start_zone_id,
-                    state: { x, y, face_down: false },
+                    state: {
+                        x,
+                        y,
+                        face_down: false,
+                        tapped: false,
+                        flipped: false,
+                        inverted: false,
+                    },
                     index: -1,
                 });
                 selectCards(null);
