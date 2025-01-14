@@ -27,11 +27,12 @@ export class MouseSensor extends LibMouseSensor {
         }
 
         if (event.detail >= 2 && event.detail % 2 == 0) {
-            let cur: EventTarget | null = event.target;
+            cur = event.target;
             while (cur && cur instanceof Element) {
                 if (cur instanceof HTMLElement && cur.dataset.shahcard) {
                     const id = cur.dataset.shahcard;
                     const shah_card = MouseSensor.ShahContext.getCard(id);
+                    if (!shah_card.state.x) return false;
                     let selectedCards =
                         MouseSensor.SelectedContext.selectedCards;
                     if (!selectedCards.includes(id)) {
@@ -48,6 +49,15 @@ export class MouseSensor extends LibMouseSensor {
                 }
                 cur = cur.parentElement;
             }
+        }
+
+        cur = event.target;
+        while (cur && cur instanceof Element) {
+            if (cur instanceof HTMLElement && cur.dataset.shahcard) {
+                const id = cur.dataset.shahcard;
+                MouseSensor.SelectedContext.setPreview(id);
+            }
+            cur = cur.parentElement;
         }
 
         return true;

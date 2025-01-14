@@ -13,8 +13,10 @@ import { FormEvent, useState } from "react";
 
 export default function Player({
     player_id,
+    active,
 }: {
     player_id: ShahrazadPlaymatId;
+    active: boolean;
 }) {
     const { getPlaymat, applyAction } = useShahrazadGameContext();
     const { life } = getPlaymat(player_id);
@@ -49,11 +51,21 @@ export default function Player({
     }
 
     return (
-        <div className="flex flex-col items-center">
+        <div
+            className={`flex flex-col items-center ${
+                active && "text-cyan-300"
+            }`}
+        >
             <Button onClick={addLife} variant="outline" size="icon">
                 <Plus className="h-[1.2rem] w-[1.2rem]" />
             </Button>
-            <Popover open={inputOpen} onOpenChange={setInputOpen}>
+            <Popover
+                open={inputOpen}
+                onOpenChange={(open) => {
+                    setLife(lifeInput);
+                    setInputOpen(open);
+                }}
+            >
                 <PopoverTrigger>
                     <h1 className="text-5xl">{life}</h1>
                 </PopoverTrigger>
@@ -63,7 +75,7 @@ export default function Player({
                             value={lifeInput}
                             onChange={(e) => {
                                 const num = Number(e.target.value);
-                                if (!num) return;
+                                if (!num && e.target.value !== "") return;
                                 setLifeInput(num);
                             }}
                         />

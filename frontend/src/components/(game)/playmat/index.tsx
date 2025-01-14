@@ -36,7 +36,7 @@ export default function Playmat(props: {
                     <Exile id={playmat.exile} />
                     <Command id={playmat.command} />
                     <Hand id={playmat.hand} active={props.active} />
-                    <Player player_id={props.player} />
+                    <Player player_id={props.player} active={props.active} />
                     <div className="flex flex-col">
                         <ImportDeckButton
                             deckId={playmat.library}
