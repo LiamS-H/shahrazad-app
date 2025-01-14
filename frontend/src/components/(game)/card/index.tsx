@@ -31,7 +31,6 @@ export default function Card(props: {
             ? undefined
             : CSS.Translate.toString(transform);
 
-    const counters = useMemo(() => <Counters id={props.id} />, [props.id]);
     return (
         <div
             data-shahcard={props.id}
@@ -56,7 +55,7 @@ export default function Card(props: {
                 tapped={shah_card.state.tapped}
                 faceDown={shah_card.state.face_down}
             />
-            {counters}
+            <Counters id={props.id} />
         </div>
     );
 }
