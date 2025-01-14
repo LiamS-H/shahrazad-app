@@ -1,27 +1,40 @@
-use crate::types::{action::ShahrazadAction, game::ShahrazadGame};
+use crate::types::{
+    action::ShahrazadAction,
+    game::{ShahrazadGame, ShahrazadGameSettings},
+};
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use type_reflect::serde_json;
 
+const DEFAULT_SETTINGS: ShahrazadGameSettings = ShahrazadGameSettings {
+    starting_life: 20,
+    free_mulligans: String::new(),
+    scry_rule: true,
+};
+
 #[test]
 fn create_game() {
-    let _ = ShahrazadGame::new();
+    let _ = ShahrazadGame::new(DEFAULT_SETTINGS);
 }
 
 #[test]
 fn add_player() {
-    let mut game = ShahrazadGame::new();
+    let mut game = ShahrazadGame::new(DEFAULT_SETTINGS);
     {
-        let action = ShahrazadAction::AddPlayer { player_id: "1".into() };
+        let action = ShahrazadAction::AddPlayer {
+            player_id: "1".into(),
+        };
         let mutation = ShahrazadGame::apply_action(action, &mut game).is_some();
         assert!(mutation == true);
     }
 }
 #[test]
 fn init_game() {
-    let mut game = ShahrazadGame::new();
+    let mut game = ShahrazadGame::new(DEFAULT_SETTINGS);
     {
-        let action = ShahrazadAction::AddPlayer { player_id: "1".into() };
+        let action = ShahrazadAction::AddPlayer {
+            player_id: "1".into(),
+        };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
         let Some(new_state) = mutation else { panic!() };
@@ -42,6 +55,7 @@ fn init_game() {
         let action = ShahrazadAction::ZoneImport {
             zone: "ZONE_1".into(),
             cards: ["Opt".into()].into(),
+            player_id: "1".into(),
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());

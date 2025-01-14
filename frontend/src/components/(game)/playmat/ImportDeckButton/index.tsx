@@ -7,6 +7,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { importFromStr } from "@/lib/importDeck";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { Import } from "lucide-react";
 import { useState } from "react";
@@ -14,9 +15,11 @@ import { useState } from "react";
 export function ImportDeckButton({
     deckId,
     commandId,
+    playerId,
 }: {
     deckId: ShahrazadZoneId;
     commandId: ShahrazadZoneId;
+    playerId: ShahrazadPlaymatId;
 }) {
     const [input, setInput] = useState<string>("");
     const { applyAction } = useShahrazadGameContext();
@@ -35,7 +38,12 @@ export function ImportDeckButton({
                 />
                 <Button
                     onClick={() => {
-                        const actions = importFromStr(input, deckId, commandId);
+                        const actions = importFromStr(
+                            input,
+                            deckId,
+                            commandId,
+                            playerId
+                        );
                         actions.forEach((a) => applyAction(a));
                     }}
                 >

@@ -80,10 +80,17 @@ export default function GameForm() {
         //     freeMulligans,
         //     scryRule,
         // });
+        let starting_life = Number(startingLife);
+        if (Number.isNaN(starting_life) || starting_life < 0) {
+            starting_life = 20;
+        }
         const { game_id, player_id } = await createGame({
-            startingLife,
-            freeMulligans,
-            scryRule,
+            settings: {
+                starting_life,
+                free_mulligans:
+                    freeMulligans === 5 ? "∞" : freeMulligans.toString(),
+                scry_rule: scryRule,
+            },
         });
         localStorage.setItem("saved-player", player_id);
         pushRoute(`game/${game_id}`);

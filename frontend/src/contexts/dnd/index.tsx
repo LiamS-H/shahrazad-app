@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useRef, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 import { IDraggableData, IDroppableData } from "@/types/interfaces/dnd";
 import {
     DndContext,
@@ -16,13 +16,15 @@ import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { DraggableOverlay } from "./overlay";
 import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
+import { useSelection } from "../selection";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
     MouseSensor.ShahContext = ShahContext;
-    const shah_ref = useRef(ShahContext);
-    shah_ref.current = ShahContext;
     const { applyAction } = ShahContext;
+    const SelectionContext = useSelection();
+    MouseSensor.SelectedContext = SelectionContext;
+    const { selectedCards, selectCards } = SelectionContext;
     const [activeId, setActiveId] = useState<string | null>(null);
 
     const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -54,6 +56,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 | undefined;
 
             const active_data = event.active.data.current as IDraggableData;
+            const target_id = event.active.id.toString();
 
             if (over_data && "zone" in over_data) {
                 const index = over_data.index ?? -1;
@@ -68,13 +71,13 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     source: active_data.zone,
                     destination: over_data.zone,
                     index: index,
-                    cards: [event.active.id.toString()],
+                    cards: [target_id],
                     state: { x: undefined, y: undefined },
                 });
                 return;
             }
 
-            // const shah_card = shah_ref.current.getCard(event.active.id.toString());
+            // const shah_card = shah_ref.current.getCard(target_id);
 
             const start_zone_id = active_data.zone;
             const end_zone_id = event.over.id.toString();
@@ -114,28 +117,31 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 console.log("dragging to same draggable");
                 applyAction({
                     type: ShahrazadActionCase.CardState,
-                    cards: [event.active.id.toString()],
+                    cards: [target_id],
                     state: { x, y },
                 });
             }
 
-            const target_id = event.active.id.toString();
             if (start_zone_id != end_zone_id) {
                 console.log("dragging between zones");
                 console.log(
                     `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
                 );
+                const cards = selectedCards.includes(target_id)
+                    ? selectedCards
+                    : [target_id];
                 applyAction({
                     type: ShahrazadActionCase.CardZone,
-                    cards: [event.active.id.toString()],
+                    cards,
                     destination: end_zone_id,
                     source: start_zone_id,
                     state: { x, y, face_down: false },
                     index: -1,
                 });
+                selectCards(null);
             }
         },
-        [applyAction]
+        [applyAction, selectedCards, selectCards]
     );
 
     const sensors = useSensors(

@@ -13,6 +13,7 @@ export enum ShahrazadActionCase {
     DeckImport = 'DeckImport',
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
+    ClearBoard = 'ClearBoard',
 }
 
 export type ShahrazadActionCaseDrawBottom = {
@@ -54,12 +55,13 @@ export type ShahrazadActionCaseZoneImport = {
     type: ShahrazadActionCase.ZoneImport;
     zone: ShahrazadZoneId;
     cards: Array<string>;
+    player_id: ShahrazadPlaymatId;
 };
 
 export type ShahrazadActionCaseDeckImport = {
     type: ShahrazadActionCase.DeckImport;
     deck_uri: string;
-    player_idx: number;
+    player_id: ShahrazadPlaymatId;
 };
 
 export type ShahrazadActionCaseAddPlayer = {
@@ -73,6 +75,11 @@ export type ShahrazadActionCaseSetLife = {
     life: number;
 };
 
+export type ShahrazadActionCaseClearBoard = {
+    type: ShahrazadActionCase.ClearBoard;
+    player_id: ShahrazadPlaymatId;
+};
+
 export type ShahrazadAction =
     | ShahrazadActionCaseDrawBottom
     | ShahrazadActionCaseDrawTop
@@ -82,4 +89,5 @@ export type ShahrazadAction =
     | ShahrazadActionCaseZoneImport
     | ShahrazadActionCaseDeckImport
     | ShahrazadActionCaseAddPlayer
-    | ShahrazadActionCaseSetLife;
+    | ShahrazadActionCaseSetLife
+    | ShahrazadActionCaseClearBoard;

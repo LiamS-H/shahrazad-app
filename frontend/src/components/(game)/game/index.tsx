@@ -4,6 +4,7 @@ import Playmat from "../playmat";
 import { ShahrazadGameProvider } from "@/contexts/game";
 import ShahrazadDND from "@/contexts/dnd";
 import { ShahrazadAction } from "@/types/bindings/action";
+import { SelectionProvider } from "@/contexts/selection";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -26,18 +27,20 @@ export default function Game(props: ShahrazadProps) {
             game={props.game}
             applyAction={props.applyAction}
         >
-            <ShahrazadDND>
-                <div
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        flexFlow: "row wrap",
-                    }}
-                >
-                    {playmat_components}
-                </div>
-            </ShahrazadDND>
+            <SelectionProvider>
+                <ShahrazadDND>
+                    <div
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            flexFlow: "row wrap",
+                        }}
+                    >
+                        {playmat_components}
+                    </div>
+                </ShahrazadDND>
+            </SelectionProvider>
         </ShahrazadGameProvider>
     );
 }

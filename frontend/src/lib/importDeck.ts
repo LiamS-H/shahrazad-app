@@ -1,4 +1,5 @@
 import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 
 function parseLine(str: string): {
@@ -28,7 +29,8 @@ function parseLine(str: string): {
 export function importFromStr(
     str: string,
     deckId: ShahrazadZoneId,
-    commandId: ShahrazadZoneId
+    commandId: ShahrazadZoneId,
+    playerId: ShahrazadPlaymatId
 ): ShahrazadAction[] {
     const importActions: ShahrazadAction[] = [];
     const card_groups = str.split("\n\n");
@@ -58,6 +60,7 @@ export function importFromStr(
         type: ShahrazadActionCase.ZoneImport,
         cards: deck,
         zone: deckId,
+        player_id: playerId,
     });
     if (!command_str) {
         return importActions;
@@ -75,6 +78,7 @@ export function importFromStr(
         type: ShahrazadActionCase.ZoneImport,
         cards: command,
         zone: commandId,
+        player_id: playerId,
     });
 
     return importActions;

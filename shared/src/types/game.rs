@@ -16,6 +16,7 @@ pub struct ShahrazadGame {
     zones: HashMap<ShahrazadZoneId, ShahrazadZone>,
     playmats: HashMap<ShahrazadPlaymatId, ShahrazadPlaymat>,
     players: Vec<ShahrazadPlaymatId>,
+    settings: ShahrazadGameSettings,
 }
 
 use super::zone::ShahrazadZoneId;
@@ -36,8 +37,15 @@ pub struct ShahrazadPlaymat {
 use crate::branded_string;
 use crate::types::action::ShahrazadAction;
 
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq)]
+pub struct ShahrazadGameSettings {
+    pub starting_life: u32,
+    pub free_mulligans: String,
+    pub scry_rule: bool,
+}
+
 impl ShahrazadGame {
-    pub fn new() -> Self {
+    pub fn new(settings: ShahrazadGameSettings) -> Self {
         Self {
             zone_count: 0,
             card_count: 0,
@@ -45,6 +53,7 @@ impl ShahrazadGame {
             zones: HashMap::new(),
             playmats: HashMap::new(),
             players: Vec::new(),
+            settings,
         }
     }
 
@@ -115,10 +124,8 @@ impl ShahrazadGame {
             } => {
                 let mut mutated = false;
 
-                // Convert cards to HashSet for efficient lookup
                 let cards_set: HashSet<ShahrazadCardId> = cards.iter().cloned().collect();
 
-                // Only check for existing cards if source and destination are different
                 if src != dest
                     && game.zones[&dest]
                         .cards
@@ -128,7 +135,6 @@ impl ShahrazadGame {
                     return None;
                 }
 
-                // Update card states
                 for card_id in &cards {
                     let old_card = game.cards.get(card_id)?;
                     let mut new_card = ShahrazadCard::clone(old_card);
@@ -142,9 +148,7 @@ impl ShahrazadGame {
                     }
                 }
 
-                // Handle zone modifications
                 if src == dest {
-                    // Same zone - just reorder
                     let zone = game.zones.get_mut(&src)?;
                     let mut new_order: Vec<ShahrazadCardId> = zone
                         .cards
@@ -166,7 +170,6 @@ impl ShahrazadGame {
                         zone.cards = new_order;
                     }
                 } else {
-                    // Different zones - remove from source and add to destination
                     {
                         let source_zone = game.zones.get_mut(&src)?;
                         let original_len = source_zone.cards.len();
@@ -218,7 +221,11 @@ impl ShahrazadGame {
                 zone_ref.cards = cards;
                 Some(game)
             }
-            ShahrazadAction::ZoneImport { zone, cards } => {
+            ShahrazadAction::ZoneImport {
+                zone,
+                cards,
+                player_id,
+            } => {
                 let mut card_ids = Vec::new();
                 for card in cards {
                     let card_name = ShahrazadCardName::new(card);
@@ -240,6 +247,7 @@ impl ShahrazadGame {
                                 y: None,
                                 counters: Some(Vec::<ShahrazadCounter>::new()),
                             },
+                            owner: player_id.clone(),
                         },
                     );
                 }
@@ -248,7 +256,7 @@ impl ShahrazadGame {
             }
             ShahrazadAction::DeckImport {
                 deck_uri,
-                player_idx,
+                player_id: player_idx,
             } => todo!("{}{}", deck_uri, player_idx),
             ShahrazadAction::AddPlayer { player_id } => {
                 let zone_types = [
@@ -280,7 +288,7 @@ impl ShahrazadGame {
                     battlefield: zone_ids[3].clone(),
                     exile: zone_ids[4].clone(),
                     command: zone_ids[5].clone(),
-                    life: 20,
+                    life: game.settings.starting_life.clone(),
                 };
 
                 game.zone_count += 6;
@@ -296,6 +304,18 @@ impl ShahrazadGame {
             ShahrazadAction::SetLife { player_id, life } => {
                 let playmat = game.playmats.get_mut(&player_id)?;
                 playmat.life = life;
+                Some(game)
+            }
+            ShahrazadAction::ClearBoard { player_id } => {
+                let mut remove: Vec<ShahrazadCardId> = Vec::new();
+                for (card_id, card) in &game.cards {
+                    if card.owner == player_id {
+                        remove.push(card_id.clone());
+                    }
+                }
+                for card_id in remove {
+                    game.cards.remove(&card_id);
+                }
                 Some(game)
             }
         }

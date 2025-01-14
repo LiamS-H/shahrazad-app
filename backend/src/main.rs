@@ -1,17 +1,19 @@
 use axum::{
+    body::Body,
     extract::{
         ws::{Message, WebSocket},
-        Path, Query, State, WebSocketUpgrade,
+        Path, Query, Request, State, WebSocketUpgrade,
     },
     response::IntoResponse,
     routing::{get, post},
-    Router,
+    Json, Router,
 };
 use backend::state::*;
 use futures::{SinkExt, StreamExt};
 use serde_json;
 use shared::types::{
-    api::{CreateGameResponse, JoinGameQuery, JoinGameResponse},
+    api::{CreateGameQuery, CreateGameResponse, JoinGameQuery, JoinGameResponse},
+    game::ShahrazadGameSettings,
     ws::ClientAction,
 };
 use std::net::SocketAddr;
@@ -45,11 +47,14 @@ async fn fallback() -> impl IntoResponse {
     "route not found".to_string()
 }
 
-async fn create_game(State(state): State<Arc<GameStateManager>>) -> impl IntoResponse {
+async fn create_game(
+    State(state): State<Arc<GameStateManager>>,
+    Json(CreateGameQuery { settings }): Json<CreateGameQuery>,
+) -> impl IntoResponse {
     let game_id = Uuid::new_v4();
     let host_id = Uuid::new_v4();
 
-    if let Ok(game_info) = (*state).create_game(game_id, host_id).await {
+    if let Ok(game_info) = (*state).create_game(game_id, host_id, settings).await {
         let response = CreateGameResponse {
             game_id: game_info.game_id.into(),
             player_id: game_info.host_id.into(),
