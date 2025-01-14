@@ -5,6 +5,7 @@ import { ShahrazadGameProvider } from "@/contexts/game";
 import ShahrazadDND from "@/contexts/dnd";
 import { ShahrazadAction } from "@/types/bindings/action";
 import { SelectionProvider } from "@/contexts/selection";
+import CardPreview from "../card-preview";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -46,6 +47,7 @@ export default function Game(props: ShahrazadProps) {
                     >
                         {playmat_components}
                     </div>
+                    <CardPreview />
                 </ShahrazadDND>
             </SelectionProvider>
         </ShahrazadGameProvider>

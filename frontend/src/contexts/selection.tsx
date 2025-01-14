@@ -12,6 +12,8 @@ import {
 export interface ISelectionContext {
     selectedCards: ShahrazadCardId[];
     selectCards: (cards: ShahrazadCardId[] | null) => void;
+    currentPreview: ShahrazadCardId | null;
+    setPreview: (card: ShahrazadCardId | null) => void;
 }
 
 const SelectionContext = createContext<ISelectionContext | null>(null);
@@ -19,6 +21,8 @@ const SelectionContext = createContext<ISelectionContext | null>(null);
 export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedCards, setSelectedCards] = useState<ShahrazadCardId[]>([]);
     const shift_key_ref = useRef(false);
+
+    const [currentPreview, setPreview] = useState<ShahrazadCardId | null>(null);
 
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
@@ -53,7 +57,9 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <SelectionContext.Provider value={{ selectedCards, selectCards }}>
+        <SelectionContext.Provider
+            value={{ selectedCards, selectCards, currentPreview, setPreview }}
+        >
             {children}
         </SelectionContext.Provider>
     );
