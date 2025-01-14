@@ -65,10 +65,10 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export const useSelection = () => {
+export function useSelection() {
     const context = useContext(SelectionContext);
     if (context === null) {
         throw Error("must use useSelection inside context");
     }
     return context;
-};
+}
