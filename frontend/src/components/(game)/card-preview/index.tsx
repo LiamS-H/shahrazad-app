@@ -19,7 +19,8 @@ export default function CardPreview() {
     }, [currentPreview, setPreview]);
 
     if (!currentPreview) return null;
-    const { card_name } = getCard(currentPreview);
+    const shah_card = getCard(currentPreview);
+    if (shah_card.state.face_down) return null;
 
     return (
         <div
@@ -33,7 +34,7 @@ export default function CardPreview() {
                 }, 1000);
             }}
         >
-            <ScryNameCard card_name={card_name} size="xl" animated />
+            <ScryNameCard card_name={shah_card.card_name} size="xl" animated />
         </div>
     );
 }
