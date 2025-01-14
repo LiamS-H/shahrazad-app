@@ -17,7 +17,7 @@ import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { useSelection } from "@/contexts/selection";
-import { isFlippable, useScrycard, useScrycardsContext } from "react-scrycards";
+import { isFlippable, useScrycard } from "react-scrycards";
 export default function BoardCardContextMenu({
     cardId,
     children,
