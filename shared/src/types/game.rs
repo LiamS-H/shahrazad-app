@@ -313,8 +313,11 @@ impl ShahrazadGame {
                         remove.push(card_id.clone());
                     }
                 }
-                for card_id in remove {
+                for card_id in &remove {
                     game.cards.remove(&card_id);
+                }
+                for (_zone_id, zone) in &mut game.zones {
+                    zone.cards.retain(|card| !remove.contains(card))
                 }
                 Some(game)
             }
