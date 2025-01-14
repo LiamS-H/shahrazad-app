@@ -34,7 +34,7 @@ export default function HandCardContextMenu({
         <ContextMenu modal={open} onOpenChange={setOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>Deck</ContextMenuLabel>
+                <ContextMenuLabel>{shah_card.card_name}</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuSub>
                     <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>
