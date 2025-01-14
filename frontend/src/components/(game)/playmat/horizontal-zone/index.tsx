@@ -17,22 +17,6 @@ export default function HorizontalZone(props: { id: ShahrazadZoneId }) {
 
     const { setNodeRef } = useDroppable({ id: props.id, data });
 
-    // if (true) {
-    // if (zone.cards.length == 0) {
-    //     return (
-    //         <div
-    //             className="horizontal-zone"
-    //             ref={setNodeRef}
-    //             style={{
-    //                 width: "100%",
-    //                 height: "100%",
-    //                 display: "flex",
-    //                 flexFlow: "row nowrap",
-    //             }}
-    //         ></div>
-    //     );
-    // }
-
     return (
         <SortableContext
             id={props.id}

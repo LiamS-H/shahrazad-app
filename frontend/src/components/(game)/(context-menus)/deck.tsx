@@ -46,7 +46,7 @@ export default function DeckContextMenu({
             >
                 <DrawerContent>
                     <DrawerTitle>Searching</DrawerTitle>
-                    <DrawerDescription>Drag items around</DrawerDescription>
+                    <DrawerDescription>Drag items into play</DrawerDescription>
                     <HorizontalZone id={zoneId} />
                 </DrawerContent>
             </Drawer>
