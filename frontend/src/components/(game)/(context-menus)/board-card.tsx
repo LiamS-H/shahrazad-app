@@ -17,6 +17,7 @@ import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { useSelection } from "@/contexts/selection";
+import { isFlippable, useScrycard, useScrycardsContext } from "react-scrycards";
 export default function BoardCardContextMenu({
     cardId,
     children,
@@ -27,6 +28,7 @@ export default function BoardCardContextMenu({
     const { applyAction, getCard } = useShahrazadGameContext();
     const { selectedCards } = useSelection();
     const shah_card = getCard(cardId);
+    const scry_card = useScrycard(shah_card.card_name);
     const [open, setOpen] = useState(true);
     const cards = selectedCards.includes(cardId) ? selectedCards : [cardId];
 
@@ -68,6 +70,22 @@ export default function BoardCardContextMenu({
                         }}
                     >
                         Untap
+                    </ContextMenuItem>
+                )}
+
+                {isFlippable(scry_card) && cards.length === 1 && (
+                    <ContextMenuItem
+                        onClick={() => {
+                            applyAction({
+                                type: ShahrazadActionCase.CardState,
+                                cards,
+                                state: {
+                                    flipped: !shah_card.state.flipped,
+                                },
+                            });
+                        }}
+                    >
+                        Flip
                     </ContextMenuItem>
                 )}
                 {(!shah_card.state.face_down || cards.length > 1) && (
