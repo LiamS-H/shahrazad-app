@@ -13,7 +13,10 @@ export default function CardPreview() {
         timeout.current = setTimeout(() => {
             setPreview(null);
         }, 1000);
-    }, [currentPreview]);
+        return () => {
+            if (timeout.current) clearTimeout(timeout.current);
+        };
+    }, [currentPreview, setPreview]);
 
     if (!currentPreview) return null;
     const { card_name } = getCard(currentPreview);
