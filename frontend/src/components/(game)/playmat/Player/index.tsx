@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
@@ -7,8 +7,8 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
+} from "@/components/(ui)/popover";
+import { Input } from "@/components/(ui)/input";
 import { FormEvent, useState } from "react";
 
 export default function Player({

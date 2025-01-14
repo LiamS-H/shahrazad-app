@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
