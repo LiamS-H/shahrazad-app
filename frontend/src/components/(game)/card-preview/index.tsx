@@ -1,6 +1,5 @@
 import { useShahrazadGameContext } from "@/contexts/game";
 import { useSelection } from "@/contexts/selection";
-import { useEffect, useRef } from "react";
 import { ScryNameCard } from "react-scrycards";
 
 export default function CardPreview() {
