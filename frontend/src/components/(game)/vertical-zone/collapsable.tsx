@@ -26,7 +26,7 @@ export default function Collapsable(props: {
         width: "fit-content",
         cursor: "grab",
         filter: isDragging ? "grayscale(100%)" : undefined,
-        marginBottom: isActive && !isFirst ? "0px" : "-125px",
+        marginBottom: isActive && !isFirst ? "0px" : "-121px",
         transition: "margin 0.3s ease-in-out",
     };
 
