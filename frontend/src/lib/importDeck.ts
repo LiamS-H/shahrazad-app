@@ -10,7 +10,6 @@ function parseLine(str: string): {
     foil?: boolean;
 } | null {
     const match = str.match(/^(\d+) (.*?)(?: \((\w+)\))? ?(\d+)? ?(\*F\*)?$/);
-    console.log(match);
     if (!match) return null;
     const [amount_str, name, set, collector_str, foil_str] = match.slice(1);
     const amount = Number(amount_str);
@@ -34,7 +33,6 @@ export function importFromStr(
 ): ShahrazadAction[] {
     const importActions: ShahrazadAction[] = [];
     const card_groups = str.split("\n\n");
-    console.log("card_groups:", card_groups);
 
     let deck_str = "";
     let command_str;
