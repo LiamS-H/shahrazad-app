@@ -55,6 +55,8 @@ export class MouseSensor extends LibMouseSensor {
         while (cur && cur instanceof Element) {
             if (cur instanceof HTMLElement && cur.dataset.shahcard) {
                 const id = cur.dataset.shahcard;
+                const shah_card = MouseSensor.ShahContext.getCard(id);
+                if (shah_card.state.face_down) return true;
                 MouseSensor.SelectedContext.setPreview(id);
             }
             cur = cur.parentElement;

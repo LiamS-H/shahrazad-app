@@ -16,9 +16,7 @@ export interface IShahrazadGameContext {
     applyAction: (action: ShahrazadAction) => void;
 }
 
-export const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(
-    null
-);
+const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(null);
 
 export function ShahrazadGameProvider(props: {
     game: ShahrazadGame;
