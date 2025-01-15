@@ -13,7 +13,8 @@ export default function VerticalZone(props: {
 }) {
     const { getZone } = useShahrazadGameContext();
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-    const setHover = useMemo(() => setHoveredItem, []);
+    // const setHover = useMemo(() => setHoveredItem, [setHoveredItem]);
+    const setHover = setHoveredItem;
 
     const zone = getZone(props.id);
     const data: IDroppableData = {};
@@ -39,7 +40,7 @@ export default function VerticalZone(props: {
                         }}
                     >
                         {zone.cards.map((id, index) => {
-                            const isHovered = id == hoveredItem;
+                            const isHovered = id === hoveredItem;
                             const isBottom = index === zone.cards.length - 1;
                             return (
                                 <CollapsableCard
