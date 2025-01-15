@@ -8,13 +8,15 @@ import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
 import init from "shahrazad-wasm";
 import { GameClient } from "@/lib/client";
-import GameError from "./error";
+import GameError, { IErrorMessage } from "./error";
 
 export default function GamePage(props: { game_id: string }) {
-    const [game, setGame] = useState<ShahrazadGame | null | undefined>(null);
+    const gameClientRef = useRef<GameClient | null>(null);
+    const [game, setGame] = useState<ShahrazadGame | null>(null);
+    const [error, setError] = useState<IErrorMessage | null>(null);
+
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
     const { preloadCards } = useScrycardsContext();
-    const gameClientRef = useRef<GameClient | null>(null);
 
     useEffect(() => {
         let mounted = true;
@@ -43,8 +45,11 @@ export default function GamePage(props: { game_id: string }) {
                         console.error("Game client error:", error);
                     },
                     onGameTermination: () => {
-                        console.error("Game Terminated");
-                        setGame(undefined);
+                        setError({
+                            status: 404,
+                            message: "Game Terminated",
+                            description: "This game no longer exists.",
+                        });
                     },
                 });
 
@@ -56,10 +61,16 @@ export default function GamePage(props: { game_id: string }) {
                     Object.values(initialState.cards).map((c) => c.card_name)
                 );
             } catch (error) {
-                console.error("Failed to initialize game:", error);
                 if (error instanceof SyntaxError) {
-                    setGame(undefined);
+                    setError({
+                        status: 404,
+                        message: "Game Not Found",
+                        description:
+                            "We couldn't find the game you are looking for.",
+                    });
+                    return;
                 }
+                console.error("Failed to initialize game:", error);
             }
         };
 
@@ -71,10 +82,10 @@ export default function GamePage(props: { game_id: string }) {
         };
     }, [props.game_id, preloadCards]);
 
-    if (game === undefined) {
+    if (error !== null) {
         gameClientRef.current?.cleanup();
         gameClientRef.current = null;
-        return <GameError />;
+        return <GameError message={error} />;
     }
 
     if (!game || !playerUUID) return null;
