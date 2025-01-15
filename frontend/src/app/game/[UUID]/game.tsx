@@ -8,7 +8,6 @@ import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
 import init from "shahrazad-wasm";
 import { GameClient } from "@/lib/client";
-import { useRouter } from "next/router";
 import GameError from "./error";
 
 export default function GamePage(props: { game_id: string }) {
