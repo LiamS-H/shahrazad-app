@@ -12,6 +12,7 @@ import {
     // ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
@@ -42,11 +43,20 @@ export default function DeckContextMenu({
         <>
             <Drawer
                 open={searchOpen && deck.cards.length !== 0}
-                onOpenChange={setSearchOpen}
+                onOpenChange={(open) => {
+                    setSearchOpen(open);
+                    if (!open) {
+                        setContextOpen(false);
+                    }
+                }}
             >
                 <DrawerContent>
-                    <DrawerTitle>Searching</DrawerTitle>
-                    <DrawerDescription>Drag items into play</DrawerDescription>
+                    <VisuallyHidden>
+                        <DrawerTitle>Searching</DrawerTitle>
+                        <DrawerDescription>
+                            Drag items into play
+                        </DrawerDescription>
+                    </VisuallyHidden>
                     <HorizontalZone id={zoneId} />
                 </DrawerContent>
             </Drawer>
