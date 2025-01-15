@@ -80,11 +80,6 @@ export default function GameForm() {
     }, [startingLife, freeMulligans, scryRule, isClient]);
 
     const handleCreateGame = async () => {
-        // console.log("Creating game with:", {
-        //     startingLife,
-        //     freeMulligans,
-        //     scryRule,
-        // });
         let starting_life = Number(startingLife);
         if (Number.isNaN(starting_life) || starting_life < 0) {
             starting_life = 20;

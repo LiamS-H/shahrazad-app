@@ -54,4 +54,5 @@ pub enum ShahrazadAction {
         player_id: ShahrazadPlaymatId,
         seed: String,
     },
+    GameTerminated,
 }

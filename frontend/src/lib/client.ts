@@ -7,6 +7,7 @@ type GameClientCallbacks = {
     onGameUpdate: (game: ShahrazadGame) => void;
     onPreloadCards: (cards: string[]) => void;
     onError?: (error: Error) => void;
+    onGameTermination: () => void;
 };
 
 export class GameClient {
@@ -17,6 +18,7 @@ export class GameClient {
     private maxReconnectAttempts = 5;
     private reconnectTimeout: NodeJS.Timeout | null = null;
     private isConnecting = false;
+    private isCleanedUp = false;
 
     constructor(
         private gameId: string,
@@ -71,6 +73,10 @@ export class GameClient {
             this.moveCount = update.sequence_number;
 
             if (update.action) {
+                if (update.action.type === ShahrazadActionCase.GameTerminated) {
+                    this.callbacks.onGameTermination();
+                    return;
+                }
                 this.applyAction(update.action);
                 console.log("[ws] received action:", update.action);
             } else if (update.game) {
@@ -103,6 +109,7 @@ export class GameClient {
             10000
         );
         this.reconnectTimeout = setTimeout(() => {
+            if (this.isCleanedUp) return;
             this.reconnectAttempts++;
             this.connect();
         }, backoffMs);
@@ -156,14 +163,18 @@ export class GameClient {
     }
 
     cleanup() {
+        this.isCleanedUp = true;
         if (this.gameState) {
             this.gameState.free();
+            this.gameState = null;
         }
         if (this.reconnectTimeout) {
             clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
         }
         if (this.socket) {
             this.socket.close(1000);
+            this.socket = null;
         }
     }
 }

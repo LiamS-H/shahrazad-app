@@ -15,6 +15,7 @@ export enum ShahrazadActionCase {
     SetLife = 'SetLife',
     ClearBoard = 'ClearBoard',
     Mulligan = 'Mulligan',
+    GameTerminated = 'GameTerminated',
 }
 
 export type ShahrazadActionCaseDrawBottom = {
@@ -87,6 +88,10 @@ export type ShahrazadActionCaseMulligan = {
     seed: string;
 };
 
+export type ShahrazadActionCaseGameTerminated = {
+    type: ShahrazadActionCase.GameTerminated;
+};
+
 export type ShahrazadAction =
     | ShahrazadActionCaseDrawBottom
     | ShahrazadActionCaseDrawTop
@@ -98,4 +103,5 @@ export type ShahrazadAction =
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
     | ShahrazadActionCaseClearBoard
-    | ShahrazadActionCaseMulligan;
+    | ShahrazadActionCaseMulligan
+    | ShahrazadActionCaseGameTerminated;

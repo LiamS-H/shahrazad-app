@@ -360,6 +360,7 @@ impl ShahrazadGame {
                 );
                 Some(game)
             }
+            ShahrazadAction::GameTerminated => None,
         }
     }
 }
