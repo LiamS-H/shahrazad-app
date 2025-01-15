@@ -48,7 +48,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
                 resetTimeout();
             }, 1000);
         },
-        [setCurrentPreview]
+        [setCurrentPreview, resetTimeout]
     );
 
     useEffect(() => {
