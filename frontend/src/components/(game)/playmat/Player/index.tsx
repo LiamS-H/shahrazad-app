@@ -62,7 +62,11 @@ export default function Player({
             <Popover
                 open={inputOpen}
                 onOpenChange={(open) => {
-                    setLife(lifeInput);
+                    if (open) {
+                        setLifeInput(life);
+                    } else {
+                        setLife(lifeInput);
+                    }
                     setInputOpen(open);
                 }}
             >
