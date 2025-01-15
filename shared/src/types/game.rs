@@ -32,6 +32,7 @@ pub struct ShahrazadPlaymat {
     exile: ShahrazadZoneId,
     command: ShahrazadZoneId,
     life: u32,
+    mulligans: u8,
 }
 
 use crate::branded_string;
@@ -76,7 +77,7 @@ impl ShahrazadGame {
                     return None;
                 }
                 let src_len = game.zones.get(&source)?.cards.len();
-                let src_range = (src_len - amount)..; // Take the last 'amount' cards
+                let src_range = (src_len - amount)..;
                 let mut drawn_cards: Vec<ShahrazadCardId> = game
                     .zones
                     .get_mut(&source)?
@@ -89,6 +90,10 @@ impl ShahrazadGame {
                         continue;
                     };
                     card.migrate(destination.clone());
+                    card.state.apply(&ShahrazadCardOptions {
+                        face_down: Some(false),
+                        ..Default::default()
+                    });
                 }
 
                 game.zones
@@ -209,12 +214,8 @@ impl ShahrazadGame {
                     let card = game.cards.get_mut(card_id)?;
                     card.state.apply(&ShahrazadCardOptions {
                         face_down: Some(true),
-                        inverted: Some(false),
-                        flipped: Some(false),
-                        tapped: Some(false),
-                        x: None,
-                        y: None,
                         counters: Some(Vec::<ShahrazadCounter>::new()),
+                        ..Default::default()
                     });
                 }
 
@@ -239,13 +240,8 @@ impl ShahrazadGame {
                             card_name,
                             location: zone.clone(),
                             state: ShahrazadCardOptions {
-                                face_down: Some(false),
-                                inverted: Some(false),
-                                flipped: Some(false),
-                                tapped: Some(false),
-                                x: None,
-                                y: None,
                                 counters: Some(Vec::<ShahrazadCounter>::new()),
+                                ..Default::default()
                             },
                             owner: player_id.clone(),
                         },
@@ -289,6 +285,7 @@ impl ShahrazadGame {
                     exile: zone_ids[4].clone(),
                     command: zone_ids[5].clone(),
                     life: game.settings.starting_life.clone(),
+                    mulligans: 0,
                 };
 
                 game.zone_count += 6;
@@ -319,6 +316,48 @@ impl ShahrazadGame {
                 for (_zone_id, zone) in &mut game.zones {
                     zone.cards.retain(|card| !remove.contains(card))
                 }
+                Some(game)
+            }
+            ShahrazadAction::Mulligan { player_id, seed } => {
+                let playmat = game.playmats.get_mut(&player_id)?;
+
+                if playmat.mulligans < game.settings.free_mulligans.parse::<u8>().unwrap_or(0) {
+                    playmat.mulligans += 1;
+                };
+                let library_id = playmat.library.clone();
+                let hand_id = playmat.hand.clone();
+
+                let ShahrazadZone { cards } = game.zones.get(&hand_id)?;
+
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::CardZone {
+                        cards: cards.clone(),
+                        state: ShahrazadCardOptions {
+                            ..Default::default()
+                        },
+                        source: hand_id.clone(),
+                        destination: library_id.clone(),
+                        index: 0,
+                    },
+                    game,
+                );
+
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::Shuffle {
+                        zone: library_id.clone(),
+                        seed,
+                    },
+                    game,
+                );
+
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::DrawTop {
+                        amount: 7,
+                        source: library_id,
+                        destination: hand_id,
+                    },
+                    game,
+                );
                 Some(game)
             }
         }

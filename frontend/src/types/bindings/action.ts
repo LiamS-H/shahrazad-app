@@ -14,6 +14,7 @@ export enum ShahrazadActionCase {
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
     ClearBoard = 'ClearBoard',
+    Mulligan = 'Mulligan',
 }
 
 export type ShahrazadActionCaseDrawBottom = {
@@ -80,6 +81,12 @@ export type ShahrazadActionCaseClearBoard = {
     player_id: ShahrazadPlaymatId;
 };
 
+export type ShahrazadActionCaseMulligan = {
+    type: ShahrazadActionCase.Mulligan;
+    player_id: ShahrazadPlaymatId;
+    seed: string;
+};
+
 export type ShahrazadAction =
     | ShahrazadActionCaseDrawBottom
     | ShahrazadActionCaseDrawTop
@@ -90,4 +97,5 @@ export type ShahrazadAction =
     | ShahrazadActionCaseDeckImport
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
-    | ShahrazadActionCaseClearBoard;
+    | ShahrazadActionCaseClearBoard
+    | ShahrazadActionCaseMulligan;
