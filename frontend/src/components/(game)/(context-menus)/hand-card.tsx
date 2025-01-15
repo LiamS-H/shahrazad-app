@@ -12,7 +12,7 @@ import {
     ContextMenuSubContent,
     ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
@@ -34,7 +34,7 @@ export default function HandCardContextMenu({
         <ContextMenu modal={open} onOpenChange={setOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>Deck</ContextMenuLabel>
+                <ContextMenuLabel>{shah_card.card_name}</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuSub>
                     <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>

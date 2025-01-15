@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/(ui)/button";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/(ui)/popover";
+import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { importFromStr } from "@/lib/importDeck";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";

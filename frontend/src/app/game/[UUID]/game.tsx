@@ -8,9 +8,10 @@ import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
 import init from "shahrazad-wasm";
 import { GameClient } from "@/lib/client";
+import GameError from "./error";
 
 export default function GamePage(props: { game_id: string }) {
-    const [game, setGame] = useState<ShahrazadGame | null>(null);
+    const [game, setGame] = useState<ShahrazadGame | null | undefined>(null);
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
     const { preloadCards } = useScrycardsContext();
     const gameClientRef = useRef<GameClient | null>(null);
@@ -41,6 +42,10 @@ export default function GamePage(props: { game_id: string }) {
                     onError: (error) => {
                         console.error("Game client error:", error);
                     },
+                    onGameTermination: () => {
+                        console.error("Game Terminated");
+                        setGame(undefined);
+                    },
                 });
 
                 gameClientRef.current = gameClient;
@@ -52,6 +57,9 @@ export default function GamePage(props: { game_id: string }) {
                 );
             } catch (error) {
                 console.error("Failed to initialize game:", error);
+                if (error instanceof SyntaxError) {
+                    setGame(undefined);
+                }
             }
         };
 
@@ -62,6 +70,12 @@ export default function GamePage(props: { game_id: string }) {
             gameClientRef.current?.cleanup();
         };
     }, [props.game_id, preloadCards]);
+
+    if (game === undefined) {
+        gameClientRef.current?.cleanup();
+        gameClientRef.current = null;
+        return <GameError />;
+    }
 
     if (!game || !playerUUID) return null;
 

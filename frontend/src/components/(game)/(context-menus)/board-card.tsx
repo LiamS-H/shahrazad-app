@@ -12,7 +12,7 @@ import {
     // ContextMenuSubContent,
     // ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
@@ -31,16 +31,20 @@ export default function BoardCardContextMenu({
     const scry_card = useScrycard(shah_card.card_name);
     const [open, setOpen] = useState(true);
     const cards = selectedCards.includes(cardId) ? selectedCards : [cardId];
+    let title = "";
+    if (cards.length !== 1) {
+        title = `${cards.length} cards`;
+    } else if (shah_card.state.face_down) {
+        title = "Face Down Card";
+    } else {
+        title = shah_card.card_name;
+    }
 
     return (
         <ContextMenu modal={open} onOpenChange={setOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>
-                    {cards.length === 1
-                        ? shah_card.card_name
-                        : `${cards.length} cards`}
-                </ContextMenuLabel>
+                <ContextMenuLabel>{title}</ContextMenuLabel>
                 <ContextMenuSeparator />
                 {(!shah_card.state.tapped || cards.length > 1) && (
                     <ContextMenuItem

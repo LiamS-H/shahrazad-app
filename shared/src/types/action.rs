@@ -50,4 +50,9 @@ pub enum ShahrazadAction {
     ClearBoard {
         player_id: ShahrazadPlaymatId,
     },
+    Mulligan {
+        player_id: ShahrazadPlaymatId,
+        seed: String,
+    },
+    GameTerminated,
 }

@@ -1,5 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
-import { useShahrazadGameContext } from "../../../../contexts/game";
+import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { IDroppableData } from "@/types/interfaces/dnd";
 import { BoardCard } from "./board-card";

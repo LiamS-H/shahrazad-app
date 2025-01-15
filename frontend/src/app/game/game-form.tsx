@@ -1,26 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/(ui)/tabs";
+import { Card, CardContent } from "@/components/(ui)/card";
+import { Label } from "@/components/(ui)/label";
+import { Input } from "@/components/(ui)/input";
+import { Button } from "@/components/(ui)/button";
+import { Switch } from "@/components/(ui)/switch";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/components/(ui)/select";
 import {
     InputOTP,
     InputOTPGroup,
     InputOTPSeparator,
     InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { Slider } from "@/components/ui/slider";
+} from "@/components/(ui)/input-otp";
+import { Slider } from "@/components/(ui)/slider";
 import { createGame } from "@/lib/createGame";
 import { useRouter } from "next/navigation";
 
@@ -75,11 +80,6 @@ export default function GameForm() {
     }, [startingLife, freeMulligans, scryRule, isClient]);
 
     const handleCreateGame = async () => {
-        // console.log("Creating game with:", {
-        //     startingLife,
-        //     freeMulligans,
-        //     scryRule,
-        // });
         let starting_life = Number(startingLife);
         if (Number.isNaN(starting_life) || starting_life < 0) {
             starting_life = 20;

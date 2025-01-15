@@ -1,6 +1,6 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { useShahrazadGameContext } from "../../../../contexts/game";
-import HorizontalZone from "../horizontal-zone";
+import { useShahrazadGameContext } from "@/contexts/game";
+import HorizontalZone from "@/components/(game)/horizontal-zone";
 import { Scrycard } from "react-scrycards";
 
 export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {

@@ -1,9 +1,9 @@
 use axum::{
-    body::Body,
     extract::{
         ws::{Message, WebSocket},
-        Path, Query, Request, State, WebSocketUpgrade,
+        Path, Query, State, WebSocketUpgrade,
     },
+    http::{Response, StatusCode},
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -12,8 +12,8 @@ use backend::state::*;
 use futures::{SinkExt, StreamExt};
 use serde_json;
 use shared::types::{
+    action::ShahrazadAction,
     api::{CreateGameQuery, CreateGameResponse, JoinGameQuery, JoinGameResponse},
-    game::ShahrazadGameSettings,
     ws::ClientAction,
 };
 use std::net::SocketAddr;
@@ -106,67 +106,86 @@ async fn join_game(
 
 async fn handle_socket(
     socket: WebSocket,
-    game_id: String,
-    player_id: String,
+    game_id: Uuid,
+    player_id: Uuid,
     state: Arc<GameStateManager>,
 ) {
-    let (game_id, player_id) = match (Uuid::parse_str(&game_id), Uuid::parse_str(&player_id)) {
-        (Ok(g), Ok(p)) => (g, p),
-        _ => return,
-    };
-
     if !(*state).is_valid_player(game_id, player_id).await {
         return;
     }
 
+    let game_subscription = match (*state).subscribe_to_game(game_id).await {
+        Ok(sub) => sub,
+        Err(_) => return,
+    };
+
     let (mut sender, mut receiver) = socket.split();
 
-    // Subscribe to game updates
-    if let Ok(mut game_subscription) = (*state).subscribe_to_game(game_id).await {
-        // Send initial game state
-        if let Ok(initial_update) = (*state).get_game_state(game_id, player_id).await {
-            if let Ok(json) = serde_json::to_string(&initial_update) {
-                let _ = sender.send(Message::Text(json)).await;
-            }
+    // Send initial game state
+    if let Ok(initial_update) = (*state).get_game_state(game_id, player_id).await {
+        if let Ok(json) = serde_json::to_string(&initial_update) {
+            let _ = sender.send(Message::Text(json)).await;
         }
+    }
 
-        // Handle incoming server updates
-        let send_task = tokio::spawn({
-            async move {
-                while let Ok(update) = game_subscription.recv().await {
-                    if update.player_id == player_id && update.game.is_none() {
-                        continue;
-                    }
-                    if update.player_id != player_id && update.action.is_none() {
-                        continue;
-                    }
-                    if let Ok(json) = serde_json::to_string(&update) {
-                        if sender.send(Message::Text(json)).await.is_err() {
-                            break;
+    // Handle incoming server updates
+    let send_task = tokio::spawn({
+        let mut game_subscription = game_subscription;
+        async move {
+            loop {
+                match game_subscription.recv().await {
+                    Ok(update) => {
+                        // Skip if it's our own update without game state
+                        if update.player_id == player_id && update.game.is_none() {
+                            continue;
+                        }
+                        // Skip if it's another player's update without an action
+                        if update.player_id != player_id && update.action.is_none() {
+                            continue;
+                        }
+
+                        if let Ok(json) = serde_json::to_string(&update) {
+                            if sender.send(Message::Text(json)).await.is_err() {
+                                break;
+                            }
+                        }
+                        // Check for game termination
+                        if let Some(action) = &update.action {
+                            if matches!(action, ShahrazadAction::GameTerminated) {
+                                break;
+                            }
                         }
                     }
-                }
-            }
-        });
-
-        // Handle incoming client actions
-        let receive_task = tokio::spawn({
-            let state = state.clone();
-            async move {
-                while let Some(Ok(Message::Text(text))) = receiver.next().await {
-                    if let Ok(client_action) = serde_json::from_str::<ClientAction>(&text) {
-                        let _ = (*state)
-                            .process_action(player_id, game_id, client_action)
-                            .await;
+                    Err(_) => {
+                        break;
                     }
                 }
             }
-        });
 
-        tokio::select! {
-            _ = send_task => {},
-            _ = receive_task => {},
+            let _ = sender.close().await;
         }
+    });
+
+    // Handle incoming client actions
+    let receive_task = tokio::spawn({
+        let state = state.clone();
+        async move {
+            while let Some(Ok(Message::Text(text))) = receiver.next().await {
+                let client_action = match serde_json::from_str::<ClientAction>(&text) {
+                    Ok(action) => action,
+                    Err(_) => continue,
+                };
+
+                let _ = (*state)
+                    .process_action(player_id, game_id, client_action)
+                    .await;
+            }
+        }
+    });
+
+    tokio::select! {
+        _ = send_task => {},
+        _ = receive_task => {},
     }
 
     let _ = (*state).disconnect_player(game_id, player_id).await;
@@ -177,5 +196,18 @@ async fn game_handler(
     Path((game_id, player_id)): Path<(String, String)>,
     State(state): State<Arc<GameStateManager>>,
 ) -> impl IntoResponse {
+    let error = Response::builder()
+        .status(StatusCode::FORBIDDEN)
+        .body("Invalid game_id or player_id".into())
+        .unwrap();
+    let (game_id, player_id) = match (Uuid::parse_str(&game_id), Uuid::parse_str(&player_id)) {
+        (Ok(g), Ok(p)) => (g, p),
+        _ => {
+            return error;
+        }
+    };
+    if !state.validate_connection(game_id, player_id) {
+        return error;
+    }
     ws.on_upgrade(move |socket| handle_socket(socket, game_id, player_id, state))
 }

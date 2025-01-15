@@ -22,7 +22,34 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedCards, setSelectedCards] = useState<ShahrazadCardId[]>([]);
     const shift_key_ref = useRef(false);
 
-    const [currentPreview, setPreview] = useState<ShahrazadCardId | null>(null);
+    const [currentPreview, setCurrentPreview] =
+        useState<ShahrazadCardId | null>(null);
+    const clearPreviewTimeout = useRef<NodeJS.Timeout | null>(null);
+
+    const resetTimeout = useCallback(() => {
+        if (clearPreviewTimeout.current) {
+            clearTimeout(clearPreviewTimeout.current);
+            clearPreviewTimeout.current = null;
+        }
+    }, []);
+
+    const setPreview = useCallback(
+        (card: ShahrazadCardId | null) => {
+            if (card != null) {
+                setCurrentPreview(card);
+                resetTimeout();
+                return;
+            }
+            if (clearPreviewTimeout.current) {
+                return;
+            }
+            clearPreviewTimeout.current = setTimeout(() => {
+                setCurrentPreview(null);
+                resetTimeout();
+            }, 1000);
+        },
+        [setCurrentPreview, resetTimeout]
+    );
 
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {

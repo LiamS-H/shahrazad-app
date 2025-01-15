@@ -7,11 +7,12 @@ import Graveyard from "./Graveyard";
 import Exile from "./Exile";
 import Command from "./Command";
 import { useShahrazadGameContext } from "@/contexts/game";
-import { ImportDeckButton } from "./ImportDeckButton";
+import { ImportDeckButton } from "./(buttons)/ImportDeckButton";
 import Player from "./Player";
 import { PlayerProvider } from "@/contexts/player";
-import UntapButton from "./UntapButton";
-import ClearBoardButton from "./ClearBoardButton";
+import { UntapButton } from "./(buttons)/UntapButton";
+import { ClearBoardButton } from "./(buttons)/ClearBoardButton";
+import { MulliganButton } from "./(buttons)/MulliganButton";
 
 export default function Playmat(props: {
     player: ShahrazadPlaymatId;
@@ -38,12 +39,14 @@ export default function Playmat(props: {
                     <Hand id={playmat.hand} active={props.active} />
                     <Player player_id={props.player} active={props.active} />
                     <div className="flex flex-col">
+                        <UntapButton board_id={playmat.battlefield} />
+                        <MulliganButton />
                         <ImportDeckButton
                             deckId={playmat.library}
                             commandId={playmat.command}
                             playerId={props.player}
                         />
-                        <UntapButton board_id={playmat.battlefield} />
+
                         <ClearBoardButton playerId={props.player} />
                     </div>
                 </div>

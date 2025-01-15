@@ -11,7 +11,7 @@ import {
     // ContextMenuSubContent,
     // ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
@@ -22,8 +22,8 @@ import {
     DrawerContent,
     DrawerDescription,
     DrawerTitle,
-} from "@/components/ui/drawer";
-import HorizontalZone from "../playmat/horizontal-zone";
+} from "@/components/(ui)/drawer";
+import HorizontalZone from "../horizontal-zone";
 export default function DeckContextMenu({
     zoneId,
     children,
