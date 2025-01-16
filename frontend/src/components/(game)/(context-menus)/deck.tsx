@@ -24,7 +24,6 @@ import {
     DrawerDescription,
     DrawerTitle,
 } from "@/components/(ui)/drawer";
-import HorizontalZone from "../horizontal-zone";
 import CardSpread from "../card-spread";
 export default function DeckContextMenu({
     zoneId,
@@ -58,7 +57,6 @@ export default function DeckContextMenu({
                             Drag items into play
                         </DrawerDescription>
                     </VisuallyHidden>
-                    {/* <HorizontalZone id={zoneId} /> */}
                     <CardSpread id={zoneId} />
                 </DrawerContent>
             </Drawer>
