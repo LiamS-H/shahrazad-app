@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useCallback, useRef, useState } from "react";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import { useShahrazadGameContext } from "../game";
 import { ShahrazadCardId } from "@/types/bindings/card";
