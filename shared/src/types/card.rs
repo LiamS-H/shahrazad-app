@@ -19,7 +19,7 @@ pub struct ShahrazadCardOptions {
     pub flipped: Option<bool>,
     pub tapped: Option<bool>,
     pub face_down: Option<bool>,
-    pub x: Option<u8>, // Use f64 for floating-point numbers
+    pub x: Option<u8>,
     pub y: Option<u8>,
     pub counters: Option<Vec<ShahrazadCounter>>,
 }
@@ -38,10 +38,10 @@ impl ShahrazadCardOptions {
             self.face_down = Some(face_down);
         }
         if let Some(x) = other.x {
-            self.x = Some(x);
+            self.x = if x < 255 { Some(x) } else { None };
         }
         if let Some(y) = other.y {
-            self.y = Some(y);
+            self.y = if y < 255 { Some(y) } else { None };
         }
         if let Some(counters) = &other.counters {
             self.counters = Some(counters.clone())
