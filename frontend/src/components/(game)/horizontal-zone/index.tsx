@@ -8,7 +8,10 @@ import SortableCard from "./sortable";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
 
-export default function HorizontalZone(props: { id: ShahrazadZoneId }) {
+export default function HorizontalZone(props: {
+    id: ShahrazadZoneId;
+    sortOptions?: true;
+}) {
     const { getZone } = useShahrazadGameContext();
     const zone = getZone(props.id);
     const items = [...zone.cards];

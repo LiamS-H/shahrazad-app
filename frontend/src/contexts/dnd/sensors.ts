@@ -18,6 +18,7 @@ export class MouseSensor extends LibMouseSensor {
             return false;
         }
 
+        // skip for buttons
         let cur: EventTarget | null = event.target;
         while (cur && cur instanceof Element) {
             if (cur.tagName == "BUTTON") {
@@ -26,13 +27,14 @@ export class MouseSensor extends LibMouseSensor {
             cur = cur.parentElement;
         }
 
+        // tapping
         if (event.detail >= 2 && event.detail % 2 == 0) {
             cur = event.target;
             while (cur && cur instanceof Element) {
                 if (cur instanceof HTMLElement && cur.dataset.shahcard) {
                     const id = cur.dataset.shahcard;
                     const shah_card = MouseSensor.ShahContext.getCard(id);
-                    if (!shah_card.state.x) return false;
+                    if (!shah_card.state.x) break;
                     let selectedCards =
                         MouseSensor.SelectedContext.selectedCards;
                     if (!selectedCards.includes(id)) {
