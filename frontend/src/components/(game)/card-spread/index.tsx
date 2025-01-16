@@ -118,6 +118,10 @@ export default function CardSpread(props: {
                 cost2 = Number.isNaN(cost2) ? 0 : cost2;
             }
 
+            if (cost1 === cost2) {
+                return (card1?.name || "").localeCompare(card2?.name || "");
+            }
+
             return cost1 - cost2;
         });
 
