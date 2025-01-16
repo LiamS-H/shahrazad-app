@@ -14,7 +14,6 @@ import { Button } from "@/components/(ui)/button";
 import { Switch } from "@/components/(ui)/switch";
 import { Label } from "@/components/(ui)/label";
 import { Input } from "@/components/(ui)/input";
-import { Search } from "lucide-react";
 
 interface ISort {
     type: "lands" | "creatures" | "artifacts" | "spells" | null;
@@ -115,11 +114,11 @@ export default function CardSpread(props: {
         const new_cards = searched_cards.map(({ id }) => id);
 
         setCards((old) => (new_cards === old ? old : new_cards));
-    }, [zone, sort]);
+    }, [zone, sort, getCard, requestCard]);
 
     useEffect(() => {
         updateCards();
-    }, [zone, sort]);
+    }, [zone, sort, updateCards]);
 
     const data: IDroppableData = { sortable: true };
 
@@ -178,6 +177,7 @@ export default function CardSpread(props: {
                         onChange={(e) =>
                             setSort((s) => ({ ...s, search: e.target.value }))
                         }
+                        placeholder="search🔎︎"
                     />
                 </div>
                 <div className="flex flex-row space-x-2 min-w-24">
