@@ -8,7 +8,6 @@ export default function CardPreview() {
 
     if (!currentPreview) return null;
     const shah_card = getCard(currentPreview);
-    if (shah_card.state.face_down) return null;
 
     return (
         <div

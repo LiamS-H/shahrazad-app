@@ -215,7 +215,8 @@ impl ShahrazadGame {
                     let card = game.cards.get_mut(card_id)?;
                     card.state.apply(&ShahrazadCardState {
                         face_down: Some(true),
-                        counters: Some(Vec::<ShahrazadCounter>::new()),
+                        counters: Some([].into()),
+                        revealed: Some([].into()),
                         ..Default::default()
                     });
                 }

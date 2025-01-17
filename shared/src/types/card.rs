@@ -49,10 +49,12 @@ impl ShahrazadCardState {
         }
         if let Some(new_revealed) = &other.revealed {
             if let Some(revealed) = &mut self.revealed {
-                revealed.append(&mut new_revealed.clone());
-            } else {
-                self.revealed = Some(new_revealed.clone())
+                if new_revealed.len() > 0 {
+                    revealed.append(&mut new_revealed.clone());
+                    return;
+                };
             }
+            self.revealed = Some(new_revealed.clone());
         }
     }
 }

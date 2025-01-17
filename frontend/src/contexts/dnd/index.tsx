@@ -153,6 +153,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                         tapped: false,
                         flipped: false,
                         inverted: false,
+                        revealed: [],
                     },
                     index: -1,
                 });
