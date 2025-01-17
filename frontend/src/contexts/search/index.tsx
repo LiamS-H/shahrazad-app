@@ -1,13 +1,5 @@
-import CardSpread from "@/contexts/search/search-zone";
-import {
-    Drawer,
-    DrawerContent,
-    DrawerDescription,
-    DrawerTitle,
-} from "@/components/(ui)/drawer";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
     createContext,
     useCallback,
@@ -15,9 +7,10 @@ import {
     useState,
     type ReactNode,
 } from "react";
+import SearchDrawer from "./drawer";
 
 export interface ISearchContext {
-    search: (zone: ShahrazadZoneId) => void;
+    search: (zone: ShahrazadZoneId | null) => void;
     active: ShahrazadZoneId | null;
 }
 
@@ -33,35 +26,14 @@ export function useSearchContext() {
 
 export function SearchContextProvider({ children }: { children: ReactNode }) {
     const [searchZone, setSearchZone] = useState<ShahrazadCardId | null>(null);
-    const search = useCallback((zone: ShahrazadZoneId) => {
+    const search = useCallback((zone: ShahrazadZoneId | null) => {
         setSearchZone(zone);
     }, []);
-
-    const open = searchZone !== null;
 
     return (
         <SearchContext.Provider value={{ search, active: searchZone }}>
             {children}
-            {
-                <Drawer
-                    open={open}
-                    onOpenChange={(open) => {
-                        if (!open) {
-                            setSearchZone(null);
-                        }
-                    }}
-                >
-                    <DrawerContent>
-                        <VisuallyHidden>
-                            <DrawerTitle>Searching</DrawerTitle>
-                            <DrawerDescription>
-                                Drag items into play
-                            </DrawerDescription>
-                        </VisuallyHidden>
-                        {open && <CardSpread id={searchZone} />}
-                    </DrawerContent>
-                </Drawer>
-            }
+            <SearchDrawer />
         </SearchContext.Provider>
     );
 }

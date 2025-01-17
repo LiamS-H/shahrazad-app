@@ -2,7 +2,7 @@ import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import DraggableCard from "../../components/(game)/card-draggable";
+import DraggableCard from "../card-draggable";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import {
@@ -41,10 +41,7 @@ interface ISort {
 
 type Color = "C" | "W" | "U" | "B" | "R" | "G";
 
-export default function CardSpread(props: {
-    id: ShahrazadZoneId;
-    sortOptions?: true;
-}) {
+export default function SearchZone(props: { id: ShahrazadZoneId }) {
     const { getZone, getCard } = useShahrazadGameContext();
     const { requestCard } = useScrycardsContext();
     const zone = getZone(props.id);
@@ -198,7 +195,10 @@ export default function CardSpread(props: {
                     <Input
                         value={sort.search}
                         onChange={(e) =>
-                            setSort((s) => ({ ...s, search: e.target.value }))
+                            setSort((s) => ({
+                                ...s,
+                                search: e.target.value,
+                            }))
                         }
                         placeholder="search🔎︎"
                     />
