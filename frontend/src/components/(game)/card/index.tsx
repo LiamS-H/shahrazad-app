@@ -4,7 +4,7 @@ import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/playmat/Board/counters";
 import { useSelection } from "@/contexts/selection";
 
-export default function Card(props: { id: ShahrazadCardId }) {
+export default function Card(props: { id: ShahrazadCardId; faceUp?: true }) {
     const { getCard } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const shah_card = getCard(props.id);
@@ -30,7 +30,7 @@ export default function Card(props: { id: ShahrazadCardId }) {
                 symbol_text_renderer={ScryNameCardText}
                 flipped={shah_card.state.flipped}
                 tapped={shah_card.state.tapped}
-                faceDown={shah_card.state.face_down}
+                faceDown={shah_card.state.face_down && !props.faceUp}
             />
             <Counters id={props.id} />
         </div>

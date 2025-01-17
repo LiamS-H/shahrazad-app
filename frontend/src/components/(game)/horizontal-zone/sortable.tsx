@@ -44,7 +44,7 @@ export default function SortableCard(props: {
                 {...listeners}
                 {...attributes}
             >
-                <Card id={props.id} />
+                <Card id={props.id} faceUp />
             </div>
         </HandCardContextMenu>
     );

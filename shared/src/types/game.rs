@@ -91,7 +91,7 @@ impl ShahrazadGame {
                     };
                     card.migrate(destination.clone());
                     card.state.apply(&ShahrazadCardOptions {
-                        face_down: Some(false),
+                        // face_down: Some(false),
                         ..Default::default()
                     });
                 }
