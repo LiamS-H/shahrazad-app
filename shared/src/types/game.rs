@@ -81,7 +81,14 @@ impl ShahrazadGame {
                     return None;
                 }
                 let src_len = game.zones.get(&source)?.cards.len();
-                let src_range = (src_len - amount)..;
+                if src_len == 0 {
+                    return None;
+                }
+                let src_range = if src_len >= amount {
+                    (src_len - amount)..
+                } else {
+                    src_len..
+                };
                 let mut drawn_cards: Vec<ShahrazadCardId> = game
                     .zones
                     .get_mut(&source)?
@@ -208,6 +215,9 @@ impl ShahrazadGame {
             }
             ShahrazadAction::Shuffle { zone, seed } => {
                 let zone_ref = game.zones.get_mut(&zone)?;
+                if zone_ref.cards.len() == 0 {
+                    return None;
+                }
                 let mut rng = ChaCha8Rng::seed_from_u64(seed.parse::<u64>().unwrap_or(0));
                 let mut cards = zone_ref.cards.clone();
                 cards.sort_by_key(|card| card.to_string());
