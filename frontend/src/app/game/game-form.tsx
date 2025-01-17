@@ -28,6 +28,7 @@ import {
 import { Slider } from "@/components/(ui)/slider";
 import { createGame } from "@/lib/client/createGame";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function GameForm() {
     const { push: pushRoute } = useRouter();
@@ -37,6 +38,7 @@ export default function GameForm() {
     const [freeMulligans, setFreeMulligans] = useState(1);
     const [scryRule, setScryRule] = useState(false);
     const [gameCode, setGameCode] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -84,7 +86,8 @@ export default function GameForm() {
         if (Number.isNaN(starting_life) || starting_life < 0) {
             starting_life = 20;
         }
-        const { game_id, player_id } = await createGame({
+        setLoading(true);
+        const gameResult = await createGame({
             settings: {
                 starting_life,
                 free_mulligans:
@@ -92,6 +95,12 @@ export default function GameForm() {
                 scry_rule: scryRule,
             },
         });
+        setLoading(false);
+        if (gameResult === null) {
+            toast("Something went wrong.");
+            return;
+        }
+        const { game_id, player_id } = gameResult;
         localStorage.setItem("saved-player", player_id);
         pushRoute(`game/${game_id}`);
     };
@@ -176,7 +185,7 @@ export default function GameForm() {
                                 onClick={handleCreateGame}
                                 className="w-full"
                             >
-                                Create Game
+                                {loading ? "loading..." : "Create Game"}
                             </Button>
                         </div>
                     </TabsContent>

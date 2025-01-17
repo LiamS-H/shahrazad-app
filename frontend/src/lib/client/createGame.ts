@@ -4,18 +4,22 @@ import { CreateGameResponse, CreateGameQuery } from "@/types/bindings/api";
 
 export async function createGame(
     settings: CreateGameQuery
-): Promise<CreateGameResponse> {
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/create_game`;
-    const res = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(settings),
-    });
-    if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+): Promise<CreateGameResponse | null> {
+    try {
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/create_game`;
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(settings),
+        });
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        return data;
+    } catch {
+        return null;
     }
-    const data = await res.json();
-    return data;
 }

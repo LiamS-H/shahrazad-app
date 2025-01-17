@@ -1,105 +1,115 @@
 "use client";
 import Game from "@/components/(game)/game";
-import { fetchGame } from "@/lib/client/fetchGame";
+import { joinGame } from "@/lib/client/joinGame";
 import { ShahrazadAction } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
 import init from "shahrazad-wasm";
 import { GameClient } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
+import { toast } from "sonner";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
     const [error, setError] = useState<IErrorMessage | null>(null);
 
+    const [loading, setLoading] = useState(true);
+    const init_ref = useRef(false);
+
+    const signalError = useCallback((error: IErrorMessage) => {
+        setError(error);
+        toast(error.message);
+    }, []);
+
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
     const [playerName, setPlayerName] = useState<string | null>(null);
     const { preloadCards } = useScrycardsContext();
 
-    useEffect(() => {
-        let mounted = true;
+    const initGame = useCallback(async () => {
+        if (init_ref.current) return;
+        init_ref.current = true;
+        const stored_player = localStorage.getItem("saved-player") || undefined;
 
-        const initGame = async () => {
-            const stored_player =
-                localStorage.getItem("saved-player") || undefined;
+        const [joinResult] = await Promise.all([
+            joinGame(props.game_id, stored_player),
+            init(),
+        ]);
 
-            try {
-                const [fetchResult] = await Promise.all([
-                    fetchGame(props.game_id, stored_player),
-                    init(),
-                ]);
+        setLoading(false);
 
-                if (!mounted) return;
+        if (joinResult === undefined) {
+            signalError({
+                status: 503,
+                message: "Connection Refused",
+                description: "Server may be down for maintenance.",
+            });
+            return;
+        }
+        if (joinResult === null) {
+            signalError({
+                status: 404,
+                message: "Game Not Found",
+                description: "We couldn't find the game you are looking for.",
+            });
+            return;
+        }
 
-                const {
-                    player_id,
-                    player_name,
-                    game: initialState,
-                } = fetchResult;
-                console.log("name", player_name);
-                setPlayerUUID(player_id);
-                setPlayerName(player_name);
-                localStorage.setItem("saved-player", player_id);
+        const { player_id, player_name, game: initialState } = joinResult;
+        console.log("name", player_name);
+        setPlayerUUID(player_id);
+        setPlayerName(player_name);
+        localStorage.setItem("saved-player", player_id);
 
-                const gameClient = new GameClient(
-                    props.game_id,
-                    player_id,
-                    player_name,
-                    {
-                        onGameUpdate: setGame,
-                        onPreloadCards: preloadCards,
-                        onError: (error) => {
-                            console.error("Game client error:", error);
-                        },
-                        onGameTermination: () => {
-                            setError({
-                                status: 404,
-                                message: "Game Terminated",
-                                description: "This game no longer exists.",
-                            });
-                        },
-                    }
-                );
-
-                gameClientRef.current = gameClient;
-                gameClient.initializeGameState(initialState);
-                gameClient.connect();
-
-                preloadCards(
-                    Object.values(initialState.cards).map((c) => c.card_name)
-                );
-            } catch (error) {
-                if (error instanceof SyntaxError) {
-                    setError({
+        const gameClient = new GameClient(
+            props.game_id,
+            player_id,
+            player_name,
+            {
+                onGameUpdate: setGame,
+                onPreloadCards: preloadCards,
+                onMessage: (message) => {
+                    toast(message);
+                },
+                onGameTermination: () => {
+                    signalError({
                         status: 404,
-                        message: "Game Not Found",
-                        description:
-                            "We couldn't find the game you are looking for.",
+                        message: "Game Terminated",
+                        description: "This game no longer exists.",
                     });
-                    return;
-                }
-                console.error("Failed to initialize game:", error);
+                },
+                onPlayerJoin: () => {
+                    toast("A new player joined.");
+                },
             }
-        };
+        );
 
+        gameClientRef.current = gameClient;
+        gameClient.initializeGameState(initialState);
+        gameClient.connect();
+
+        preloadCards(Object.values(initialState.cards).map((c) => c.card_name));
+    }, []);
+
+    useEffect(() => {
         initGame();
 
         return () => {
-            mounted = false;
             gameClientRef.current?.cleanup();
         };
     }, [props.game_id, preloadCards]);
+
+    if (loading || !game || !playerUUID || !playerName) {
+        return <h1>loading game...</h1>;
+    }
 
     if (error !== null) {
         gameClientRef.current?.cleanup();
         gameClientRef.current = null;
         return <GameError message={error} />;
     }
-
-    if (!game || !playerUUID || !playerName) return null;
 
     const handleAction = (action: ShahrazadAction) => {
         try {
