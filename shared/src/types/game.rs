@@ -209,6 +209,7 @@ impl ShahrazadGame {
                 let zone_ref = game.zones.get_mut(&zone)?;
                 let mut rng = ChaCha8Rng::seed_from_u64(seed.parse::<u64>().unwrap_or(0));
                 let mut cards = zone_ref.cards.clone();
+                cards.sort_by_key(|card| card.to_string());
                 cards.shuffle(&mut rng);
                 for card_id in &cards {
                     let card = game.cards.get_mut(card_id)?;

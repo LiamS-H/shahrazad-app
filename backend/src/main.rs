@@ -136,6 +136,7 @@ async fn handle_socket(
             loop {
                 match game_subscription.recv().await {
                     Ok(update) => {
+                        println!("num:{}\n {:?}", update.sequence_number, update.action);
                         // Skip if it's our own update without game state
                         if update.player_id == player_id && update.game.is_none() {
                             continue;
