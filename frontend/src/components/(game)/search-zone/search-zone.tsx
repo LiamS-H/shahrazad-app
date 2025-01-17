@@ -186,11 +186,8 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
     }
 
     return (
-        <div className="w-full flex flex-col gap-4 h-[150px]">
-            <div
-                className="w-full flex flex-row gap-6 items-center"
-                // the above class stopped working idk
-            >
+        <div className="w-full flex flex-col gap-4 h-[240px]">
+            <div className="w-full flex flex-row gap-6 justify-around items-center">
                 <div>
                     <Input
                         value={sort.search}
@@ -200,10 +197,10 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                                 search: e.target.value,
                             }))
                         }
-                        placeholder="search🔎︎"
+                        placeholder="Search 🔎︎"
                     />
                 </div>
-                <div className="flex flex-row space-x-2 min-w-36">
+                <div className="flex flex-row space-x-2 min-w-24 items-center">
                     <Switch
                         id="match-switch"
                         checked={sort.match}
