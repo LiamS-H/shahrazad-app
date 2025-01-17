@@ -1,4 +1,4 @@
-import CardSpread from "@/components/(game)/card-spread";
+import CardSpread from "@/contexts/search/search-zone";
 import {
     Drawer,
     DrawerContent,

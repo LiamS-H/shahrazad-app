@@ -2,7 +2,7 @@ import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import DraggableCard from "../card-draggable";
+import DraggableCard from "../../components/(game)/card-draggable";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import {
