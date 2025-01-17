@@ -1,4 +1,3 @@
-import "./playmat.css";
 import Deck from "./Deck";
 import type { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import Board from "./Board";
