@@ -6,6 +6,7 @@ import ShahrazadDND from "@/contexts/dnd";
 import { ShahrazadAction } from "@/types/bindings/action";
 import { SelectionProvider } from "@/contexts/selection";
 import CardPreview from "../card-preview";
+import { SearchContextProvider } from "@/contexts/search";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -37,17 +38,19 @@ export default function Game(props: ShahrazadProps) {
         >
             <SelectionProvider>
                 <ShahrazadDND>
-                    <div
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            flexFlow: "row wrap",
-                        }}
-                    >
-                        {playmat_components}
-                    </div>
-                    <CardPreview />
+                    <SearchContextProvider>
+                        <div
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                display: "flex",
+                                flexFlow: "row wrap",
+                            }}
+                        >
+                            {playmat_components}
+                        </div>
+                        <CardPreview />
+                    </SearchContextProvider>
                 </ShahrazadDND>
             </SelectionProvider>
         </ShahrazadGameProvider>
