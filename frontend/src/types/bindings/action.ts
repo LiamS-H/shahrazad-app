@@ -1,4 +1,4 @@
-import { ShahrazadCardId, ShahrazadCardOptions } from './card';
+import { ShahrazadCardId, ShahrazadCardState } from './card';
 import { ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
 type usize = number;
@@ -21,27 +21,25 @@ export enum ShahrazadActionCase {
 export type ShahrazadActionCaseDrawBottom = {
     type: ShahrazadActionCase.DrawBottom;
     amount: usize;
-    source: ShahrazadZoneId;
-    destination: ShahrazadZoneId;
+    player_id: ShahrazadPlaymatId;
 };
 
 export type ShahrazadActionCaseDrawTop = {
     type: ShahrazadActionCase.DrawTop;
     amount: usize;
-    source: ShahrazadZoneId;
-    destination: ShahrazadZoneId;
+    player_id: ShahrazadPlaymatId;
 };
 
 export type ShahrazadActionCaseCardState = {
     type: ShahrazadActionCase.CardState;
     cards: Array<ShahrazadCardId>;
-    state: ShahrazadCardOptions;
+    state: ShahrazadCardState;
 };
 
 export type ShahrazadActionCaseCardZone = {
     type: ShahrazadActionCase.CardZone;
     cards: Array<ShahrazadCardId>;
-    state: ShahrazadCardOptions;
+    state: ShahrazadCardState;
     source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
     index: number;

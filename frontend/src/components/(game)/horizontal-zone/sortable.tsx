@@ -11,7 +11,7 @@ export default function SortableCard(props: {
     id: ShahrazadCardId;
     index: number;
 }) {
-    const { getCard } = useShahrazadGameContext();
+    const { getCard, player_name } = useShahrazadGameContext();
     const shah_card = getCard(props.id);
 
     const data: IDraggableData = {
@@ -44,7 +44,10 @@ export default function SortableCard(props: {
                 {...listeners}
                 {...attributes}
             >
-                <Card id={props.id} faceUp />
+                <Card
+                    id={props.id}
+                    faceUp={shah_card.state.revealed?.includes(player_name)}
+                />
             </div>
         </HandCardContextMenu>
     );

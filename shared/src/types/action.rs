@@ -8,21 +8,19 @@ use super::{card::*, game::ShahrazadPlaymatId, zone::*};
 pub enum ShahrazadAction {
     DrawBottom {
         amount: usize,
-        source: ShahrazadZoneId,
-        destination: ShahrazadZoneId,
+        player_id: ShahrazadPlaymatId,
     },
     DrawTop {
         amount: usize,
-        source: ShahrazadZoneId,
-        destination: ShahrazadZoneId,
+        player_id: ShahrazadPlaymatId,
     },
     CardState {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardOptions,
+        state: ShahrazadCardState,
     },
     CardZone {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardOptions,
+        state: ShahrazadCardState,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
         index: i32,

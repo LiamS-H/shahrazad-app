@@ -134,7 +134,6 @@ export class GameClient {
         if (newState) {
             this.callbacks.onGameUpdate(newState);
         }
-        console.log("[ws]", newState);
     }
 
     setState(game: ShahrazadGame) {

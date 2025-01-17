@@ -4,7 +4,7 @@ import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/playmat/Board/counters";
 import { useSelection } from "@/contexts/selection";
 
-export default function Card(props: { id: ShahrazadCardId; faceUp?: true }) {
+export default function Card(props: { id: ShahrazadCardId; faceUp?: boolean }) {
     const { getCard } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const shah_card = getCard(props.id);

@@ -32,7 +32,7 @@ export default function Game(props: ShahrazadProps) {
 
     return (
         <ShahrazadGameProvider
-            player_uuid={props.playerName}
+            player_name={props.playerName}
             game={props.game}
             applyAction={props.applyAction}
         >

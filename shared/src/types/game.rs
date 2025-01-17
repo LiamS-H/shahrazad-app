@@ -63,19 +63,18 @@ impl ShahrazadGame {
         game: &mut ShahrazadGame,
     ) -> Option<&mut ShahrazadGame> {
         match action {
-            ShahrazadAction::DrawBottom {
-                amount,
-                source,
-                destination,
-            } => todo!("{}{}{}", amount, source, destination),
-            ShahrazadAction::DrawTop {
-                amount,
-                source,
-                destination,
-            } => {
+            ShahrazadAction::DrawBottom { amount, player_id } => {
+                todo!("{}{}", amount, player_id)
+            }
+            ShahrazadAction::DrawTop { amount, player_id } => {
                 if amount == 0 {
                     return None;
                 }
+                let Some(playmat_ref) = game.playmats.get(&player_id) else {
+                    return None;
+                };
+                let source = playmat_ref.library.clone();
+                let destination = playmat_ref.hand.clone();
                 let src_len = game.zones.get(&source)?.cards.len();
                 let src_range = (src_len - amount)..;
                 let mut drawn_cards: Vec<ShahrazadCardId> = game
@@ -90,7 +89,8 @@ impl ShahrazadGame {
                         continue;
                     };
                     card.migrate(destination.clone());
-                    card.state.apply(&ShahrazadCardOptions {
+                    card.state.apply(&ShahrazadCardState {
+                        revealed: Some([player_id.clone()].into()),
                         // face_down: Some(false),
                         ..Default::default()
                     });
@@ -212,7 +212,7 @@ impl ShahrazadGame {
                 cards.shuffle(&mut rng);
                 for card_id in &cards {
                     let card = game.cards.get_mut(card_id)?;
-                    card.state.apply(&ShahrazadCardOptions {
+                    card.state.apply(&ShahrazadCardState {
                         face_down: Some(true),
                         counters: Some(Vec::<ShahrazadCounter>::new()),
                         ..Default::default()
@@ -239,7 +239,7 @@ impl ShahrazadGame {
                         ShahrazadCard {
                             card_name,
                             location: zone.clone(),
-                            state: ShahrazadCardOptions {
+                            state: ShahrazadCardState {
                                 counters: Some(Vec::<ShahrazadCounter>::new()),
                                 ..Default::default()
                             },
@@ -332,7 +332,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
                         cards: cards.clone(),
-                        state: ShahrazadCardOptions {
+                        state: ShahrazadCardState {
                             ..Default::default()
                         },
                         source: hand_id.clone(),
@@ -353,8 +353,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::DrawTop {
                         amount: 7,
-                        source: library_id,
-                        destination: hand_id,
+                        player_id,
                     },
                     game,
                 );

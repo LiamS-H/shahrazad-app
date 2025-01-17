@@ -55,8 +55,7 @@ export default function DeckContextMenu({
                         applyAction({
                             type: ShahrazadActionCase.DrawTop,
                             amount: 1,
-                            destination: playmat.hand,
-                            source: playmat.library,
+                            player_id: player,
                         });
                     }}
                 >
