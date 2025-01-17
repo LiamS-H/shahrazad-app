@@ -189,8 +189,11 @@ export default function CardSpread(props: {
     }
 
     return (
-        <div className="w-full flex flex-col gap-4 h-[240px]">
-            <div className="w-full flex flex-row justify-around items-center">
+        <div className="w-full flex flex-col gap-4 h-[150px]">
+            <div
+                className="w-full flex flex-row gap-6 items-center"
+                // the above class stopped working idk
+            >
                 <div>
                     <Input
                         value={sort.search}
@@ -200,7 +203,7 @@ export default function CardSpread(props: {
                         placeholder="search🔎︎"
                     />
                 </div>
-                <div className="flex flex-row space-x-2 min-w-24">
+                <div className="flex flex-row space-x-2 min-w-36">
                     <Switch
                         id="match-switch"
                         checked={sort.match}
@@ -219,7 +222,7 @@ export default function CardSpread(props: {
             </div>
             <div
                 ref={setNodeRef}
-                className="w-full h-full flex flex-row flex-nowrap overflow-x-auto"
+                className="w-full h-full flex flex-row flex-nowrap justify-center overflow-x-auto"
             >
                 {cards.length === 0 ? (
                     <Scrycard card={undefined} />

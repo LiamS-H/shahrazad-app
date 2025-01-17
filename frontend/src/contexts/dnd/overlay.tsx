@@ -8,7 +8,7 @@ import {
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import { useShahrazadGameContext } from "../game";
 import { ShahrazadCardId } from "@/types/bindings/card";
-import { clamp } from "@/lib/clamp";
+import { clamp } from "@/lib/utils/clamp";
 
 function OverlayWrapper({ children }: { children: ReactNode }) {
     const animationFrameId = useRef<number | null>(null);

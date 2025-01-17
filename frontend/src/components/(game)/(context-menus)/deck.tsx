@@ -15,7 +15,7 @@ import {
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
-import { randomU64 } from "@/lib/random";
+import { randomU64 } from "@/lib/utils/random";
 import { usePlayer } from "@/contexts/player";
 import { useSearchContext } from "@/contexts/search";
 export default function DeckContextMenu({

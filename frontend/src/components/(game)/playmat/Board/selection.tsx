@@ -5,7 +5,7 @@ import { useSelection } from "@/contexts/selection";
 import type { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 
 import { GRID_SIZE } from ".";
-import { clamp } from "@/lib/clamp";
+import { clamp } from "@/lib/utils/clamp";
 
 interface SelectionBounds {
     left: number;

@@ -1,6 +1,6 @@
 "use client";
 import Game from "@/components/(game)/game";
-import { fetchGame } from "@/lib/fetchGame";
+import { fetchGame } from "@/lib/client/fetchGame";
 import { ShahrazadAction } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef } from "react";

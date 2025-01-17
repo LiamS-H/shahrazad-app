@@ -26,7 +26,7 @@ import {
     InputOTPSlot,
 } from "@/components/(ui)/input-otp";
 import { Slider } from "@/components/(ui)/slider";
-import { createGame } from "@/lib/createGame";
+import { createGame } from "@/lib/client/createGame";
 import { useRouter } from "next/navigation";
 
 export default function GameForm() {
