@@ -6,6 +6,8 @@ import { BoardCard } from "./board-card";
 import { useSelection } from "@/contexts/selection";
 import Selection from "./selection";
 
+import "./board-grid.css";
+
 export const GRID_SIZE = 20;
 
 export default function Board({ id }: { id: ShahrazadZoneId }) {
@@ -35,11 +37,7 @@ export default function Board({ id }: { id: ShahrazadZoneId }) {
     });
 
     return (
-        <div
-            className="shahrazad-playmat-grid"
-            style={{ position: "relative" }}
-            ref={setNodeRef}
-        >
+        <div className="shahrazad-playmat-grid" ref={setNodeRef}>
             <Selection cards={cards} node={node} />
             {cards.map(({ id, card }) => (
                 <BoardCard
