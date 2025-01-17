@@ -7,9 +7,9 @@ import {
     // ContextMenuRadioItem,
     ContextMenuSeparator,
     ContextMenuShortcut,
-    // ContextMenuSub,
-    // ContextMenuSubContent,
-    // ContextMenuSubTrigger,
+    ContextMenuSub,
+    ContextMenuSubContent,
+    ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext } from "../../../contexts/game";
@@ -50,18 +50,7 @@ export default function DeckContextMenu({
                     Shuffle
                     <ContextMenuShortcut>⌘S</ContextMenuShortcut>
                 </ContextMenuItem>
-                <ContextMenuItem
-                    onClick={() => {
-                        applyAction({
-                            type: ShahrazadActionCase.DrawTop,
-                            amount: 1,
-                            player_id: player,
-                        });
-                    }}
-                >
-                    Draw
-                    <ContextMenuShortcut>⌘D</ContextMenuShortcut>
-                </ContextMenuItem>
+
                 <ContextMenuItem
                     disabled={deck.cards.length === 0}
                     onClick={() => {
@@ -76,6 +65,54 @@ export default function DeckContextMenu({
                     Search
                     <ContextMenuShortcut>⌘F</ContextMenuShortcut>
                 </ContextMenuItem>
+                <ContextMenuItem
+                    onClick={() => {
+                        applyAction({
+                            type: ShahrazadActionCase.DrawTop,
+                            amount: 1,
+                            destination: playmat.hand,
+                            source: playmat.library,
+                            state: {
+                                face_down: true,
+                                revealed: [player],
+                            },
+                        });
+                    }}
+                >
+                    Draw
+                    <ContextMenuShortcut>⌘D</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuSub>
+                    <ContextMenuSubTrigger>Draw to</ContextMenuSubTrigger>
+                    <ContextMenuSubContent>
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.DrawTop,
+                                    amount: 1,
+                                    destination: playmat.graveyard,
+                                    source: playmat.library,
+                                    state: {},
+                                });
+                            }}
+                        >
+                            Graveyard
+                        </ContextMenuItem>
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.DrawTop,
+                                    amount: 1,
+                                    destination: playmat.exile,
+                                    source: playmat.library,
+                                    state: {},
+                                });
+                            }}
+                        >
+                            Exile
+                        </ContextMenuItem>
+                    </ContextMenuSubContent>
+                </ContextMenuSub>
             </ContextMenuContent>
         </ContextMenu>
     );

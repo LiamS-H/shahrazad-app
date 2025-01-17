@@ -63,18 +63,23 @@ impl ShahrazadGame {
         game: &mut ShahrazadGame,
     ) -> Option<&mut ShahrazadGame> {
         match action {
-            ShahrazadAction::DrawBottom { amount, player_id } => {
-                todo!("{}{}", amount, player_id)
+            ShahrazadAction::DrawBottom {
+                amount,
+                source,
+                destination,
+                state,
+            } => {
+                todo!("{}{}{}{:?}", amount, source, destination, state)
             }
-            ShahrazadAction::DrawTop { amount, player_id } => {
+            ShahrazadAction::DrawTop {
+                amount,
+                source,
+                destination,
+                state,
+            } => {
                 if amount == 0 {
                     return None;
                 }
-                let Some(playmat_ref) = game.playmats.get(&player_id) else {
-                    return None;
-                };
-                let source = playmat_ref.library.clone();
-                let destination = playmat_ref.hand.clone();
                 let src_len = game.zones.get(&source)?.cards.len();
                 let src_range = (src_len - amount)..;
                 let mut drawn_cards: Vec<ShahrazadCardId> = game
@@ -89,11 +94,7 @@ impl ShahrazadGame {
                         continue;
                     };
                     card.migrate(destination.clone());
-                    card.state.apply(&ShahrazadCardState {
-                        revealed: Some([player_id.clone()].into()),
-                        // face_down: Some(false),
-                        ..Default::default()
-                    });
+                    card.state.apply(&state);
                 }
 
                 game.zones
@@ -355,7 +356,12 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::DrawTop {
                         amount: 7,
-                        player_id,
+                        source: library_id.clone(),
+                        destination: hand_id.clone(),
+                        state: ShahrazadCardState {
+                            revealed: Some([player_id].into()),
+                            ..Default::default()
+                        },
                     },
                     game,
                 );

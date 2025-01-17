@@ -21,13 +21,17 @@ export enum ShahrazadActionCase {
 export type ShahrazadActionCaseDrawBottom = {
     type: ShahrazadActionCase.DrawBottom;
     amount: usize;
-    player_id: ShahrazadPlaymatId;
+    source: ShahrazadZoneId;
+    destination: ShahrazadZoneId;
+    state: ShahrazadCardState;
 };
 
 export type ShahrazadActionCaseDrawTop = {
     type: ShahrazadActionCase.DrawTop;
     amount: usize;
-    player_id: ShahrazadPlaymatId;
+    source: ShahrazadZoneId;
+    destination: ShahrazadZoneId;
+    state: ShahrazadCardState;
 };
 
 export type ShahrazadActionCaseCardState = {
