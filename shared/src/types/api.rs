@@ -24,5 +24,6 @@ pub struct JoinGameResponse {
     pub game: ShahrazadGame,
     pub game_id: String,
     pub player_id: String,
+    pub player_name: String,
     pub reconnected: bool,
 }

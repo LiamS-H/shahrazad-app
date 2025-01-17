@@ -16,6 +16,7 @@ export default function GamePage(props: { game_id: string }) {
     const [error, setError] = useState<IErrorMessage | null>(null);
 
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
+    const [playerName, setPlayerName] = useState<string | null>(null);
     const { preloadCards } = useScrycardsContext();
 
     useEffect(() => {
@@ -33,25 +34,35 @@ export default function GamePage(props: { game_id: string }) {
 
                 if (!mounted) return;
 
-                const { player_id: playerUUID, game: initialState } =
-                    fetchResult;
-                setPlayerUUID(playerUUID);
-                localStorage.setItem("saved-player", playerUUID);
+                const {
+                    player_id,
+                    player_name,
+                    game: initialState,
+                } = fetchResult;
+                console.log("name", player_name);
+                setPlayerUUID(player_id);
+                setPlayerName(player_name);
+                localStorage.setItem("saved-player", player_id);
 
-                const gameClient = new GameClient(props.game_id, playerUUID, {
-                    onGameUpdate: setGame,
-                    onPreloadCards: preloadCards,
-                    onError: (error) => {
-                        console.error("Game client error:", error);
-                    },
-                    onGameTermination: () => {
-                        setError({
-                            status: 404,
-                            message: "Game Terminated",
-                            description: "This game no longer exists.",
-                        });
-                    },
-                });
+                const gameClient = new GameClient(
+                    props.game_id,
+                    player_id,
+                    player_name,
+                    {
+                        onGameUpdate: setGame,
+                        onPreloadCards: preloadCards,
+                        onError: (error) => {
+                            console.error("Game client error:", error);
+                        },
+                        onGameTermination: () => {
+                            setError({
+                                status: 404,
+                                message: "Game Terminated",
+                                description: "This game no longer exists.",
+                            });
+                        },
+                    }
+                );
 
                 gameClientRef.current = gameClient;
                 gameClient.initializeGameState(initialState);
@@ -88,7 +99,7 @@ export default function GamePage(props: { game_id: string }) {
         return <GameError message={error} />;
     }
 
-    if (!game || !playerUUID) return null;
+    if (!game || !playerUUID || !playerName) return null;
 
     const handleAction = (action: ShahrazadAction) => {
         try {
@@ -100,6 +111,6 @@ export default function GamePage(props: { game_id: string }) {
     };
 
     return (
-        <Game game={game} player_uuid={playerUUID} applyAction={handleAction} />
+        <Game game={game} playerName={playerName} applyAction={handleAction} />
     );
 }

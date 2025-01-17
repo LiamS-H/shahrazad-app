@@ -11,8 +11,9 @@ use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct GameInfo {
-    pub game_id: Uuid,
     pub host_id: Uuid,
+    pub game_id: Uuid,
+    pub name: String,
     pub game: ShahrazadGame,
 }
 
@@ -21,14 +22,15 @@ pub struct GameState {
     game: ShahrazadGame,
     host_id: Uuid,
     sequence_number: u64,
-    players: DashMap<Uuid, PlayerConnection>,
+    players: DashMap<Uuid, Player>,
     tx: broadcast::Sender<ServerUpdate>,
     last_activity: Instant,
 }
 
 #[derive(Clone)]
-struct PlayerConnection {
+struct Player {
     connected: bool,
+    name: String,
 }
 
 pub struct GameStateManager {
@@ -99,12 +101,18 @@ impl GameStateManager {
             last_activity: Instant::now(),
         };
 
-        game_state
-            .players
-            .insert(host_id, PlayerConnection { connected: false });
+        let player_name: String = "P0".into();
+
+        game_state.players.insert(
+            host_id,
+            Player {
+                connected: false,
+                name: player_name.clone(),
+            },
+        );
 
         let add_player = ShahrazadAction::AddPlayer {
-            player_id: host_id.to_string(),
+            player_id: player_name.clone(),
         };
 
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
@@ -120,8 +128,9 @@ impl GameStateManager {
         self.games.insert(game_id, game_state);
 
         Ok(GameInfo {
-            game_id,
             host_id,
+            game_id,
+            name: player_name.clone(),
             game: self.games.get(&game_id).unwrap().game.clone(),
         })
     }
@@ -129,12 +138,18 @@ impl GameStateManager {
     pub async fn add_player(&self, game_id: Uuid, player_id: Uuid) -> Result<GameInfo, String> {
         let mut game_ref = self.games.get_mut(&game_id).ok_or("Game not found")?;
 
-        game_ref
-            .players
-            .insert(player_id, PlayerConnection { connected: false });
+        let player_name: String = format!("P{}", game_ref.players.len());
+
+        game_ref.players.insert(
+            player_id,
+            Player {
+                connected: false,
+                name: player_name.clone(),
+            },
+        );
 
         let add_player = ShahrazadAction::AddPlayer {
-            player_id: player_id.to_string(),
+            player_id: player_name.clone(),
         };
 
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_ref.game) {
@@ -151,6 +166,7 @@ impl GameStateManager {
         }
 
         Ok(GameInfo {
+            name: player_name.clone(),
             game_id,
             host_id: game_ref.host_id,
             game: game_ref.game.clone(),
@@ -165,26 +181,17 @@ impl GameStateManager {
         let mut game_ref = self.games.get_mut(&game_id).ok_or("Game not found")?;
         game_ref.last_activity = Instant::now();
 
-        if !game_ref.players.contains_key(&player_id) {
+        let Some(mut player) = game_ref.players.get_mut(&player_id) else {
             return Err("Player not found".to_string());
-        }
-
-        if let Some(mut player) = game_ref.players.get_mut(&player_id) {
-            player.connected = true;
-        }
+        };
+        player.connected = true;
 
         Ok(GameInfo {
+            name: player.name.clone(),
             game_id,
             host_id: game_ref.host_id,
             game: game_ref.game.clone(),
         })
-    }
-
-    pub async fn is_valid_player(&self, game_id: Uuid, player_id: Uuid) -> bool {
-        self.games
-            .get(&game_id)
-            .map(|game| game.players.contains_key(&player_id))
-            .unwrap_or(false)
     }
 
     pub async fn subscribe_to_game(
@@ -197,7 +204,7 @@ impl GameStateManager {
             .ok_or("Game not found".to_string())
     }
 
-    pub fn validate_connection(&self, game_id: Uuid, player_id: Uuid) -> bool {
+    pub async fn validate_connection(&self, game_id: Uuid, player_id: Uuid) -> bool {
         if let Some(game_ref) = self.games.get(&game_id) {
             return game_ref.players.contains_key(&player_id);
         } else {

@@ -54,15 +54,14 @@ async fn create_game(
     let game_id = Uuid::new_v4();
     let host_id = Uuid::new_v4();
 
-    if let Ok(game_info) = (*state).create_game(game_id, host_id, settings).await {
-        let response = CreateGameResponse {
-            game_id: game_info.game_id.into(),
-            player_id: game_info.host_id.into(),
-        };
-        serde_json::to_string(&response).unwrap()
-    } else {
-        "Failed to create game".to_string()
-    }
+    let Ok(game_info) = (*state).create_game(game_id, host_id, settings).await else {
+        return "Failed to create game".to_string();
+    };
+    let response = CreateGameResponse {
+        game_id: game_info.game_id.into(),
+        player_id: game_info.host_id.into(),
+    };
+    serde_json::to_string(&response).unwrap()
 }
 
 async fn join_game(
@@ -80,6 +79,7 @@ async fn join_game(
         if let Ok(player_id) = Uuid::parse_str(&player_id_str) {
             if let Ok(game_info) = (*state).reconnect_player(game_id, player_id).await {
                 return serde_json::json!(JoinGameResponse {
+                    player_name: game_info.name,
                     game_id: game_info.game_id.into(),
                     player_id: player_id.into(),
                     game: game_info.game,
@@ -94,6 +94,7 @@ async fn join_game(
     let player_id = Uuid::new_v4();
     match (*state).add_player(game_id, player_id).await {
         Ok(game_info) => serde_json::json!(JoinGameResponse {
+            player_name: game_info.name,
             game_id: game_info.game_id.into(),
             player_id: player_id.into(),
             game: game_info.game,
@@ -110,7 +111,7 @@ async fn handle_socket(
     player_id: Uuid,
     state: Arc<GameStateManager>,
 ) {
-    if !(*state).is_valid_player(game_id, player_id).await {
+    if !(*state).validate_connection(game_id, player_id).await {
         return;
     }
 
@@ -206,7 +207,7 @@ async fn game_handler(
             return error;
         }
     };
-    if !state.validate_connection(game_id, player_id) {
+    if !state.validate_connection(game_id, player_id).await {
         return error;
     }
     ws.on_upgrade(move |socket| handle_socket(socket, game_id, player_id, state))

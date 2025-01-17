@@ -23,6 +23,7 @@ export class GameClient {
     constructor(
         private gameId: string,
         private playerUUID: string,
+        private playerName: string,
         private callbacks: GameClientCallbacks
     ) {}
 
@@ -133,6 +134,7 @@ export class GameClient {
         if (newState) {
             this.callbacks.onGameUpdate(newState);
         }
+        console.log("[ws]", newState);
     }
 
     setState(game: ShahrazadGame) {

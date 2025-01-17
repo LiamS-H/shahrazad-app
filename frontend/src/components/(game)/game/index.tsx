@@ -11,19 +11,19 @@ import { SearchContextProvider } from "@/contexts/search";
 export type ShahrazadProps = {
     game: ShahrazadGame;
     applyAction: (action: ShahrazadAction) => void;
-    player_uuid: string;
+    playerName: string;
 };
 
 export default function Game(props: ShahrazadProps) {
     const playmat_components = [];
-    const offset = props.game.players.indexOf(props.player_uuid);
+    const offset = props.game.players.indexOf(props.playerName);
     const numPlayers = props.game.players.length;
 
     for (let i = 0; i < numPlayers; i++) {
         const player = props.game.players[(i + offset) % numPlayers];
         playmat_components.push(
             <Playmat
-                active={player == props.player_uuid}
+                active={player == props.playerName}
                 player={player}
                 key={player}
             />
@@ -32,7 +32,7 @@ export default function Game(props: ShahrazadProps) {
 
     return (
         <ShahrazadGameProvider
-            player_uuid={props.player_uuid}
+            player_uuid={props.playerName}
             game={props.game}
             applyAction={props.applyAction}
         >

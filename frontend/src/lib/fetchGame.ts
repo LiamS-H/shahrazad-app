@@ -14,5 +14,6 @@ export async function fetchGame(
     if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
     }
-    return await res.json();
+    const data = await res.json();
+    return data;
 }
