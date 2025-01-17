@@ -25,7 +25,7 @@ export default function BoardCardContextMenu({
     cardId: string;
     children: ReactNode;
 }) {
-    const { applyAction, getCard } = useShahrazadGameContext();
+    const { applyAction, getCard, player_name } = useShahrazadGameContext();
     const { selectedCards } = useSelection();
     const shah_card = getCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
@@ -99,6 +99,7 @@ export default function BoardCardContextMenu({
                                 type: ShahrazadActionCase.CardState,
                                 cards,
                                 state: {
+                                    revealed: [player_name],
                                     face_down: true,
                                 },
                             });
@@ -114,6 +115,7 @@ export default function BoardCardContextMenu({
                                 type: ShahrazadActionCase.CardState,
                                 cards,
                                 state: {
+                                    revealed: [],
                                     face_down: false,
                                 },
                             });
