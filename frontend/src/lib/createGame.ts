@@ -17,6 +17,5 @@ export async function createGame(
         throw new Error(`HTTP error! status: ${res.status}`);
     }
     const data = await res.json();
-    console.log("createGame", data);
     return data;
 }
