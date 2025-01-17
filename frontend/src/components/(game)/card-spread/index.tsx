@@ -49,7 +49,6 @@ export default function CardSpread(props: {
     const { requestCard } = useScrycardsContext();
     const zone = getZone(props.id);
     const [sort, setSort] = useState<ISort>({
-        // colors: { C: false, W: true, U: true, B: true, R: true, G: true },
         colors: null,
         type: null,
         match: true,
@@ -104,26 +103,26 @@ export default function CardSpread(props: {
             }));
             return;
         }
-        const sorted_cards = filtered_cards.toSorted((i1, i2) => {
-            const card1 = i1.card;
-            const card2 = i2.card;
-            let cost1 = 0;
-            if (card1 && "cmc" in card1) {
-                cost1 = Number(card1?.cmc);
-                cost1 = Number.isNaN(cost1) ? 0 : cost1;
-            }
-            let cost2 = 0;
-            if (card2 && "cmc" in card2) {
-                cost2 = Number(card2?.cmc);
-                cost2 = Number.isNaN(cost2) ? 0 : cost2;
-            }
+        const sorted_cards = filtered_cards.toSorted(
+            ({ card: card1 }, { card: card2 }) => {
+                let cost1 = 0;
+                if (card1 && "cmc" in card1) {
+                    cost1 = Number(card1?.cmc);
+                    cost1 = Number.isNaN(cost1) ? 0 : cost1;
+                }
+                let cost2 = 0;
+                if (card2 && "cmc" in card2) {
+                    cost2 = Number(card2?.cmc);
+                    cost2 = Number.isNaN(cost2) ? 0 : cost2;
+                }
 
-            if (cost1 === cost2) {
-                return (card1?.name || "").localeCompare(card2?.name || "");
-            }
+                if (cost1 === cost2) {
+                    return (card1?.name || "").localeCompare(card2?.name || "");
+                }
 
-            return cost1 - cost2;
-        });
+                return cost1 - cost2;
+            }
+        );
 
         const searched_cards = sorted_cards.filter(({ card }) => {
             if (!card) return false;
