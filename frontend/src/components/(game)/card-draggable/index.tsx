@@ -9,6 +9,7 @@ import Card from "../card";
 export default function DraggableCard(props: {
     id: ShahrazadCardId;
     noDragTranslate?: true;
+    dragNamespace?: string;
     divStyle?: CSSProperties;
 }) {
     const { getCard } = useShahrazadGameContext();
@@ -17,9 +18,12 @@ export default function DraggableCard(props: {
     const data: IDraggableData = {
         zone: shah_card.location,
     };
+    const drag_id = props.dragNamespace
+        ? `${props.dragNamespace}:${props.id}`
+        : props.id;
     const { attributes, listeners, setNodeRef, transform, isDragging } =
         useDraggable({
-            id: props.id,
+            id: drag_id,
             data,
         });
 

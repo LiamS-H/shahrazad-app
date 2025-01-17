@@ -5,12 +5,16 @@ import CardStack from "@/components/(game)/card-stack";
 import { IDroppableData } from "@/types/interfaces/dnd";
 import { Scrycard } from "react-scrycards";
 import DeckContextMenu from "@/components/(game)/(context-menus)/deck";
+import { useSearchContext } from "@/contexts/search";
 
 export default function Deck(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
+    const { active } = useSearchContext();
     const zone = getZone(props.id);
     const data: IDroppableData = {};
-    const { setNodeRef } = useDroppable({ id: props.id, data });
+    const searching = active === props.id;
+    const drag_id = searching ? `disabled:${props.id}` : props.id;
+    const { setNodeRef } = useDroppable({ id: drag_id, data });
 
     return (
         <div
@@ -27,6 +31,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                         />
                     )}
                     cards={zone.cards}
+                    dragNamespace={searching ? "disabled" : undefined}
                 />
             </DeckContextMenu>
         </div>
