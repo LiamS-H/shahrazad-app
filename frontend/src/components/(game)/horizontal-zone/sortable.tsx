@@ -44,10 +44,7 @@ export default function SortableCard(props: {
                 {...listeners}
                 {...attributes}
             >
-                <Card
-                    id={props.id}
-                    faceUp={shah_card.state.revealed?.includes(player_name)}
-                />
+                <Card id={props.id} />
             </div>
         </HandCardContextMenu>
     );
