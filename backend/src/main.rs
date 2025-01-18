@@ -51,15 +51,13 @@ async fn create_game(
     State(state): State<Arc<GameStateManager>>,
     Json(CreateGameQuery { settings }): Json<CreateGameQuery>,
 ) -> impl IntoResponse {
-    let game_id = Uuid::new_v4();
-    let host_id = Uuid::new_v4();
-
-    let Ok(game_info) = (*state).create_game(game_id, host_id, settings).await else {
+    let Ok(game_info) = (*state).create_game(settings).await else {
         return "Failed to create game".to_string();
     };
     let response = CreateGameResponse {
         game_id: game_info.game_id.into(),
         player_id: game_info.host_id.into(),
+        code: game_info.code,
     };
     serde_json::to_string(&response).unwrap()
 }
@@ -69,9 +67,8 @@ async fn join_game(
     Path(game_id): Path<String>,
     Query(params): Query<JoinGameQuery>,
 ) -> impl IntoResponse {
-    let game_id = match Uuid::parse_str(&game_id) {
-        Ok(id) => id,
-        Err(_) => return format!("{}:invalid_id", game_id),
+    let Some(game_id) = state.parse_uuid(game_id.clone()).await else {
+        return format!("{}:invalid_id", game_id);
     };
 
     // Handle reconnection
@@ -83,6 +80,7 @@ async fn join_game(
                     game_id: game_info.game_id.into(),
                     player_id: player_id.into(),
                     game: game_info.game,
+                    code: game_info.code,
                     reconnected: true
                 })
                 .to_string();
@@ -98,6 +96,7 @@ async fn join_game(
             game_id: game_info.game_id.into(),
             player_id: player_id.into(),
             game: game_info.game,
+            code: game_info.code,
             reconnected: false
         })
         .to_string(),
@@ -201,11 +200,11 @@ async fn game_handler(
         .status(StatusCode::FORBIDDEN)
         .body("Invalid game_id or player_id".into())
         .unwrap();
-    let (game_id, player_id) = match (Uuid::parse_str(&game_id), Uuid::parse_str(&player_id)) {
-        (Ok(g), Ok(p)) => (g, p),
-        _ => {
-            return error;
-        }
+    let Ok(player_id) = Uuid::parse_str(&player_id) else {
+        return error;
+    };
+    let Some(game_id) = state.parse_uuid(game_id.clone()).await else {
+        return error;
     };
     if !state.validate_connection(game_id, player_id).await {
         return error;

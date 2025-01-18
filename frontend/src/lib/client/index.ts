@@ -96,6 +96,7 @@ export class GameClient {
                 console.log("[ws] received game:", update.game);
             }
         } catch (error) {
+            console.error("[ws] message error:", error);
             this.callbacks.onMessage("Error processing action.");
         }
     };

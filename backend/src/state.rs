@@ -1,4 +1,5 @@
 use dashmap::DashMap;
+use rand::Rng;
 use shared::types::game::{ShahrazadGame, ShahrazadGameSettings};
 use shared::types::{
     action::ShahrazadAction,
@@ -15,6 +16,7 @@ pub struct GameInfo {
     pub game_id: Uuid,
     pub name: String,
     pub game: ShahrazadGame,
+    pub code: u32,
 }
 
 #[derive(Clone)]
@@ -25,6 +27,7 @@ pub struct GameState {
     players: DashMap<Uuid, Player>,
     tx: broadcast::Sender<ServerUpdate>,
     last_activity: Instant,
+    code: u32,
 }
 
 #[derive(Clone)]
@@ -35,6 +38,7 @@ struct Player {
 
 pub struct GameStateManager {
     games: Arc<DashMap<Uuid, GameState>>,
+    codes: Arc<DashMap<u32, Uuid>>,
 }
 
 const GAME_CLEANUP_INTERVAL: Duration = Duration::from_secs(60);
@@ -44,6 +48,7 @@ impl GameStateManager {
     pub fn new() -> Self {
         let manager = Self {
             games: Arc::new(DashMap::new()),
+            codes: Arc::new(DashMap::new()),
         };
 
         let games = manager.games.clone();
@@ -84,13 +89,16 @@ impl GameStateManager {
         manager
     }
 
-    pub async fn create_game(
-        &self,
-        game_id: Uuid,
-        host_id: Uuid,
-        settings: ShahrazadGameSettings,
-    ) -> Result<GameInfo, String> {
+    pub async fn create_game(&self, settings: ShahrazadGameSettings) -> Result<GameInfo, String> {
         let (tx, _) = broadcast::channel(100);
+        let game_id = Uuid::new_v4();
+        let host_id = Uuid::new_v4();
+
+        let mut rng = rand::thread_rng();
+        let mut code: u32 = rng.gen_range(100_000..=999_999);
+        while self.codes.contains_key(&code) {
+            code = rng.gen_range(100_000..=999_999);
+        }
 
         let mut game_state = GameState {
             game: ShahrazadGame::new(settings),
@@ -99,7 +107,10 @@ impl GameStateManager {
             players: DashMap::new(),
             tx,
             last_activity: Instant::now(),
+            code: code.clone(),
         };
+
+        self.codes.insert(code, game_id);
 
         let player_name: String = "P0".into();
 
@@ -127,20 +138,23 @@ impl GameStateManager {
 
         self.games.insert(game_id, game_state);
 
+        let game_state = self.games.get(&game_id).unwrap();
+
         Ok(GameInfo {
             host_id,
             game_id,
             name: player_name.clone(),
-            game: self.games.get(&game_id).unwrap().game.clone(),
+            game: game_state.game.clone(),
+            code: game_state.code,
         })
     }
 
     pub async fn add_player(&self, game_id: Uuid, player_id: Uuid) -> Result<GameInfo, String> {
-        let mut game_ref = self.games.get_mut(&game_id).ok_or("Game not found")?;
+        let mut game_state = self.games.get_mut(&game_id).ok_or("Game not found")?;
 
-        let player_name: String = format!("P{}", game_ref.players.len());
+        let player_name: String = format!("P{}", game_state.players.len());
 
-        game_ref.players.insert(
+        game_state.players.insert(
             player_id,
             Player {
                 connected: false,
@@ -152,24 +166,25 @@ impl GameStateManager {
             player_id: player_name.clone(),
         };
 
-        if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_ref.game) {
-            game_ref.sequence_number += 1;
+        if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
+            game_state.sequence_number += 1;
 
             let update = ServerUpdate {
                 action: Some(add_player),
                 game: None,
-                sequence_number: game_ref.sequence_number,
+                sequence_number: game_state.sequence_number,
                 player_id,
             };
 
-            let _ = game_ref.tx.send(update);
+            let _ = game_state.tx.send(update);
         }
 
         Ok(GameInfo {
             name: player_name.clone(),
             game_id,
-            host_id: game_ref.host_id,
-            game: game_ref.game.clone(),
+            host_id: game_state.host_id,
+            game: game_state.game.clone(),
+            code: game_state.code,
         })
     }
 
@@ -178,10 +193,10 @@ impl GameStateManager {
         game_id: Uuid,
         player_id: Uuid,
     ) -> Result<GameInfo, String> {
-        let mut game_ref = self.games.get_mut(&game_id).ok_or("Game not found")?;
-        game_ref.last_activity = Instant::now();
+        let mut game_state = self.games.get_mut(&game_id).ok_or("Game not found")?;
+        game_state.last_activity = Instant::now();
 
-        let Some(mut player) = game_ref.players.get_mut(&player_id) else {
+        let Some(mut player) = game_state.players.get_mut(&player_id) else {
             return Err("Player not found".to_string());
         };
         player.connected = true;
@@ -189,8 +204,9 @@ impl GameStateManager {
         Ok(GameInfo {
             name: player.name.clone(),
             game_id,
-            host_id: game_ref.host_id,
-            game: game_ref.game.clone(),
+            host_id: game_state.host_id,
+            game: game_state.game.clone(),
+            code: game_state.code,
         })
     }
 
@@ -283,6 +299,24 @@ impl GameStateManager {
 
         let _ = game_ref.tx.send(update.clone());
         Ok(update)
+    }
+
+    pub async fn parse_uuid(&self, id_str: String) -> Option<Uuid> {
+        if id_str.len() == 6 {
+            match id_str.parse::<u32>() {
+                Ok(num) => {
+                    if let Some(uuid) = self.codes.get(&num) {
+                        return Some(uuid.clone());
+                    }
+                    return None;
+                }
+                Err(_) => return None,
+            };
+        }
+        match Uuid::parse_str(&id_str) {
+            Ok(uuid) => return Some(uuid.clone()),
+            Err(_) => return None,
+        };
     }
 
     pub async fn disconnect_player(&self, game_id: Uuid, player_id: Uuid) -> Result<(), String> {

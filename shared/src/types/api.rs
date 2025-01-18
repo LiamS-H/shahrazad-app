@@ -17,6 +17,7 @@ pub struct CreateGameQuery {
 pub struct CreateGameResponse {
     pub game_id: String,
     pub player_id: String,
+    pub code: u32,
 }
 
 #[derive(Reflect, Serialize)]
@@ -25,5 +26,6 @@ pub struct JoinGameResponse {
     pub game_id: String,
     pub player_id: String,
     pub player_name: String,
+    pub code: u32,
     pub reconnected: bool,
 }

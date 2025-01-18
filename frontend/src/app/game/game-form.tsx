@@ -29,6 +29,8 @@ import { Slider } from "@/components/(ui)/slider";
 import { createGame } from "@/lib/client/createGame";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ClipboardPaste, X } from "lucide-react";
+import { joinGame } from "@/lib/client/joinGame";
 
 export default function GameForm() {
     const { push: pushRoute } = useRouter();
@@ -38,6 +40,7 @@ export default function GameForm() {
     const [freeMulligans, setFreeMulligans] = useState(1);
     const [scryRule, setScryRule] = useState(false);
     const [gameCode, setGameCode] = useState("");
+    const [clipboard, setClipboard] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -54,6 +57,25 @@ export default function GameForm() {
                 return defaultValue;
             }
         };
+
+        function readClipboard() {
+            setTimeout(() => {
+                navigator.clipboard
+                    .readText()
+                    .then((clipboard) => {
+                        setClipboard(null);
+                        if (clipboard.length !== 6) return;
+                        const code = Number(clipboard);
+                        if (Number.isNaN(code)) return;
+                        if (code >= 100000 && code <= 999999) {
+                            setClipboard(clipboard);
+                        }
+                    })
+                    .catch(() => {});
+                readClipboard();
+            }, 500);
+        }
+        readClipboard();
 
         setStartingLife(safeGetItem("default-game-startingLife", "20"));
         setFreeMulligans(safeGetItem("default-game-freeMulligans", 1));
@@ -100,13 +122,27 @@ export default function GameForm() {
             toast("Something went wrong.");
             return;
         }
-        const { game_id, player_id } = gameResult;
+        const { player_id, code } = gameResult;
         localStorage.setItem("saved-player", player_id);
-        pushRoute(`game/${game_id}`);
+        pushRoute(`game/${code}`);
     };
 
-    const handleJoinGame = () => {
-        console.log("Joining game with code:", gameCode);
+    const handleJoinGame = async () => {
+        console.log("joining game", gameCode);
+        const stored_player = localStorage.getItem("saved-player") || undefined;
+        const joinResult = await joinGame(gameCode, stored_player);
+        if (joinResult === null) {
+            toast("Couldn't find game");
+            return;
+        }
+        if (joinResult === undefined) {
+            toast("Something went wrong.");
+            return;
+        }
+        const { player_id, code } = joinResult;
+        localStorage.setItem("saved-player", player_id);
+
+        pushRoute(`game/${code}`);
     };
 
     if (!isClient) {
@@ -194,21 +230,44 @@ export default function GameForm() {
                     <TabsContent value="join">
                         <div className="space-y-4 pt-4">
                             <Label>Game Code</Label>
-                            <InputOTP
-                                maxLength={6}
-                                value={gameCode}
-                                onChange={setGameCode}
-                            >
-                                <InputOTPGroup>
-                                    <InputOTPSlot index={0} />
-                                    <InputOTPSlot index={1} />
-                                    <InputOTPSlot index={2} />
-                                    <InputOTPSeparator />
-                                    <InputOTPSlot index={3} />
-                                    <InputOTPSlot index={4} />
-                                    <InputOTPSlot index={5} />
-                                </InputOTPGroup>
-                            </InputOTP>
+                            <div className="flex">
+                                <InputOTP
+                                    maxLength={6}
+                                    value={gameCode}
+                                    onChange={setGameCode}
+                                >
+                                    <InputOTPGroup>
+                                        <InputOTPSlot index={0} />
+                                        <InputOTPSlot index={1} />
+                                        <InputOTPSlot index={2} />
+                                        <InputOTPSeparator />
+                                        <InputOTPSlot index={3} />
+                                        <InputOTPSlot index={4} />
+                                        <InputOTPSlot index={5} />
+                                    </InputOTPGroup>
+                                </InputOTP>
+                                <Button
+                                    size="icon"
+                                    variant={
+                                        clipboard === null
+                                            ? "outline"
+                                            : "default"
+                                    }
+                                    disabled={clipboard === null}
+                                    onClick={() => {
+                                        if (clipboard) setGameCode(clipboard);
+                                    }}
+                                >
+                                    <ClipboardPaste />
+                                </Button>
+                                <Button
+                                    size="icon"
+                                    variant="destructive"
+                                    onClick={() => setGameCode("")}
+                                >
+                                    <X />
+                                </Button>
+                            </div>
 
                             <Button
                                 onClick={handleJoinGame}

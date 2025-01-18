@@ -10,6 +10,7 @@ import init from "shahrazad-wasm";
 import { GameClient } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
 import { toast } from "sonner";
+import ShareGameButton from "@/components/(game)/playmat/(buttons)/ShareGameButton";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -26,12 +27,15 @@ export default function GamePage(props: { game_id: string }) {
 
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
     const [playerName, setPlayerName] = useState<string | null>(null);
+    const [gameCode, setGameCode] = useState<number | null>(null);
+
     const { preloadCards } = useScrycardsContext();
 
     const initGame = useCallback(async () => {
         if (init_ref.current) return;
         init_ref.current = true;
         const stored_player = localStorage.getItem("saved-player") || undefined;
+        console.log("loaded stored_player");
 
         const [joinResult] = await Promise.all([
             joinGame(props.game_id, stored_player),
@@ -57,10 +61,11 @@ export default function GamePage(props: { game_id: string }) {
             return;
         }
 
-        const { player_id, player_name, game: initialState } = joinResult;
+        const { player_id, player_name, game: initialState, code } = joinResult;
         console.log("name", player_name);
         setPlayerUUID(player_id);
         setPlayerName(player_name);
+        setGameCode(code);
         localStorage.setItem("saved-player", player_id);
 
         const gameClient = new GameClient(
@@ -91,7 +96,7 @@ export default function GamePage(props: { game_id: string }) {
         gameClient.connect();
 
         preloadCards(Object.values(initialState.cards).map((c) => c.card_name));
-    }, []);
+    }, [props.game_id, preloadCards, signalError]);
 
     useEffect(() => {
         initGame();
@@ -99,7 +104,7 @@ export default function GamePage(props: { game_id: string }) {
         return () => {
             gameClientRef.current?.cleanup();
         };
-    }, [props.game_id, preloadCards]);
+    }, [initGame, props.game_id, preloadCards]);
 
     if (error !== null) {
         gameClientRef.current?.cleanup();
@@ -120,6 +125,13 @@ export default function GamePage(props: { game_id: string }) {
     };
 
     return (
-        <Game game={game} playerName={playerName} applyAction={handleAction} />
+        <>
+            <Game
+                game={game}
+                playerName={playerName}
+                applyAction={handleAction}
+            />
+            {gameCode && <ShareGameButton code={gameCode} />}
+        </>
     );
 }
