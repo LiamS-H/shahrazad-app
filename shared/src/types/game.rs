@@ -10,8 +10,8 @@ use super::{card::*, zone::*};
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadGame {
-    zone_count: u8,
-    card_count: u8,
+    zone_count: u64,
+    card_count: u64,
     cards: HashMap<ShahrazadCardId, ShahrazadCard>,
     zones: HashMap<ShahrazadZoneId, ShahrazadZone>,
     playmats: HashMap<ShahrazadPlaymatId, ShahrazadPlaymat>,
@@ -279,8 +279,10 @@ impl ShahrazadGame {
                 let mut zone_ids = Vec::new();
 
                 for (index, _) in zone_types.iter().enumerate() {
-                    let zone_id =
-                        ShahrazadZoneId::new(format!("ZONE_{}", game.zone_count + index as u8 + 1));
+                    let zone_id = ShahrazadZoneId::new(format!(
+                        "ZONE_{}",
+                        game.zone_count + index as u64 + 1
+                    ));
                     game.zones.insert(
                         zone_id.clone(),
                         ShahrazadZone {
@@ -332,11 +334,14 @@ impl ShahrazadGame {
                 Some(game)
             }
             ShahrazadAction::Mulligan { player_id, seed } => {
-                let playmat = game.playmats.get_mut(&player_id)?;
+                {
+                    let playmat = game.playmats.get_mut(&player_id)?;
 
-                if playmat.mulligans < game.settings.free_mulligans.parse::<u8>().unwrap_or(0) {
-                    playmat.mulligans += 1;
-                };
+                    if playmat.mulligans < game.settings.free_mulligans.parse::<u8>().unwrap_or(0) {
+                        playmat.mulligans += 1;
+                    };
+                }
+                let playmat = game.playmats.get(&player_id)?;
                 let library_id = playmat.library.clone();
                 let hand_id = playmat.hand.clone();
 
@@ -366,8 +371,8 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::DrawTop {
                         amount: 7,
-                        source: library_id.clone(),
-                        destination: hand_id.clone(),
+                        source: library_id,
+                        destination: hand_id,
                         state: ShahrazadCardState {
                             revealed: Some([player_id].into()),
                             ..Default::default()
