@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from "react";
+import Preview from "./preview";
 
 export interface ISelectionContext {
     selectedCards: ShahrazadCardId[];
@@ -88,6 +89,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             value={{ selectedCards, selectCards, currentPreview, setPreview }}
         >
             {children}
+            <Preview />
         </SelectionContext.Provider>
     );
 }

@@ -1,22 +1,24 @@
 import { Button } from "@/components/(ui)/button";
-import { useShahrazadGameContext } from "@/contexts/game";
 import { useSelection } from "@/contexts/selection";
+import { ShahrazadCard } from "@/types/bindings/card";
 import { FlipHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ScryNameCard } from "react-scrycards";
+import { isFlippable, ScryNameCard, useScrycard } from "react-scrycards";
 
-export default function CardPreview() {
-    const { currentPreview, setPreview } = useSelection();
-    const { getCard } = useShahrazadGameContext();
+export default function PreviewCard({
+    shah_card,
+}: {
+    shah_card: ShahrazadCard;
+}) {
     const [flipped, setFlipped] = useState<boolean | null>(null);
+
+    const { currentPreview, setPreview } = useSelection();
 
     useEffect(() => {
         setFlipped(null);
     }, [currentPreview]);
 
-    if (currentPreview === null) return null;
-    const shah_card = getCard(currentPreview);
-
+    const scrycard = useScrycard(shah_card.card_name);
     return (
         <div
             className="fixed right-5 top-5"
@@ -33,23 +35,25 @@ export default function CardPreview() {
                 size="xl"
                 animated
             />
-            <div className="relative">
-                <div className="absolute bottom-1 left-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                            setFlipped(
-                                flipped === null
-                                    ? !shah_card.state.flipped
-                                    : !flipped
-                            );
-                        }}
-                    >
-                        <FlipHorizontal />
-                    </Button>
+            {isFlippable(scrycard) && (
+                <div className="relative">
+                    <div className="absolute bottom-1 left-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                                setFlipped(
+                                    flipped === null
+                                        ? !shah_card.state.flipped
+                                        : !flipped
+                                );
+                            }}
+                        >
+                            <FlipHorizontal />
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
