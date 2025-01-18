@@ -20,6 +20,7 @@ export class GameClient {
     private reconnectTimeout: NodeJS.Timeout | null = null;
     private isConnecting = false;
     private isCleanedUp = false;
+    private queuedActions: ShahrazadAction[] = [];
 
     constructor(
         private gameId: string,
@@ -56,6 +57,10 @@ export class GameClient {
     private handleOpen = () => {
         console.log("[ws] connected");
         this.reconnectAttempts = 0;
+        for (const action of this.queuedActions) {
+            this.queueAction(action);
+        }
+        this.queuedActions = [];
     };
 
     private handleClose = (event: CloseEvent) => {
@@ -143,19 +148,21 @@ export class GameClient {
         this.callbacks.onGameUpdate(initialState);
     }
 
-    applyAction(action: ShahrazadAction) {
+    private applyAction(action: ShahrazadAction): boolean {
         if (!this.gameState) {
             throw new Error("Game state not initialized");
         }
-
-        const newState = this.gameState.apply_action(action);
         if (action.type === ShahrazadActionCase.ZoneImport) {
             this.callbacks.onPreloadCards(action.cards);
         }
 
+        const newState = this.gameState.apply_action(action);
+
         if (newState) {
             this.callbacks.onGameUpdate(newState);
+            return true;
         }
+        return false;
     }
 
     setState(game: ShahrazadGame) {
@@ -169,10 +176,17 @@ export class GameClient {
         }
     }
 
-    broadcastAction(action: ShahrazadAction) {
+    queueAction(action: ShahrazadAction) {
+        const success = this.applyAction(action);
+        if (!success) return;
+        this.broadcastAction(action);
+    }
+
+    private broadcastAction(action: ShahrazadAction) {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             this.attemptReconnect();
-            throw new Error("WebSocket not connected");
+            this.queuedActions.push(action);
+            return;
         }
 
         this.moveCount++;
