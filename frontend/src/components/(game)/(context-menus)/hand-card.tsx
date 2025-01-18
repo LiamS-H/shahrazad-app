@@ -17,6 +17,7 @@ import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { usePlayer } from "@/contexts/player";
+import { isFlippable, useScrycard } from "react-scrycards";
 export default function HandCardContextMenu({
     cardId,
     children,
@@ -28,6 +29,7 @@ export default function HandCardContextMenu({
     const { applyAction, getPlaymat, getCard } = useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const shah_card = getCard(cardId);
+    const scry_card = useScrycard(shah_card.card_name);
     const [open, setOpen] = useState(true);
 
     return (
@@ -47,7 +49,7 @@ export default function HandCardContextMenu({
                                     destination: playmat.library,
                                     source: shah_card.location,
                                     index: 0,
-                                    state: { face_down: true },
+                                    state: {},
                                 });
                             }}
                         >
@@ -61,13 +63,47 @@ export default function HandCardContextMenu({
                                     destination: playmat.library,
                                     source: shah_card.location,
                                     index: -1,
-                                    state: { face_down: true },
+                                    state: {},
                                 });
                             }}
                         >
                             Library top
                         </ContextMenuItem>
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.CardZone,
+                                    cards: [cardId],
+                                    destination: playmat.battlefield,
+                                    source: shah_card.location,
+                                    index: -1,
+                                    state: {
+                                        face_down: true,
+                                        revealed: [player],
+                                        x: 0,
+                                        y: 0,
+                                    },
+                                });
+                            }}
+                        >
+                            Play face-down
+                        </ContextMenuItem>
                     </ContextMenuSubContent>
+                    {isFlippable(scry_card) && (
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.CardState,
+                                    cards: [cardId],
+                                    state: {
+                                        flipped: !shah_card.state.flipped,
+                                    },
+                                });
+                            }}
+                        >
+                            Flip
+                        </ContextMenuItem>
+                    )}
                 </ContextMenuSub>
             </ContextMenuContent>
         </ContextMenu>

@@ -6,7 +6,7 @@ export default function CardPreview() {
     const { currentPreview, setPreview } = useSelection();
     const { getCard } = useShahrazadGameContext();
 
-    if (!currentPreview) return null;
+    if (currentPreview === null) return null;
     const shah_card = getCard(currentPreview);
 
     return (
@@ -19,7 +19,12 @@ export default function CardPreview() {
                 setPreview(null);
             }}
         >
-            <ScryNameCard card_name={shah_card.card_name} size="xl" animated />
+            <ScryNameCard
+                card_name={shah_card.card_name}
+                flipped={shah_card.state.flipped}
+                size="xl"
+                animated
+            />
         </div>
     );
 }
