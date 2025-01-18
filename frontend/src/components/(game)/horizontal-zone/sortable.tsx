@@ -38,13 +38,7 @@ export default function SortableCard(props: {
 
     return (
         <HandCardContextMenu cardId={props.id}>
-            <div
-                data-shahcard={props.id}
-                ref={setNodeRef}
-                style={style}
-                {...listeners}
-                {...attributes}
-            >
+            <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
                 <Card id={props.id} />
                 {shah_card.state.face_down &&
                     shah_card.state.revealed &&

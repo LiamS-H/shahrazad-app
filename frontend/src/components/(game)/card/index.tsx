@@ -24,6 +24,7 @@ export default function Card(props: { id: ShahrazadCardId }) {
                 };
                 window.addEventListener("mouseup", handler);
             }}
+            data-shahcard={props.id}
         >
             <Scrycard
                 card={card}

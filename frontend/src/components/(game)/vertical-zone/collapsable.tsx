@@ -32,7 +32,6 @@ export default function Collapsable(props: {
 
     return (
         <div
-            data-shahcard={props.id}
             ref={setNodeRef}
             style={style}
             {...listeners}

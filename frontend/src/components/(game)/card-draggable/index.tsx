@@ -9,6 +9,7 @@ import Card from "../card";
 export default function DraggableCard(props: {
     id: ShahrazadCardId;
     noDragTranslate?: true;
+    dragDisabled?: true;
     dragNamespace?: string;
     divStyle?: CSSProperties;
 }) {
@@ -25,6 +26,7 @@ export default function DraggableCard(props: {
         useDraggable({
             id: drag_id,
             data,
+            disabled: props.dragDisabled,
         });
 
     const draggableStyle: CSSProperties = {};
@@ -35,7 +37,6 @@ export default function DraggableCard(props: {
 
     return (
         <div
-            data-shahcard={props.id}
             ref={setNodeRef}
             {...listeners}
             {...attributes}
