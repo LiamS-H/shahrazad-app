@@ -92,6 +92,7 @@ export default function GameForm() {
 
         return () => {
             window.removeEventListener("focus", readClipboard);
+            window.removeEventListener("onpaste", handlePaste);
         };
     }, []);
 
@@ -130,8 +131,8 @@ export default function GameForm() {
                 scry_rule: scryRule,
             },
         });
-        setLoading(false);
         if (gameResult === null) {
+            setLoading(false);
             toast("Something went wrong.");
             return;
         }
@@ -145,10 +146,12 @@ export default function GameForm() {
         const stored_player = localStorage.getItem("saved-player") || undefined;
         const joinResult = await joinGame(gameCode, stored_player);
         if (joinResult === null) {
+            setLoading(false);
             toast("Couldn't find game");
             return;
         }
         if (joinResult === undefined) {
+            setLoading(false);
             toast("Something went wrong.");
             return;
         }
@@ -233,6 +236,7 @@ export default function GameForm() {
                             <Button
                                 onClick={handleCreateGame}
                                 className="w-full"
+                                disabled={loading}
                             >
                                 {loading ? "loading..." : "Create Game"}
                             </Button>
@@ -285,7 +289,7 @@ export default function GameForm() {
                             <Button
                                 onClick={handleJoinGame}
                                 className="w-full"
-                                disabled={gameCode.length !== 6}
+                                disabled={gameCode.length !== 6 || loading}
                             >
                                 Join Game
                             </Button>
