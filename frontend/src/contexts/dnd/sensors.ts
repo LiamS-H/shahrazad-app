@@ -63,8 +63,9 @@ export class MouseSensor extends LibMouseSensor {
                     !shah_card.state.revealed?.includes(
                         MouseSensor.ShahContext.player_name
                     )
-                )
+                ) {
                     return true;
+                }
                 MouseSensor.SelectedContext.setPreview(id);
             }
             cur = cur.parentElement;
