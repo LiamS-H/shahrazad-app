@@ -101,20 +101,19 @@ export default function GamePage(props: { game_id: string }) {
         };
     }, [props.game_id, preloadCards]);
 
-    if (loading || !game || !playerUUID || !playerName) {
-        return <h1>loading game...</h1>;
-    }
-
     if (error !== null) {
         gameClientRef.current?.cleanup();
         gameClientRef.current = null;
         return <GameError message={error} />;
     }
 
+    if (loading || !game || !playerUUID || !playerName) {
+        return <h1>loading game...</h1>;
+    }
+
     const handleAction = (action: ShahrazadAction) => {
         try {
-            gameClientRef.current?.applyAction(action);
-            gameClientRef.current?.broadcastAction(action);
+            gameClientRef.current?.queueAction(action);
         } catch (error) {
             console.error("Failed to handle action:", error);
         }
