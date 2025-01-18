@@ -58,28 +58,41 @@ export default function GameForm() {
             }
         };
 
-        function readClipboard() {
-            setTimeout(() => {
-                navigator.clipboard
-                    .readText()
-                    .then((clipboard) => {
-                        setClipboard(null);
-                        if (clipboard.length !== 6) return;
-                        const code = Number(clipboard);
-                        if (Number.isNaN(code)) return;
-                        if (code >= 100000 && code <= 999999) {
-                            setClipboard(clipboard);
-                        }
-                    })
-                    .catch(() => {});
-                readClipboard();
-            }, 500);
+        function parseClipboard(clipboard: string | undefined) {
+            setClipboard(null);
+            if (!clipboard) return;
+            if (clipboard.length !== 6) return;
+            const code = Number(clipboard);
+            if (Number.isNaN(code)) return;
+            if (code >= 100000 && code <= 999999) {
+                setClipboard(clipboard);
+            }
         }
-        readClipboard();
+
+        function readClipboard() {
+            navigator.clipboard
+                .readText()
+                .then((c) => parseClipboard(c))
+                .catch(() => {});
+        }
+
+        function handlePaste(e: ClipboardEvent | Event) {
+            if (!("clipboardData" in e)) {
+                return;
+            }
+            parseClipboard(e.clipboardData?.getData("Text"));
+        }
+
+        window.addEventListener("focus", readClipboard);
+        window.addEventListener("onpaste", handlePaste);
 
         setStartingLife(safeGetItem("default-game-startingLife", "20"));
         setFreeMulligans(safeGetItem("default-game-freeMulligans", 1));
         setScryRule(safeGetItem("default-game-scryRule", false));
+
+        return () => {
+            window.removeEventListener("focus", readClipboard);
+        };
     }, []);
 
     useEffect(() => {

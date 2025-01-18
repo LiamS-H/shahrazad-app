@@ -124,8 +124,8 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
 
                 y = Math.max(Math.round(y / end_zone_gridsize), 0);
             }
-            x = x || 255;
-            y = y || 255;
+            x = x === undefined ? 255 : x;
+            y = y === undefined ? 255 : y;
             if (start_zone_id == end_zone_id) {
                 console.log("dragging to same draggable");
                 applyAction({

@@ -35,8 +35,9 @@ export function BoardCard({
         top,
     };
     if (selected) {
-        divStyle.outline = "1px solid blue";
+        divStyle.outline = "2px solid blue";
         divStyle.filter = BLUE_TINT;
+        divStyle.borderRadius = "4.75% / 3.5%";
     }
     return (
         <BoardCardContextMenu cardId={cardId}>
