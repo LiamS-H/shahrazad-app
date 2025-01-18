@@ -35,7 +35,6 @@ export default function GamePage(props: { game_id: string }) {
         if (init_ref.current) return;
         init_ref.current = true;
         const stored_player = localStorage.getItem("saved-player") || undefined;
-        console.log("loaded stored_player");
 
         const [joinResult] = await Promise.all([
             joinGame(props.game_id, stored_player),

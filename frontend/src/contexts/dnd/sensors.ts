@@ -35,7 +35,6 @@ export class MouseSensor extends LibMouseSensor {
                     const id = cur.dataset.shahcard;
                     const shah_card = MouseSensor.ShahContext.getCard(id);
                     if (shah_card.state.x === undefined) break;
-                    console.log("[sensor] clicked on card:", shah_card);
                     let selectedCards =
                         MouseSensor.SelectedContext.selectedCards;
                     if (!selectedCards.includes(id)) {
