@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/(theme)/theme-provider";
 import NavBar from "./navbar";
 import ScrycardsContext from "@/contexts/scrycards";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/(ui)/sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",

@@ -11,7 +11,7 @@ export default function SortableCard(props: {
     id: ShahrazadCardId;
     index: number;
 }) {
-    const { getCard, player_name } = useShahrazadGameContext();
+    const { getCard } = useShahrazadGameContext();
     const shah_card = getCard(props.id);
 
     const data: IDraggableData = {
