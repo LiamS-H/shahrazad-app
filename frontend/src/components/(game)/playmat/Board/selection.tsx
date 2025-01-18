@@ -70,12 +70,17 @@ export default function Selection({
                 if (!bounds) {
                     return;
                 }
-                const new_selection = cards.filter((card) => {
-                    if (!card.card.state.x || !card.card.state.y) return false;
+                const new_selection = cards.filter(({ card }) => {
+                    console.log(card.state.x, card.state.y);
+                    if (
+                        card.state.x === undefined ||
+                        card.state.y === undefined
+                    )
+                        return false;
 
-                    const left = card.card.state.x * GRID_SIZE;
+                    const left = card.state.x * GRID_SIZE;
                     const right = left + 5 * GRID_SIZE;
-                    const top = card.card.state.y * GRID_SIZE;
+                    const top = card.state.y * GRID_SIZE;
                     const bottom = top + 7 * GRID_SIZE;
 
                     if (right < bounds.left) return false;

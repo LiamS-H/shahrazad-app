@@ -62,7 +62,8 @@ export default function GamePage(props: { game_id: string }) {
         }
 
         const { player_id, player_name, game: initialState, code } = joinResult;
-        console.log("name", player_name);
+        toast(`Joining game ${code}`);
+
         setPlayerUUID(player_id);
         setPlayerName(player_name);
         setGameCode(code);
