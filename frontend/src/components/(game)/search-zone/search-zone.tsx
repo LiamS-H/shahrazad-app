@@ -41,15 +41,11 @@ interface ISort {
 
 type Color = "C" | "W" | "U" | "B" | "R" | "G";
 
-export default function CardSpread(props: {
-    id: ShahrazadZoneId;
-    sortOptions?: true;
-}) {
+export default function SearchZone(props: { id: ShahrazadZoneId }) {
     const { getZone, getCard } = useShahrazadGameContext();
     const { requestCard } = useScrycardsContext();
     const zone = getZone(props.id);
     const [sort, setSort] = useState<ISort>({
-        // colors: { C: false, W: true, U: true, B: true, R: true, G: true },
         colors: null,
         type: null,
         match: true,
@@ -104,22 +100,26 @@ export default function CardSpread(props: {
             }));
             return;
         }
-        const sorted_cards = filtered_cards.toSorted((i1, i2) => {
-            const card1 = i1.card;
-            const card2 = i2.card;
-            let cost1 = 0;
-            if (card1 && "cmc" in card1) {
-                cost1 = Number(card1?.cmc);
-                cost1 = Number.isNaN(cost1) ? 0 : cost1;
-            }
-            let cost2 = 0;
-            if (card2 && "cmc" in card2) {
-                cost2 = Number(card2?.cmc);
-                cost2 = Number.isNaN(cost2) ? 0 : cost2;
-            }
+        const sorted_cards = filtered_cards.toSorted(
+            ({ card: card1 }, { card: card2 }) => {
+                let cost1 = 0;
+                if (card1 && "cmc" in card1) {
+                    cost1 = Number(card1?.cmc);
+                    cost1 = Number.isNaN(cost1) ? 0 : cost1;
+                }
+                let cost2 = 0;
+                if (card2 && "cmc" in card2) {
+                    cost2 = Number(card2?.cmc);
+                    cost2 = Number.isNaN(cost2) ? 0 : cost2;
+                }
 
-            return cost1 - cost2;
-        });
+                if (cost1 === cost2) {
+                    return (card1?.name || "").localeCompare(card2?.name || "");
+                }
+
+                return cost1 - cost2;
+            }
+        );
 
         const searched_cards = sorted_cards.filter(({ card }) => {
             if (!card) return false;
@@ -187,17 +187,20 @@ export default function CardSpread(props: {
 
     return (
         <div className="w-full flex flex-col gap-4 h-[240px]">
-            <div className="w-full flex flex-row justify-around items-center">
+            <div className="w-full flex flex-row gap-6 justify-around items-center">
                 <div>
                     <Input
                         value={sort.search}
                         onChange={(e) =>
-                            setSort((s) => ({ ...s, search: e.target.value }))
+                            setSort((s) => ({
+                                ...s,
+                                search: e.target.value,
+                            }))
                         }
-                        placeholder="search🔎︎"
+                        placeholder="Search 🔎︎"
                     />
                 </div>
-                <div className="flex flex-row space-x-2 min-w-24">
+                <div className="flex flex-row space-x-2 min-w-24 items-center">
                     <Switch
                         id="match-switch"
                         checked={sort.match}
@@ -216,7 +219,7 @@ export default function CardSpread(props: {
             </div>
             <div
                 ref={setNodeRef}
-                className="w-full h-full flex flex-row flex-nowrap overflow-x-auto"
+                className="w-full h-full flex flex-row flex-nowrap justify-center overflow-x-auto"
             >
                 {cards.length === 0 ? (
                     <Scrycard card={undefined} />

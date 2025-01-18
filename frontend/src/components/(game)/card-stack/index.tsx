@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 export default function CardStack(props: {
     cards: ShahrazadCardId[];
     emptyMessage: string | (() => ReactNode);
+    dragNamespace?: string;
 }) {
     const deckSize = props.cards.length;
     const dispCards: ReactNode[] = [];
@@ -25,6 +26,7 @@ export default function CardStack(props: {
                 divStyle={{ position: "absolute" }}
                 key={props.cards[props.cards.length - 1]}
                 id={props.cards[props.cards.length - 1]}
+                dragNamespace={props.dragNamespace}
                 noDragTranslate
             />
         );
@@ -34,6 +36,7 @@ export default function CardStack(props: {
                 divStyle={{ position: "absolute" }}
                 key={props.cards[props.cards.length - 2]}
                 id={props.cards[props.cards.length - 2]}
+                dragNamespace={props.dragNamespace}
                 noDragTranslate
             />
         );
@@ -42,6 +45,7 @@ export default function CardStack(props: {
                 divStyle={{ position: "absolute" }}
                 key={props.cards[props.cards.length - 1]}
                 id={props.cards[props.cards.length - 1]}
+                dragNamespace={props.dragNamespace}
                 noDragTranslate
             />
         );

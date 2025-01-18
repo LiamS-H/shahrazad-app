@@ -6,8 +6,9 @@ import { GameState } from "shahrazad-wasm";
 type GameClientCallbacks = {
     onGameUpdate: (game: ShahrazadGame) => void;
     onPreloadCards: (cards: string[]) => void;
-    onError?: (error: Error) => void;
+    onMessage: (error: string) => void;
     onGameTermination: () => void;
+    onPlayerJoin: () => void;
 };
 
 export class GameClient {
@@ -19,16 +20,19 @@ export class GameClient {
     private reconnectTimeout: NodeJS.Timeout | null = null;
     private isConnecting = false;
     private isCleanedUp = false;
+    private queuedActions: ShahrazadAction[] = [];
 
     constructor(
         private gameId: string,
         private playerUUID: string,
+        private playerName: string,
         private callbacks: GameClientCallbacks
     ) {}
 
     async connect() {
         if (this.isConnecting) return;
         this.isConnecting = true;
+        console.log("connecting");
 
         try {
             const backend = process.env.NEXT_PUBLIC_BACKEND_URL || "";
@@ -53,6 +57,10 @@ export class GameClient {
     private handleOpen = () => {
         console.log("[ws] connected");
         this.reconnectAttempts = 0;
+        for (const action of this.queuedActions) {
+            this.queueAction(action);
+        }
+        this.queuedActions = [];
     };
 
     private handleClose = (event: CloseEvent) => {
@@ -75,7 +83,11 @@ export class GameClient {
             if (update.action) {
                 if (update.action.type === ShahrazadActionCase.GameTerminated) {
                     this.callbacks.onGameTermination();
+                    this.cleanup();
                     return;
+                }
+                if (update.action.type === ShahrazadActionCase.AddPlayer) {
+                    this.callbacks.onPlayerJoin();
                 }
                 this.applyAction(update.action);
                 console.log("[ws] received action:", update.action);
@@ -84,23 +96,34 @@ export class GameClient {
                 console.log("[ws] received game:", update.game);
             }
         } catch (error) {
-            console.error("[ws] error processing message:", error);
-            this.callbacks.onError?.(error as Error);
+            console.error("[ws] message error:", error);
+            this.callbacks.onMessage("Error processing action.");
         }
     };
 
     private handleError = (error: Event) => {
-        console.error("[ws] connection error:", error);
-        this.callbacks.onError?.(new Error("WebSocket connection error"));
-        this.socket?.close();
+        console.log("[ws] error:", error, this.socket);
+        console.log(this.reconnectAttempts);
+        if (this.reconnectAttempts === 1) {
+            this.callbacks.onMessage("Game Disconnected.");
+        }
+        if (this.reconnectAttempts > 1) {
+            this.callbacks.onMessage("Reconnect failed.");
+        }
+        if (this.socket?.OPEN) {
+            this.socket?.close();
+        }
     };
 
     private attemptReconnect = () => {
-        if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-            console.error("[ws] max reconnection attempts reached");
-            this.callbacks.onError?.(
-                new Error("Failed to reconnect to game server")
-            );
+        if (this.reconnectTimeout) return;
+        console.log("[ws] scheduling reconnect");
+
+        this.reconnectAttempts++;
+
+        if (this.reconnectAttempts > this.maxReconnectAttempts) {
+            this.callbacks.onGameTermination();
+            this.cleanup();
             return;
         }
 
@@ -110,7 +133,13 @@ export class GameClient {
         );
         this.reconnectTimeout = setTimeout(() => {
             if (this.isCleanedUp) return;
-            this.reconnectAttempts++;
+            if (this.reconnectAttempts > 1) {
+                this.callbacks.onMessage("Reconnecting...");
+            }
+            if (this.reconnectTimeout) {
+                clearTimeout(this.reconnectTimeout);
+                this.reconnectTimeout = null;
+            }
             this.connect();
         }, backoffMs);
     };
@@ -120,19 +149,21 @@ export class GameClient {
         this.callbacks.onGameUpdate(initialState);
     }
 
-    applyAction(action: ShahrazadAction) {
+    private applyAction(action: ShahrazadAction): boolean {
         if (!this.gameState) {
             throw new Error("Game state not initialized");
         }
-
-        const newState = this.gameState.apply_action(action);
         if (action.type === ShahrazadActionCase.ZoneImport) {
             this.callbacks.onPreloadCards(action.cards);
         }
 
+        const newState = this.gameState.apply_action(action);
+
         if (newState) {
             this.callbacks.onGameUpdate(newState);
+            return true;
         }
+        return false;
     }
 
     setState(game: ShahrazadGame) {
@@ -146,10 +177,17 @@ export class GameClient {
         }
     }
 
-    broadcastAction(action: ShahrazadAction) {
+    queueAction(action: ShahrazadAction) {
+        const success = this.applyAction(action);
+        if (!success) return;
+        this.broadcastAction(action);
+    }
+
+    private broadcastAction(action: ShahrazadAction) {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             this.attemptReconnect();
-            throw new Error("WebSocket not connected");
+            this.queuedActions.push(action);
+            return;
         }
 
         this.moveCount++;

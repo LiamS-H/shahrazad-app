@@ -47,7 +47,7 @@ export default function HandCardContextMenu({
                                     destination: playmat.library,
                                     source: shah_card.location,
                                     index: 0,
-                                    state: { face_down: false },
+                                    state: { face_down: true },
                                 });
                             }}
                         >
@@ -61,7 +61,7 @@ export default function HandCardContextMenu({
                                     destination: playmat.library,
                                     source: shah_card.location,
                                     index: -1,
-                                    state: { face_down: false },
+                                    state: { face_down: true },
                                 });
                             }}
                         >

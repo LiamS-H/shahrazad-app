@@ -67,17 +67,28 @@ impl ShahrazadGame {
                 amount,
                 source,
                 destination,
-            } => todo!("{}{}{}", amount, source, destination),
+                state,
+            } => {
+                todo!("{}{}{}{:?}", amount, source, destination, state)
+            }
             ShahrazadAction::DrawTop {
                 amount,
                 source,
                 destination,
+                state,
             } => {
                 if amount == 0 {
                     return None;
                 }
                 let src_len = game.zones.get(&source)?.cards.len();
-                let src_range = (src_len - amount)..;
+                if src_len == 0 {
+                    return None;
+                }
+                let src_range = if src_len >= amount {
+                    (src_len - amount)..
+                } else {
+                    src_len..
+                };
                 let mut drawn_cards: Vec<ShahrazadCardId> = game
                     .zones
                     .get_mut(&source)?
@@ -90,10 +101,7 @@ impl ShahrazadGame {
                         continue;
                     };
                     card.migrate(destination.clone());
-                    card.state.apply(&ShahrazadCardOptions {
-                        face_down: Some(false),
-                        ..Default::default()
-                    });
+                    card.state.apply(&state);
                 }
 
                 game.zones
@@ -207,14 +215,19 @@ impl ShahrazadGame {
             }
             ShahrazadAction::Shuffle { zone, seed } => {
                 let zone_ref = game.zones.get_mut(&zone)?;
+                if zone_ref.cards.len() == 0 {
+                    return None;
+                }
                 let mut rng = ChaCha8Rng::seed_from_u64(seed.parse::<u64>().unwrap_or(0));
                 let mut cards = zone_ref.cards.clone();
+                cards.sort_by_key(|card| card.to_string());
                 cards.shuffle(&mut rng);
                 for card_id in &cards {
                     let card = game.cards.get_mut(card_id)?;
-                    card.state.apply(&ShahrazadCardOptions {
+                    card.state.apply(&ShahrazadCardState {
                         face_down: Some(true),
-                        counters: Some(Vec::<ShahrazadCounter>::new()),
+                        counters: Some([].into()),
+                        revealed: Some([].into()),
                         ..Default::default()
                     });
                 }
@@ -239,7 +252,7 @@ impl ShahrazadGame {
                         ShahrazadCard {
                             card_name,
                             location: zone.clone(),
-                            state: ShahrazadCardOptions {
+                            state: ShahrazadCardState {
                                 counters: Some(Vec::<ShahrazadCounter>::new()),
                                 ..Default::default()
                             },
@@ -332,7 +345,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
                         cards: cards.clone(),
-                        state: ShahrazadCardOptions {
+                        state: ShahrazadCardState {
                             ..Default::default()
                         },
                         source: hand_id.clone(),
@@ -353,8 +366,12 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::DrawTop {
                         amount: 7,
-                        source: library_id,
-                        destination: hand_id,
+                        source: library_id.clone(),
+                        destination: hand_id.clone(),
+                        state: ShahrazadCardState {
+                            revealed: Some([player_id].into()),
+                            ..Default::default()
+                        },
                     },
                     game,
                 );

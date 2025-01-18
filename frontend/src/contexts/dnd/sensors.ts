@@ -34,7 +34,8 @@ export class MouseSensor extends LibMouseSensor {
                 if (cur instanceof HTMLElement && cur.dataset.shahcard) {
                     const id = cur.dataset.shahcard;
                     const shah_card = MouseSensor.ShahContext.getCard(id);
-                    if (!shah_card.state.x) break;
+                    if (shah_card.state.x === undefined) break;
+                    console.log("[sensor] clicked on card:", shah_card);
                     let selectedCards =
                         MouseSensor.SelectedContext.selectedCards;
                     if (!selectedCards.includes(id)) {
@@ -58,7 +59,13 @@ export class MouseSensor extends LibMouseSensor {
             if (cur instanceof HTMLElement && cur.dataset.shahcard) {
                 const id = cur.dataset.shahcard;
                 const shah_card = MouseSensor.ShahContext.getCard(id);
-                if (shah_card.state.face_down) return true;
+                if (
+                    shah_card.state.face_down &&
+                    !shah_card.state.revealed?.includes(
+                        MouseSensor.ShahContext.player_name
+                    )
+                )
+                    return true;
                 MouseSensor.SelectedContext.setPreview(id);
             }
             cur = cur.parentElement;

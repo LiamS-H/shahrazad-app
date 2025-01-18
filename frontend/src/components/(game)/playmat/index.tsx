@@ -1,4 +1,3 @@
-import "./playmat.css";
 import Deck from "./Deck";
 import type { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import Board from "./Board";
@@ -23,14 +22,11 @@ export default function Playmat(props: {
 
     return (
         <PlayerProvider player={props.player}>
-            <div className="shahrazad-playmat">
-                <div className="shahrazad-playmat-board">
+            <div className="shahrazad-playmat h-full w-full flex flex-col flex-nowrap content-between select-none">
+                <div className="h-full w-full">
                     <Board id={playmat.battlefield} />
                 </div>
-                <div
-                    className="shahrazad-playmat-tray"
-                    style={{ position: "relative" }}
-                >
+                <div className="shahrazad-playmat-tray w-full flex flex-row flex-nowrap gap-4 relative">
                     <Graveyard id={playmat.graveyard} />
                     <Deck id={playmat.library} />
 

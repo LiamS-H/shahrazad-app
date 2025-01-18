@@ -10,19 +10,21 @@ pub enum ShahrazadAction {
         amount: usize,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
+        state: ShahrazadCardState,
     },
     DrawTop {
         amount: usize,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
+        state: ShahrazadCardState,
     },
     CardState {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardOptions,
+        state: ShahrazadCardState,
     },
     CardZone {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardOptions,
+        state: ShahrazadCardState,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
         index: i32,

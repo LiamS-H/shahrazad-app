@@ -4,7 +4,7 @@ use crate::types::{
     action::ShahrazadAction,
     api::{CreateGameQuery, CreateGameResponse, JoinGameQuery, JoinGameResponse},
     card::{
-        ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardOptions, ShahrazadCounter,
+        ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState, ShahrazadCounter,
     },
     game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
     ws::{ClientAction, ServerUpdate},
@@ -20,7 +20,7 @@ pub fn export_all() {
             TypeScript(
                 "./bindings/action.ts"
                 prefix: "\
-                import {ShahrazadCardId,ShahrazadCardOptions} from './card';
+                import {ShahrazadCardId,ShahrazadCardState} from './card';
                 import {ShahrazadZoneId} from './zone';
                 import { ShahrazadPlaymatId } from './playmat';
                 type usize = number;
@@ -36,7 +36,7 @@ pub fn export_all() {
             ShahrazadCard,
             ShahrazadCardId,
             ShahrazadCardName,
-            ShahrazadCardOptions,
+            ShahrazadCardState,
             ShahrazadCounter
         ],
         destinations: [

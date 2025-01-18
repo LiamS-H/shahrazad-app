@@ -14,17 +14,18 @@ pub struct ShahrazadCounter {
 }
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
-pub struct ShahrazadCardOptions {
+pub struct ShahrazadCardState {
     pub inverted: Option<bool>,
     pub flipped: Option<bool>,
     pub tapped: Option<bool>,
     pub face_down: Option<bool>,
-    pub x: Option<u8>, // Use f64 for floating-point numbers
+    pub revealed: Option<Vec<ShahrazadPlaymatId>>,
+    pub x: Option<u8>,
     pub y: Option<u8>,
     pub counters: Option<Vec<ShahrazadCounter>>,
 }
-impl ShahrazadCardOptions {
-    pub fn apply(&mut self, other: &ShahrazadCardOptions) {
+impl ShahrazadCardState {
+    pub fn apply(&mut self, other: &ShahrazadCardState) {
         if let Some(inverted) = other.inverted {
             self.inverted = Some(inverted);
         }
@@ -38,20 +39,29 @@ impl ShahrazadCardOptions {
             self.face_down = Some(face_down);
         }
         if let Some(x) = other.x {
-            self.x = Some(x);
+            self.x = if x < 255 { Some(x) } else { None };
         }
         if let Some(y) = other.y {
-            self.y = Some(y);
+            self.y = if y < 255 { Some(y) } else { None };
         }
         if let Some(counters) = &other.counters {
-            self.counters = Some(counters.clone())
+            self.counters = Some(counters.clone());
+        }
+        if let Some(new_revealed) = &other.revealed {
+            if let Some(revealed) = &mut self.revealed {
+                if new_revealed.len() > 0 {
+                    revealed.append(&mut new_revealed.clone());
+                    return;
+                };
+            }
+            self.revealed = Some(new_revealed.clone());
         }
     }
 }
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ShahrazadCard {
-    pub state: ShahrazadCardOptions,
+    pub state: ShahrazadCardState,
     pub card_name: ShahrazadCardName,
     pub location: ShahrazadZoneId,
     pub owner: ShahrazadPlaymatId,
