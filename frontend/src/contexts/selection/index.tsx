@@ -63,6 +63,11 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
         document.addEventListener("keydown", handleKey);
         document.addEventListener("keyup", handleKey);
+
+        return () => {
+            document.removeEventListener("keydown", handleKey);
+            document.removeEventListener("keyup", handleKey);
+        };
     });
 
     const selectCards = useCallback((cards: ShahrazadCardId[] | null) => {
