@@ -5,10 +5,11 @@ import {
     useRef,
     useState,
 } from "react";
-import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
-import { useShahrazadGameContext } from "../game";
+import { ScryNameCard } from "react-scrycards";
+import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { clamp } from "@/lib/utils/clamp";
+import { useSelection } from "@/contexts/selection";
 
 function OverlayWrapper({ children }: { children: ReactNode }) {
     const animationFrameId = useRef<number | null>(null);
@@ -47,7 +48,6 @@ function OverlayWrapper({ children }: { children: ReactNode }) {
         position: "absolute",
         width: "fit-content",
         cursor: "grabbing",
-        boxShadow: "0 0 10px rgba(0,0,0,0.2)",
         transition: "transform 0.2s ease-out",
         transform: `perspective(1000px) rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
         zIndex: 2,
@@ -62,13 +62,46 @@ function OverlayWrapper({ children }: { children: ReactNode }) {
 export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
     const { getCard, player_name } = useShahrazadGameContext();
     const shah_card = getCard(id);
-    const card = useScrycard(shah_card.card_name);
+    const { selectedCards } = useSelection();
+
+    const cards = selectedCards.length === 0 ? [id] : selectedCards;
 
     return (
         <OverlayWrapper>
-            <Scrycard
-                card={card}
-                symbol_text_renderer={ScryNameCardText}
+            {/* {cards.map((id) => {
+                const card = getCard(id);
+                let xOffset = 0;
+                let yOffset = 0;
+                const style: CSSProperties = {};
+                if (
+                    card.state.x !== undefined &&
+                    card.state.y !== undefined &&
+                    shah_card.state.x !== undefined &&
+                    shah_card.state.y !== undefined &&
+                    selectedCards.length !== 0
+                ) {
+                    xOffset = (card.state.x - shah_card.state.x) * 20;
+                    yOffset = (card.state.y - shah_card.state.y) * 20;
+                    style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+                    style.position = "absolute";
+                    // style.top = "-140px";
+                }
+                return (
+                    <div style={style} key={id}>
+                        <ScryNameCard
+                            card_name={card.card_name}
+                            flipped={shah_card.state.flipped}
+                            faceDown={
+                                shah_card.state.face_down &&
+                                !shah_card.state.revealed?.includes(player_name)
+                            }
+                            tapped={shah_card.state.tapped}
+                        />
+                    </div>
+                );
+            })} */}
+            <ScryNameCard
+                card_name={shah_card.card_name}
                 flipped={shah_card.state.flipped}
                 faceDown={
                     shah_card.state.face_down &&
@@ -76,6 +109,13 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                 }
                 tapped={shah_card.state.tapped}
             />
+            {selectedCards.length !== 0 && (
+                <div className="relative">
+                    <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive flex justify-center items-center">
+                        {selectedCards.length}
+                    </div>
+                </div>
+            )}
         </OverlayWrapper>
     );
 }
