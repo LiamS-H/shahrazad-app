@@ -10,6 +10,14 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
     const { setPreview } = useSelection();
     const zone = getZone(props.id);
 
+    const cardCountChip = (
+        <div className="relative z-10 pointer-events-none">
+            <div className="absolute bottom-1 w-6 h-6 rounded-full bg-destructive flex justify-center items-center">
+                {zone.cards.length}
+            </div>
+        </div>
+    );
+
     if (!props.active) {
         return (
             <div className="shahrazad-hand flex flex-grow">
@@ -33,12 +41,14 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
                         </div>
                     );
                 })}
+                {cardCountChip}
             </div>
         );
     }
 
     return (
         <div className="shahrazad-hand flex flex-grow">
+            {cardCountChip}
             <HorizontalZone id={props.id} />
         </div>
     );

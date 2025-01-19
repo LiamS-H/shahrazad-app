@@ -36,7 +36,7 @@ export default function DeckContextMenu({
         <ContextMenu modal={contextOpen} onOpenChange={setContextOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>Deck</ContextMenuLabel>
+                <ContextMenuLabel>Deck ({deck.cards.length})</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuItem
                     onClick={() => {
