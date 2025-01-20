@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/(theme)/theme-provider";
 import NavBar from "./navbar";
 import ScrycardsContext from "@/contexts/scrycards";
 import { Toaster } from "@/components/(ui)/sonner";
+import { TooltipProvider } from "@/components/(ui)/tooltip";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -37,10 +38,12 @@ export default function RootLayout({
                     enableSystem
                     // disableTransitionOnChange
                 >
-                    <ScrycardsContext>
-                        <NavBar />
-                        {children}
-                    </ScrycardsContext>
+                    <TooltipProvider>
+                        <ScrycardsContext>
+                            <NavBar />
+                            {children}
+                        </ScrycardsContext>
+                    </TooltipProvider>
                     <Toaster />
                 </ThemeProvider>
             </body>
