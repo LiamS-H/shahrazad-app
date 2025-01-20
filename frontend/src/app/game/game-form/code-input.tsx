@@ -6,8 +6,11 @@ import {
     InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/(ui)/input-otp";
-import { parseCode } from "@/lib/client/parseCode";
-export function CodeInput(props: {
+export function CodeInput({
+    code,
+    setCode,
+    invalid,
+}: {
     code: string;
     setCode: (s: string) => void;
     invalid?: boolean;
@@ -15,16 +18,14 @@ export function CodeInput(props: {
     const handleChange = useCallback(
         (e: string) => {
             const num = Number(e);
-            if (num || e === "") props.setCode(e);
+            if (num || e === "") setCode(e);
         },
-        [props.setCode]
+        [setCode]
     );
 
     return (
-        <InputOTP maxLength={6} value={props.code} onChange={handleChange}>
-            <InputOTPGroup
-                className={props.invalid ? "text-destructive" : undefined}
-            >
+        <InputOTP maxLength={6} value={code} onChange={handleChange}>
+            <InputOTPGroup className={invalid ? "text-destructive" : undefined}>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
                 <InputOTPSlot index={2} />
