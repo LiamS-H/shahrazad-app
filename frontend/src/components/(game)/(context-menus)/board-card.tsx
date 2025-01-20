@@ -47,9 +47,9 @@ export default function BoardCardContextMenu({
         title = scry_card?.name || shah_card.card_name;
     }
     const related_cards =
-        scry_card?.all_parts?.filter(
-            (c) => c.name.toLowerCase() !== title.toLowerCase()
-        ) || [];
+        scry_card?.all_parts
+            ?.slice(0, 5)
+            .filter((c) => c.name.toLowerCase() !== title.toLowerCase()) || [];
 
     return (
         <ContextMenu modal={open} onOpenChange={setOpen}>
