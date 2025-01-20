@@ -5,14 +5,14 @@ import {
     DragEndEvent,
     DragOverlay,
     DragStartEvent,
-    KeyboardSensor,
+    // KeyboardSensor,
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 import { useShahrazadGameContext } from "../game";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+// import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { DraggableOverlay } from "../../components/(game)/card-overlay/overlay";
 import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
@@ -166,10 +166,10 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
     const sensors = useSensors(
         // useSensor(MouseSensor),
         // useSensor(LibMouseSensor),
-        useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
+        useSensor(MouseSensor, { activationConstraint: { distance: 5 } })
+        // useSensor(KeyboardSensor, {
+        //     coordinateGetter: sortableKeyboardCoordinates,
+        // })
     );
 
     return (
