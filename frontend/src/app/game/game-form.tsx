@@ -142,7 +142,6 @@ export default function GameForm() {
     };
 
     const handleJoinGame = async () => {
-        console.log("joining game", gameCode);
         const stored_player = localStorage.getItem("saved-player") || undefined;
         const joinResult = await joinGame(gameCode, stored_player);
         if (joinResult === null) {

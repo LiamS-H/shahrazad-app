@@ -36,7 +36,7 @@ export default function DeckContextMenu({
         <ContextMenu modal={contextOpen} onOpenChange={setContextOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>Deck</ContextMenuLabel>
+                <ContextMenuLabel>Deck ({deck.cards.length})</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuItem
                     onClick={() => {
@@ -92,7 +92,7 @@ export default function DeckContextMenu({
                                     amount: 1,
                                     destination: playmat.graveyard,
                                     source: playmat.library,
-                                    state: {},
+                                    state: { face_down: false },
                                 });
                             }}
                         >
@@ -105,7 +105,7 @@ export default function DeckContextMenu({
                                     amount: 1,
                                     destination: playmat.exile,
                                     source: playmat.library,
-                                    state: {},
+                                    state: { face_down: false },
                                 });
                             }}
                         >

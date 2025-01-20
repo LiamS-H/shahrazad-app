@@ -59,6 +59,7 @@ export type ShahrazadActionCaseZoneImport = {
     type: ShahrazadActionCase.ZoneImport;
     zone: ShahrazadZoneId;
     cards: Array<string>;
+    token?: boolean;
     player_id: ShahrazadPlaymatId;
 };
 

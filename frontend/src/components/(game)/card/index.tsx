@@ -1,7 +1,7 @@
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
-import Counters from "@/components/(game)/playmat/Board/counters";
+import Counters from "@/components/(game)/card/counters";
 import { useSelection } from "@/contexts/selection";
 
 export default function Card(props: { id: ShahrazadCardId }) {
@@ -24,6 +24,7 @@ export default function Card(props: { id: ShahrazadCardId }) {
                 };
                 window.addEventListener("mouseup", handler);
             }}
+            data-shahcard={props.id}
         >
             <Scrycard
                 card={card}
@@ -32,7 +33,8 @@ export default function Card(props: { id: ShahrazadCardId }) {
                 tapped={shah_card.state.tapped}
                 faceDown={
                     shah_card.state.face_down &&
-                    !shah_card.state.revealed?.includes(player_name)
+                    (!shah_card.state.revealed?.includes(player_name) ||
+                        shah_card.state.x !== undefined)
                 }
             />
             <Counters id={props.id} />

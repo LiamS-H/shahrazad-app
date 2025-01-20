@@ -1,14 +1,24 @@
-import { useShahrazadGameContext } from "@/contexts/game";
+import { Button } from "@/components/(ui)/button";
 import { useSelection } from "@/contexts/selection";
-import { ScryNameCard } from "react-scrycards";
+import { ShahrazadCard } from "@/types/bindings/card";
+import { FlipHorizontal } from "lucide-react";
+import { useEffect, useState } from "react";
+import { isFlippable, ScryNameCard, useScrycard } from "react-scrycards";
 
-export default function CardPreview() {
+export default function PreviewCard({
+    shah_card,
+}: {
+    shah_card: ShahrazadCard;
+}) {
+    const [flipped, setFlipped] = useState<boolean | null>(null);
+
     const { currentPreview, setPreview } = useSelection();
-    const { getCard } = useShahrazadGameContext();
 
-    if (!currentPreview) return null;
-    const shah_card = getCard(currentPreview);
+    useEffect(() => {
+        setFlipped(null);
+    }, [currentPreview]);
 
+    const scrycard = useScrycard(shah_card.card_name);
     return (
         <div
             className="fixed right-5 top-5"
@@ -19,7 +29,31 @@ export default function CardPreview() {
                 setPreview(null);
             }}
         >
-            <ScryNameCard card_name={shah_card.card_name} size="xl" animated />
+            <ScryNameCard
+                card_name={shah_card.card_name}
+                flipped={flipped === null ? shah_card.state.flipped : flipped}
+                size="xl"
+                animated
+            />
+            {isFlippable(scrycard) && (
+                <div className="relative">
+                    <div className="absolute bottom-1 left-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                                setFlipped(
+                                    flipped === null
+                                        ? !shah_card.state.flipped
+                                        : !flipped
+                                );
+                            }}
+                        >
+                            <FlipHorizontal />
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,22 +1,38 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useShahrazadGameContext } from "@/contexts/game";
-import { useDroppable } from "@dnd-kit/core";
-import CardStack from "@/components/(game)/card-stack";
-import { IDroppableData } from "@/types/interfaces/dnd";
+import { useState } from "react";
+import VerticalZone from "../../vertical-zone";
+import { ArrowDownToLine } from "lucide-react";
 
 export default function Exile(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
     const zone = getZone(props.id);
-    const data: IDroppableData = {};
-    const { setNodeRef } = useDroppable({ id: props.id, data });
-
+    const [opened, setOpened] = useState(false);
     return (
-        <div
-            className="shahrazad-exile"
-            style={{ width: "auto" }}
-            ref={(ref) => setNodeRef(ref)}
-        >
-            {<CardStack emptyMessage="exile" cards={zone.cards} />}
+        <div className="shahrazad-exile">
+            <div
+                onClick={() => {
+                    setOpened((o) => !o);
+                }}
+            >
+                <VerticalZone
+                    id={props.id}
+                    hidden={zone.cards.length == 0 || !opened}
+                    emptyMessage="exile"
+                />
+            </div>
+            {opened && zone.cards.length > 1 && (
+                <button
+                    style={{
+                        position: "absolute",
+                        bottom: "0px",
+                        zIndex: 3,
+                    }}
+                    onClick={() => setOpened(false)}
+                >
+                    <ArrowDownToLine />
+                </button>
+            )}
         </div>
     );
 }

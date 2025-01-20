@@ -7,6 +7,8 @@ import {
     // ContextMenuRadioGroup,
     // ContextMenuRadioItem,
     ContextMenuSeparator,
+    ContextMenuSub,
+    ContextMenuSubTrigger,
     // ContextMenuShortcut,
     // ContextMenuSub,
     // ContextMenuSubContent,
@@ -18,6 +20,8 @@ import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { useSelection } from "@/contexts/selection";
 import { isFlippable, useScrycard } from "react-scrycards";
+import { usePlayer } from "@/contexts/player";
+import { ContextMenuSubContent } from "@radix-ui/react-context-menu";
 export default function BoardCardContextMenu({
     cardId,
     children,
@@ -25,20 +29,27 @@ export default function BoardCardContextMenu({
     cardId: string;
     children: ReactNode;
 }) {
-    const { applyAction, getCard, player_name } = useShahrazadGameContext();
+    const { applyAction, getCard, getPlaymat, player_name } =
+        useShahrazadGameContext();
     const { selectedCards } = useSelection();
+    const player = usePlayer();
     const shah_card = getCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
+    const playmat = getPlaymat(player);
     const [open, setOpen] = useState(true);
     const cards = selectedCards.includes(cardId) ? selectedCards : [cardId];
     let title = "";
     if (cards.length !== 1) {
-        title = `${cards.length} cards`;
+        title = `(${cards.length}) cards`;
     } else if (shah_card.state.face_down) {
         title = "Face Down Card";
     } else {
-        title = shah_card.card_name;
+        title = scry_card?.name || shah_card.card_name;
     }
+    const related_cards =
+        scry_card?.all_parts
+            ?.slice(0, 5)
+            .filter((c) => c.name.toLowerCase() !== title.toLowerCase()) || [];
 
     return (
         <ContextMenu modal={open} onOpenChange={setOpen}>
@@ -158,6 +169,55 @@ export default function BoardCardContextMenu({
                             Remove counter
                         </ContextMenuItem>
                     </>
+                )}
+                <ContextMenuItem
+                    onClick={() => {
+                        applyAction({
+                            type: ShahrazadActionCase.ZoneImport,
+                            cards: cards.map((s) => getCard(s).card_name),
+                            player_id: player,
+                            zone: playmat.battlefield,
+                            token: true,
+                        });
+                    }}
+                >
+                    Clone
+                </ContextMenuItem>
+                {scry_card && related_cards.length == 1 && (
+                    <ContextMenuItem
+                        onClick={() => {
+                            applyAction({
+                                type: ShahrazadActionCase.ZoneImport,
+                                cards: [scry_card.id],
+                                player_id: player,
+                                zone: playmat.battlefield,
+                                token: true,
+                            });
+                        }}
+                    ></ContextMenuItem>
+                )}
+                {related_cards.length >= 1 && (
+                    <ContextMenuSub>
+                        <ContextMenuSubTrigger>Add token</ContextMenuSubTrigger>
+                        <ContextMenuSubContent>
+                            {related_cards.map((card) => (
+                                <ContextMenuItem
+                                    key={card.id}
+                                    onClick={() => {
+                                        applyAction({
+                                            type: ShahrazadActionCase.ZoneImport,
+                                            cards: [card.id],
+                                            player_id: player,
+                                            zone: playmat.battlefield,
+                                            token: true,
+                                        });
+                                    }}
+                                >
+                                    {card.name}
+                                </ContextMenuItem>
+                            ))}
+                        </ContextMenuSubContent>
+                    </ContextMenuSub>
                 )}
             </ContextMenuContent>
         </ContextMenu>

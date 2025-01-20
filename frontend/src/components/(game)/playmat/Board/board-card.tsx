@@ -33,12 +33,20 @@ export function BoardCard({
         position: "absolute",
         left,
         top,
+
+        borderRadius: "4.75% / 3.5%",
     };
+    if (!selected && card.token) {
+        divStyle.outline = "2px solid white";
+    }
     if (selected) {
-        divStyle.outline = "2px solid blue";
+        divStyle.outline = `2px solid ${
+            card.token ? "DodgerBlue" : "DarkBlue"
+        }`;
         divStyle.filter = BLUE_TINT;
         divStyle.borderRadius = "4.75% / 3.5%";
     }
+
     return (
         <BoardCardContextMenu cardId={cardId}>
             <DraggableCard divStyle={divStyle} noDragTranslate id={cardId} />

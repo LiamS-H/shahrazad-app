@@ -6,6 +6,7 @@ import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import HandCardContextMenu from "../(context-menus)/hand-card";
 import Card from "../card";
+import { Eye } from "lucide-react";
 
 export default function SortableCard(props: {
     id: ShahrazadCardId;
@@ -37,14 +38,17 @@ export default function SortableCard(props: {
 
     return (
         <HandCardContextMenu cardId={props.id}>
-            <div
-                data-shahcard={props.id}
-                ref={setNodeRef}
-                style={style}
-                {...listeners}
-                {...attributes}
-            >
+            <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
                 <Card id={props.id} />
+                {shah_card.state.face_down &&
+                    shah_card.state.revealed &&
+                    shah_card.state.revealed.length > 1 && (
+                        <div className="relative">
+                            <div className="absolute bottom-[100px] w-full flex justify-center">
+                                <Eye />
+                            </div>
+                        </div>
+                    )}
             </div>
         </HandCardContextMenu>
     );

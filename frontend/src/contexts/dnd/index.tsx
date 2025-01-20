@@ -13,7 +13,7 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 import { useShahrazadGameContext } from "../game";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { DraggableOverlay } from "./overlay";
+import { DraggableOverlay } from "../../components/(game)/card-overlay/overlay";
 import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { useSelection } from "../selection";
@@ -57,7 +57,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             const active_data = event.active.data.current as IDraggableData;
             const target_id = event.active.id.toString();
             const cards = selectedCards.includes(target_id)
-                ? selectedCards
+                ? [target_id, ...selectedCards.filter((id) => id !== target_id)]
                 : [target_id];
 
             if (over_data && "zone" in over_data) {
@@ -151,8 +151,8 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                         y,
                         face_down: false,
                         tapped: false,
-                        flipped: false,
-                        inverted: false,
+                        flipped: x === 255 ? false : undefined,
+                        inverted: x === 255 ? false : undefined,
                         revealed: [],
                     },
                     index: -1,

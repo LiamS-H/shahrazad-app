@@ -1,3 +1,4 @@
+use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet};
 
 use rand::seq::SliceRandom;
@@ -112,11 +113,46 @@ impl ShahrazadGame {
             }
             ShahrazadAction::CardState { cards, state } => {
                 let mut mutated = false;
+
+                struct Pos {
+                    pub x: i16,
+                    pub y: i16,
+                }
+
+                let transform = if let (Some(x), Some(y)) = (state.x, state.y) {
+                    let Some(first_card) = game.cards.get(&cards[0]) else {
+                        return None;
+                    };
+                    if let (Some(sx), Some(sy)) = (first_card.state.x, first_card.state.y) {
+                        Some(Pos {
+                            x: x as i16 - sx as i16,
+                            y: y as i16 - sy as i16,
+                        })
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
+
                 for card_id in &cards {
                     let old_card = game.cards.get(&card_id)?;
                     let mut new_card = ShahrazadCard { ..old_card.clone() };
+
                     new_card.state.apply(&old_card.state);
                     new_card.state.apply(&state);
+                    if let Some(transform) = &transform {
+                        if let (Some(x), Some(y)) = (old_card.state.x, old_card.state.y) {
+                            let new_x = max(min(x as i16 + transform.x, 254), 0) as u8;
+                            let new_y = max(min(y as i16 + transform.y, 254), 0) as u8;
+                            new_card.state.apply(&ShahrazadCardState {
+                                x: Some(new_x),
+                                y: Some(new_y),
+                                ..Default::default()
+                            })
+                        }
+                    }
+
                     if *old_card == new_card {
                         continue;
                     };
@@ -239,8 +275,10 @@ impl ShahrazadGame {
                 zone,
                 cards,
                 player_id,
+                token,
             } => {
                 let mut card_ids = Vec::new();
+                let token = token.unwrap_or(false);
                 for card in cards {
                     let card_name = ShahrazadCardName::new(card);
                     game.card_count += 1;
@@ -252,6 +290,7 @@ impl ShahrazadGame {
                         ShahrazadCard {
                             card_name,
                             location: zone.clone(),
+                            token,
                             state: ShahrazadCardState {
                                 counters: Some(Vec::<ShahrazadCounter>::new()),
                                 ..Default::default()

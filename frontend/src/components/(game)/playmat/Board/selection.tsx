@@ -71,7 +71,6 @@ export default function Selection({
                     return;
                 }
                 const new_selection = cards.filter(({ card }) => {
-                    console.log(card.state.x, card.state.y);
                     if (
                         card.state.x === undefined ||
                         card.state.y === undefined

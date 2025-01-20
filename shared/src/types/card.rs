@@ -50,9 +50,13 @@ impl ShahrazadCardState {
         if let Some(new_revealed) = &other.revealed {
             if let Some(revealed) = &mut self.revealed {
                 if new_revealed.len() > 0 {
-                    revealed.append(&mut new_revealed.clone());
+                    for player in new_revealed.clone() {
+                        if !revealed.contains(&player) {
+                            revealed.push(player);
+                        };
+                    }
                     return;
-                };
+                }
             }
             self.revealed = Some(new_revealed.clone());
         }
@@ -65,6 +69,7 @@ pub struct ShahrazadCard {
     pub card_name: ShahrazadCardName,
     pub location: ShahrazadZoneId,
     pub owner: ShahrazadPlaymatId,
+    pub token: bool,
 }
 
 impl ShahrazadCard {

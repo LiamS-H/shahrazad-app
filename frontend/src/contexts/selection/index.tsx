@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from "react";
+import Preview from "./preview";
 
 export interface ISelectionContext {
     selectedCards: ShahrazadCardId[];
@@ -35,7 +36,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
     const setPreview = useCallback(
         (card: ShahrazadCardId | null) => {
-            if (card != null) {
+            if (card !== null) {
                 setCurrentPreview(card);
                 resetTimeout();
                 return;
@@ -62,6 +63,11 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
         document.addEventListener("keydown", handleKey);
         document.addEventListener("keyup", handleKey);
+
+        return () => {
+            document.removeEventListener("keydown", handleKey);
+            document.removeEventListener("keyup", handleKey);
+        };
     });
 
     const selectCards = useCallback((cards: ShahrazadCardId[] | null) => {
@@ -88,6 +94,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             value={{ selectedCards, selectCards, currentPreview, setPreview }}
         >
             {children}
+            <Preview />
         </SelectionContext.Provider>
     );
 }
