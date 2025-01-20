@@ -38,6 +38,7 @@ function Counter({
             <Button
                 size="icon"
                 className="h-[1.2rem] w-[1.2rem]"
+                disabled={counter.amount >= 99}
                 onClick={() => {
                     setCounter(counter.amount + 1);
                 }}
@@ -56,14 +57,19 @@ function Counter({
                 }}
             >
                 <PopoverTrigger asChild>
-                    <Button size="icon" className="h-[1.2rem] w-[1.2rem]">
-                        {counter.amount}
+                    <Button
+                        variant={
+                            counter.amount >= 0 ? undefined : "destructive"
+                        }
+                        size="icon"
+                        className="h-[1.2rem] w-[1.2rem]"
+                    >
+                        {counter.amount >= 0
+                            ? counter.amount
+                            : Math.abs(counter.amount)}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent
-                    className="w-24"
-                    onMouseDown={() => setInputOpen(false)}
-                >
+                <PopoverContent className="w-24" data-nodrag>
                     <form onSubmit={onSubmit}>
                         <Input
                             value={input}
@@ -80,6 +86,7 @@ function Counter({
             <Button
                 size="icon"
                 className="h-[1.2rem] w-[1.2rem]"
+                disabled={counter.amount <= -99}
                 onClick={() => {
                     setCounter(counter.amount - 1);
                 }}
