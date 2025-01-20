@@ -20,7 +20,7 @@ export default function Player({
 }) {
     const { getPlaymat, applyAction } = useShahrazadGameContext();
     const { life } = getPlaymat(player_id);
-    const [lifeInput, setLifeInput] = useState<number>(life);
+    const [lifeInput, setLifeInput] = useState<string>(life.toString());
     const [inputOpen, setInputOpen] = useState(false);
 
     function addLife() {
@@ -37,16 +37,23 @@ export default function Player({
             player_id: player_id,
         });
     }
-    function setLife(life: number) {
+    function setLife(new_life?: number) {
+        if (!new_life) return;
+        if (new_life === life) return;
         applyAction({
             type: ShahrazadActionCase.SetLife,
-            life: life,
+            life: new_life,
             player_id: player_id,
         });
     }
+    function parseInput(str: string): number | undefined {
+        const num = Number(str);
+        if (!num) return undefined;
+        return num;
+    }
     function onSubmit(e: FormEvent) {
         e.preventDefault();
-        setLife(lifeInput);
+        setLife(parseInput(lifeInput));
         setInputOpen(false);
     }
 
@@ -63,9 +70,9 @@ export default function Player({
                 open={inputOpen}
                 onOpenChange={(open) => {
                     if (open) {
-                        setLifeInput(life);
+                        setLifeInput(life.toString());
                     } else {
-                        setLife(lifeInput);
+                        setLife(parseInput(lifeInput));
                     }
                     setInputOpen(open);
                 }}
@@ -78,9 +85,9 @@ export default function Player({
                         <Input
                             value={lifeInput}
                             onChange={(e) => {
-                                const num = Number(e.target.value);
-                                if (!num && e.target.value !== "") return;
-                                setLifeInput(num);
+                                const str = e.target.value;
+                                const num = parseInput(str);
+                                setLifeInput(num ? num.toString() : str);
                             }}
                         />
                     </form>

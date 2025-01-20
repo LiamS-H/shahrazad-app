@@ -32,7 +32,7 @@ pub struct ShahrazadPlaymat {
     battlefield: ShahrazadZoneId,
     exile: ShahrazadZoneId,
     command: ShahrazadZoneId,
-    life: u32,
+    life: i32,
     mulligans: u8,
 }
 
@@ -41,7 +41,7 @@ use crate::types::action::ShahrazadAction;
 
 #[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadGameSettings {
-    pub starting_life: u32,
+    pub starting_life: i32,
     pub free_mulligans: String,
     pub scry_rule: bool,
 }
