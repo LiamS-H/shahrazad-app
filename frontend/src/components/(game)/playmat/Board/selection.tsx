@@ -23,12 +23,13 @@ export default function Selection({
     const [selectionBounds, setSelectionBounds] =
         useState<SelectionBounds | null>(null);
     const bounds_ref = useRef(selectionBounds);
-    const { selectCards } = useSelection();
+    const { selectCards, setPreview } = useSelection();
 
     const handleMouseDown = useCallback(
         (e: MouseEvent) => {
             if (e.target !== e.currentTarget) return;
             if (!node.current) return;
+            setPreview(undefined);
 
             const boardRect = node.current.getBoundingClientRect();
             const startX = e.clientX - boardRect.x;
