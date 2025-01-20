@@ -1,6 +1,5 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useShahrazadGameContext } from "@/contexts/game";
-import { IDroppableData } from "@/types/interfaces/dnd";
 import { useState } from "react";
 import VerticalZone from "../../vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
