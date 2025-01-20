@@ -65,12 +65,17 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             shift_key_ref.current = false;
         };
 
-        document.addEventListener("keydown", handleKey);
-        document.addEventListener("keyup", handleKey);
+        const controller = new AbortController();
+
+        window.addEventListener("keydown", handleKey, {
+            signal: controller.signal,
+        });
+        window.addEventListener("keyup", handleKey, {
+            signal: controller.signal,
+        });
 
         return () => {
-            document.removeEventListener("keydown", handleKey);
-            document.removeEventListener("keyup", handleKey);
+            controller.abort();
         };
     });
 

@@ -63,9 +63,9 @@ export default function Selection({
                 bounds_ref.current = newBounds;
             };
 
+            const controller = new AbortController();
             const handleMouseUp = () => {
-                window.removeEventListener("mousemove", handleMouseMove);
-                window.removeEventListener("mouseup", handleMouseUp);
+                controller.abort();
                 setSelectionBounds(null);
                 const bounds = bounds_ref.current;
                 if (!bounds) {
@@ -94,8 +94,12 @@ export default function Selection({
                 bounds_ref.current = null;
             };
 
-            window.addEventListener("mousemove", handleMouseMove);
-            window.addEventListener("mouseup", handleMouseUp);
+            window.addEventListener("mousemove", handleMouseMove, {
+                signal: controller.signal,
+            });
+            window.addEventListener("mouseup", handleMouseUp, {
+                signal: controller.signal,
+            });
         },
         [cards, node, selectCards]
     );
