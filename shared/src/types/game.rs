@@ -275,8 +275,10 @@ impl ShahrazadGame {
                 zone,
                 cards,
                 player_id,
+                token,
             } => {
                 let mut card_ids = Vec::new();
+                let token = token.unwrap_or(false);
                 for card in cards {
                     let card_name = ShahrazadCardName::new(card);
                     game.card_count += 1;
@@ -288,6 +290,7 @@ impl ShahrazadGame {
                         ShahrazadCard {
                             card_name,
                             location: zone.clone(),
+                            token,
                             state: ShahrazadCardState {
                                 counters: Some(Vec::<ShahrazadCounter>::new()),
                                 ..Default::default()

@@ -64,7 +64,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
     const shah_card = getCard(id);
     const { selectedCards } = useSelection();
 
-    const cards = selectedCards.length === 0 ? [id] : selectedCards;
+    // const cards = selectedCards.length === 0 ? [id] : selectedCards;
 
     return (
         <OverlayWrapper>
@@ -100,22 +100,28 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                     </div>
                 );
             })} */}
-            <ScryNameCard
-                card_name={shah_card.card_name}
-                flipped={shah_card.state.flipped}
-                faceDown={
-                    shah_card.state.face_down &&
-                    !shah_card.state.revealed?.includes(player_name)
-                }
-                tapped={shah_card.state.tapped}
-            />
-            {selectedCards.length !== 0 && (
-                <div className="relative">
-                    <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive flex justify-center items-center">
-                        {selectedCards.length}
+            <div
+                style={{
+                    outline: shah_card.token ? "1px solid white" : undefined,
+                }}
+            >
+                <ScryNameCard
+                    card_name={shah_card.card_name}
+                    flipped={shah_card.state.flipped}
+                    faceDown={
+                        shah_card.state.face_down &&
+                        !shah_card.state.revealed?.includes(player_name)
+                    }
+                    tapped={shah_card.state.tapped}
+                />
+                {selectedCards.length !== 0 && (
+                    <div className="relative">
+                        <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive flex justify-center items-center">
+                            {selectedCards.length}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </OverlayWrapper>
     );
 }

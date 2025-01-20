@@ -36,6 +36,7 @@ pub enum ShahrazadAction {
     ZoneImport {
         zone: ShahrazadZoneId,
         cards: Vec<String>,
+        token: Option<bool>,
         player_id: ShahrazadPlaymatId,
     },
     DeckImport {

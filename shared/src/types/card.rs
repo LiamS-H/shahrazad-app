@@ -69,6 +69,7 @@ pub struct ShahrazadCard {
     pub card_name: ShahrazadCardName,
     pub location: ShahrazadZoneId,
     pub owner: ShahrazadPlaymatId,
+    pub token: bool,
 }
 
 impl ShahrazadCard {

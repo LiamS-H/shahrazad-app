@@ -25,6 +25,9 @@ export default function Card(props: { id: ShahrazadCardId }) {
                 window.addEventListener("mouseup", handler);
             }}
             data-shahcard={props.id}
+            style={{
+                outline: shah_card.token ? "3px solid white" : undefined,
+            }}
         >
             <Scrycard
                 card={card}

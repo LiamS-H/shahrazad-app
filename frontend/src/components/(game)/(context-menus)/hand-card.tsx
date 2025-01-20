@@ -31,12 +31,13 @@ export default function HandCardContextMenu({
     const shah_card = getCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
     const [open, setOpen] = useState(true);
+    const title = scry_card?.name || shah_card.card_name;
 
     return (
         <ContextMenu modal={open} onOpenChange={setOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>{shah_card.card_name}</ContextMenuLabel>
+                <ContextMenuLabel>{title}</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuSub>
                     <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>
