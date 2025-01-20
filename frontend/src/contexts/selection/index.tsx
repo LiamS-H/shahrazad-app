@@ -14,7 +14,7 @@ export interface ISelectionContext {
     selectedCards: ShahrazadCardId[];
     selectCards: (cards: ShahrazadCardId[] | null) => void;
     currentPreview: ShahrazadCardId | null;
-    setPreview: (card: ShahrazadCardId | null) => void;
+    setPreview: (card: ShahrazadCardId | null | undefined) => void;
 }
 
 const SelectionContext = createContext<ISelectionContext | null>(null);
@@ -35,11 +35,15 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const setPreview = useCallback(
-        (card: ShahrazadCardId | null) => {
-            if (card !== null) {
+        (card: ShahrazadCardId | null | undefined) => {
+            if (card) {
                 setCurrentPreview(card);
                 resetTimeout();
                 return;
+            }
+            if (card === undefined) {
+                setCurrentPreview(null);
+                resetTimeout();
             }
             if (clearPreviewTimeout.current) {
                 return;
@@ -61,13 +65,16 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             shift_key_ref.current = false;
         };
 
-        document.addEventListener("keydown", handleKey);
-        document.addEventListener("keyup", handleKey);
+        const controller = new AbortController();
 
-        return () => {
-            document.removeEventListener("keydown", handleKey);
-            document.removeEventListener("keyup", handleKey);
-        };
+        window.addEventListener("keydown", handleKey, {
+            signal: controller.signal,
+        });
+        window.addEventListener("keyup", handleKey, {
+            signal: controller.signal,
+        });
+
+        return controller.abort;
     });
 
     const selectCards = useCallback((cards: ShahrazadCardId[] | null) => {

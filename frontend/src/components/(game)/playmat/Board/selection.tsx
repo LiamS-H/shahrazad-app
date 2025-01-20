@@ -23,12 +23,13 @@ export default function Selection({
     const [selectionBounds, setSelectionBounds] =
         useState<SelectionBounds | null>(null);
     const bounds_ref = useRef(selectionBounds);
-    const { selectCards } = useSelection();
+    const { selectCards, setPreview } = useSelection();
 
     const handleMouseDown = useCallback(
         (e: MouseEvent) => {
             if (e.target !== e.currentTarget) return;
             if (!node.current) return;
+            setPreview(undefined);
 
             const boardRect = node.current.getBoundingClientRect();
             const startX = e.clientX - boardRect.x;
@@ -62,9 +63,9 @@ export default function Selection({
                 bounds_ref.current = newBounds;
             };
 
+            const controller = new AbortController();
             const handleMouseUp = () => {
-                window.removeEventListener("mousemove", handleMouseMove);
-                window.removeEventListener("mouseup", handleMouseUp);
+                controller.abort();
                 setSelectionBounds(null);
                 const bounds = bounds_ref.current;
                 if (!bounds) {
@@ -93,8 +94,14 @@ export default function Selection({
                 bounds_ref.current = null;
             };
 
-            window.addEventListener("mousemove", handleMouseMove);
-            window.addEventListener("mouseup", handleMouseUp);
+            window.addEventListener("mousemove", handleMouseMove, {
+                signal: controller.signal,
+            });
+            window.addEventListener("mouseup", handleMouseUp, {
+                signal: controller.signal,
+            });
+
+            return controller.abort;
         },
         [cards, node, selectCards]
     );
@@ -102,10 +109,11 @@ export default function Selection({
     useEffect(() => {
         if (!node.current) return;
         const nodeRef = node.current;
-        nodeRef.addEventListener("mousedown", handleMouseDown);
-        return () => {
-            nodeRef.removeEventListener("mousedown", handleMouseDown);
-        };
+        const controller = new AbortController();
+        nodeRef.addEventListener("mousedown", handleMouseDown, {
+            signal: controller.signal,
+        });
+        return controller.abort;
     }, [cards, node, handleMouseDown]);
 
     if (!selectionBounds) return null;

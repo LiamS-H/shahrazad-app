@@ -4,16 +4,33 @@ import HorizontalZone from "@/components/(game)/horizontal-zone";
 import { Scrycard } from "react-scrycards";
 import Card from "../../card";
 import { useSelection } from "@/contexts/selection";
+import {
+    Tooltip,
+    TooltipTrigger,
+    TooltipContent,
+} from "@/components/(ui)/tooltip";
+import { useState } from "react";
 
 export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
     const { getZone, getCard, player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const zone = getZone(props.id);
+    const [tooltipOpen, setTooltipOpen] = useState(false);
 
     const cardCountChip = (
-        <div className="relative z-10 pointer-events-none">
-            <div className="absolute bottom-1 w-6 h-6 rounded-full bg-destructive flex justify-center items-center">
-                {zone.cards.length}
+        <div className="relative z-10">
+            <div className="absolute bottom-1">
+                <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
+                    <TooltipTrigger
+                        className="w-6 h-6 rounded-full bg-destructive flex justify-center items-center"
+                        onClick={() => setTooltipOpen(true)}
+                    >
+                        {zone.cards.length}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        ({zone.cards.length}) cards in hand
+                    </TooltipContent>
+                </Tooltip>
             </div>
         </div>
     );

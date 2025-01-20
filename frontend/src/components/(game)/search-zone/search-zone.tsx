@@ -14,6 +14,7 @@ import { Button } from "@/components/(ui)/button";
 import { Switch } from "@/components/(ui)/switch";
 import { Label } from "@/components/(ui)/label";
 import { Input } from "@/components/(ui)/input";
+import type { ScryfallColors } from "@scryfall/api-types";
 
 interface ISort {
     type: "lands" | "creatures" | "artifacts" | "spells" | null;
@@ -74,7 +75,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                 case "spells":
                 default:
             }
-            if (!sort.colors) return true;
+            if (sort.colors === null) return true;
             const color_identity =
                 card.color_identity.length === 0
                     ? (["C"] as const)
@@ -87,6 +88,10 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
             }
             for (const color of color_identity) {
                 if (!sort.colors[color]) return false;
+            }
+            for (const color of Object.keys(sort.colors) as ScryfallColors) {
+                if (!sort.colors[color]) continue;
+                if (!(color_identity as string[]).includes(color)) return false;
             }
 
             return true;
@@ -219,7 +224,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
             </div>
             <div
                 ref={setNodeRef}
-                className="w-full h-full flex flex-row flex-nowrap justify-center overflow-x-auto"
+                className="flex flex-row flex-nowrap gap-1 overflow-x-auto"
             >
                 {cards.length === 0 ? (
                     <Scrycard card={undefined} />
