@@ -21,9 +21,8 @@ export class MouseSensor extends LibMouseSensor {
         // skip for buttons
         let cur: EventTarget | null = event.target;
         while (cur && cur instanceof Element) {
-            if (cur.tagName == "BUTTON") {
-                return false;
-            }
+            if (cur.tagName == "BUTTON") return false;
+            if (cur instanceof HTMLElement && cur.dataset.nodrag) return false;
             cur = cur.parentElement;
         }
 
