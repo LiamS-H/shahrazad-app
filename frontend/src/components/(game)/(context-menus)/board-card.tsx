@@ -139,19 +139,22 @@ export default function BoardCardContextMenu({
                 )}
                 {cards.length === 1 && (
                     <>
-                        {scry_card && related_cards.length === 1 && (
+                        {scry_card && related_cards.length == 1 && (
                             <ContextMenuItem
                                 onClick={() => {
                                     applyAction({
                                         type: ShahrazadActionCase.ZoneImport,
-                                        cards: [related_cards[0].id],
+                                        cards: [
+                                            related_cards.at(0)?.id || "test",
+                                        ],
                                         player_id: player,
                                         zone: playmat.battlefield,
                                         token: true,
                                     });
                                 }}
                             >
-                                Summon token ({related_cards[0].name})
+                                Summon token (
+                                {related_cards.at(0)?.name || "loading..."})
                             </ContextMenuItem>
                         )}
                         {related_cards.length > 1 && (
