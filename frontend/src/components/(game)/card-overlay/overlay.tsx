@@ -101,9 +101,14 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                 );
             })} */}
             <div
-                style={{
-                    outline: shah_card.token ? "1px solid white" : undefined,
-                }}
+                style={
+                    shah_card.token
+                        ? {
+                              outline: "2px solid white",
+                              borderRadius: "4.75% / 3.5%",
+                          }
+                        : undefined
+                }
             >
                 <ScryNameCard
                     card_name={shah_card.card_name}
