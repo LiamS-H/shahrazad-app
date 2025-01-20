@@ -92,7 +92,7 @@ export default function GameForm() {
             signal: controller.signal,
         });
 
-        return controller.abort;
+        return () => controller.abort();
     }, [gameCode, readClipboard]);
 
     useEffect(() => {
