@@ -101,7 +101,7 @@ export default function Selection({
                 signal: controller.signal,
             });
 
-            return controller.abort;
+            return () => controller.abort();
         },
         [cards, node, selectCards]
     );
@@ -113,7 +113,7 @@ export default function Selection({
         nodeRef.addEventListener("mousedown", handleMouseDown, {
             signal: controller.signal,
         });
-        return controller.abort;
+        return () => controller.abort();
     }, [cards, node, handleMouseDown]);
 
     if (!selectionBounds) return null;
