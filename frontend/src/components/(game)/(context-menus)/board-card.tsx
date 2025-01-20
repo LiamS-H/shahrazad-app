@@ -49,7 +49,9 @@ export default function BoardCardContextMenu({
     const related_cards =
         scry_card?.all_parts
             ?.slice(0, 5)
-            .filter((c) => c.name.toLowerCase() !== title.toLowerCase()) || [];
+            .filter(
+                (c) => c.name.toLowerCase() !== scry_card.name.toLowerCase()
+            ) || [];
 
     return (
         <ContextMenu modal={open} onOpenChange={setOpen}>
@@ -137,6 +139,49 @@ export default function BoardCardContextMenu({
                 )}
                 {cards.length === 1 && (
                     <>
+                        {scry_card && related_cards.length == 1 && (
+                            <ContextMenuItem
+                                onClick={() => {
+                                    applyAction({
+                                        type: ShahrazadActionCase.ZoneImport,
+                                        cards: [
+                                            related_cards.at(0)?.id || "test",
+                                        ],
+                                        player_id: player,
+                                        zone: playmat.battlefield,
+                                        token: true,
+                                    });
+                                }}
+                            >
+                                Summon token (
+                                {related_cards.at(0)?.name || "loading..."})
+                            </ContextMenuItem>
+                        )}
+                        {related_cards.length > 1 && (
+                            <ContextMenuSub>
+                                <ContextMenuSubTrigger>
+                                    Summon token
+                                </ContextMenuSubTrigger>
+                                <ContextMenuSubContent>
+                                    {related_cards.map((card) => (
+                                        <ContextMenuItem
+                                            key={card.id}
+                                            onClick={() => {
+                                                applyAction({
+                                                    type: ShahrazadActionCase.ZoneImport,
+                                                    cards: [card.id],
+                                                    player_id: player,
+                                                    zone: playmat.battlefield,
+                                                    token: true,
+                                                });
+                                            }}
+                                        >
+                                            {card.name}
+                                        </ContextMenuItem>
+                                    ))}
+                                </ContextMenuSubContent>
+                            </ContextMenuSub>
+                        )}
                         <ContextMenuItem
                             onClick={() => {
                                 applyAction({
@@ -183,42 +228,7 @@ export default function BoardCardContextMenu({
                 >
                     Clone
                 </ContextMenuItem>
-                {scry_card && related_cards.length == 1 && (
-                    <ContextMenuItem
-                        onClick={() => {
-                            applyAction({
-                                type: ShahrazadActionCase.ZoneImport,
-                                cards: [scry_card.id],
-                                player_id: player,
-                                zone: playmat.battlefield,
-                                token: true,
-                            });
-                        }}
-                    ></ContextMenuItem>
-                )}
-                {related_cards.length >= 1 && (
-                    <ContextMenuSub>
-                        <ContextMenuSubTrigger>Add token</ContextMenuSubTrigger>
-                        <ContextMenuSubContent>
-                            {related_cards.map((card) => (
-                                <ContextMenuItem
-                                    key={card.id}
-                                    onClick={() => {
-                                        applyAction({
-                                            type: ShahrazadActionCase.ZoneImport,
-                                            cards: [card.id],
-                                            player_id: player,
-                                            zone: playmat.battlefield,
-                                            token: true,
-                                        });
-                                    }}
-                                >
-                                    {card.name}
-                                </ContextMenuItem>
-                            ))}
-                        </ContextMenuSubContent>
-                    </ContextMenuSub>
-                )}
+                {selectedCards.length === 0 && <></>}
             </ContextMenuContent>
         </ContextMenu>
     );
