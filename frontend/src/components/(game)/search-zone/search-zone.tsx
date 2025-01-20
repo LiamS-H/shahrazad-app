@@ -80,7 +80,6 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                 card.color_identity.length === 0
                     ? (["C"] as const)
                     : card.color_identity;
-            console.log(sort.match);
             if (sort.match) {
                 for (const color of color_identity) {
                     if (sort.colors[color]) return true;
@@ -225,7 +224,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
             </div>
             <div
                 ref={setNodeRef}
-                className="w-full h-full flex flex-row flex-nowrap justify-center overflow-x-auto"
+                className="flex flex-row flex-nowrap gap-1 overflow-x-auto"
             >
                 {cards.length === 0 ? (
                     <Scrycard card={undefined} />
