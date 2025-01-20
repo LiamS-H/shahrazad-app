@@ -40,7 +40,7 @@ export default function BoardCardContextMenu({
     const cards = selectedCards.includes(cardId) ? selectedCards : [cardId];
     let title = "";
     if (cards.length !== 1) {
-        title = `${cards.length} cards`;
+        title = `(${cards.length}) cards`;
     } else if (shah_card.state.face_down) {
         title = "Face Down Card";
     } else {
