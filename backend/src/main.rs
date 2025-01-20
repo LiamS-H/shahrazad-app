@@ -170,15 +170,25 @@ async fn handle_socket(
     let receive_task = tokio::spawn({
         let state = state.clone();
         async move {
-            while let Some(Ok(Message::Text(text))) = receiver.next().await {
-                let client_action = match serde_json::from_str::<ClientAction>(&text) {
-                    Ok(action) => action,
-                    Err(_) => continue,
-                };
-
-                let _ = (*state)
-                    .process_action(player_id, game_id, client_action)
-                    .await;
+            while let Some(message) = receiver.next().await {
+                match message {
+                    Ok(Message::Text(text)) => {
+                        let client_action = match serde_json::from_str::<ClientAction>(&text) {
+                            Ok(action) => action,
+                            Err(_) => continue,
+                        };
+                        if (*state)
+                            .process_action(player_id, game_id, client_action)
+                            .await
+                            .is_err()
+                        {
+                            break;
+                        }
+                    }
+                    Ok(Message::Close(_)) => break,
+                    Err(_) => break,
+                    _ => continue,
+                }
             }
         }
     });
