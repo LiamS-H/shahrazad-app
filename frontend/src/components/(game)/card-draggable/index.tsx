@@ -44,11 +44,11 @@ export default function DraggableCard(props: {
                 ...draggableStyle,
                 width: "fit-content",
                 cursor: "grab",
-                ...props.divStyle,
                 filter:
                     isDragging && props.noDragTranslate
                         ? "grayscale(100%)"
                         : undefined,
+                ...props.divStyle,
             }}
         >
             <Card id={props.id} />
