@@ -100,6 +100,8 @@ export default function Selection({
             window.addEventListener("mouseup", handleMouseUp, {
                 signal: controller.signal,
             });
+
+            return controller.abort;
         },
         [cards, node, selectCards]
     );
@@ -107,10 +109,11 @@ export default function Selection({
     useEffect(() => {
         if (!node.current) return;
         const nodeRef = node.current;
-        nodeRef.addEventListener("mousedown", handleMouseDown);
-        return () => {
-            nodeRef.removeEventListener("mousedown", handleMouseDown);
-        };
+        const controller = new AbortController();
+        nodeRef.addEventListener("mousedown", handleMouseDown, {
+            signal: controller.signal,
+        });
+        return controller.abort;
     }, [cards, node, handleMouseDown]);
 
     if (!selectionBounds) return null;

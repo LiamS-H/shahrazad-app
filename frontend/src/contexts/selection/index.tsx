@@ -74,9 +74,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             signal: controller.signal,
         });
 
-        return () => {
-            controller.abort();
-        };
+        return controller.abort;
     });
 
     const selectCards = useCallback((cards: ShahrazadCardId[] | null) => {

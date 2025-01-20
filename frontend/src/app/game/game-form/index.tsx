@@ -79,7 +79,7 @@ export default function GameForm() {
         setStartingLife(safeGetItem("default-game-startingLife", "20"));
         setFreeMulligans(safeGetItem("default-game-freeMulligans", 1));
         setScryRule(safeGetItem("default-game-scryRule", false));
-        readClipboard();
+        readClipboard(); // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -92,10 +92,8 @@ export default function GameForm() {
             signal: controller.signal,
         });
 
-        return () => {
-            controller.abort();
-        };
-    }, [gameCode]);
+        return controller.abort;
+    }, [gameCode, readClipboard]);
 
     useEffect(() => {
         if (isClient) {
@@ -163,10 +161,6 @@ export default function GameForm() {
 
         pushRoute(`game/${code}`);
     };
-
-    if (!isClient) {
-        return null;
-    }
 
     return (
         <Card>
