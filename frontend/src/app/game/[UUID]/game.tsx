@@ -10,7 +10,8 @@ import init from "shahrazad-wasm";
 import { GameClient } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
 import { toast } from "sonner";
-import ShareGameButton from "@/components/(game)/playmat/(buttons)/ShareGameButton";
+import ShareGameButton from "./ShareGameButton";
+import FullscreenToggle from "./FullscreenToggle";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -131,7 +132,10 @@ export default function GamePage(props: { game_id: string }) {
                 playerName={playerName}
                 applyAction={handleAction}
             />
-            {gameCode && <ShareGameButton code={gameCode} />}
+            <div className="absolute top-4 right-4 flex gap-4">
+                <ShareGameButton code={gameCode} />
+                <FullscreenToggle />
+            </div>
         </>
     );
 }
