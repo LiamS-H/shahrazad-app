@@ -22,6 +22,7 @@ export default function CreateGameForm() {
     const { push: pushRoute } = useRouter();
     const [loading, setLoading] = useState(false);
     const [startingLife, setStartingLife] = useState("20");
+    const [customStartingLife, setCustomStartingLife] = useState("");
     const [freeMulligans, setFreeMulligans] = useState(1);
     const [scryRule, setScryRule] = useState(false);
     const [isClient, setIsClient] = useState(false);
@@ -41,6 +42,7 @@ export default function CreateGameForm() {
             }
         };
         setStartingLife(safeGetItem("default-game-startingLife", "20"));
+        setCustomStartingLife(safeGetItem("default-game-customLife", ""));
         setFreeMulligans(safeGetItem("default-game-freeMulligans", 1));
         setScryRule(safeGetItem("default-game-scryRule", false));
     }, []);
@@ -51,6 +53,10 @@ export default function CreateGameForm() {
                 localStorage.setItem(
                     "default-game-startingLife",
                     JSON.stringify(startingLife)
+                );
+                localStorage.setItem(
+                    "default-game-customLife",
+                    JSON.stringify(customStartingLife)
                 );
                 localStorage.setItem(
                     "default-game-freeMulligans",
@@ -70,7 +76,12 @@ export default function CreateGameForm() {
     }
 
     const handleCreateGame = async () => {
-        let starting_life = Number(startingLife);
+        let starting_life: number;
+        if (startingLife === "custom" && customStartingLife !== "") {
+            starting_life = Number(customStartingLife);
+        } else {
+            starting_life = Number(startingLife);
+        }
         if (Number.isNaN(starting_life) || starting_life < 0) {
             starting_life = 20;
         }
@@ -110,7 +121,12 @@ export default function CreateGameForm() {
                             <SelectItem value="20">20</SelectItem>
                             <SelectItem value="25">25</SelectItem>
                             <SelectItem value="40">40</SelectItem>
-                            <SelectItem value="custom">Custom</SelectItem>
+                            <SelectItem value="custom">
+                                Custom
+                                {customStartingLife
+                                    ? ` - ${customStartingLife}`
+                                    : ""}
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                     {startingLife === "custom" && (
@@ -118,6 +134,10 @@ export default function CreateGameForm() {
                             type="number"
                             placeholder="Enter custom life total"
                             className="mt-2"
+                            value={customStartingLife}
+                            onChange={(e) =>
+                                setCustomStartingLife(e.target.value)
+                            }
                         />
                     )}
                 </div>
@@ -152,7 +172,10 @@ export default function CreateGameForm() {
                 <Button
                     onClick={handleCreateGame}
                     className="w-full"
-                    disabled={loading}
+                    disabled={
+                        loading ||
+                        (customStartingLife === "" && startingLife === "custom")
+                    }
                 >
                     {loading ? "loading..." : "Create Game"}
                 </Button>
