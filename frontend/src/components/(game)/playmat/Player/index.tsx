@@ -56,7 +56,7 @@ export default function Player() {
     }
 
     return (
-        <div className={`flex h-[140px] ${active && "text-cyan-300"}`}>
+        <div className={`flex h-[140px] ${active && "text-highlight"}`}>
             <div className="flex flex-col justify-around">
                 <ImportDeckButton />
                 <ClearBoardButton />

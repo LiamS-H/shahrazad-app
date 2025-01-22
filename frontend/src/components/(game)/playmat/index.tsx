@@ -29,7 +29,7 @@ export default function Playmat(props: {
                     <Deck id={playmat.library} />
                     <div
                         className={`flex justify-around z-10 gap-4 ${
-                            props.active && "text-primary"
+                            props.active && "text-highlight"
                         }`}
                     >
                         <MulliganButton />

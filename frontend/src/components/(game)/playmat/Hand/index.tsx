@@ -24,7 +24,7 @@ export default function Hand(props: { id: ShahrazadZoneId }) {
             <div className="absolute bottom-1">
                 <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
                     <TooltipTrigger
-                        className="w-6 h-6 rounded-full bg-destructive flex justify-center items-center"
+                        className="w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex justify-center items-center"
                         onClick={() => setTooltipOpen(true)}
                     >
                         {zone.cards.length}

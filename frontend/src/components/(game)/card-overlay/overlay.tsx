@@ -89,7 +89,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                 />
                 {selectedCards.length !== 0 && selectedCards.includes(id) && (
                     <div className="relative">
-                        <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive flex justify-center items-center">
+                        <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive text-destructive-foreground flex justify-center items-center">
                             {selectedCards.length}
                         </div>
                     </div>
