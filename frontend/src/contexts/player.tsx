@@ -1,6 +1,5 @@
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { createContext, ReactNode, useContext } from "react";
-import { useShahrazadGameContext } from "./game";
 
 interface IPlayerContext {
     player: ShahrazadPlaymatId;
