@@ -4,7 +4,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/(ui)/dropdown-menu";
-import { Copy, Share2 } from "lucide-react";
+import { CirclePlus, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,8 +16,8 @@ export default function ShareGameButton({ code }: { code: number }) {
         <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
                 <Button variant="secondary" className="absolute top-4 right-4">
-                    Share
-                    <Share2 />
+                    Invite
+                    <CirclePlus />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="flex flex-col gap-4 w-full ">
