@@ -25,7 +25,7 @@ export default function DeckContextMenu({
     zoneId: string;
     children: ReactNode;
 }) {
-    const player = usePlayer();
+    const { player } = usePlayer();
     const { applyAction, getPlaymat, getZone } = useShahrazadGameContext();
     const { search } = useSearchContext();
     const playmat = getPlaymat(player);

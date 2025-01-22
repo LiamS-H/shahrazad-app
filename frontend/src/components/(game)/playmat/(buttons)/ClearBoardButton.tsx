@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 
 export function ClearBoardButton() {
     const { applyAction } = useShahrazadGameContext();
-    const player_id = usePlayer();
+    const { player: player_id } = usePlayer();
     return (
         <Button
             variant="outline"

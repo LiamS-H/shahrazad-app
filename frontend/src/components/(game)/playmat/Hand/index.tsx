@@ -10,8 +10,10 @@ import {
     TooltipContent,
 } from "@/components/(ui)/tooltip";
 import { useState } from "react";
+import { usePlayer } from "@/contexts/player";
 
-export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
+export default function Hand(props: { id: ShahrazadZoneId }) {
+    const { active } = usePlayer();
     const { getZone, getCard, player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const zone = getZone(props.id);
@@ -35,7 +37,7 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
         </div>
     );
 
-    if (!props.active) {
+    if (!active) {
         return (
             <div className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]">
                 {cardCountChip}

@@ -15,7 +15,7 @@ import { useState } from "react";
 
 export function ImportDeckButton() {
     const { applyAction, getPlaymat } = useShahrazadGameContext();
-    const player = usePlayer();
+    const { player } = usePlayer();
     const playmat = getPlaymat(player);
     const [input, setInput] = useState<string>("");
     return (

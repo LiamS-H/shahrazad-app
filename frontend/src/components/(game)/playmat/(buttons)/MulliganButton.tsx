@@ -7,7 +7,7 @@ import { ListRestart } from "lucide-react";
 
 export function MulliganButton() {
     const { applyAction } = useShahrazadGameContext();
-    const player_id = usePlayer();
+    const { player: player_id } = usePlayer();
     return (
         <Button
             variant="outline"

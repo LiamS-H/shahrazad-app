@@ -12,16 +12,12 @@ import { Input } from "@/components/(ui)/input";
 import { FormEvent, useState } from "react";
 import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
 import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
+import { usePlayer } from "@/contexts/player";
 
-export default function Player({
-    player_id,
-    active,
-}: {
-    player_id: ShahrazadPlaymatId;
-    active: boolean;
-}) {
+export default function Player({}: {}) {
+    const { player, active } = usePlayer();
     const { getPlaymat, applyAction } = useShahrazadGameContext();
-    const playmat = getPlaymat(player_id);
+    const playmat = getPlaymat(player);
     const { life } = playmat;
     const [lifeInput, setLifeInput] = useState<string>(life.toString());
     const [inputOpen, setInputOpen] = useState(false);
@@ -30,14 +26,14 @@ export default function Player({
         applyAction({
             type: ShahrazadActionCase.SetLife,
             life: life + 1,
-            player_id: player_id,
+            player_id: player,
         });
     }
     function subtractLife() {
         applyAction({
             type: ShahrazadActionCase.SetLife,
             life: life - 1,
-            player_id: player_id,
+            player_id: player,
         });
     }
     function setLife(new_life?: number) {
@@ -46,7 +42,7 @@ export default function Player({
         applyAction({
             type: ShahrazadActionCase.SetLife,
             life: new_life,
-            player_id: player_id,
+            player_id: player,
         });
     }
     function parseInput(str: string): number | undefined {

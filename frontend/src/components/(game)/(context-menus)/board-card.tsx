@@ -32,7 +32,7 @@ export default function BoardCardContextMenu({
     const { applyAction, getCard, getPlaymat, player_name } =
         useShahrazadGameContext();
     const { selectedCards } = useSelection();
-    const player = usePlayer();
+    const { player } = usePlayer();
     const shah_card = getCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
     const playmat = getPlaymat(player);

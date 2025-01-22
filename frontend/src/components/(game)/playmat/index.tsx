@@ -19,11 +19,11 @@ export default function Playmat(props: {
     const playmat = getPlaymat(props.player);
 
     return (
-        <PlayerProvider player={props.player}>
+        <PlayerProvider player={props.player} active={props.active}>
             {/* Full height should be px without gaps */}
             <div className="w-fit h-fit flex gap-4 select-none">
                 <div className="flex flex-col gap-3">
-                    <Player player_id={props.player} active={props.active} />
+                    <Player />
                     <Exile id={playmat.exile} />
                     <Graveyard id={playmat.graveyard} />
                     <Deck id={playmat.library} />
@@ -36,7 +36,7 @@ export default function Playmat(props: {
                     <Board id={playmat.battlefield} />
                     <div className="flex gap-4">
                         <Command id={playmat.command} />
-                        <Hand id={playmat.hand} active={props.active} />
+                        <Hand id={playmat.hand} />
                     </div>
                 </div>
             </div>

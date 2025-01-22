@@ -25,7 +25,7 @@ export default function HandCardContextMenu({
     cardId: string;
     children: ReactNode;
 }) {
-    const player = usePlayer();
+    const { player } = usePlayer();
     const { applyAction, getPlaymat, getCard } = useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const shah_card = getCard(cardId);
