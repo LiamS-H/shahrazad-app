@@ -68,6 +68,7 @@ export default function GamePage(props: { game_id: string }) {
         setPlayerName(player_name);
         setGameCode(code);
         localStorage.setItem("saved-player", player_id);
+        localStorage.setItem("saved-game", code.toString());
 
         const gameClient = new GameClient(
             props.game_id,

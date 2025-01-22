@@ -13,7 +13,9 @@ use futures::{SinkExt, StreamExt};
 use serde_json;
 use shared::types::{
     action::ShahrazadAction,
-    api::{CreateGameQuery, CreateGameResponse, JoinGameQuery, JoinGameResponse},
+    api::{
+        CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
+    },
     ws::ClientAction,
 };
 use std::net::SocketAddr;
@@ -33,6 +35,7 @@ async fn main() {
         .route("/create_game", post(create_game))
         .route("/join_game/:game_id", get(join_game))
         .route("/ws/game/:game_id/player/:player_id", get(game_handler))
+        .route("/fetch_game/:game_id", get(fetch_game))
         .fallback(fallback)
         .layer(cors)
         .with_state(state);
@@ -199,6 +202,23 @@ async fn handle_socket(
     }
 
     let _ = (*state).disconnect_player(game_id, player_id).await;
+}
+
+async fn fetch_game(
+    State(state): State<Arc<GameStateManager>>,
+    Path(game_id): Path<String>,
+) -> impl IntoResponse {
+    let Some(game_id) = state.parse_uuid(game_id.clone()).await else {
+        return format!("{}:invalid_id", game_id);
+    };
+    let Some(code) = (*state).get_game_code(game_id).await else {
+        return format!("{}:invalid_id", game_id);
+    };
+    return serde_json::json!(FetchGameResponse {
+        code,
+        game_id: game_id.into(),
+    })
+    .to_string();
 }
 
 async fn game_handler(

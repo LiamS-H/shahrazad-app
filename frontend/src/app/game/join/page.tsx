@@ -9,6 +9,7 @@ import { parseCode } from "@/lib/client/parseCode";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { joinGame } from "@/lib/client/joinGame";
+import { fetchGame } from "@/lib/client/fecthGame";
 
 export default function JoinGameForm() {
     const { push: pushRoute } = useRouter();
@@ -16,12 +17,26 @@ export default function JoinGameForm() {
     const [gameCode, setGameCode] = useState("");
     const [clipboard, setClipboard] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const invalids_ref = useRef(new Set<string>());
+    const [reconnect, setReconnect] = useState("");
+
+    const init_ref = useRef(false);
 
     useEffect(() => {
-        readClipboard(); // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        if (init_ref.current) return;
+        init_ref.current = true;
+        const code = parseCode(localStorage.getItem("saved-game") || undefined);
+        if (!code) {
+            readClipboard();
+            return;
+        }
+        fetchGame(code).then((r) => {
+            if (r === null) return;
+            if (r === undefined) return;
+            setReconnect(code);
+        });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const invalids_ref = useRef(new Set<string>());
     const readClipboard = useCallback(() => {
         navigator.clipboard
             .readText()
@@ -52,7 +67,7 @@ export default function JoinGameForm() {
 
         return () => controller.abort();
     }, [gameCode, readClipboard]);
-    const handleJoinGame = async () => {
+    const handleJoinGame = async (gameCode: string) => {
         setLoading(true);
         toast("Joining Game...");
         const stored_player = localStorage.getItem("saved-player") || undefined;
@@ -109,10 +124,22 @@ export default function JoinGameForm() {
                         loading ||
                         invalids_ref.current.has(gameCode)
                     }
-                    onClick={handleJoinGame}
+                    onClick={() => handleJoinGame(gameCode)}
                 >
                     {loading ? "loading..." : "Join Game"}
                 </Button>
+                {reconnect && !invalids_ref.current.has(reconnect) && (
+                    <Button
+                        className="w-full"
+                        variant="highlight"
+                        disabled={
+                            loading || invalids_ref.current.has(reconnect)
+                        }
+                        onClick={() => handleJoinGame(reconnect)}
+                    >
+                        {loading ? "loading..." : `Reconnect - ${reconnect}`}
+                    </Button>
+                )}
             </div>
         </TabsContent>
     );

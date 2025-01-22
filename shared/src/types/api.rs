@@ -29,3 +29,9 @@ pub struct JoinGameResponse {
     pub code: u32,
     pub reconnected: bool,
 }
+
+#[derive(Reflect, Serialize)]
+pub struct FetchGameResponse {
+    pub game_id: String,
+    pub code: u32,
+}

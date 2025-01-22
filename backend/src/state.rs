@@ -42,7 +42,7 @@ pub struct GameStateManager {
 }
 
 const GAME_CLEANUP_INTERVAL: Duration = Duration::from_secs(60);
-const GAME_TIMEOUT: Duration = Duration::from_secs(300);
+const GAME_TIMEOUT: Duration = Duration::from_secs(3000);
 
 impl GameStateManager {
     pub fn new() -> Self {
@@ -317,6 +317,13 @@ impl GameStateManager {
             Ok(uuid) => return Some(uuid.clone()),
             Err(_) => return None,
         };
+    }
+
+    pub async fn get_game_code(&self, game_id: Uuid) -> Option<u32> {
+        let Some(game) = self.games.get(&game_id) else {
+            return None;
+        };
+        return Some(game.code.clone());
     }
 
     pub async fn disconnect_player(&self, game_id: Uuid, player_id: Uuid) -> Result<(), String> {
