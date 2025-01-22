@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import CardStack from "../card-stack";
 import { IDroppableData } from "@/types/interfaces/dnd";
 import CollapsableCard from "./collapsable";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 export default function VerticalZone(props: {
     id: ShahrazadZoneId;
@@ -12,9 +13,26 @@ export default function VerticalZone(props: {
     emptyMessage: string;
 }) {
     const { getZone } = useShahrazadGameContext();
-    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-    // const setHover = useMemo(() => setHoveredItem, [setHoveredItem]);
-    const setHover = setHoveredItem;
+    const [hoveredItem, setHoveredItem] = useState<ShahrazadCardId | null>(
+        null
+    );
+    const hover_timeout = useRef<NodeJS.Timeout | null>(null);
+
+    const setHover = useCallback(
+        (id: ShahrazadCardId | null) => {
+            if (hoveredItem === null) {
+                setHoveredItem(id);
+                return;
+            }
+            if (hover_timeout.current) {
+                clearTimeout(hover_timeout.current);
+            }
+            hover_timeout.current = setTimeout(() => {
+                setHoveredItem(id);
+            }, 100);
+        },
+        [setHoveredItem, hoveredItem]
+    );
 
     const zone = getZone(props.id);
     const data: IDroppableData = {};
