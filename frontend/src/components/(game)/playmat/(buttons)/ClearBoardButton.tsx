@@ -2,7 +2,6 @@ import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { usePlayer } from "@/contexts/player";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { X } from "lucide-react";
 
 export function ClearBoardButton() {

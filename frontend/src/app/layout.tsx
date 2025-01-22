@@ -6,6 +6,7 @@ import NavBar from "./navbar";
 import ScrycardsContext from "@/contexts/scrycards";
 import { Toaster } from "@/components/(ui)/sonner";
 import { TooltipProvider } from "@/components/(ui)/tooltip";
+import { FullscreenContextProvider } from "@/contexts/fullscreen";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -40,8 +41,10 @@ export default function RootLayout({
                 >
                     <TooltipProvider>
                         <ScrycardsContext>
-                            <NavBar />
-                            {children}
+                            <FullscreenContextProvider>
+                                <NavBar />
+                                {children}
+                            </FullscreenContextProvider>
                         </ScrycardsContext>
                     </TooltipProvider>
                     <Toaster position="bottom-center" />

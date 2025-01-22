@@ -8,8 +8,6 @@ import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { usePlayer } from "@/contexts/player";
 import { importFromStr } from "@/lib/client/importDeck";
-import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
-import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { Import } from "lucide-react";
 import { useState } from "react";
 

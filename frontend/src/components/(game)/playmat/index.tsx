@@ -27,18 +27,18 @@ export default function Playmat(props: {
                     <Exile id={playmat.exile} />
                     <Graveyard id={playmat.graveyard} />
                     <Deck id={playmat.library} />
-                    <div className="flex justify-around z-10">
-                        <UntapButton board_id={playmat.battlefield} />
+                    <div
+                        className={`flex justify-around z-10 gap-4 ${
+                            props.active && "text-primary"
+                        }`}
+                    >
                         <MulliganButton />
+                        <UntapButton board_id={playmat.battlefield} />
                     </div>
                 </div>
                 <div className="flex flex-col gap-4">
                     <Board id={playmat.battlefield} />
-                    <div
-                        className={`flex gap-4 ${
-                            props.active && "text-cyan-300"
-                        }`}
-                    >
+                    <div className="flex gap-4">
                         <Command id={playmat.command} />
                         <Hand id={playmat.hand} />
                     </div>

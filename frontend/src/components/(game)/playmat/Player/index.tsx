@@ -1,7 +1,6 @@
 import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { Minus, Plus } from "lucide-react";
 import {
     Popover,
@@ -14,7 +13,7 @@ import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
 import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
 import { usePlayer } from "@/contexts/player";
 
-export default function Player({}: {}) {
+export default function Player() {
     const { player, active } = usePlayer();
     const { getPlaymat, applyAction } = useShahrazadGameContext();
     const playmat = getPlaymat(player);
