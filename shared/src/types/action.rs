@@ -25,7 +25,6 @@ pub enum ShahrazadAction {
     CardZone {
         cards: Vec<ShahrazadCardId>,
         state: ShahrazadCardState,
-        source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
         index: i32,
     },

@@ -48,7 +48,6 @@ export default function HandCardContextMenu({
                                     type: ShahrazadActionCase.CardZone,
                                     cards: [cardId],
                                     destination: playmat.library,
-                                    source: shah_card.location,
                                     index: 0,
                                     state: {},
                                 });
@@ -62,7 +61,6 @@ export default function HandCardContextMenu({
                                     type: ShahrazadActionCase.CardZone,
                                     cards: [cardId],
                                     destination: playmat.library,
-                                    source: shah_card.location,
                                     index: -1,
                                     state: {},
                                 });
@@ -76,7 +74,6 @@ export default function HandCardContextMenu({
                                     type: ShahrazadActionCase.CardZone,
                                     cards: [cardId],
                                     destination: playmat.battlefield,
-                                    source: shah_card.location,
                                     index: -1,
                                     state: {
                                         face_down: true,

@@ -44,7 +44,6 @@ export type ShahrazadActionCaseCardZone = {
     type: ShahrazadActionCase.CardZone;
     cards: Array<ShahrazadCardId>;
     state: ShahrazadCardState;
-    source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
     index: number;
 };

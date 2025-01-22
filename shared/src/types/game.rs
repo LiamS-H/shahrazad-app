@@ -167,80 +167,63 @@ impl ShahrazadGame {
             ShahrazadAction::CardZone {
                 cards,
                 state,
-                source: src,
-                destination: dest,
+                destination: dest_id,
                 index,
             } => {
                 let mut mutated = false;
+                let dest_set: HashSet<ShahrazadCardId> =
+                    game.zones.get(&dest_id)?.cards.iter().cloned().collect();
 
-                let cards_set: HashSet<ShahrazadCardId> = cards.iter().cloned().collect();
-
-                if src != dest
-                    && game.zones[&dest]
-                        .cards
-                        .iter()
-                        .any(|id| cards_set.contains(id))
+                let mut migrating_cards = HashSet::new();
                 {
-                    return None;
-                }
+                    let mut migrating_zones = Vec::new();
+                    for id in &cards {
+                        let Some(card) = game.cards.get(id) else {
+                            continue;
+                        };
+                        if !game.zones.contains_key(&card.location) {
+                            continue;
+                        };
+                        migrating_zones.push(card.location.clone());
 
-                for card_id in &cards {
-                    let old_card = game.cards.get(card_id)?;
-                    let mut new_card = ShahrazadCard::clone(old_card);
-                    new_card.state.apply(&old_card.state);
-                    new_card.state.apply(&state);
-                    new_card.migrate(dest.clone());
-
-                    if new_card != *old_card {
-                        mutated = true;
-                        game.cards.insert(card_id.clone(), new_card);
+                        let mut new_card = ShahrazadCard::clone(card);
+                        new_card.state.apply(&card.state);
+                        new_card.state.apply(&state);
+                        new_card.migrate(dest_id.clone());
+                        if new_card != *card {
+                            mutated = true;
+                            game.cards.insert(id.clone(), new_card);
+                        };
+                        if !dest_set.contains(id) {
+                            migrating_cards.insert(id.clone());
+                        };
                     }
-                }
-
-                if src == dest {
-                    let zone = game.zones.get_mut(&src)?;
-                    let mut new_order: Vec<ShahrazadCardId> = zone
-                        .cards
-                        .iter()
-                        .filter(|id| !cards_set.contains(id))
-                        .cloned()
-                        .collect();
-
-                    let insert_idx = if index == -1 {
-                        new_order.len()
-                    } else {
-                        index as usize
-                    };
-
-                    new_order.splice(insert_idx..insert_idx, cards_set.iter().cloned());
-
-                    if new_order != zone.cards {
-                        mutated = true;
-                        zone.cards = new_order;
-                    }
-                } else {
-                    {
-                        let source_zone = game.zones.get_mut(&src)?;
-                        let original_len = source_zone.cards.len();
-                        source_zone.cards.retain(|id| !cards_set.contains(id));
-                        if source_zone.cards.len() != original_len {
+                    for id in &migrating_zones {
+                        let Some(zone) = game.zones.get_mut(id) else {
+                            continue;
+                        };
+                        let len = zone.cards.len();
+                        zone.cards.retain(|id| !migrating_cards.contains(id));
+                        if len != zone.cards.len() {
                             mutated = true;
                         }
                     }
+                }
 
-                    let dest_zone = game.zones.get_mut(&dest)?;
-                    let idx = if index == -1 {
-                        dest_zone.cards.len()
-                    } else {
-                        index as usize
-                    };
+                let dest_zone = game.zones.get_mut(&dest_id)?;
+                let idx = if index == -1 {
+                    dest_zone.cards.len()
+                } else {
+                    index as usize
+                };
 
-                    let original_cards = dest_zone.cards.clone();
-                    dest_zone.cards.splice(idx..idx, cards_set.iter().cloned());
+                let original_cards = dest_zone.cards.clone();
+                dest_zone
+                    .cards
+                    .splice(idx..idx, migrating_cards.iter().cloned());
 
-                    if dest_zone.cards != original_cards {
-                        mutated = true;
-                    }
+                if dest_zone.cards != original_cards {
+                    mutated = true;
                 }
 
                 if mutated {
@@ -392,7 +375,6 @@ impl ShahrazadGame {
                         state: ShahrazadCardState {
                             ..Default::default()
                         },
-                        source: hand_id.clone(),
                         destination: library_id.clone(),
                         index: 0,
                     },
