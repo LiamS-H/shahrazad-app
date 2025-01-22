@@ -74,14 +74,7 @@ export default function JoinGameForm() {
     };
     return (
         <TabsContent value="join">
-            <form
-                className="space-y-4 pt-4"
-                onSubmit={(e) => {
-                    console.log("submitting");
-                    e.preventDefault();
-                    handleJoinGame();
-                }}
-            >
+            <div className="space-y-4 pt-4">
                 <Label>Game Code</Label>
                 <div className="flex justify-between items-center">
                     <Button
@@ -110,17 +103,17 @@ export default function JoinGameForm() {
                 </div>
 
                 <Button
-                    type="submit"
                     className="w-full"
                     disabled={
                         gameCode.length !== 6 ||
                         loading ||
                         invalids_ref.current.has(gameCode)
                     }
+                    onClick={handleJoinGame}
                 >
                     {loading ? "loading..." : "Join Game"}
                 </Button>
-            </form>
+            </div>
         </TabsContent>
     );
 }

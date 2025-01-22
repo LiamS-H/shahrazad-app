@@ -16,6 +16,7 @@ import { createGame } from "@/lib/client/createGame";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import CreateGameLoading from "./loading";
 
 export default function CreateGameForm() {
     const { push: pushRoute } = useRouter();
@@ -24,6 +25,7 @@ export default function CreateGameForm() {
     const [freeMulligans, setFreeMulligans] = useState(1);
     const [scryRule, setScryRule] = useState(false);
     const [isClient, setIsClient] = useState(false);
+
     useEffect(() => {
         setIsClient(true);
 
@@ -42,6 +44,7 @@ export default function CreateGameForm() {
         setFreeMulligans(safeGetItem("default-game-freeMulligans", 1));
         setScryRule(safeGetItem("default-game-scryRule", false));
     }, []);
+
     useEffect(() => {
         if (isClient) {
             try {
@@ -62,6 +65,10 @@ export default function CreateGameForm() {
             }
         }
     }, [startingLife, freeMulligans, scryRule, isClient]);
+    if (!isClient) {
+        return <CreateGameLoading />;
+    }
+
     const handleCreateGame = async () => {
         let starting_life = Number(startingLife);
         if (Number.isNaN(starting_life) || starting_life < 0) {
@@ -86,6 +93,7 @@ export default function CreateGameForm() {
         localStorage.setItem("saved-player", player_id);
         pushRoute(`/game/${code}`);
     };
+
     return (
         <TabsContent value="create">
             <div className="space-y-4 pt-4">

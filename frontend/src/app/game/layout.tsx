@@ -13,7 +13,17 @@ export default function GameConfigLayout({
     const router = useRouter();
     const pathname = usePathname();
 
-    const currentTab = pathname === "/game/join" ? "join" : "create";
+    const page = pathname.slice(6);
+
+    let currentTab;
+    switch (page) {
+        case "create":
+        case "join":
+            currentTab = page;
+            break;
+        default:
+            return children;
+    }
 
     const handleTabChange = (value: string) => {
         router.push(`/game/${value}`);
