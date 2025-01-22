@@ -34,7 +34,11 @@ export default function Playmat(props: {
                 </div>
                 <div className="flex flex-col gap-4">
                     <Board id={playmat.battlefield} />
-                    <div className="flex gap-4">
+                    <div
+                        className={`flex gap-4 ${
+                            props.active && "text-cyan-300"
+                        }`}
+                    >
                         <Command id={playmat.command} />
                         <Hand id={playmat.hand} />
                     </div>
