@@ -10,6 +10,8 @@ import {
 } from "@/components/(ui)/popover";
 import { Input } from "@/components/(ui)/input";
 import { FormEvent, useState } from "react";
+import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
+import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
 
 export default function Player({
     player_id,
@@ -19,7 +21,8 @@ export default function Player({
     active: boolean;
 }) {
     const { getPlaymat, applyAction } = useShahrazadGameContext();
-    const { life } = getPlaymat(player_id);
+    const playmat = getPlaymat(player_id);
+    const { life } = playmat;
     const [lifeInput, setLifeInput] = useState<string>(life.toString());
     const [inputOpen, setInputOpen] = useState(false);
 
@@ -58,44 +61,46 @@ export default function Player({
     }
 
     return (
-        <div
-            className={`flex flex-col items-center ${
-                active && "text-cyan-300"
-            }`}
-        >
-            <Button onClick={addLife} variant="outline" size="icon">
-                <Plus className="h-[1.2rem] w-[1.2rem]" />
-            </Button>
-            <Popover
-                open={inputOpen}
-                onOpenChange={(open) => {
-                    if (open) {
-                        setLifeInput(life.toString());
-                    } else {
-                        setLife(parseInput(lifeInput));
-                    }
-                    setInputOpen(open);
-                }}
-            >
-                <PopoverTrigger>
-                    <h1 className="text-5xl">{life}</h1>
-                </PopoverTrigger>
-                <PopoverContent className="w-24">
-                    <form onSubmit={onSubmit}>
-                        <Input
-                            value={lifeInput}
-                            onChange={(e) => {
-                                const str = e.target.value;
-                                const num = parseInput(str);
-                                setLifeInput(num ? num.toString() : str);
-                            }}
-                        />
-                    </form>
-                </PopoverContent>
-            </Popover>
-            <Button onClick={subtractLife} variant="outline" size="icon">
-                <Minus className="h-[1.2rem] w-[1.2rem]" />
-            </Button>
+        <div className={`flex h-[140px] ${active && "text-cyan-300"}`}>
+            <div className="flex flex-col justify-around">
+                <ImportDeckButton />
+                <ClearBoardButton />
+            </div>
+            <div className="flex flex-col justify-center items-center">
+                <Button onClick={addLife} variant="outline" size="icon">
+                    <Plus className="h-[1.2rem] w-[1.2rem]" />
+                </Button>
+                <Popover
+                    open={inputOpen}
+                    onOpenChange={(open) => {
+                        if (open) {
+                            setLifeInput(life.toString());
+                        } else {
+                            setLife(parseInput(lifeInput));
+                        }
+                        setInputOpen(open);
+                    }}
+                >
+                    <PopoverTrigger>
+                        <h1 className="text-5xl">{life}</h1>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-24">
+                        <form onSubmit={onSubmit}>
+                            <Input
+                                value={lifeInput}
+                                onChange={(e) => {
+                                    const str = e.target.value;
+                                    const num = parseInput(str);
+                                    setLifeInput(num ? num.toString() : str);
+                                }}
+                            />
+                        </form>
+                    </PopoverContent>
+                </Popover>
+                <Button onClick={subtractLife} variant="outline" size="icon">
+                    <Minus className="h-[1.2rem] w-[1.2rem]" />
+                </Button>
+            </div>
         </div>
     );
 }

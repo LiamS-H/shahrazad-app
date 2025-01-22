@@ -39,7 +39,10 @@ export default function VerticalZone(props: {
     const { setNodeRef } = useDroppable({ id: props.id, data });
 
     return (
-        <div style={{ width: "100px" }} ref={(ref) => setNodeRef(ref)}>
+        <div
+            style={{ width: "100px", position: "relative" }}
+            ref={(ref) => setNodeRef(ref)}
+        >
             {props.hidden ? (
                 <CardStack
                     emptyMessage={props.emptyMessage}

@@ -1,15 +1,13 @@
 import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/game";
+import { usePlayer } from "@/contexts/player";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { X } from "lucide-react";
 
-export function ClearBoardButton({
-    playerId,
-}: {
-    playerId: ShahrazadPlaymatId;
-}) {
+export function ClearBoardButton() {
     const { applyAction } = useShahrazadGameContext();
+    const player_id = usePlayer();
     return (
         <Button
             variant="outline"
@@ -17,7 +15,7 @@ export function ClearBoardButton({
             onClick={() => {
                 applyAction({
                     type: ShahrazadActionCase.ClearBoard,
-                    player_id: playerId,
+                    player_id,
                 });
             }}
         >

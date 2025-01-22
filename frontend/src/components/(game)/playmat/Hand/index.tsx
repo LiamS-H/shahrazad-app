@@ -37,7 +37,8 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
 
     if (!props.active) {
         return (
-            <div className="shahrazad-hand flex flex-grow">
+            <div className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]">
+                {cardCountChip}
                 {zone.cards.map((id) => {
                     const shah_card = getCard(id);
                     if (
@@ -58,13 +59,12 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
                         </div>
                     );
                 })}
-                {cardCountChip}
             </div>
         );
     }
 
     return (
-        <div className="shahrazad-hand flex flex-grow">
+        <div className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]">
             {cardCountChip}
             <HorizontalZone id={props.id} />
         </div>
