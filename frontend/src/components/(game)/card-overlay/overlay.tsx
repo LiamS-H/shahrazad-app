@@ -68,38 +68,6 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
 
     return (
         <OverlayWrapper>
-            {/* {cards.map((id) => {
-                const card = getCard(id);
-                let xOffset = 0;
-                let yOffset = 0;
-                const style: CSSProperties = {};
-                if (
-                    card.state.x !== undefined &&
-                    card.state.y !== undefined &&
-                    shah_card.state.x !== undefined &&
-                    shah_card.state.y !== undefined &&
-                    selectedCards.length !== 0
-                ) {
-                    xOffset = (card.state.x - shah_card.state.x) * 20;
-                    yOffset = (card.state.y - shah_card.state.y) * 20;
-                    style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-                    style.position = "absolute";
-                    // style.top = "-140px";
-                }
-                return (
-                    <div style={style} key={id}>
-                        <ScryNameCard
-                            card_name={card.card_name}
-                            flipped={shah_card.state.flipped}
-                            faceDown={
-                                shah_card.state.face_down &&
-                                !shah_card.state.revealed?.includes(player_name)
-                            }
-                            tapped={shah_card.state.tapped}
-                        />
-                    </div>
-                );
-            })} */}
             <div
                 style={
                     shah_card.token
@@ -119,7 +87,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                     }
                     tapped={shah_card.state.tapped}
                 />
-                {selectedCards.length !== 0 && (
+                {selectedCards.length !== 0 && selectedCards.includes(id) && (
                     <div className="relative">
                         <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive flex justify-center items-center">
                             {selectedCards.length}
