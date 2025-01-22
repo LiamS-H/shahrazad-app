@@ -44,7 +44,7 @@ export default function RootLayout({
                             {children}
                         </ScrycardsContext>
                     </TooltipProvider>
-                    <Toaster />
+                    <Toaster position="bottom-center" />
                 </ThemeProvider>
             </body>
         </html>

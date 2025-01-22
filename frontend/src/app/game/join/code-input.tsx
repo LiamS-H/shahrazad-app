@@ -25,12 +25,16 @@ export function CodeInput({
 
     return (
         <InputOTP maxLength={6} value={code} onChange={handleChange}>
-            <InputOTPGroup className={invalid ? "text-destructive" : undefined}>
+            <InputOTPGroup
+                className={`text-xl ${
+                    invalid ? "text-destructive" : undefined
+                }`}
+            >
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
                 <InputOTPSlot index={2} />
                 <InputOTPSeparator />
-                <InputOTPSlot index={3} />
+                <InputOTPSlot className="border-l" index={3} />
                 <InputOTPSlot index={4} />
                 <InputOTPSlot index={5} />
             </InputOTPGroup>
