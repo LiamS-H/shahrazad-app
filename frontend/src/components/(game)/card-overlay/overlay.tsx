@@ -87,7 +87,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                     }
                     tapped={shah_card.state.tapped}
                 />
-                {selectedCards.length !== 0 && selectedCards.includes(id) && (
+                {selectedCards.length > 1 && selectedCards.includes(id) && (
                     <div className="relative">
                         <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive text-destructive-foreground flex justify-center items-center">
                             {selectedCards.length}
