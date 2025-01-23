@@ -30,9 +30,14 @@ export default function JoinGameForm() {
             readClipboard();
             return;
         }
+        if (invalids_ref.current.has(code)) return;
         fetchGame(code).then((r) => {
-            if (r === null) return;
             if (r === undefined) return;
+            if (r === null) {
+                invalids_ref.current.add(code);
+                localStorage.setItem("saved-game", "");
+                return;
+            }
             setReconnect(code);
         });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -72,13 +77,14 @@ export default function JoinGameForm() {
         toast("Joining Game...");
         const stored_player = localStorage.getItem("saved-player") || undefined;
         const joinResult = await joinGame(gameCode, stored_player);
-        setLoading(false);
         if (joinResult === null) {
+            setLoading(false);
             toast("Couldn't find game");
             invalids_ref.current.add(gameCode);
             return;
         }
         if (joinResult === undefined) {
+            setLoading(false);
             toast("Something went wrong.");
             return;
         }
@@ -87,6 +93,9 @@ export default function JoinGameForm() {
 
         pushRoute(`/game/${code}`);
     };
+    const joinDisabled =
+        gameCode.length !== 6 || loading || invalids_ref.current.has(gameCode);
+
     return (
         <TabsContent value="join">
             <div className="space-y-4 pt-4">
@@ -119,11 +128,8 @@ export default function JoinGameForm() {
 
                 <Button
                     className="w-full"
-                    disabled={
-                        gameCode.length !== 6 ||
-                        loading ||
-                        invalids_ref.current.has(gameCode)
-                    }
+                    variant={joinDisabled ? "outline" : "default"}
+                    disabled={joinDisabled}
                     onClick={() => handleJoinGame(gameCode)}
                 >
                     {loading ? "loading..." : "Join Game"}
