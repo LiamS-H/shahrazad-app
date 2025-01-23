@@ -367,11 +367,23 @@ impl ShahrazadGame {
                 let library_id = playmat.library.clone();
                 let hand_id = playmat.hand.clone();
 
-                let ShahrazadZone { cards } = game.zones.get(&hand_id)?;
+                let mut cards: Vec<ShahrazadCardId> = Vec::new();
+                for (card_id, card) in &game.cards {
+                    if card.owner == player_id {
+                        cards.push(card_id.clone());
+                    }
+                }
+
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::DeleteToken {
+                        cards: cards.clone(),
+                    },
+                    game,
+                );
 
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
-                        cards: cards.clone(),
+                        cards,
                         state: ShahrazadCardState {
                             ..Default::default()
                         },
