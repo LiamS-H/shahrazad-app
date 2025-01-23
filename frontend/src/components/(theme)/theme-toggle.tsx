@@ -1,6 +1,3 @@
-"use client";
-
-import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -11,12 +8,19 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/(ui)/dropdown-menu";
+import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-    const { setTheme, theme: currentTheme, themes } = useTheme();
+    const { setTheme, themes, theme } = useTheme();
+    const [open, setOpen] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState<string | undefined>(theme);
+
+    useEffect(() => {
+        if (open) setCurrentTheme(theme);
+    }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
                     <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -27,13 +31,19 @@ export function ThemeToggle() {
             <DropdownMenuContent align="end">
                 {themes.map((theme) => (
                     <DropdownMenuItem
+                        key={theme}
                         onClick={() => setTheme(theme)}
                         disabled={theme === currentTheme}
-                        key={theme}
                     >
                         {theme.slice(0, 1).toUpperCase() + theme.slice(1)}
                     </DropdownMenuItem>
                 ))}
+                {/* <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                    System
+                </DropdownMenuItem> */}
             </DropdownMenuContent>
         </DropdownMenu>
     );
