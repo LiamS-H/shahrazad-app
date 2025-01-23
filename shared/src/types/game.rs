@@ -244,10 +244,14 @@ impl ShahrazadGame {
                 for card_id in &cards {
                     let card = game.cards.get_mut(card_id)?;
                     card.state.apply(&ShahrazadCardState {
+                        flipped: Some(false),
+                        inverted: Some(false),
+                        tapped: Some(false),
                         face_down: Some(true),
                         counters: Some([].into()),
                         revealed: Some([].into()),
-                        ..Default::default()
+                        x: Some(255),
+                        y: Some(255),
                     });
                 }
 
