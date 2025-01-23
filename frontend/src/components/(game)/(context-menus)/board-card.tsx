@@ -89,7 +89,6 @@ export default function BoardCardContextMenu({
                         Untap
                     </ContextMenuItem>
                 )}
-
                 {isFlippable(scry_card) && cards.length === 1 && (
                     <ContextMenuItem
                         onClick={() => {
@@ -231,7 +230,18 @@ export default function BoardCardContextMenu({
                 >
                     Clone
                 </ContextMenuItem>
-                {selectedCards.length === 0 && <></>}
+                {cards.map((i) => getCard(i)).some((s) => s?.token) && (
+                    <ContextMenuItem
+                        onClick={() => {
+                            applyAction({
+                                type: ShahrazadActionCase.DeleteToken,
+                                cards,
+                            });
+                        }}
+                    >
+                        Delete Token
+                    </ContextMenuItem>
+                )}
             </ContextMenuContent>
         </ContextMenu>
     );

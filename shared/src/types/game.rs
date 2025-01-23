@@ -404,6 +404,39 @@ impl ShahrazadGame {
                 Some(game)
             }
             ShahrazadAction::GameTerminated => None,
+            ShahrazadAction::DeleteToken { cards } => {
+                let mut mutated = false;
+
+                let mut tokens = HashSet::new();
+                let mut zones = Vec::new();
+
+                for id in &cards {
+                    let Some(card) = game.cards.get(id) else {
+                        continue;
+                    };
+                    if !card.token {
+                        continue;
+                    }
+                    zones.push(card.location.clone());
+                    tokens.insert(id);
+                    mutated = true;
+                }
+                for id in &tokens {
+                    game.cards.remove(id);
+                }
+
+                for id in &zones {
+                    let Some(zone) = game.zones.get_mut(id) else {
+                        continue;
+                    };
+                    zone.cards.retain(|id| !tokens.contains(id));
+                }
+
+                if !mutated {
+                    return None;
+                }
+                return Some(game);
+            }
         }
     }
 }

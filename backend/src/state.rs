@@ -42,7 +42,7 @@ pub struct GameStateManager {
 }
 
 const GAME_CLEANUP_INTERVAL: Duration = Duration::from_secs(60);
-const GAME_TIMEOUT: Duration = Duration::from_secs(300);
+const GAME_TIMEOUT: Duration = Duration::from_secs(3000);
 
 impl GameStateManager {
     pub fn new() -> Self {

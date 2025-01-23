@@ -52,6 +52,9 @@ pub enum ShahrazadAction {
     ClearBoard {
         player_id: ShahrazadPlaymatId,
     },
+    DeleteToken {
+        cards: Vec<ShahrazadCardId>,
+    },
     Mulligan {
         player_id: ShahrazadPlaymatId,
         seed: String,

@@ -14,6 +14,7 @@ export enum ShahrazadActionCase {
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
     ClearBoard = 'ClearBoard',
+    DeleteToken = 'DeleteToken',
     Mulligan = 'Mulligan',
     GameTerminated = 'GameTerminated',
 }
@@ -84,6 +85,11 @@ export type ShahrazadActionCaseClearBoard = {
     player_id: ShahrazadPlaymatId;
 };
 
+export type ShahrazadActionCaseDeleteToken = {
+    type: ShahrazadActionCase.DeleteToken;
+    cards: Array<ShahrazadCardId>;
+};
+
 export type ShahrazadActionCaseMulligan = {
     type: ShahrazadActionCase.Mulligan;
     player_id: ShahrazadPlaymatId;
@@ -105,5 +111,6 @@ export type ShahrazadAction =
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
     | ShahrazadActionCaseClearBoard
+    | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan
     | ShahrazadActionCaseGameTerminated;
