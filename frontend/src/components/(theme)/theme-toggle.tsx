@@ -38,12 +38,6 @@ export function ThemeToggle() {
                         {theme.slice(0, 1).toUpperCase() + theme.slice(1)}
                     </DropdownMenuItem>
                 ))}
-                {/* <DropdownMenuItem onClick={() => setTheme("dark")}>
-                    Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                    System
-                </DropdownMenuItem> */}
             </DropdownMenuContent>
         </DropdownMenu>
     );
