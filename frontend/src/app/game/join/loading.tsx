@@ -1,4 +1,3 @@
-import { InputOTPSeparator } from "@/components/(ui)/input-otp";
 import { Skeleton } from "@/components/(ui)/skeleton";
 import { TabsContent } from "@/components/(ui)/tabs";
 
@@ -9,20 +8,20 @@ export default function JoinGameLoading() {
                 {/*Game Code Label*/}
                 <Skeleton className="h-4 w-24 mb-2" /> {/* Label */}
                 {/*Game Code input */}
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center pt-2">
                     <Skeleton className="h-9 w-9" />
                     <div className="flex items-center">
                         <Skeleton className="rounded-r-none h-12 w-12" />
                         <Skeleton className="rounded-none h-12 w-12" />
-                        <Skeleton className="rounded-none h-12 w-12" />
-                        <InputOTPSeparator />
-                        <Skeleton className="rounded-none h-12 w-12" />
+                        <Skeleton className="rounded-l-none h-12 w-12" />
+                        <Skeleton className="rounded h-1 w-4 mx-1"></Skeleton>
+                        <Skeleton className="rounded-r-none h-12 w-12" />
                         <Skeleton className="rounded-none h-12 w-12" />
                         <Skeleton className="rounded-l-none h-12 w-12" />
                     </div>
                     <Skeleton className="h-9 w-9" />
                 </div>
-                <Skeleton className="h-10 w-full rounded-md" />
+                <Skeleton className="h-9 w-full rounded-md" />
             </div>
         </TabsContent>
     );
