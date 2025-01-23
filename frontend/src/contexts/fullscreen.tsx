@@ -1,4 +1,5 @@
 "use client";
+import { useDevice } from "@/hooks/useDevice";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 /* this is for webkit */
 
@@ -10,11 +11,11 @@ import {
     useState,
     type ReactNode,
 } from "react";
+import { toast } from "sonner";
 
 interface IFullScreenContext {
     isFullscreen: boolean;
-    enterFullscreen: () => void;
-    exitFullscreen: () => void;
+    toggleFullscreen: (fullscreen?: boolean) => void;
 }
 const FullscreenContext = createContext<IFullScreenContext | null>(null);
 
@@ -24,6 +25,7 @@ export function FullscreenContextProvider({
     children: ReactNode;
 }) {
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const device = useDevice();
 
     useEffect(() => {
         const controller = new AbortController();
@@ -35,45 +37,60 @@ export function FullscreenContextProvider({
             },
             { signal: controller.signal }
         );
+        window.addEventListener(
+            "keydown",
+            (e) => {
+                if (e.key === "F11") {
+                    e.preventDefault();
+                    toggleFullscreen();
+                    return;
+                }
+                if (
+                    device === "OSX" &&
+                    e.metaKey &&
+                    (e.key === "F" || e.key === "f")
+                ) {
+                    e.preventDefault();
+                    toggleFullscreen();
+                    return;
+                }
+            },
+            { signal: controller.signal }
+        );
 
         return () => controller.abort();
     }, []);
 
-    const exitFullscreen = useCallback(async () => {
+    const toggleFullscreen = useCallback(async (fs?: boolean) => {
         const promises = [];
-        if (document.exitFullscreen) {
-            promises.push(document.exitFullscreen());
-        } else if ((document as any).webkitExitFullscreen) {
-            promises.push((document as any).webkitExitFullscreen());
+        fs = fs !== undefined ? fs : window.innerHeight !== screen.height;
+        if (fs) {
+            const element = document.documentElement;
+            if (element.requestFullscreen) {
+                promises.push(element.requestFullscreen());
+            } else if ((element as any).webkitRequestFullscreen) {
+                promises.push((element as any).webkitRequestFullscreen());
+            }
+        } else {
+            if (document.exitFullscreen) {
+                promises.push(document.exitFullscreen());
+            } else if ((document as any).webkitExitFullscreen) {
+                promises.push((document as any).webkitExitFullscreen());
+            }
         }
         try {
             await Promise.all(promises);
-            setIsFullscreen(true);
         } catch {
-            console.error("couldn't exit fullscreen.");
-        }
-    }, []);
-
-    const enterFullscreen = useCallback(async () => {
-        const element = document.documentElement;
-        const promises = [];
-        if (element.requestFullscreen) {
-            promises.push(element.requestFullscreen());
-        } else if ((element as any).webkitRequestFullscreen) {
-            promises.push((element as any).webkitRequestFullscreen());
-        }
-        try {
-            await Promise.all(promises);
-            setIsFullscreen(true);
-        } catch {
-            console.error("couldn't enter fullscreen.");
+            if (fs) {
+                toast("Couldn't enter fullscreen, refresh and try button.");
+            } else {
+                toast("Couldn't exit fullscreen, refresh and try button.");
+            }
         }
     }, []);
 
     return (
-        <FullscreenContext.Provider
-            value={{ isFullscreen, enterFullscreen, exitFullscreen }}
-        >
+        <FullscreenContext.Provider value={{ isFullscreen, toggleFullscreen }}>
             {children}
         </FullscreenContext.Provider>
     );

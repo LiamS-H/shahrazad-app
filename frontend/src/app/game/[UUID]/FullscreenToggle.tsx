@@ -3,19 +3,15 @@ import { useFullscreen } from "@/contexts/fullscreen";
 import { Maximize2, Minimize2 } from "lucide-react";
 
 export default function FullscreenToggle() {
-    const { isFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
-
-    if (isFullscreen) {
-        return (
-            <Button size="icon" variant="outline" onClick={exitFullscreen}>
-                <Minimize2 />
-            </Button>
-        );
-    }
+    const { isFullscreen, toggleFullscreen } = useFullscreen();
 
     return (
-        <Button size="icon" variant="outline" onClick={enterFullscreen}>
-            <Maximize2 />
+        <Button
+            size="icon"
+            variant="outline"
+            onClick={() => toggleFullscreen()}
+        >
+            {isFullscreen ? <Minimize2 /> : <Maximize2 />}
         </Button>
     );
 }
