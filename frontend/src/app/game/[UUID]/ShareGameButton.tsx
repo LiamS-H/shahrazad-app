@@ -4,7 +4,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/(ui)/dropdown-menu";
-import { CirclePlus, Copy } from "lucide-react";
+import { Copy, DiamondPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -15,9 +15,14 @@ export default function ShareGameButton({ code }: { code: number | null }) {
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant="secondary">
+                <Button
+                    variant="highlight"
+                    className={`group${
+                        open ? " bg-primary text-primary-foreground" : ""
+                    }`}
+                >
                     Invite
-                    <CirclePlus />
+                    <DiamondPlus className="transition duration-300 group-hover:rotate-[405deg]" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="flex flex-col gap-4 w-full ">
