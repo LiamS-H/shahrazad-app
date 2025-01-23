@@ -21,7 +21,7 @@ export default function PreviewCard({
     const scrycard = useScrycard(shah_card.card_name);
     return (
         <div
-            className="fixed right-5 top-5"
+            className="fixed right-5 top-20"
             onMouseEnter={() => {
                 setPreview(currentPreview);
             }}

@@ -38,14 +38,7 @@ export default function Game(props: ShahrazadProps) {
             <SelectionProvider>
                 <ShahrazadDND>
                     <SearchContextProvider>
-                        <div
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                display: "flex",
-                                flexFlow: "row wrap",
-                            }}
-                        >
+                        <div className="mx-4 w-ful h-ful flex flex-col gap-4">
                             {playmat_components}
                         </div>
                     </SearchContextProvider>

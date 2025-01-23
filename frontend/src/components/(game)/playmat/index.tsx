@@ -21,7 +21,7 @@ export default function Playmat(props: {
     return (
         <PlayerProvider player={props.player} active={props.active}>
             {/* Full height should be px without gaps */}
-            <div className="w-fit h-fit flex gap-4 select-none">
+            <div className="w-full h-fit flex gap-4 select-none">
                 <div className="flex flex-col gap-3">
                     <Player />
                     <Exile id={playmat.exile} />
@@ -36,7 +36,7 @@ export default function Playmat(props: {
                         <UntapButton board_id={playmat.battlefield} />
                     </div>
                 </div>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 w-full">
                     <Board id={playmat.battlefield} />
                     <div className="flex gap-4">
                         <Command id={playmat.command} />

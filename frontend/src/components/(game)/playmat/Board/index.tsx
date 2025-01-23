@@ -35,9 +35,11 @@ export default function Board({ id }: { id: ShahrazadZoneId }) {
         id,
         data,
     });
-
     return (
-        <div className="shahrazad-playmat-board" ref={setNodeRef}>
+        <div
+            className="shahrazad-playmat-board h-[501px] min-w-[901px] max-w-[1301] relative"
+            ref={setNodeRef}
+        >
             <Selection cards={cards} node={node} />
             {cards.map(({ id, card }) => (
                 <BoardCard
