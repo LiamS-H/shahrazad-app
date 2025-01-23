@@ -27,40 +27,6 @@ export function FullscreenContextProvider({
     const [isFullscreen, setIsFullscreen] = useState(false);
     const device = useDevice();
 
-    useEffect(() => {
-        const controller = new AbortController();
-
-        window.addEventListener(
-            "resize",
-            () => {
-                setIsFullscreen(window.innerHeight === screen.height);
-            },
-            { signal: controller.signal }
-        );
-        window.addEventListener(
-            "keydown",
-            (e) => {
-                if (e.key === "F11") {
-                    e.preventDefault();
-                    toggleFullscreen();
-                    return;
-                }
-                if (
-                    device === "OSX" &&
-                    e.metaKey &&
-                    (e.key === "F" || e.key === "f")
-                ) {
-                    e.preventDefault();
-                    toggleFullscreen();
-                    return;
-                }
-            },
-            { signal: controller.signal }
-        );
-
-        return () => controller.abort();
-    }, []);
-
     const toggleFullscreen = useCallback(async (fs?: boolean) => {
         const promises = [];
         fs = fs !== undefined ? fs : window.innerHeight !== screen.height;
@@ -88,6 +54,40 @@ export function FullscreenContextProvider({
             }
         }
     }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        window.addEventListener(
+            "resize",
+            () => {
+                setIsFullscreen(window.innerHeight === screen.height);
+            },
+            { signal: controller.signal }
+        );
+        window.addEventListener(
+            "keydown",
+            (e) => {
+                if (e.key === "F11") {
+                    e.preventDefault();
+                    toggleFullscreen();
+                    return;
+                }
+                if (
+                    device.current === "OSX" &&
+                    e.metaKey &&
+                    (e.key === "F" || e.key === "f")
+                ) {
+                    e.preventDefault();
+                    toggleFullscreen();
+                    return;
+                }
+            },
+            { signal: controller.signal }
+        );
+
+        return () => controller.abort();
+    }, [device, toggleFullscreen]);
 
     return (
         <FullscreenContext.Provider value={{ isFullscreen, toggleFullscreen }}>
