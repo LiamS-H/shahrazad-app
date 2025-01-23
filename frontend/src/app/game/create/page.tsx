@@ -70,7 +70,7 @@ export default function CreateGameForm() {
                 console.error("Failed to update localStorage", error);
             }
         }
-    }, [startingLife, freeMulligans, scryRule, isClient]);
+    }, [startingLife, freeMulligans, scryRule, isClient, customStartingLife]);
     if (!isClient) {
         return <CreateGameLoading />;
     }
