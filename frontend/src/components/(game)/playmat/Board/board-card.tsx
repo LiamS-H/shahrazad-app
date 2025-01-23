@@ -37,7 +37,7 @@ export function BoardCard({
         borderRadius: "4.75% / 3.5%",
     };
     if (!selected && card.token) {
-        divStyle.outline = "2px solid white";
+        divStyle.outline = "4px solid hsl(var(--token-outline))";
     }
     if (selected) {
         divStyle.outline = `2px solid ${

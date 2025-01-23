@@ -72,7 +72,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                 style={
                     shah_card.token
                         ? {
-                              outline: "2px solid white",
+                              outline: "4px solid hsl(var(--token-outline))",
                               borderRadius: "4.75% / 3.5%",
                           }
                         : undefined
