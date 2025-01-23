@@ -6,7 +6,15 @@ export default function Home() {
         <div className="flex flex-col flex-grow justify-center items-center w-full font-[family-name:var(--font-geist-sans)]">
             <h1 className="text-9xl select-none">Shahrazad</h1>
             <Link href={"/game/create"}>
-                <Button variant="highlight">Get Started</Button>
+                <Button
+                    variant="highlight"
+                    className="group transition hover:scale-110 overflow-hidden"
+                >
+                    <span>Get Started</span>
+                    <div className="absolute inset-0 flex h-full w-full [transform:skew(-12deg)_translateX(-100%)] justify-center group-hover:[transform:skew(-12deg)_translateX(100%)] group-hover:duration-1000">
+                        <div className="relative h-full w-8 bg-gray-400/30"></div>
+                    </div>
+                </Button>
             </Link>
         </div>
     );
