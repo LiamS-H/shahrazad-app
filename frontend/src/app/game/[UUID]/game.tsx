@@ -84,7 +84,8 @@ export default function GamePage(props: { game_id: string }) {
                     signalError({
                         status: 404,
                         message: "Game Terminated",
-                        description: "This game no longer exists.",
+                        description:
+                            "Games Close after 5 minutes of inactivity. This game no longer exists.",
                     });
                 },
                 onPlayerJoin: () => {
