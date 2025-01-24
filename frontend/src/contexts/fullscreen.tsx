@@ -19,6 +19,18 @@ interface IFullScreenContext {
 }
 const FullscreenContext = createContext<IFullScreenContext | null>(null);
 
+function getCurrentFullscreen() {
+    let cur_fs;
+    if (
+        typeof (document as any).webkitCurrentFullScreenElement !== "undefined"
+    ) {
+        cur_fs = !!(document as any).webkitCurrentFullScreenElement;
+    } else {
+        cur_fs = !!document.fullscreenElement;
+    }
+    return cur_fs;
+}
+
 export function FullscreenContextProvider({
     children,
 }: {
@@ -26,34 +38,37 @@ export function FullscreenContextProvider({
 }) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const device = useDevice();
-
-    const toggleFullscreen = useCallback(async (fs?: boolean) => {
-        const promises = [];
-        fs = fs !== undefined ? fs : window.innerHeight !== screen.height;
-        if (fs) {
-            const element = document.documentElement;
-            if (element.requestFullscreen) {
-                promises.push(element.requestFullscreen());
-            } else if ((element as any).webkitRequestFullscreen) {
-                promises.push((element as any).webkitRequestFullscreen());
-            }
-        } else {
-            if (document.exitFullscreen) {
-                promises.push(document.exitFullscreen());
-            } else if ((document as any).webkitExitFullscreen) {
-                promises.push((document as any).webkitExitFullscreen());
-            }
-        }
-        try {
-            await Promise.all(promises);
-        } catch {
-            if (fs) {
-                toast("Couldn't enter fullscreen, refresh and try button.");
+    const toggleFullscreen = useCallback(
+        async (future_fs?: boolean) => {
+            const promises = [];
+            future_fs =
+                future_fs !== undefined ? future_fs : !getCurrentFullscreen();
+            if (future_fs) {
+                const element = document.documentElement;
+                if (element.requestFullscreen) {
+                    promises.push(element.requestFullscreen());
+                } else if ((element as any).webkitRequestFullscreen) {
+                    promises.push((element as any).webkitRequestFullscreen());
+                }
             } else {
-                toast("Couldn't exit fullscreen, refresh and try button.");
+                if (document.exitFullscreen) {
+                    promises.push(document.exitFullscreen());
+                } else if ((document as any).webkitExitFullscreen) {
+                    promises.push((document as any).webkitExitFullscreen());
+                }
             }
-        }
-    }, []);
+            try {
+                await Promise.all(promises);
+            } catch {
+                if (future_fs) {
+                    toast("Couldn't enter fullscreen, refresh and try button.");
+                } else {
+                    toast("Couldn't exit fullscreen, refresh and try button.");
+                }
+            }
+        },
+        [device]
+    );
 
     useEffect(() => {
         const controller = new AbortController();
@@ -61,7 +76,7 @@ export function FullscreenContextProvider({
         window.addEventListener(
             "resize",
             () => {
-                setIsFullscreen(window.innerHeight === screen.height);
+                setIsFullscreen(getCurrentFullscreen());
             },
             { signal: controller.signal }
         );
@@ -69,12 +84,13 @@ export function FullscreenContextProvider({
             "keydown",
             (e) => {
                 if (e.key === "F11") {
+                    console.log("preventing fullscreen");
                     e.preventDefault();
                     toggleFullscreen();
                     return;
                 }
                 if (
-                    device.current === "OSX" &&
+                    device === "OSX" &&
                     e.metaKey &&
                     (e.key === "F" || e.key === "f")
                 ) {

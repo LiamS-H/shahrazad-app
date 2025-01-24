@@ -1,24 +1,22 @@
 "use client";
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useState } from "react";
 
 type Device = "OSX" | "notOSX" | null;
 
-export function useDevice(): RefObject<Device | null> {
-    const user_ref = useRef<null | Device>(null);
+export function useDevice(): Device | null {
+    const [device, setDevice] = useState<null | Device>(null);
 
     useEffect(() => {
-        if (user_ref.current) return;
-        let device: Device;
+        if (device) return;
         if (
             window.navigator.userAgent.includes("mac") ||
             window.navigator.userAgent.includes("ip")
         ) {
-            device = "OSX";
+            setDevice("OSX");
         } else {
-            device = "notOSX";
+            setDevice("notOSX");
         }
-        user_ref.current = device;
     }, []);
 
-    return user_ref;
+    return device;
 }
