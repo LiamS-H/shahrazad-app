@@ -15,7 +15,10 @@ export default function CardStack(props: {
         props.emptyMessage instanceof Function ? (
             <props.emptyMessage key={"empty_deck"} />
         ) : (
-            <h1 key={"empty_text"} style={{ color: "white" }}>
+            <h1
+                key={"empty_text"}
+                className="rounded-sm w-full h-full flex items-center justify-center text-sm text-secondary-foreground bg-secondary"
+            >
                 {props.emptyMessage}
             </h1>
         )

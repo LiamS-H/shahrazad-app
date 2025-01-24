@@ -57,7 +57,7 @@ export default function VerticalZone(props: {
                             position: "absolute",
                             bottom: 0,
                             flexFlow: "column nowrap",
-                            transform: "translateY(-125px)",
+                            transform: "translateY(-121px)",
                         }}
                     >
                         {zone.cards.map((id, index) => {
