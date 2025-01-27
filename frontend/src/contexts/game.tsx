@@ -9,7 +9,8 @@ import type {
 } from "@/types/bindings/playmat";
 
 export interface IShahrazadGameContext {
-    player_name: string;
+    player_name: ShahrazadPlaymatId;
+    players: ShahrazadPlaymatId[];
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
     getZone: (arg0: ShahrazadZoneId) => ShahrazadZone;
     getPlaymat: (arg0: ShahrazadPlaymatId) => ShahrazadPlaymat;
@@ -21,7 +22,8 @@ const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(null);
 export function ShahrazadGameProvider(props: {
     game: ShahrazadGame;
     applyAction: (action: ShahrazadAction) => void;
-    player_name: string;
+    player_name: ShahrazadPlaymatId;
+    players: ShahrazadPlaymatId[];
     children: ReactNode;
 }) {
     function getCard(card: ShahrazadCardId): ShahrazadCard {
@@ -38,6 +40,7 @@ export function ShahrazadGameProvider(props: {
         <ShahrazadGameContext.Provider
             value={{
                 player_name: props.player_name,
+                players: props.players,
                 getCard,
                 getZone,
                 getPlaymat,

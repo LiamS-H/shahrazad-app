@@ -50,6 +50,11 @@ pub enum ShahrazadAction {
         player_id: ShahrazadPlaymatId,
         life: i32,
     },
+    SetCommand {
+        player_id: ShahrazadPlaymatId,
+        command_id: ShahrazadPlaymatId,
+        damage: i32,
+    },
     ClearBoard {
         player_id: ShahrazadPlaymatId,
     },

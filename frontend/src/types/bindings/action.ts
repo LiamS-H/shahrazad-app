@@ -13,6 +13,7 @@ export enum ShahrazadActionCase {
     DeckImport = 'DeckImport',
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
+    SetCommand = 'SetCommand',
     ClearBoard = 'ClearBoard',
     DeleteToken = 'DeleteToken',
     Mulligan = 'Mulligan',
@@ -81,6 +82,13 @@ export type ShahrazadActionCaseSetLife = {
     life: number;
 };
 
+export type ShahrazadActionCaseSetCommand = {
+    type: ShahrazadActionCase.SetCommand;
+    player_id: ShahrazadPlaymatId;
+    command_id: ShahrazadPlaymatId;
+    damage: number;
+};
+
 export type ShahrazadActionCaseClearBoard = {
     type: ShahrazadActionCase.ClearBoard;
     player_id: ShahrazadPlaymatId;
@@ -111,6 +119,7 @@ export type ShahrazadAction =
     | ShahrazadActionCaseDeckImport
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
+    | ShahrazadActionCaseSetCommand
     | ShahrazadActionCaseClearBoard
     | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan

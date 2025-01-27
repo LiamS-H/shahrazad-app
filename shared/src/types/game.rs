@@ -35,6 +35,7 @@ pub struct ShahrazadPlaymat {
     command: ShahrazadZoneId,
     life: i32,
     mulligans: u8,
+    command_damage: HashMap<ShahrazadPlaymatId, i32>,
     player: ShahrazadPlayer,
 }
 
@@ -293,8 +294,8 @@ impl ShahrazadGame {
             }
             ShahrazadAction::DeckImport {
                 deck_uri,
-                player_id: player_idx,
-            } => todo!("{}{}", deck_uri, player_idx),
+                player_id,
+            } => todo!("{}{}", deck_uri, player_id),
             ShahrazadAction::AddPlayer { player_id, player } => {
                 let zone_types = [
                     "library",
@@ -320,6 +321,19 @@ impl ShahrazadGame {
                     zone_ids.push(zone_id);
                 }
 
+                let player_uuid = ShahrazadPlaymatId::new(player_id);
+                game.players.push(player_uuid.clone());
+
+                let mut command_damage = HashMap::new();
+
+                for player in &game.players {
+                    command_damage.insert(player.clone(), 0);
+                    let Some(playmat) = game.playmats.get_mut(player) else {
+                        continue;
+                    };
+                    playmat.command_damage.insert(player_uuid.clone(), 0);
+                }
+
                 let new_playmat = ShahrazadPlaymat {
                     library: zone_ids[0].clone(),
                     hand: zone_ids[1].clone(),
@@ -329,22 +343,28 @@ impl ShahrazadGame {
                     command: zone_ids[5].clone(),
                     life: game.settings.starting_life.clone(),
                     mulligans: 0,
+                    command_damage,
                     player,
                 };
 
                 game.zone_count += 6;
 
-                let player_uuid = ShahrazadPlaymatId::new(player_id);
-
                 game.playmats.insert(player_uuid.clone(), new_playmat);
-
-                game.players.push(player_uuid.clone());
 
                 return Some(game);
             }
             ShahrazadAction::SetLife { player_id, life } => {
                 let playmat = game.playmats.get_mut(&player_id)?;
                 playmat.life = life;
+                Some(game)
+            }
+            ShahrazadAction::SetCommand {
+                player_id,
+                command_id,
+                damage,
+            } => {
+                let playmat = game.playmats.get_mut(&player_id)?;
+                playmat.command_damage.insert(command_id, damage);
                 Some(game)
             }
             ShahrazadAction::ClearBoard { player_id } => {

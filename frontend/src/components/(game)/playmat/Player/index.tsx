@@ -12,10 +12,11 @@ import { FormEvent, useState } from "react";
 import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
 import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
 import { usePlayer } from "@/contexts/player";
+import CommandDamageButton from "./command-damage";
 
 export default function Player() {
     const { player, active } = usePlayer();
-    const { getPlaymat, applyAction } = useShahrazadGameContext();
+    const { getPlaymat, applyAction, players } = useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const { life } = playmat;
     const [lifeInput, setLifeInput] = useState<string>(life.toString());
@@ -36,7 +37,7 @@ export default function Player() {
         });
     }
     function setLife(new_life?: number) {
-        if (!new_life) return;
+        if (new_life === undefined) return;
         if (new_life === life) return;
         applyAction({
             type: ShahrazadActionCase.SetLife,
@@ -46,7 +47,7 @@ export default function Player() {
     }
     function parseInput(str: string): number | undefined {
         const num = Number(str);
-        if (!num) return undefined;
+        if (Number.isNaN(num)) return undefined;
         return num;
     }
     function onSubmit(e: FormEvent) {
@@ -97,15 +98,12 @@ export default function Player() {
                 </Button>
             </div>
             <div className="flex flex-col justify-around">
-                {["1", "2", "3"].map((command_life, i) => (
-                    <Button
-                        className="text-accent-foreground"
-                        variant="outline"
-                        size="icon"
-                        key={i}
-                    >
-                        {command_life}
-                    </Button>
+                {players.map((command_id) => (
+                    <CommandDamageButton
+                        key={command_id}
+                        command_id={command_id}
+                        player_id={player}
+                    />
                 ))}
             </div>
         </div>
