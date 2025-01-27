@@ -22,7 +22,7 @@ export default function Playmat(props: {
         <PlayerProvider player={props.player} active={props.active}>
             {/* Full height should be px without gaps */}
             <div className="w-full h-fit flex gap-4 select-none">
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 items-center">
                     <Player />
                     <Exile id={playmat.exile} />
                     <Graveyard id={playmat.graveyard} />

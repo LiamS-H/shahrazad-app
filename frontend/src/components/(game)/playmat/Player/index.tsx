@@ -96,6 +96,18 @@ export default function Player() {
                     <Minus className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
             </div>
+            <div className="flex flex-col justify-around">
+                {["1", "2", "3"].map((command_life, i) => (
+                    <Button
+                        className="text-accent-foreground"
+                        variant="outline"
+                        size="icon"
+                        key={i}
+                    >
+                        {command_life}
+                    </Button>
+                ))}
+            </div>
         </div>
     );
 }

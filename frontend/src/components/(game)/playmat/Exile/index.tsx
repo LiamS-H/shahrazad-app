@@ -10,7 +10,7 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
     const zone = getZone(props.id);
     const [opened, setOpened] = useState(false);
     return (
-        <div className="shahrazad-exile relative">
+        <div className="shahrazad-exile relative w-fit">
             <div
                 onClick={() => {
                     setOpened((o) => !o);

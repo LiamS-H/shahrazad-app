@@ -19,7 +19,7 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
                 }
             }}
             onMouseLeave={() => setHovered(false)}
-            className="shahrazad-graveyard relative"
+            className="shahrazad-graveyard relative w-fit"
         >
             <VerticalZone
                 id={props.id}
