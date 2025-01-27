@@ -1,10 +1,10 @@
 .shahrazad-playmat-board {
-    --grid-lines: white 1px;
+    --grid-lines: hsl(var(--background)) 1px;
     background-color: hsl(var(--secondary));
     /* background-color: black; */
 }
 .dark .shahrazad-playmat-board {
-    --grid-lines: rgba(50, 50, 50, 0.3) 1px;
+    --grid-lines: hsl(var(--secondary)) 1px;
     /* --grid-lines: hsl(var(--background)); */
     /* background-color: hsl(var(--secondary)); */
     background-color: transparent;
