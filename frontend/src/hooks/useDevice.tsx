@@ -1,5 +1,5 @@
 "use client";
-import { type RefObject, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Device = "OSX" | "notOSX" | null;
 
@@ -16,7 +16,7 @@ export function useDevice(): Device | null {
         } else {
             setDevice("notOSX");
         }
-    }, []);
+    }, [device]);
 
     return device;
 }
