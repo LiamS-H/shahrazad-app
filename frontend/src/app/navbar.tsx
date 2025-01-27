@@ -9,13 +9,19 @@ export default function NavBar() {
     return (
         <nav className={`${isFullscreen ? "hidden" : ""}`}>
             <ul className="p-4 flex flex-row items-center gap-4">
-                <Link href={"/"}>
-                    <Button variant="link">Home</Button>
-                </Link>
-                <Link href={"/game/create"}>
-                    <Button variant="link"> Game</Button>
-                </Link>
-                <ThemeToggle />
+                <li>
+                    <Link href={"/"}>
+                        <Button variant="link">Home</Button>
+                    </Link>
+                </li>
+                <li>
+                    <Link href={"/game/create"}>
+                        <Button variant="link"> Game</Button>
+                    </Link>
+                </li>
+                <li>
+                    <ThemeToggle />
+                </li>
             </ul>
         </nav>
     );
