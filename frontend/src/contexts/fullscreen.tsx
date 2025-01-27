@@ -45,13 +45,13 @@ export function FullscreenContextProvider({
                 future_fs !== undefined ? future_fs : !getCurrentFullscreen();
             if (future_fs) {
                 const element = document.documentElement;
-                if (element.requestFullscreen) {
+                if (device === "notOSX" && element.requestFullscreen) {
                     promises.push(element.requestFullscreen());
                 } else if ((element as any).webkitRequestFullscreen) {
                     promises.push((element as any).webkitRequestFullscreen());
                 }
             } else {
-                if (document.exitFullscreen) {
+                if (device === "notOSX" && document.exitFullscreen) {
                     promises.push(document.exitFullscreen());
                 } else if ((document as any).webkitExitFullscreen) {
                     promises.push((document as any).webkitExitFullscreen());
