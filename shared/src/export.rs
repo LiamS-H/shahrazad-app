@@ -9,6 +9,7 @@ use crate::types::{
         ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState, ShahrazadCounter,
     },
     game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
+    player::ShahrazadPlayer,
     ws::{ClientAction, ServerUpdate},
     zone::{ShahrazadZone, ShahrazadZoneId},
 };
@@ -24,7 +25,7 @@ pub fn export_all() {
                 prefix: "\
                 import {ShahrazadCardId,ShahrazadCardState} from './card';
                 import {ShahrazadZoneId} from './zone';
-                import { ShahrazadPlaymatId } from './playmat';
+                import { ShahrazadPlaymatId, ShahrazadPlayer } from './playmat';
                 type usize = number;
                 ",
                 tab_size: 4,
@@ -77,6 +78,7 @@ pub fn export_all() {
         types: [
             ShahrazadPlaymat,
             ShahrazadPlaymatId,
+            ShahrazadPlayer
         ],
         destinations: [
             TypeScript(
@@ -111,12 +113,14 @@ pub fn export_all() {
             JoinGameQuery,
             CreateGameResponse,
             JoinGameResponse,
-            FetchGameResponse
+            FetchGameResponse,
         ],
         destinations: [
             TypeScript(
                 "./bindings/api.ts"
-                prefix: "import {ShahrazadGame,ShahrazadGameSettings} from './game';
+                prefix: "\
+                import {ShahrazadGame,ShahrazadGameSettings} from './game';
+                import {ShahrazadPlayer} from './playmat';
                 "
                 tab_size: 4,
             ),

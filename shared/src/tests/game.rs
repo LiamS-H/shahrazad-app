@@ -1,6 +1,7 @@
 use crate::types::{
     action::ShahrazadAction,
     game::{ShahrazadGame, ShahrazadGameSettings},
+    player::ShahrazadPlayer,
 };
 use pretty_assertions::assert_eq;
 use serde_json::Value;
@@ -23,6 +24,7 @@ fn add_player() {
     {
         let action = ShahrazadAction::AddPlayer {
             player_id: "1".into(),
+            player: ShahrazadPlayer {},
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game).is_some();
         assert!(mutation == true);
@@ -34,6 +36,7 @@ fn init_game() {
     {
         let action = ShahrazadAction::AddPlayer {
             player_id: "1".into(),
+            player: ShahrazadPlayer {},
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());

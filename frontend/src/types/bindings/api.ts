@@ -1,6 +1,8 @@
 import { ShahrazadGame, ShahrazadGameSettings } from './game';
-export type CreateGameQuery = { settings: ShahrazadGameSettings };
-export type JoinGameQuery = { player_id?: string };
+import { ShahrazadPlayer } from './playmat';
+export type CreateGameQuery = { player?: ShahrazadPlayer;
+    settings: ShahrazadGameSettings };
+export type JoinGameQuery = { player?: ShahrazadPlayer; player_id?: string };
 export type CreateGameResponse = { game_id: string; player_id: string;
     code: number };
 export type JoinGameResponse = { game: ShahrazadGame; game_id: string;

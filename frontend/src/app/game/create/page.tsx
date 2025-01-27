@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import CreateGameLoading from "./loading";
+import { savePlayer } from "@/lib/client/localPlayer";
 
 export default function CreateGameForm() {
     const { push: pushRoute } = useRouter();
@@ -101,7 +102,7 @@ export default function CreateGameForm() {
             return;
         }
         const { player_id, code } = gameResult;
-        localStorage.setItem("saved-player", player_id);
+        savePlayer(player_id);
         pushRoute(`/game/${code}`);
     };
 

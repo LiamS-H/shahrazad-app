@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
-use super::{card::*, game::ShahrazadPlaymatId, zone::*};
+use super::{card::*, game::ShahrazadPlaymatId, player::ShahrazadPlayer, zone::*};
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
 #[serde(tag = "type")]
@@ -44,6 +44,7 @@ pub enum ShahrazadAction {
     },
     AddPlayer {
         player_id: String,
+        player: ShahrazadPlayer,
     },
     SetLife {
         player_id: ShahrazadPlaymatId,

@@ -7,6 +7,7 @@ use rand_chacha::ChaCha8Rng;
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
+use super::player::ShahrazadPlayer;
 use super::{card::*, zone::*};
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -34,6 +35,7 @@ pub struct ShahrazadPlaymat {
     command: ShahrazadZoneId,
     life: i32,
     mulligans: u8,
+    player: ShahrazadPlayer,
 }
 
 use crate::branded_string;
@@ -293,7 +295,7 @@ impl ShahrazadGame {
                 deck_uri,
                 player_id: player_idx,
             } => todo!("{}{}", deck_uri, player_idx),
-            ShahrazadAction::AddPlayer { player_id } => {
+            ShahrazadAction::AddPlayer { player_id, player } => {
                 let zone_types = [
                     "library",
                     "hand",
@@ -327,6 +329,7 @@ impl ShahrazadGame {
                     command: zone_ids[5].clone(),
                     life: game.settings.starting_life.clone(),
                     mulligans: 0,
+                    player,
                 };
 
                 game.zone_count += 6;

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { joinGame } from "@/lib/client/joinGame";
 import { fetchGame } from "@/lib/client/fecthGame";
+import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
 
 export default function JoinGameForm() {
     const { push: pushRoute } = useRouter();
@@ -75,7 +76,7 @@ export default function JoinGameForm() {
     const handleJoinGame = async (gameCode: string) => {
         setLoading(true);
         toast("Joining Game...");
-        const stored_player = localStorage.getItem("saved-player") || undefined;
+        const stored_player = loadPlayer();
         const joinResult = await joinGame(gameCode, stored_player);
         if (joinResult === null) {
             setLoading(false);
@@ -89,7 +90,7 @@ export default function JoinGameForm() {
             return;
         }
         const { player_id, code } = joinResult;
-        localStorage.setItem("saved-player", player_id);
+        savePlayer(player_id);
 
         pushRoute(`/game/${code}`);
     };

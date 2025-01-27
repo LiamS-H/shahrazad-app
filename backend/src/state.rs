@@ -1,6 +1,7 @@
 use dashmap::DashMap;
 use rand::Rng;
 use shared::types::game::{ShahrazadGame, ShahrazadGameSettings};
+use shared::types::player::ShahrazadPlayer;
 use shared::types::{
     action::ShahrazadAction,
     ws::{ClientAction, ServerUpdate},
@@ -89,10 +90,18 @@ impl GameStateManager {
         manager
     }
 
-    pub async fn create_game(&self, settings: ShahrazadGameSettings) -> Result<GameInfo, String> {
+    pub async fn create_game(
+        &self,
+        settings: ShahrazadGameSettings,
+        player: Option<ShahrazadPlayer>,
+    ) -> Result<GameInfo, String> {
         let (tx, _) = broadcast::channel(100);
         let game_id = Uuid::new_v4();
         let host_id = Uuid::new_v4();
+        let player = match player {
+            Some(p) => p,
+            None => ShahrazadPlayer {},
+        };
 
         let mut rng = rand::thread_rng();
         let mut code: u32 = rng.gen_range(100_000..=999_999);
@@ -124,6 +133,7 @@ impl GameStateManager {
 
         let add_player = ShahrazadAction::AddPlayer {
             player_id: player_name.clone(),
+            player,
         };
 
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
@@ -149,10 +159,19 @@ impl GameStateManager {
         })
     }
 
-    pub async fn add_player(&self, game_id: Uuid, player_id: Uuid) -> Result<GameInfo, String> {
+    pub async fn add_player(
+        &self,
+        game_id: Uuid,
+        player_id: Uuid,
+        player: Option<ShahrazadPlayer>,
+    ) -> Result<GameInfo, String> {
         let mut game_state = self.games.get_mut(&game_id).ok_or("Game not found")?;
 
         let player_name: String = format!("P{}", game_state.players.len());
+        let player = match player {
+            Some(p) => p,
+            None => ShahrazadPlayer {},
+        };
 
         game_state.players.insert(
             player_id,
@@ -164,6 +183,7 @@ impl GameStateManager {
 
         let add_player = ShahrazadAction::AddPlayer {
             player_id: player_name.clone(),
+            player,
         };
 
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {

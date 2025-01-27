@@ -1,5 +1,5 @@
 import { ShahrazadCardId, ShahrazadCardState } from './card';
-import { ShahrazadPlaymatId } from './playmat';
+import { ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
 type usize = number;
 
@@ -72,6 +72,7 @@ export type ShahrazadActionCaseDeckImport = {
 export type ShahrazadActionCaseAddPlayer = {
     type: ShahrazadActionCase.AddPlayer;
     player_id: string;
+    player: ShahrazadPlayer;
 };
 
 export type ShahrazadActionCaseSetLife = {
