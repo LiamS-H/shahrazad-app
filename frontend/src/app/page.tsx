@@ -8,7 +8,7 @@ export default function Home() {
             <Link href={"/game/create"}>
                 <Button
                     variant="highlight"
-                    className="group transition hover:scale-110 overflow-hidden"
+                    className="group transition hover:scale-110 overflow-hidden relative"
                 >
                     <span>Get Started</span>
                     <div className="absolute inset-0 flex h-full w-full [transform:skew(-12deg)_translateX(-100%)] justify-center group-hover:[transform:skew(-12deg)_translateX(100%)] group-hover:duration-1000">
