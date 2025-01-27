@@ -100,7 +100,9 @@ impl GameStateManager {
         let host_id = Uuid::new_v4();
         let player = match player {
             Some(p) => p,
-            None => ShahrazadPlayer {},
+            None => ShahrazadPlayer {
+                display_name: "P0".into(),
+            },
         };
 
         let mut rng = rand::thread_rng();
@@ -170,7 +172,9 @@ impl GameStateManager {
         let player_name: String = format!("P{}", game_state.players.len());
         let player = match player {
             Some(p) => p,
-            None => ShahrazadPlayer {},
+            None => ShahrazadPlayer {
+                display_name: player_name.clone(),
+            },
         };
 
         game_state.players.insert(

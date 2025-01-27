@@ -5,4 +5,4 @@ export type ShahrazadPlaymat = { library: ShahrazadZoneId;
     command: ShahrazadZoneId; life: number; mulligans: number;
     player: ShahrazadPlayer };
 export type ShahrazadPlaymatId = string;
-export type ShahrazadPlayer = {};
+export type ShahrazadPlayer = { display_name: string };
