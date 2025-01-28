@@ -10,7 +10,7 @@ import { ShahrazadPlayer } from "@/types/bindings/playmat";
 import { User, UserPen } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const icons = [];
+// const icons = [];
 
 export default function PlayerIcon({
     onChange,
@@ -31,7 +31,7 @@ export default function PlayerIcon({
     useEffect(() => {
         const stored = loadPlayer();
         updatePlayer(stored?.player || null);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (player) {
