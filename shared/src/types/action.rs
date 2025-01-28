@@ -42,8 +42,12 @@ pub enum ShahrazadAction {
         deck_uri: String,
         player_id: ShahrazadPlaymatId,
     },
+    SetPlayer {
+        player_id: ShahrazadPlaymatId,
+        player: ShahrazadPlayer,
+    },
     AddPlayer {
-        player_id: String,
+        player_id: ShahrazadPlaymatId,
         player: ShahrazadPlayer,
     },
     SetLife {

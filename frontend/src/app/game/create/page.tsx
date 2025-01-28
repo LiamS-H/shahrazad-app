@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import CreateGameLoading from "./loading";
-import { savePlayer } from "@/lib/client/localPlayer";
+import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
 
 export default function CreateGameForm() {
     const { push: pushRoute } = useRouter();
@@ -95,6 +95,7 @@ export default function CreateGameForm() {
                     freeMulligans === 5 ? "∞" : freeMulligans.toString(),
                 scry_rule: scryRule,
             },
+            player: loadPlayer()?.player,
         });
         if (gameResult === null) {
             setLoading(false);

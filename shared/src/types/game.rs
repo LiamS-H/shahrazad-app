@@ -296,6 +296,16 @@ impl ShahrazadGame {
                 deck_uri,
                 player_id,
             } => todo!("{}{}", deck_uri, player_id),
+            ShahrazadAction::SetPlayer { player_id, player } => {
+                let Some(playmat) = game.playmats.get_mut(&player_id) else {
+                    return None;
+                };
+                if playmat.player == player {
+                    return None;
+                }
+                playmat.player = player;
+                return Some(game);
+            }
             ShahrazadAction::AddPlayer { player_id, player } => {
                 let zone_types = [
                     "library",
@@ -321,8 +331,7 @@ impl ShahrazadGame {
                     zone_ids.push(zone_id);
                 }
 
-                let player_uuid = ShahrazadPlaymatId::new(player_id);
-                game.players.push(player_uuid.clone());
+                game.players.push(player_id.clone());
 
                 let mut command_damage = HashMap::new();
 
@@ -331,7 +340,7 @@ impl ShahrazadGame {
                     let Some(playmat) = game.playmats.get_mut(player) else {
                         continue;
                     };
-                    playmat.command_damage.insert(player_uuid.clone(), 0);
+                    playmat.command_damage.insert(player_id.clone(), 0);
                 }
 
                 let new_playmat = ShahrazadPlaymat {
@@ -349,12 +358,15 @@ impl ShahrazadGame {
 
                 game.zone_count += 6;
 
-                game.playmats.insert(player_uuid.clone(), new_playmat);
+                game.playmats.insert(player_id.clone(), new_playmat);
 
                 return Some(game);
             }
             ShahrazadAction::SetLife { player_id, life } => {
                 let playmat = game.playmats.get_mut(&player_id)?;
+                if playmat.life == life {
+                    return None;
+                }
                 playmat.life = life;
                 Some(game)
             }

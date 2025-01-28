@@ -8,7 +8,7 @@ type GameClientCallbacks = {
     onPreloadCards: (cards: string[]) => void;
     onMessage: (error: string) => void;
     onGameTermination: () => void;
-    onPlayerJoin: () => void;
+    onPlayerJoin: (player: string) => void;
 };
 
 export class GameClient {
@@ -86,10 +86,21 @@ export class GameClient {
                     this.cleanup();
                     return;
                 }
+
+                const mutated = this.applyAction(update.action);
                 if (update.action.type === ShahrazadActionCase.AddPlayer) {
-                    this.callbacks.onPlayerJoin();
+                    this.callbacks.onPlayerJoin(
+                        update.action.player.display_name
+                    );
                 }
-                this.applyAction(update.action);
+                if (
+                    mutated &&
+                    update.action.type === ShahrazadActionCase.SetPlayer
+                ) {
+                    this.callbacks.onMessage(
+                        `${update.action.player_id} has new name: ${update.action.player.display_name}`
+                    );
+                }
                 console.log("[ws] received action:", update.action);
             } else if (update.game) {
                 this.setState(update.game);

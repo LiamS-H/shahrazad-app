@@ -22,7 +22,7 @@ fn create_game() {
 fn add_player() {
     let mut game = ShahrazadGame::new(DEFAULT_SETTINGS);
     {
-        let action = ShahrazadAction::AddPlayer {
+        let action = ShahrazadAction::SetPlayer {
             player_id: "1".into(),
             player: ShahrazadPlayer {
                 display_name: "".into(),
@@ -36,7 +36,7 @@ fn add_player() {
 fn init_game() {
     let mut game = ShahrazadGame::new(DEFAULT_SETTINGS);
     {
-        let action = ShahrazadAction::AddPlayer {
+        let action = ShahrazadAction::SetPlayer {
             player_id: "1".into(),
             player: ShahrazadPlayer {
                 display_name: "".into(),

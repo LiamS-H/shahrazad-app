@@ -1,6 +1,6 @@
 use dashmap::DashMap;
 use rand::Rng;
-use shared::types::game::{ShahrazadGame, ShahrazadGameSettings};
+use shared::types::game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymatId};
 use shared::types::player::ShahrazadPlayer;
 use shared::types::{
     action::ShahrazadAction,
@@ -134,7 +134,7 @@ impl GameStateManager {
         );
 
         let add_player = ShahrazadAction::AddPlayer {
-            player_id: player_name.clone(),
+            player_id: ShahrazadPlaymatId::new(player_name.clone()),
             player,
         };
 
@@ -186,7 +186,7 @@ impl GameStateManager {
         );
 
         let add_player = ShahrazadAction::AddPlayer {
-            player_id: player_name.clone(),
+            player_id: ShahrazadPlaymatId::new(player_name.clone()),
             player,
         };
 

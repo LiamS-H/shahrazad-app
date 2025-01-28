@@ -11,6 +11,7 @@ export enum ShahrazadActionCase {
     Shuffle = 'Shuffle',
     ZoneImport = 'ZoneImport',
     DeckImport = 'DeckImport',
+    SetPlayer = 'SetPlayer',
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
     SetCommand = 'SetCommand',
@@ -70,9 +71,15 @@ export type ShahrazadActionCaseDeckImport = {
     player_id: ShahrazadPlaymatId;
 };
 
+export type ShahrazadActionCaseSetPlayer = {
+    type: ShahrazadActionCase.SetPlayer;
+    player_id: ShahrazadPlaymatId;
+    player: ShahrazadPlayer;
+};
+
 export type ShahrazadActionCaseAddPlayer = {
     type: ShahrazadActionCase.AddPlayer;
-    player_id: string;
+    player_id: ShahrazadPlaymatId;
     player: ShahrazadPlayer;
 };
 
@@ -117,6 +124,7 @@ export type ShahrazadAction =
     | ShahrazadActionCaseShuffle
     | ShahrazadActionCaseZoneImport
     | ShahrazadActionCaseDeckImport
+    | ShahrazadActionCaseSetPlayer
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
     | ShahrazadActionCaseSetCommand

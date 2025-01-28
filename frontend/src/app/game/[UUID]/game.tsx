@@ -1,7 +1,7 @@
 "use client";
 import Game from "@/components/(game)/game";
 import { joinGame } from "@/lib/client/joinGame";
-import { ShahrazadAction } from "@/types/bindings/action";
+import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import ShareGameButton from "./ShareGameButton";
 import FullscreenToggle from "./FullscreenToggle";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import PlayerIcon from "@/components/(game)/player-icon";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -136,6 +137,15 @@ export default function GamePage(props: { game_id: string }) {
                 applyAction={handleAction}
             />
             <div className="absolute top-4 right-4 flex gap-4">
+                <PlayerIcon
+                    onChange={(p) => {
+                        handleAction({
+                            type: ShahrazadActionCase.SetPlayer,
+                            player: p,
+                            player_id: playerName,
+                        });
+                    }}
+                />
                 <ShareGameButton code={gameCode} />
                 <FullscreenToggle />
             </div>
