@@ -3,6 +3,7 @@
 export class GameState {
   free(): void;
   constructor(game: any);
+  get_hash(): any;
   apply_action(action: any): any;
   set_state(game: any): any;
 }
@@ -13,6 +14,7 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_gamestate_free: (a: number, b: number) => void;
   readonly gamestate_new: (a: any) => number;
+  readonly gamestate_get_hash: (a: number) => [number, number, number];
   readonly gamestate_apply_action: (a: number, b: any) => [number, number, number];
   readonly gamestate_set_state: (a: number, b: any) => [number, number, number];
   readonly __wbindgen_exn_store: (a: number) => void;

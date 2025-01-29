@@ -24,7 +24,6 @@ pub struct GameInfo {
 pub struct GameState {
     game: ShahrazadGame,
     host_id: Uuid,
-    sequence_number: u64,
     players: DashMap<Uuid, Player>,
     tx: broadcast::Sender<ServerUpdate>,
     last_activity: Instant,
@@ -73,7 +72,6 @@ impl GameStateManager {
                         let disconnect_update = ServerUpdate {
                             action: Some(ShahrazadAction::GameTerminated),
                             game: None,
-                            sequence_number: game_ref.sequence_number + 1,
                             player_id: *game_id,
                         };
                         let _ = game_ref.tx.send(disconnect_update);
@@ -114,7 +112,6 @@ impl GameStateManager {
         let mut game_state = GameState {
             game: ShahrazadGame::new(settings),
             host_id,
-            sequence_number: 0,
             players: DashMap::new(),
             tx,
             last_activity: Instant::now(),
@@ -142,7 +139,6 @@ impl GameStateManager {
             let update = ServerUpdate {
                 action: Some(add_player),
                 game: None,
-                sequence_number: 0,
                 player_id: host_id,
             };
             let _ = game_state.tx.send(update);
@@ -191,12 +187,9 @@ impl GameStateManager {
         };
 
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
-            game_state.sequence_number += 1;
-
             let update = ServerUpdate {
                 action: Some(add_player),
                 game: None,
-                sequence_number: game_state.sequence_number,
                 player_id,
             };
 
@@ -259,13 +252,10 @@ impl GameStateManager {
     ) -> Result<ServerUpdate, String> {
         let game_ref = self.games.get(&game_id).ok_or("Game not found")?;
 
-        let sequence_number = game_ref.sequence_number;
-
         return Ok(ServerUpdate {
             action: None,
             game: Some(game_ref.game.clone()),
             player_id,
-            sequence_number,
         });
     }
 
@@ -285,21 +275,23 @@ impl GameStateManager {
             return Ok(ServerUpdate {
                 action: None,
                 game: Some(game_ref.game.clone()),
-                sequence_number: game_ref.sequence_number,
                 player_id,
             });
         };
 
-        game_ref.sequence_number += 1;
+        let game_hash = game_ref.game.hash();
+        let client_hash: u64 = match client_action.hash.parse() {
+            Ok(num) => num,
+            Err(_) => 0,
+        };
 
         // Handle client desync
         // This triggers when a client attempts to make an update and its own state is outdated
         // The server then attempts to process the action, and then updates the client with full state
-        if client_action.sequence_number < game_ref.sequence_number {
+        if client_hash != game_hash {
             let full_state = ServerUpdate {
                 action: None,
                 game: Some(game_ref.game.clone()),
-                sequence_number: game_ref.sequence_number,
                 player_id,
             };
             let _ = game_ref.tx.send(full_state);
@@ -307,7 +299,6 @@ impl GameStateManager {
             let action_update = ServerUpdate {
                 action: Some(client_action.action),
                 game: None,
-                sequence_number: game_ref.sequence_number,
                 player_id,
             };
             let _ = game_ref.tx.send(action_update.clone());
@@ -317,7 +308,6 @@ impl GameStateManager {
         let update = ServerUpdate {
             action: Some(client_action.action),
             game: None,
-            sequence_number: game_ref.sequence_number,
             player_id,
         };
 

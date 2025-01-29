@@ -1,9 +1,11 @@
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet};
+use std::hash::{Hash, Hasher};
 
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
+use seahash::SeaHasher;
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
@@ -39,10 +41,30 @@ pub struct ShahrazadPlaymat {
     player: ShahrazadPlayer,
 }
 
+impl std::hash::Hash for ShahrazadPlaymat {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.library.hash(state);
+        self.hand.hash(state);
+        self.graveyard.hash(state);
+        self.battlefield.hash(state);
+        self.exile.hash(state);
+        self.command.hash(state);
+        self.life.hash(state);
+        self.mulligans.hash(state);
+        let mut damages: Vec<_> = self.command_damage.iter().collect();
+        damages.sort_by(|a, b| a.0.cmp(b.0));
+        for damage in damages {
+            damage.0.hash(state);
+            damage.1.hash(state);
+        }
+        self.player.hash(state);
+    }
+}
+
 use crate::branded_string;
 use crate::types::action::ShahrazadAction;
 
-#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Hash)]
 pub struct ShahrazadGameSettings {
     pub starting_life: i32,
     pub free_mulligans: String,
@@ -50,6 +72,34 @@ pub struct ShahrazadGameSettings {
 }
 
 impl ShahrazadGame {
+    pub fn hash(&self) -> u64 {
+        let mut state = SeaHasher::with_seeds(0, 0, 0, 0);
+        self.zone_count.hash(&mut state);
+        self.card_count.hash(&mut state);
+        let mut cards: Vec<_> = self.cards.iter().collect();
+        cards.sort_by(|a, b| a.0.cmp(b.0));
+        for card in cards {
+            card.0.hash(&mut state);
+            card.1.hash(&mut state);
+        }
+
+        let mut zones: Vec<_> = self.zones.iter().collect();
+        zones.sort_by(|a, b| a.0.cmp(b.0));
+        for zone in zones {
+            zone.0.hash(&mut state);
+            zone.1.hash(&mut state);
+        }
+        for player in &self.players {
+            let Some(playmat) = self.playmats.get(player) else {
+                continue;
+            };
+            player.hash(&mut state);
+            playmat.hash(&mut state);
+        }
+        self.settings.hash(&mut state);
+
+        state.finish()
+    }
     pub fn new(settings: ShahrazadGameSettings) -> Self {
         Self {
             zone_count: 0,

@@ -30,6 +30,10 @@ impl GameState {
             panic!("Error loading game")
         }
     }
+    #[wasm_bindgen]
+    pub fn get_hash(&self) -> Result<JsValue, JsValue> {
+        to_js_value(&self.inner.hash().to_string())
+    }
 
     #[wasm_bindgen]
     pub fn apply_action(&mut self, action: JsValue) -> Result<JsValue, JsValue> {
