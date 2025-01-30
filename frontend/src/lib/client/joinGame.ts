@@ -1,17 +1,19 @@
-import { JoinGameResponse } from "@/types/bindings/api";
+import { JoinGameQuery, JoinGameResponse } from "@/types/bindings/api";
 
 export async function joinGame(
     uuid: string,
-    player_id?: string
+    props?: JoinGameQuery
 ): Promise<JoinGameResponse | null | undefined> {
     let res: Response;
+    console.log(props);
     try {
-        const params = player_id
-            ? `?player_id=${encodeURIComponent(player_id)}`
-            : ``;
-        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/join_game/${uuid}${params}`;
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/join_game/${uuid}`;
         res = await fetch(url, {
-            method: "GET",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(props) || "{}",
         });
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);

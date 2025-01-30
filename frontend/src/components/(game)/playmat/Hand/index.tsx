@@ -10,8 +10,10 @@ import {
     TooltipContent,
 } from "@/components/(ui)/tooltip";
 import { useState } from "react";
+import { usePlayer } from "@/contexts/player";
 
-export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
+export default function Hand(props: { id: ShahrazadZoneId }) {
+    const { active } = usePlayer();
     const { getZone, getCard, player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const zone = getZone(props.id);
@@ -22,7 +24,7 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
             <div className="absolute bottom-1">
                 <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
                     <TooltipTrigger
-                        className="w-6 h-6 rounded-full bg-destructive flex justify-center items-center"
+                        className="w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex justify-center items-center"
                         onClick={() => setTooltipOpen(true)}
                     >
                         {zone.cards.length}
@@ -35,9 +37,10 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
         </div>
     );
 
-    if (!props.active) {
+    if (!active) {
         return (
-            <div className="shahrazad-hand flex flex-grow">
+            <div className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]">
+                {cardCountChip}
                 {zone.cards.map((id) => {
                     const shah_card = getCard(id);
                     if (
@@ -58,13 +61,12 @@ export default function Hand(props: { id: ShahrazadZoneId; active: boolean }) {
                         </div>
                     );
                 })}
-                {cardCountChip}
             </div>
         );
     }
 
     return (
-        <div className="shahrazad-hand flex flex-grow">
+        <div className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]">
             {cardCountChip}
             <HorizontalZone id={props.id} />
         </div>

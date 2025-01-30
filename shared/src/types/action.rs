@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
-use super::{card::*, game::ShahrazadPlaymatId, zone::*};
+use super::{card::*, game::ShahrazadPlaymatId, player::ShahrazadPlayer, zone::*};
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
 #[serde(tag = "type")]
@@ -25,7 +25,6 @@ pub enum ShahrazadAction {
     CardZone {
         cards: Vec<ShahrazadCardId>,
         state: ShahrazadCardState,
-        source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
         index: i32,
     },
@@ -43,15 +42,28 @@ pub enum ShahrazadAction {
         deck_uri: String,
         player_id: ShahrazadPlaymatId,
     },
+    SetPlayer {
+        player_id: ShahrazadPlaymatId,
+        player: ShahrazadPlayer,
+    },
     AddPlayer {
-        player_id: String,
+        player_id: ShahrazadPlaymatId,
+        player: ShahrazadPlayer,
     },
     SetLife {
         player_id: ShahrazadPlaymatId,
         life: i32,
     },
+    SetCommand {
+        player_id: ShahrazadPlaymatId,
+        command_id: ShahrazadPlaymatId,
+        damage: i32,
+    },
     ClearBoard {
         player_id: ShahrazadPlaymatId,
+    },
+    DeleteToken {
+        cards: Vec<ShahrazadCardId>,
     },
     Mulligan {
         player_id: ShahrazadPlaymatId,

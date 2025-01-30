@@ -1,12 +1,15 @@
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet};
+use std::hash::{Hash, Hasher};
 
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
+use seahash::SeaHasher;
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
+use super::player::ShahrazadPlayer;
 use super::{card::*, zone::*};
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -34,19 +37,70 @@ pub struct ShahrazadPlaymat {
     command: ShahrazadZoneId,
     life: i32,
     mulligans: u8,
+    command_damage: HashMap<ShahrazadPlaymatId, i32>,
+    player: ShahrazadPlayer,
+}
+
+impl std::hash::Hash for ShahrazadPlaymat {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.library.hash(state);
+        self.hand.hash(state);
+        self.graveyard.hash(state);
+        self.battlefield.hash(state);
+        self.exile.hash(state);
+        self.command.hash(state);
+        self.life.hash(state);
+        self.mulligans.hash(state);
+        let mut damages: Vec<_> = self.command_damage.iter().collect();
+        damages.sort_by(|a, b| a.0.cmp(b.0));
+        for damage in damages {
+            damage.0.hash(state);
+            damage.1.hash(state);
+        }
+        self.player.hash(state);
+    }
 }
 
 use crate::branded_string;
 use crate::types::action::ShahrazadAction;
 
-#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Hash)]
 pub struct ShahrazadGameSettings {
     pub starting_life: i32,
     pub free_mulligans: String,
+    pub commander: bool,
     pub scry_rule: bool,
 }
 
 impl ShahrazadGame {
+    pub fn hash(&self) -> u64 {
+        let mut state = SeaHasher::with_seeds(0, 0, 0, 0);
+        self.zone_count.hash(&mut state);
+        self.card_count.hash(&mut state);
+        let mut cards: Vec<_> = self.cards.iter().collect();
+        cards.sort_by(|a, b| a.0.cmp(b.0));
+        for card in cards {
+            card.0.hash(&mut state);
+            card.1.hash(&mut state);
+        }
+
+        let mut zones: Vec<_> = self.zones.iter().collect();
+        zones.sort_by(|a, b| a.0.cmp(b.0));
+        for zone in zones {
+            zone.0.hash(&mut state);
+            zone.1.hash(&mut state);
+        }
+        for player in &self.players {
+            let Some(playmat) = self.playmats.get(player) else {
+                continue;
+            };
+            player.hash(&mut state);
+            playmat.hash(&mut state);
+        }
+        self.settings.hash(&mut state);
+
+        state.finish()
+    }
     pub fn new(settings: ShahrazadGameSettings) -> Self {
         Self {
             zone_count: 0,
@@ -167,80 +221,63 @@ impl ShahrazadGame {
             ShahrazadAction::CardZone {
                 cards,
                 state,
-                source: src,
-                destination: dest,
+                destination: dest_id,
                 index,
             } => {
                 let mut mutated = false;
+                let dest_set: HashSet<ShahrazadCardId> =
+                    game.zones.get(&dest_id)?.cards.iter().cloned().collect();
 
-                let cards_set: HashSet<ShahrazadCardId> = cards.iter().cloned().collect();
-
-                if src != dest
-                    && game.zones[&dest]
-                        .cards
-                        .iter()
-                        .any(|id| cards_set.contains(id))
+                let mut migrating_cards = HashSet::new();
                 {
-                    return None;
-                }
+                    let mut migrating_zones = Vec::new();
+                    for id in &cards {
+                        let Some(card) = game.cards.get(id) else {
+                            continue;
+                        };
+                        if !game.zones.contains_key(&card.location) {
+                            continue;
+                        };
+                        migrating_zones.push(card.location.clone());
 
-                for card_id in &cards {
-                    let old_card = game.cards.get(card_id)?;
-                    let mut new_card = ShahrazadCard::clone(old_card);
-                    new_card.state.apply(&old_card.state);
-                    new_card.state.apply(&state);
-                    new_card.migrate(dest.clone());
-
-                    if new_card != *old_card {
-                        mutated = true;
-                        game.cards.insert(card_id.clone(), new_card);
+                        let mut new_card = ShahrazadCard::clone(card);
+                        new_card.state.apply(&card.state);
+                        new_card.state.apply(&state);
+                        new_card.migrate(dest_id.clone());
+                        if new_card != *card {
+                            mutated = true;
+                            game.cards.insert(id.clone(), new_card);
+                        };
+                        if !dest_set.contains(id) {
+                            migrating_cards.insert(id.clone());
+                        };
                     }
-                }
-
-                if src == dest {
-                    let zone = game.zones.get_mut(&src)?;
-                    let mut new_order: Vec<ShahrazadCardId> = zone
-                        .cards
-                        .iter()
-                        .filter(|id| !cards_set.contains(id))
-                        .cloned()
-                        .collect();
-
-                    let insert_idx = if index == -1 {
-                        new_order.len()
-                    } else {
-                        index as usize
-                    };
-
-                    new_order.splice(insert_idx..insert_idx, cards_set.iter().cloned());
-
-                    if new_order != zone.cards {
-                        mutated = true;
-                        zone.cards = new_order;
-                    }
-                } else {
-                    {
-                        let source_zone = game.zones.get_mut(&src)?;
-                        let original_len = source_zone.cards.len();
-                        source_zone.cards.retain(|id| !cards_set.contains(id));
-                        if source_zone.cards.len() != original_len {
+                    for id in &migrating_zones {
+                        let Some(zone) = game.zones.get_mut(id) else {
+                            continue;
+                        };
+                        let len = zone.cards.len();
+                        zone.cards.retain(|id| !migrating_cards.contains(id));
+                        if len != zone.cards.len() {
                             mutated = true;
                         }
                     }
+                }
 
-                    let dest_zone = game.zones.get_mut(&dest)?;
-                    let idx = if index == -1 {
-                        dest_zone.cards.len()
-                    } else {
-                        index as usize
-                    };
+                let dest_zone = game.zones.get_mut(&dest_id)?;
+                let idx = if index == -1 {
+                    dest_zone.cards.len()
+                } else {
+                    index as usize
+                };
 
-                    let original_cards = dest_zone.cards.clone();
-                    dest_zone.cards.splice(idx..idx, cards_set.iter().cloned());
+                let original_cards = dest_zone.cards.clone();
+                dest_zone
+                    .cards
+                    .splice(idx..idx, migrating_cards.iter().cloned());
 
-                    if dest_zone.cards != original_cards {
-                        mutated = true;
-                    }
+                if dest_zone.cards != original_cards {
+                    mutated = true;
                 }
 
                 if mutated {
@@ -261,10 +298,14 @@ impl ShahrazadGame {
                 for card_id in &cards {
                     let card = game.cards.get_mut(card_id)?;
                     card.state.apply(&ShahrazadCardState {
+                        flipped: Some(false),
+                        inverted: Some(false),
+                        tapped: Some(false),
                         face_down: Some(true),
                         counters: Some([].into()),
                         revealed: Some([].into()),
-                        ..Default::default()
+                        x: Some(255),
+                        y: Some(255),
                     });
                 }
 
@@ -304,9 +345,19 @@ impl ShahrazadGame {
             }
             ShahrazadAction::DeckImport {
                 deck_uri,
-                player_id: player_idx,
-            } => todo!("{}{}", deck_uri, player_idx),
-            ShahrazadAction::AddPlayer { player_id } => {
+                player_id,
+            } => todo!("{}{}", deck_uri, player_id),
+            ShahrazadAction::SetPlayer { player_id, player } => {
+                let Some(playmat) = game.playmats.get_mut(&player_id) else {
+                    return None;
+                };
+                if playmat.player == player {
+                    return None;
+                }
+                playmat.player = player;
+                return Some(game);
+            }
+            ShahrazadAction::AddPlayer { player_id, player } => {
                 let zone_types = [
                     "library",
                     "hand",
@@ -331,6 +382,18 @@ impl ShahrazadGame {
                     zone_ids.push(zone_id);
                 }
 
+                game.players.push(player_id.clone());
+
+                let mut command_damage = HashMap::new();
+
+                for player in &game.players {
+                    command_damage.insert(player.clone(), 0);
+                    let Some(playmat) = game.playmats.get_mut(player) else {
+                        continue;
+                    };
+                    playmat.command_damage.insert(player_id.clone(), 0);
+                }
+
                 let new_playmat = ShahrazadPlaymat {
                     library: zone_ids[0].clone(),
                     hand: zone_ids[1].clone(),
@@ -340,21 +403,31 @@ impl ShahrazadGame {
                     command: zone_ids[5].clone(),
                     life: game.settings.starting_life.clone(),
                     mulligans: 0,
+                    command_damage,
+                    player,
                 };
 
                 game.zone_count += 6;
 
-                let player_uuid = ShahrazadPlaymatId::new(player_id);
-
-                game.playmats.insert(player_uuid.clone(), new_playmat);
-
-                game.players.push(player_uuid.clone());
+                game.playmats.insert(player_id.clone(), new_playmat);
 
                 return Some(game);
             }
             ShahrazadAction::SetLife { player_id, life } => {
                 let playmat = game.playmats.get_mut(&player_id)?;
+                if playmat.life == life {
+                    return None;
+                }
                 playmat.life = life;
+                Some(game)
+            }
+            ShahrazadAction::SetCommand {
+                player_id,
+                command_id,
+                damage,
+            } => {
+                let playmat = game.playmats.get_mut(&player_id)?;
+                playmat.command_damage.insert(command_id, damage);
                 Some(game)
             }
             ShahrazadAction::ClearBoard { player_id } => {
@@ -384,15 +457,26 @@ impl ShahrazadGame {
                 let library_id = playmat.library.clone();
                 let hand_id = playmat.hand.clone();
 
-                let ShahrazadZone { cards } = game.zones.get(&hand_id)?;
+                let mut cards: Vec<ShahrazadCardId> = Vec::new();
+                for (card_id, card) in &game.cards {
+                    if card.owner == player_id {
+                        cards.push(card_id.clone());
+                    }
+                }
+
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::DeleteToken {
+                        cards: cards.clone(),
+                    },
+                    game,
+                );
 
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
-                        cards: cards.clone(),
+                        cards,
                         state: ShahrazadCardState {
                             ..Default::default()
                         },
-                        source: hand_id.clone(),
                         destination: library_id.clone(),
                         index: 0,
                     },
@@ -422,6 +506,39 @@ impl ShahrazadGame {
                 Some(game)
             }
             ShahrazadAction::GameTerminated => None,
+            ShahrazadAction::DeleteToken { cards } => {
+                let mut mutated = false;
+
+                let mut tokens = HashSet::new();
+                let mut zones = Vec::new();
+
+                for id in &cards {
+                    let Some(card) = game.cards.get(id) else {
+                        continue;
+                    };
+                    if !card.token {
+                        continue;
+                    }
+                    zones.push(card.location.clone());
+                    tokens.insert(id);
+                    mutated = true;
+                }
+                for id in &tokens {
+                    game.cards.remove(id);
+                }
+
+                for id in &zones {
+                    let Some(zone) = game.zones.get_mut(id) else {
+                        continue;
+                    };
+                    zone.cards.retain(|id| !tokens.contains(id));
+                }
+
+                if !mutated {
+                    return None;
+                }
+                return Some(game);
+            }
         }
     }
 }

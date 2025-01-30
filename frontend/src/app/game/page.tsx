@@ -1,9 +1,5 @@
-import GameForm from "./game-form";
+import { redirect } from "next/navigation";
 
 export default function GameConfigPage() {
-    return (
-        <div className="container mx-auto p-4 max-w-md">
-            <GameForm />
-        </div>
-    );
+    redirect("/game/create");
 }

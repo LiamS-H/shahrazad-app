@@ -1,7 +1,7 @@
 "use client";
 import Game from "@/components/(game)/game";
 import { joinGame } from "@/lib/client/joinGame";
-import { ShahrazadAction } from "@/types/bindings/action";
+import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
@@ -10,7 +10,10 @@ import init from "shahrazad-wasm";
 import { GameClient } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
 import { toast } from "sonner";
-import ShareGameButton from "@/components/(game)/playmat/(buttons)/ShareGameButton";
+import ShareGameButton from "./ShareGameButton";
+import FullscreenToggle from "./FullscreenToggle";
+import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import PlayerIcon from "@/components/(game)/player-icon";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -34,7 +37,7 @@ export default function GamePage(props: { game_id: string }) {
     const initGame = useCallback(async () => {
         if (init_ref.current) return;
         init_ref.current = true;
-        const stored_player = localStorage.getItem("saved-player") || undefined;
+        const stored_player = loadPlayer();
 
         const [joinResult] = await Promise.all([
             joinGame(props.game_id, stored_player),
@@ -61,12 +64,13 @@ export default function GamePage(props: { game_id: string }) {
         }
 
         const { player_id, player_name, game: initialState, code } = joinResult;
-        toast(`Joining game ${code}`);
+        toast(`Joined game ${code}`);
 
         setPlayerUUID(player_id);
         setPlayerName(player_name);
         setGameCode(code);
-        localStorage.setItem("saved-player", player_id);
+        savePlayer(player_id);
+        localStorage.setItem("saved-game", code.toString());
 
         const gameClient = new GameClient(
             props.game_id,
@@ -82,7 +86,8 @@ export default function GamePage(props: { game_id: string }) {
                     signalError({
                         status: 404,
                         message: "Game Terminated",
-                        description: "This game no longer exists.",
+                        description:
+                            "Games Close after 5 minutes of inactivity. This game no longer exists.",
                     });
                 },
                 onPlayerJoin: () => {
@@ -131,7 +136,19 @@ export default function GamePage(props: { game_id: string }) {
                 playerName={playerName}
                 applyAction={handleAction}
             />
-            {gameCode && <ShareGameButton code={gameCode} />}
+            <div className="absolute top-4 right-4 flex gap-4">
+                <PlayerIcon
+                    onChange={(p) => {
+                        handleAction({
+                            type: ShahrazadActionCase.SetPlayer,
+                            player: p,
+                            player_id: playerName,
+                        });
+                    }}
+                />
+                <ShareGameButton code={gameCode} />
+                <FullscreenToggle />
+            </div>
         </>
     );
 }

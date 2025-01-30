@@ -1,0 +1,20 @@
+.shahrazad-playmat-board {
+    --grid-lines: hsl(var(--background)) 1px;
+    background-color: hsl(var(--secondary));
+    /* background-color: black; */
+}
+.dark .shahrazad-playmat-board {
+    --grid-lines: hsl(var(--secondary)) 1px;
+    /* --grid-lines: hsl(var(--background)); */
+    /* background-color: hsl(var(--secondary)); */
+    background-color: transparent;
+}
+.shahrazad-playmat-board {
+    background-image: linear-gradient(
+            to right,
+            var(--grid-lines),
+            transparent 1px
+        ),
+        linear-gradient(to bottom, var(--grid-lines), transparent 1px);
+    background-size: 20px 20px;
+}

@@ -18,6 +18,8 @@ body {
         --primary-foreground: 210 40% 98%;
         --secondary: 210 40% 96.1%;
         --secondary-foreground: 222.2 47.4% 11.2%;
+        --highlight: 205 92% 69%;
+        --highlight-foreground: 183 70% 98%;
         --muted: 210 40% 96.1%;
         --muted-foreground: 215.4 16.3% 46.9%;
         --accent: 210 40% 96.1%;
@@ -33,6 +35,7 @@ body {
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
+        --token-outline: 222 50% 80%;
     }
     .dark {
         --background: 222.2 84% 4.9%;
@@ -45,6 +48,8 @@ body {
         --primary-foreground: 222.2 47.4% 11.2%;
         --secondary: 217.2 32.6% 17.5%;
         --secondary-foreground: 210 40% 98%;
+        --highlight: 187 92% 69%;
+        --highlight-foreground: 222.2 84% 10%;
         --muted: 217.2 32.6% 17.5%;
         --muted-foreground: 215 20.2% 65.1%;
         --accent: 217.2 32.6% 17.5%;
@@ -59,6 +64,7 @@ body {
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
+        --token-outline: 0 0% 100%;
     }
 }
 
@@ -69,4 +75,8 @@ body {
     body {
         @apply bg-background text-foreground;
     }
+}
+
+body[data-scroll-locked][data-scroll-locked] {
+    overflow: auto !important;
 }

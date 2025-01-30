@@ -42,6 +42,7 @@ echo "${RESET}\nBuilding wasm..."
 
 cd wasm
 wasm-pack build --target "web" || { echo "${RED}❌wasm build failed"; exit 1;}
+# RUSTFLAGS='--cfg getrandom_backend="wasm_js"' wasm-pack build --target "web" || { echo "${RED}❌wasm build failed"; exit 1;}
 cd ..
 
 echo "Copying wasm to frontend..."

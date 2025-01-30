@@ -3,7 +3,7 @@
 import { CreateGameResponse, CreateGameQuery } from "@/types/bindings/api";
 
 export async function createGame(
-    settings: CreateGameQuery
+    props: CreateGameQuery
 ): Promise<CreateGameResponse | null> {
     try {
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/create_game`;
@@ -12,7 +12,7 @@ export async function createGame(
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(settings),
+            body: JSON.stringify(props),
         });
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);

@@ -1,5 +1,5 @@
 import { ShahrazadCardId, ShahrazadCardState } from './card';
-import { ShahrazadPlaymatId } from './playmat';
+import { ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
 type usize = number;
 
@@ -11,9 +11,12 @@ export enum ShahrazadActionCase {
     Shuffle = 'Shuffle',
     ZoneImport = 'ZoneImport',
     DeckImport = 'DeckImport',
+    SetPlayer = 'SetPlayer',
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
+    SetCommand = 'SetCommand',
     ClearBoard = 'ClearBoard',
+    DeleteToken = 'DeleteToken',
     Mulligan = 'Mulligan',
     GameTerminated = 'GameTerminated',
 }
@@ -44,7 +47,6 @@ export type ShahrazadActionCaseCardZone = {
     type: ShahrazadActionCase.CardZone;
     cards: Array<ShahrazadCardId>;
     state: ShahrazadCardState;
-    source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
     index: number;
 };
@@ -69,9 +71,16 @@ export type ShahrazadActionCaseDeckImport = {
     player_id: ShahrazadPlaymatId;
 };
 
+export type ShahrazadActionCaseSetPlayer = {
+    type: ShahrazadActionCase.SetPlayer;
+    player_id: ShahrazadPlaymatId;
+    player: ShahrazadPlayer;
+};
+
 export type ShahrazadActionCaseAddPlayer = {
     type: ShahrazadActionCase.AddPlayer;
-    player_id: string;
+    player_id: ShahrazadPlaymatId;
+    player: ShahrazadPlayer;
 };
 
 export type ShahrazadActionCaseSetLife = {
@@ -80,9 +89,21 @@ export type ShahrazadActionCaseSetLife = {
     life: number;
 };
 
+export type ShahrazadActionCaseSetCommand = {
+    type: ShahrazadActionCase.SetCommand;
+    player_id: ShahrazadPlaymatId;
+    command_id: ShahrazadPlaymatId;
+    damage: number;
+};
+
 export type ShahrazadActionCaseClearBoard = {
     type: ShahrazadActionCase.ClearBoard;
     player_id: ShahrazadPlaymatId;
+};
+
+export type ShahrazadActionCaseDeleteToken = {
+    type: ShahrazadActionCase.DeleteToken;
+    cards: Array<ShahrazadCardId>;
 };
 
 export type ShahrazadActionCaseMulligan = {
@@ -103,8 +124,11 @@ export type ShahrazadAction =
     | ShahrazadActionCaseShuffle
     | ShahrazadActionCaseZoneImport
     | ShahrazadActionCaseDeckImport
+    | ShahrazadActionCaseSetPlayer
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
+    | ShahrazadActionCaseSetCommand
     | ShahrazadActionCaseClearBoard
+    | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan
     | ShahrazadActionCaseGameTerminated;

@@ -9,7 +9,7 @@ export default function Collapsable(props: {
     id: ShahrazadCardId;
     isHovered: boolean;
     isBottom: boolean;
-    setHovered: (arg0: string | null) => void;
+    setHovered: (arg0: ShahrazadCardId | null) => void;
 }) {
     const { getCard } = useShahrazadGameContext();
     const shah_card = getCard(props.id);

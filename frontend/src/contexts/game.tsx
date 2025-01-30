@@ -1,7 +1,10 @@
 import { createContext, ReactNode, useContext } from "react";
 import type { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import type { ShahrazadZone, ShahrazadZoneId } from "@/types/bindings/zone";
-import type { ShahrazadGame } from "@/types/bindings/game";
+import type {
+    ShahrazadGame,
+    ShahrazadGameSettings,
+} from "@/types/bindings/game";
 import type { ShahrazadAction } from "@/types/bindings/action";
 import type {
     ShahrazadPlaymat,
@@ -9,7 +12,9 @@ import type {
 } from "@/types/bindings/playmat";
 
 export interface IShahrazadGameContext {
-    player_name: string;
+    player_name: ShahrazadPlaymatId;
+    players: ShahrazadPlaymatId[];
+    settings: ShahrazadGameSettings;
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
     getZone: (arg0: ShahrazadZoneId) => ShahrazadZone;
     getPlaymat: (arg0: ShahrazadPlaymatId) => ShahrazadPlaymat;
@@ -21,7 +26,8 @@ const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(null);
 export function ShahrazadGameProvider(props: {
     game: ShahrazadGame;
     applyAction: (action: ShahrazadAction) => void;
-    player_name: string;
+    player_name: ShahrazadPlaymatId;
+    players: ShahrazadPlaymatId[];
     children: ReactNode;
 }) {
     function getCard(card: ShahrazadCardId): ShahrazadCard {
@@ -37,7 +43,9 @@ export function ShahrazadGameProvider(props: {
     return (
         <ShahrazadGameContext.Provider
             value={{
+                settings: props.game.settings,
                 player_name: props.player_name,
+                players: props.players,
                 getCard,
                 getZone,
                 getPlaymat,

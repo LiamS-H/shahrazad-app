@@ -3,6 +3,7 @@ import { useShahrazadGameContext } from "../../../../contexts/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import VerticalZone from "@/components/(game)/vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
+import { Button } from "@/components/(ui)/button";
 
 export default function Graveyard(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
@@ -12,13 +13,13 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
     return (
         <div
             onMouseEnter={() => {
-                if (hovered == false) {
+                if (hovered == false && zone.cards.length > 1) {
                     setHovered(true);
                     setOpened(true);
                 }
             }}
             onMouseLeave={() => setHovered(false)}
-            className="shahrazad-graveyard"
+            className="shahrazad-graveyard relative w-fit"
         >
             <VerticalZone
                 id={props.id}
@@ -26,16 +27,14 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
                 emptyMessage="graveyard"
             />
             {opened && zone.cards.length > 1 && (
-                <button
-                    style={{
-                        position: "absolute",
-                        bottom: "0px",
-                        zIndex: 3,
-                    }}
+                <Button
+                    size="icon"
+                    variant="outline"
+                    className="absolute -bottom-2 -left-2 z-10"
                     onClick={() => setOpened(false)}
                 >
                     <ArrowDownToLine />
-                </button>
+                </Button>
             )}
         </div>
     );

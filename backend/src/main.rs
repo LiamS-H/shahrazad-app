@@ -1,7 +1,7 @@
 use axum::{
     extract::{
         ws::{Message, WebSocket},
-        Path, Query, State, WebSocketUpgrade,
+        Path, State, WebSocketUpgrade,
     },
     http::{Response, StatusCode},
     response::IntoResponse,
@@ -13,7 +13,9 @@ use futures::{SinkExt, StreamExt};
 use serde_json;
 use shared::types::{
     action::ShahrazadAction,
-    api::{CreateGameQuery, CreateGameResponse, JoinGameQuery, JoinGameResponse},
+    api::{
+        CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
+    },
     ws::ClientAction,
 };
 use std::net::SocketAddr;
@@ -31,8 +33,9 @@ async fn main() {
     let cors = CorsLayer::permissive();
     let app = Router::new()
         .route("/create_game", post(create_game))
-        .route("/join_game/:game_id", get(join_game))
+        .route("/join_game/:game_id", post(join_game))
         .route("/ws/game/:game_id/player/:player_id", get(game_handler))
+        .route("/fetch_game/:game_id", get(fetch_game))
         .fallback(fallback)
         .layer(cors)
         .with_state(state);
@@ -49,9 +52,9 @@ async fn fallback() -> impl IntoResponse {
 
 async fn create_game(
     State(state): State<Arc<GameStateManager>>,
-    Json(CreateGameQuery { settings }): Json<CreateGameQuery>,
+    Json(CreateGameQuery { settings, player }): Json<CreateGameQuery>,
 ) -> impl IntoResponse {
-    let Ok(game_info) = (*state).create_game(settings).await else {
+    let Ok(game_info) = (*state).create_game(settings, player).await else {
         return "Failed to create game".to_string();
     };
     let response = CreateGameResponse {
@@ -65,14 +68,14 @@ async fn create_game(
 async fn join_game(
     State(state): State<Arc<GameStateManager>>,
     Path(game_id): Path<String>,
-    Query(params): Query<JoinGameQuery>,
+    Json(JoinGameQuery { player, player_id }): Json<JoinGameQuery>,
 ) -> impl IntoResponse {
     let Some(game_id) = state.parse_uuid(game_id.clone()).await else {
         return format!("{}:invalid_id", game_id);
     };
 
     // Handle reconnection
-    if let Some(player_id_str) = params.player_id {
+    if let Some(player_id_str) = player_id {
         if let Ok(player_id) = Uuid::parse_str(&player_id_str) {
             if let Ok(game_info) = (*state).reconnect_player(game_id, player_id).await {
                 return serde_json::json!(JoinGameResponse {
@@ -90,7 +93,7 @@ async fn join_game(
 
     // Handle new player joining
     let player_id = Uuid::new_v4();
-    match (*state).add_player(game_id, player_id).await {
+    match (*state).add_player(game_id, player_id, player).await {
         Ok(game_info) => serde_json::json!(JoinGameResponse {
             player_name: game_info.name,
             game_id: game_info.game_id.into(),
@@ -199,6 +202,23 @@ async fn handle_socket(
     }
 
     let _ = (*state).disconnect_player(game_id, player_id).await;
+}
+
+async fn fetch_game(
+    State(state): State<Arc<GameStateManager>>,
+    Path(game_id): Path<String>,
+) -> impl IntoResponse {
+    let Some(game_id) = state.parse_uuid(game_id.clone()).await else {
+        return format!("{}:invalid_id", game_id);
+    };
+    let Some(code) = (*state).get_game_code(game_id).await else {
+        return format!("{}:invalid_id", game_id);
+    };
+    return serde_json::json!(FetchGameResponse {
+        code,
+        game_id: game_id.into(),
+    })
+    .to_string();
 }
 
 async fn game_handler(

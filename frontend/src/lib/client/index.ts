@@ -8,13 +8,12 @@ type GameClientCallbacks = {
     onPreloadCards: (cards: string[]) => void;
     onMessage: (error: string) => void;
     onGameTermination: () => void;
-    onPlayerJoin: () => void;
+    onPlayerJoin: (player: string) => void;
 };
 
 export class GameClient {
     private gameState: GameState | null = null;
     private socket: WebSocket | null = null;
-    private moveCount = 0;
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
     private reconnectTimeout: NodeJS.Timeout | null = null;
@@ -78,22 +77,32 @@ export class GameClient {
 
         try {
             const update: ServerUpdate = JSON.parse(event.data);
-            this.moveCount = update.sequence_number;
 
             if (update.action) {
+                console.log("[ws] received action:", update.action);
                 if (update.action.type === ShahrazadActionCase.GameTerminated) {
                     this.callbacks.onGameTermination();
                     this.cleanup();
                     return;
                 }
+
+                const mutated = this.applyAction(update.action);
                 if (update.action.type === ShahrazadActionCase.AddPlayer) {
-                    this.callbacks.onPlayerJoin();
+                    this.callbacks.onPlayerJoin(
+                        update.action.player.display_name
+                    );
                 }
-                this.applyAction(update.action);
-                console.log("[ws] received action:", update.action);
+                if (
+                    mutated &&
+                    update.action.type === ShahrazadActionCase.SetPlayer
+                ) {
+                    this.callbacks.onMessage(
+                        `${update.action.player_id} has new name: ${update.action.player.display_name}`
+                    );
+                }
             } else if (update.game) {
-                this.setState(update.game);
                 console.log("[ws] received game:", update.game);
+                this.setState(update.game);
             }
         } catch (error) {
             console.error("[ws] message error:", error);
@@ -103,7 +112,6 @@ export class GameClient {
 
     private handleError = (error: Event) => {
         console.log("[ws] error:", error, this.socket);
-        console.log(this.reconnectAttempts);
         if (this.reconnectAttempts === 1) {
             this.callbacks.onMessage("Game Disconnected.");
         }
@@ -189,11 +197,14 @@ export class GameClient {
             this.queuedActions.push(action);
             return;
         }
+        if (!this.gameState) {
+            console.error("[ws] attempting broadcast without gameState");
+            return;
+        }
 
-        this.moveCount++;
         const req: ClientAction = {
             action,
-            sequence_number: this.moveCount,
+            hash: this.gameState.get_hash(),
         };
 
         console.log("[ws] broadcasting action", req);

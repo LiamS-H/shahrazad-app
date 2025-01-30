@@ -6,23 +6,16 @@ import {
 } from "@/components/(ui)/popover";
 import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/game";
+import { usePlayer } from "@/contexts/player";
 import { importFromStr } from "@/lib/client/importDeck";
-import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
-import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { Import } from "lucide-react";
 import { useState } from "react";
 
-export function ImportDeckButton({
-    deckId,
-    commandId,
-    playerId,
-}: {
-    deckId: ShahrazadZoneId;
-    commandId: ShahrazadZoneId;
-    playerId: ShahrazadPlaymatId;
-}) {
+export function ImportDeckButton() {
+    const { applyAction, getPlaymat } = useShahrazadGameContext();
+    const { player } = usePlayer();
+    const playmat = getPlaymat(player);
     const [input, setInput] = useState<string>("");
-    const { applyAction } = useShahrazadGameContext();
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -40,9 +33,9 @@ export function ImportDeckButton({
                     onClick={() => {
                         const actions = importFromStr(
                             input,
-                            deckId,
-                            commandId,
-                            playerId
+                            playmat.library,
+                            playmat.command,
+                            player
                         );
                         actions.forEach((a) => applyAction(a));
                     }}

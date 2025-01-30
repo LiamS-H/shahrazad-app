@@ -1,25 +1,37 @@
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { createContext, ReactNode, useContext } from "react";
 
-const PlayerContext = createContext<string | null>(null);
+interface IPlayerContext {
+    player: ShahrazadPlaymatId;
+    active: boolean;
+}
 
-export function usePlayer(): ShahrazadPlaymatId {
-    const player = useContext(PlayerContext);
-    if (!player) {
+const PlayerContext = createContext<IPlayerContext | null>(null);
+
+export function usePlayer() {
+    const context = useContext(PlayerContext);
+    if (!context) {
         throw Error("usePlayer() must be called inside a playmat.");
     }
-    return player;
+    return context;
 }
 
 export function PlayerProvider({
     children,
     player,
+    active,
 }: {
     children: ReactNode;
     player: string;
+    active: boolean;
 }) {
     return (
-        <PlayerContext.Provider value={player}>
+        <PlayerContext.Provider
+            value={{
+                player,
+                active,
+            }}
+        >
             {children}
         </PlayerContext.Provider>
     );

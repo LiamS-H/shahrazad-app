@@ -67,20 +67,27 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     console.log("dropping sortable from outside");
                     applyAction({
                         type: ShahrazadActionCase.CardZone,
-                        source: active_data.zone,
                         destination: over_data.zone,
                         index: index,
                         cards: cards,
-                        state: { x: 255, y: 255 },
+                        state: {
+                            x: 255,
+                            y: 255,
+                            face_down: false,
+                            tapped: false,
+                            flipped: false,
+                            inverted: false,
+                            counters: [],
+                        },
                     });
+                    selectCards(null);
                 } else {
                     console.log("dropping sortable from within");
                     applyAction({
                         type: ShahrazadActionCase.CardZone,
-                        source: active_data.zone,
                         destination: over_data.zone,
                         index: index,
-                        cards: [target_id],
+                        cards: cards,
                         state: { x: 255, y: 255 },
                     });
                 }
@@ -145,7 +152,6 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     type: ShahrazadActionCase.CardZone,
                     cards,
                     destination: end_zone_id,
-                    source: start_zone_id,
                     state: {
                         x,
                         y,
@@ -154,6 +160,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                         flipped: x === 255 ? false : undefined,
                         inverted: x === 255 ? false : undefined,
                         revealed: [],
+                        counters: over_data?.sortable ? [] : undefined,
                     },
                     index: -1,
                 });

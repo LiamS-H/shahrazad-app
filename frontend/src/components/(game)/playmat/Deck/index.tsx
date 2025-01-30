@@ -12,7 +12,7 @@ import { usePlayer } from "@/contexts/player";
 export default function Deck(props: { id: ShahrazadZoneId }) {
     const { getZone, applyAction, getPlaymat } = useShahrazadGameContext();
     const { active } = useSearchContext();
-    const player = usePlayer();
+    const { player } = usePlayer();
     const playmat = getPlaymat(player);
     const zone = getZone(props.id);
     const data: IDroppableData = {};
@@ -21,11 +21,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
     const { setNodeRef } = useDroppable({ id: drag_id, data });
 
     return (
-        <div
-            className="shahrazad-deck"
-            style={{ width: "auto" }}
-            ref={(ref) => setNodeRef(ref)}
-        >
+        <div className="shahrazad-deck w-fit" ref={(ref) => setNodeRef(ref)}>
             <DeckContextMenu zoneId={props.id}>
                 <div
                     onClick={(e) => {

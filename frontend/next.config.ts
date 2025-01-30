@@ -2,14 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     /* config options here */
-    async rewrites() {
-        return [
-            {
-                source: "/api/:path*",
-                destination: "http://localhost:5000/:path*",
-            },
-        ];
-    },
+    redirects: async () => [
+        {
+            source: "/game/",
+            destination: "/game/create",
+            permanent: false,
+        },
+    ],
 };
 
 export default nextConfig;
