@@ -225,8 +225,8 @@ impl ShahrazadGame {
                 index,
             } => {
                 let mut mutated = false;
-                let dest_set: HashSet<ShahrazadCardId> =
-                    game.zones.get(&dest_id)?.cards.iter().cloned().collect();
+                // let dest_set: HashSet<ShahrazadCardId> =
+                //     game.zones.get(&dest_id)?.cards.iter().cloned().collect();
 
                 let mut migrating_cards = HashSet::new();
                 {
@@ -248,9 +248,9 @@ impl ShahrazadGame {
                             mutated = true;
                             game.cards.insert(id.clone(), new_card);
                         };
-                        if !dest_set.contains(id) {
-                            migrating_cards.insert(id.clone());
-                        };
+                        // if !dest_set.contains(id) {
+                        migrating_cards.insert(id.clone());
+                        // };
                     }
                     for id in &migrating_zones {
                         let Some(zone) = game.zones.get_mut(id) else {
