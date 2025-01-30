@@ -47,7 +47,7 @@ export default function CreateGameForm() {
         setCustomStartingLife(safeGetItem("default-game-customLife", ""));
         setFreeMulligans(safeGetItem("default-game-freeMulligans", 1));
         setScryRule(safeGetItem("default-game-scryRule", false));
-        setScryRule(safeGetItem("default-game-command", false));
+        setCommanderGame(safeGetItem("default-game-command", false));
     }, []);
 
     useEffect(() => {
