@@ -459,6 +459,9 @@ impl ShahrazadGame {
 
                 let mut cards: Vec<ShahrazadCardId> = Vec::new();
                 for (card_id, card) in &game.cards {
+                    if card.location == playmat.command {
+                        continue;
+                    }
                     if card.owner == player_id {
                         cards.push(card_id.clone());
                     }
