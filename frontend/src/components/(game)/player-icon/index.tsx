@@ -57,8 +57,20 @@ export default function PlayerIcon({
                         <UserPen />
                     </Button>
                 ) : (
-                    <Button variant="outline">
-                        <User /> {player.display_name}
+                    <Button className="group" variant="outline">
+                        <div className="h-full w-4 relative">
+                            <User
+                                className={`absolute ${
+                                    open ? "hidden" : "group-hover:hidden"
+                                }`}
+                            />
+                            <UserPen
+                                className={`absolute ${
+                                    open ? "" : "hidden group-hover:block"
+                                }`}
+                            />
+                        </div>
+                        {player.display_name}
                     </Button>
                 )}
             </PopoverTrigger>
