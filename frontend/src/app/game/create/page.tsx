@@ -25,6 +25,7 @@ export default function CreateGameForm() {
     const [startingLife, setStartingLife] = useState("20");
     const [customStartingLife, setCustomStartingLife] = useState("");
     const [freeMulligans, setFreeMulligans] = useState(1);
+    const [commanderGame, setCommanderGame] = useState(true);
     const [scryRule, setScryRule] = useState(false);
     const [isClient, setIsClient] = useState(false);
 
@@ -46,6 +47,7 @@ export default function CreateGameForm() {
         setCustomStartingLife(safeGetItem("default-game-customLife", ""));
         setFreeMulligans(safeGetItem("default-game-freeMulligans", 1));
         setScryRule(safeGetItem("default-game-scryRule", false));
+        setScryRule(safeGetItem("default-game-command", false));
     }, []);
 
     useEffect(() => {
@@ -67,11 +69,22 @@ export default function CreateGameForm() {
                     "default-game-scryRule",
                     JSON.stringify(scryRule)
                 );
+                localStorage.setItem(
+                    "default-game-command",
+                    JSON.stringify(commanderGame)
+                );
             } catch (error) {
                 console.error("Failed to update localStorage", error);
             }
         }
-    }, [startingLife, freeMulligans, scryRule, isClient, customStartingLife]);
+    }, [
+        startingLife,
+        freeMulligans,
+        scryRule,
+        isClient,
+        customStartingLife,
+        commanderGame,
+    ]);
     if (!isClient) {
         return <CreateGameLoading />;
     }
@@ -94,6 +107,7 @@ export default function CreateGameForm() {
                 free_mulligans:
                     freeMulligans === 5 ? "∞" : freeMulligans.toString(),
                 scry_rule: scryRule,
+                commander: commanderGame,
             },
             player: loadPlayer()?.player,
         });
@@ -164,11 +178,21 @@ export default function CreateGameForm() {
 
                 <div className="flex items-center space-x-2">
                     <Switch
-                        id="scry-rule"
-                        checked={scryRule}
-                        onCheckedChange={setScryRule}
+                        id="command-game"
+                        checked={commanderGame}
+                        onCheckedChange={setCommanderGame}
                     />
-                    <Label htmlFor="scry-rule">Scry Rule</Label>
+                    <Label htmlFor="command-game">Commander</Label>
+                    {commanderGame && (
+                        <>
+                            <Switch
+                                id="scry-rule"
+                                checked={scryRule}
+                                onCheckedChange={setScryRule}
+                            />
+                            <Label htmlFor="scry-rule">Scry Rule</Label>
+                        </>
+                    )}
                 </div>
 
                 <Button

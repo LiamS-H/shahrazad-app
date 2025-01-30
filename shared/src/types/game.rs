@@ -68,6 +68,7 @@ use crate::types::action::ShahrazadAction;
 pub struct ShahrazadGameSettings {
     pub starting_life: i32,
     pub free_mulligans: String,
+    pub commander: bool,
     pub scry_rule: bool,
 }
 

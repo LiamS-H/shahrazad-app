@@ -16,7 +16,8 @@ import CommandDamageButton from "./command-damage";
 
 export default function Player() {
     const { player, active } = usePlayer();
-    const { getPlaymat, applyAction, players } = useShahrazadGameContext();
+    const { getPlaymat, applyAction, players, settings } =
+        useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const { life } = playmat;
     const [lifeInput, setLifeInput] = useState<string>(life.toString());
@@ -97,15 +98,17 @@ export default function Player() {
                     <Minus className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
             </div>
-            <div className="flex flex-col justify-around">
-                {players.map((command_id) => (
-                    <CommandDamageButton
-                        key={command_id}
-                        command_id={command_id}
-                        player_id={player}
-                    />
-                ))}
-            </div>
+            {settings.commander && (
+                <div className="flex flex-col justify-around">
+                    {players.map((command_id) => (
+                        <CommandDamageButton
+                            key={command_id}
+                            command_id={command_id}
+                            player_id={player}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

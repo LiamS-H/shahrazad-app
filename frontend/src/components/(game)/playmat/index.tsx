@@ -15,7 +15,7 @@ export default function Playmat(props: {
     player: ShahrazadPlaymatId;
     active: boolean;
 }) {
-    const { getPlaymat } = useShahrazadGameContext();
+    const { getPlaymat, settings } = useShahrazadGameContext();
     const playmat = getPlaymat(props.player);
 
     return (
@@ -38,7 +38,7 @@ export default function Playmat(props: {
                 <div className="flex flex-col gap-4 w-full">
                     <Board id={playmat.battlefield} />
                     <div className="flex gap-4">
-                        <Command id={playmat.command} />
+                        {settings.commander && <Command id={playmat.command} />}
                         <Hand id={playmat.hand} />
                     </div>
                 </div>

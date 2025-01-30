@@ -11,6 +11,7 @@ use type_reflect::serde_json;
 const DEFAULT_SETTINGS: ShahrazadGameSettings = ShahrazadGameSettings {
     starting_life: 20,
     free_mulligans: String::new(),
+    commander: true,
     scry_rule: true,
 };
 
