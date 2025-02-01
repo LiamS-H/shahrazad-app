@@ -3,11 +3,12 @@ import { useShahrazadGameContext } from "../../../../contexts/game";
 import { useDroppable } from "@dnd-kit/core";
 import CardStack from "@/components/(game)/card-stack";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import { Scrycard } from "react-scrycards";
+import { Scrycard, Scrydeck } from "react-scrycards";
 import DeckContextMenu from "@/components/(game)/(context-menus)/deck";
 import { useSearchContext } from "@/contexts/search";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { usePlayer } from "@/contexts/player";
+import Card from "@/components/(game)/card";
 
 export default function Deck(props: { id: ShahrazadZoneId }) {
     const { getZone, applyAction, getPlaymat } = useShahrazadGameContext();
@@ -19,6 +20,15 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
     const searching = active === props.id;
     const drag_id = searching ? `disabled:${props.id}` : props.id;
     const { setNodeRef } = useDroppable({ id: drag_id, data });
+
+    if (searching) {
+        const top = zone.cards.at(-1);
+        return (
+            <Scrydeck count={zone.cards.length}>
+                {top ? <Card id={top} /> : <Scrycard card={undefined} />}
+            </Scrydeck>
+        );
+    }
 
     return (
         <div className="shahrazad-deck w-fit" ref={(ref) => setNodeRef(ref)}>
@@ -36,12 +46,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                     }}
                 >
                     <CardStack
-                        emptyMessage={() => (
-                            <Scrycard
-                                card={undefined}
-                                symbol_text_renderer={() => null}
-                            />
-                        )}
+                        emptyMessage={() => <Scrycard card={undefined} />}
                         cards={zone.cards}
                         dragNamespace={searching ? "disabled" : undefined}
                     />
