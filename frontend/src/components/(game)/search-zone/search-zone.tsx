@@ -192,7 +192,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
 
     return (
         <div className="w-full flex flex-col gap-4 h-[240px]">
-            <div className="w-full flex flex-row gap-6 justify-around items-center">
+            <div className="max-w-5xl flex flex-row gap-6 justify-around items-center">
                 <div>
                     <Input
                         value={sort.search}
