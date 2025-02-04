@@ -9,10 +9,13 @@ import { useSearchContext } from "@/contexts/search";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { usePlayer } from "@/contexts/player";
 import Card from "@/components/(game)/card";
+import { useEffect, useRef } from "react";
+import { randomU64 } from "@/lib/utils/random";
 
 export default function Deck(props: { id: ShahrazadZoneId }) {
     const { getZone, applyAction, getPlaymat } = useShahrazadGameContext();
     const { active } = useSearchContext();
+    const last_active = useRef(active);
     const { player } = usePlayer();
     const playmat = getPlaymat(player);
     const zone = getZone(props.id);
@@ -20,6 +23,17 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
     const searching = active === props.id;
     const drag_id = searching ? `disabled:${props.id}` : props.id;
     const { setNodeRef } = useDroppable({ id: drag_id, data });
+
+    useEffect(() => {
+        if (active !== props.id && last_active.current === props.id) {
+            applyAction({
+                type: ShahrazadActionCase.Shuffle,
+                seed: randomU64(),
+                zone: props.id,
+            });
+        }
+        last_active.current = active;
+    }, [active]);
 
     if (searching) {
         const top = zone.cards.at(-1);
