@@ -1,6 +1,5 @@
 import {
     ContextMenu,
-    // ContextMenuCheckboxItem,
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuLabel,
@@ -13,98 +12,92 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { usePlayer } from "@/contexts/player";
-import { isFlippable, useScrycard } from "react-scrycards";
+import { useSearchContext } from "@/contexts/search";
+import { randomU64 } from "@/lib/utils/random";
 import { RevealRandomCard, RevealToPlayers } from "./(menu-items)/reveal";
-export default function HandCardContextMenu({
-    cardId,
+export default function HandContextMenu({
+    zoneId,
     children,
 }: {
-    cardId: string;
+    zoneId: string;
     children: ReactNode;
 }) {
     const { player } = usePlayer();
-    const { applyAction, getPlaymat, getCard } = useShahrazadGameContext();
+    const { applyAction, getPlaymat, getZone } = useShahrazadGameContext();
+    const { search } = useSearchContext();
     const playmat = getPlaymat(player);
-    const shah_card = getCard(cardId);
-    const scry_card = useScrycard(shah_card.card_name);
-    const [open, setOpen] = useState(true);
-    const title = scry_card?.name || shah_card.card_name;
+    const [contextOpen, setContextOpen] = useState(true);
+    const hand = getZone(zoneId);
 
     return (
-        <ContextMenu modal={open} onOpenChange={setOpen}>
+        <ContextMenu modal={contextOpen} onOpenChange={setContextOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>{title}</ContextMenuLabel>
+                <ContextMenuLabel>Hand ({hand.cards.length})</ContextMenuLabel>
                 <ContextMenuSeparator />
+                <RevealToPlayers cards={hand.cards} />
+                <RevealRandomCard cards={hand.cards} />
                 <ContextMenuSub>
-                    <RevealToPlayers cards={[cardId]} />
                     <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>
                     <ContextMenuSubContent>
                         <ContextMenuItem
                             onClick={() => {
                                 applyAction({
                                     type: ShahrazadActionCase.CardZone,
-                                    cards: [cardId],
-                                    destination: playmat.library,
+                                    cards: hand.cards,
+                                    index: -1,
+                                    destination: playmat.exile,
+                                    state: {},
+                                });
+                            }}
+                        >
+                            Exile
+                        </ContextMenuItem>
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.CardZone,
+                                    cards: hand.cards,
+                                    index: -1,
+                                    destination: playmat.graveyard,
+                                    state: {},
+                                });
+                            }}
+                        >
+                            Graveyard
+                        </ContextMenuItem>
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.CardZone,
+                                    cards: hand.cards,
                                     index: 0,
-                                    state: {},
-                                });
-                            }}
-                        >
-                            Library bottom
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.CardZone,
-                                    cards: [cardId],
                                     destination: playmat.library,
-                                    index: -1,
                                     state: {},
                                 });
-                            }}
-                        >
-                            Library top
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                            onClick={() => {
                                 applyAction({
-                                    type: ShahrazadActionCase.CardZone,
-                                    cards: [cardId],
-                                    destination: playmat.battlefield,
-                                    index: -1,
-                                    state: {
-                                        face_down: true,
-                                        revealed: [player],
-                                        x: 0,
-                                        y: 0,
-                                    },
+                                    type: ShahrazadActionCase.Shuffle,
+                                    zone: playmat.library,
+                                    seed: randomU64(),
                                 });
                             }}
                         >
-                            Play face-down
+                            Deck Shuffled
                         </ContextMenuItem>
                     </ContextMenuSubContent>
-                    {isFlippable(scry_card) && (
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.CardState,
-                                    cards: [cardId],
-                                    state: {
-                                        flipped: !shah_card.state.flipped,
-                                    },
-                                });
-                            }}
-                        >
-                            Flip
-                        </ContextMenuItem>
-                    )}
                 </ContextMenuSub>
+                <ContextMenuItem
+                    disabled={hand.cards.length === 0}
+                    onClick={() => {
+                        search(zoneId);
+                    }}
+                >
+                    Search
+                </ContextMenuItem>
             </ContextMenuContent>
         </ContextMenu>
     );
