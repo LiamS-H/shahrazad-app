@@ -36,19 +36,21 @@ export default function SortableCard(props: {
         filter: isDragging ? "grayscale(100%)" : undefined,
     };
 
+    const display_eye =
+        !shah_card.state.face_down ||
+        (shah_card.state.revealed && shah_card.state.revealed.length > 1);
+
     return (
         <HandCardContextMenu cardId={props.id}>
             <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
                 <Card id={props.id} />
-                {shah_card.state.face_down &&
-                    shah_card.state.revealed &&
-                    shah_card.state.revealed.length > 1 && (
-                        <div className="relative">
-                            <div className="absolute bottom-[100px] w-full flex justify-center">
-                                <Eye />
-                            </div>
+                {display_eye && (
+                    <div className="relative">
+                        <div className="absolute bottom-[100px] w-full flex justify-center">
+                            <Eye />
                         </div>
-                    )}
+                    </div>
+                )}
             </div>
         </HandCardContextMenu>
     );
