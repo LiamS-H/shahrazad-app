@@ -16,8 +16,9 @@ export function ImportDeckButton() {
     const { player } = usePlayer();
     const playmat = getPlaymat(player);
     const [input, setInput] = useState<string>("");
+    const [open, setOpen] = useState(false);
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="outline" size="icon">
                     <Import className="h-[1.2rem] w-[1.2rem]" />
@@ -38,6 +39,7 @@ export function ImportDeckButton() {
                             player
                         );
                         actions.forEach((a) => applyAction(a));
+                        setOpen(false);
                     }}
                 >
                     Import
