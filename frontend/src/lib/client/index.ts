@@ -86,7 +86,7 @@ export class GameClient {
                     return;
                 }
 
-                const mutated = this.applyAction(update.action);
+                this.applyAction(update.action);
                 if (update.action.type === ShahrazadActionCase.AddPlayer) {
                     this.callbacks.onPlayerJoin(
                         update.action.player.display_name
