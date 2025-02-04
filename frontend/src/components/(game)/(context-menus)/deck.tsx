@@ -18,6 +18,8 @@ import { type ReactNode, useState } from "react";
 import { randomU64 } from "@/lib/utils/random";
 import { usePlayer } from "@/contexts/player";
 import { useSearchContext } from "@/contexts/search";
+import { DrawTo } from "./(menu-items)/draw-to";
+
 export default function DeckContextMenu({
     zoneId,
     children,
@@ -89,32 +91,22 @@ export default function DeckContextMenu({
                         Draw to
                     </ContextMenuSubTrigger>
                     <ContextMenuSubContent>
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.DrawTop,
-                                    amount: 1,
-                                    destination: playmat.graveyard,
-                                    source: playmat.library,
-                                    state: { face_down: false },
-                                });
-                            }}
-                        >
-                            Graveyard
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.DrawTop,
-                                    amount: 1,
-                                    destination: playmat.exile,
-                                    source: playmat.library,
-                                    state: { face_down: false },
-                                });
-                            }}
-                        >
-                            Exile
-                        </ContextMenuItem>
+                        <DrawTo
+                            label="Graveyard"
+                            destination={playmat.graveyard}
+                            source={zoneId}
+                        />
+                        <DrawTo
+                            label="Exile"
+                            destination={playmat.exile}
+                            source={zoneId}
+                        />
+                        <DrawTo
+                            label="Hand"
+                            destination={playmat.hand}
+                            source={zoneId}
+                            state={{ revealed: [player] }}
+                        />
                     </ContextMenuSubContent>
                 </ContextMenuSub>
             </ContextMenuContent>
