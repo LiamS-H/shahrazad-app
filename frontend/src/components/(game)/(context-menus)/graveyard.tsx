@@ -29,11 +29,10 @@ export default function GraveyardContextMenu({
     const { applyAction, getPlaymat, getZone } = useShahrazadGameContext();
     const { search } = useSearchContext();
     const playmat = getPlaymat(player);
-    const [contextOpen, setContextOpen] = useState(true);
     const graveyard = getZone(zoneId);
 
     return (
-        <ContextMenu modal={contextOpen} onOpenChange={setContextOpen}>
+        <ContextMenu modal>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
                 <ContextMenuLabel>

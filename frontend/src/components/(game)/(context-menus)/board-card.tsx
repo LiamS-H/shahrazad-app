@@ -36,7 +36,6 @@ export default function BoardCardContextMenu({
     const shah_card = getCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
     const playmat = getPlaymat(player);
-    const [open, setOpen] = useState(true);
     const cards = selectedCards.includes(cardId) ? selectedCards : [cardId];
     let title = "";
     if (cards.length !== 1) {
@@ -54,7 +53,7 @@ export default function BoardCardContextMenu({
             ) || [];
 
     return (
-        <ContextMenu modal={open} onOpenChange={setOpen}>
+        <ContextMenu modal>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
                 <ContextMenuLabel>{title}</ContextMenuLabel>
