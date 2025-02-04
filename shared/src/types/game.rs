@@ -36,7 +36,7 @@ pub struct ShahrazadPlaymat {
     exile: ShahrazadZoneId,
     command: ShahrazadZoneId,
     life: i32,
-    mulligans: u8,
+    mulligans: i8,
     command_damage: HashMap<ShahrazadPlaymatId, i32>,
     player: ShahrazadPlayer,
 }
@@ -445,8 +445,15 @@ impl ShahrazadGame {
                 {
                     let playmat = game.playmats.get_mut(&player_id)?;
 
-                    if playmat.mulligans < game.settings.free_mulligans.parse::<u8>().unwrap_or(0) {
-                        playmat.mulligans += 1;
+                    let free_mulligans = game.settings.free_mulligans.parse::<i8>().unwrap_or(0);
+
+                    if free_mulligans == 5 {
+                    } else if playmat.mulligans <= -free_mulligans {
+                        playmat.mulligans = 1;
+                    } else if playmat.mulligans <= 0 {
+                        playmat.mulligans -= 1;
+                    } else {
+                        playmat.mulligans = min(playmat.mulligans + 1, 7);
                     };
                 }
                 let playmat = game.playmats.get(&player_id)?;
@@ -454,12 +461,33 @@ impl ShahrazadGame {
                 let hand_id = playmat.hand.clone();
 
                 let mut cards: Vec<ShahrazadCardId> = Vec::new();
+                let mut is_reset: bool = game.zones.get(&playmat.hand)?.cards.len() == 0;
                 for (card_id, card) in &game.cards {
+                    if !is_reset
+                        && !(card.location == playmat.library
+                            || card.location == playmat.hand
+                            || card.location == playmat.command)
+                    {
+                        is_reset = true;
+                    }
                     if card.location == playmat.command {
                         continue;
                     }
                     if card.owner == player_id {
                         cards.push(card_id.clone());
+                    }
+                }
+                if is_reset {
+                    {
+                        let playmat = game.playmats.get_mut(&player_id)?;
+                        playmat.mulligans = 0;
+                        for k in &game.players {
+                            playmat.command_damage.insert(k.clone(), 0);
+                        }
+                    }
+                    for player_id in &game.players {
+                        let playmat = game.playmats.get_mut(player_id)?;
+                        playmat.life = game.settings.starting_life;
                     }
                 }
 
