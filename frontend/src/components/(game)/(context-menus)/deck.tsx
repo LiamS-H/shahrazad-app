@@ -39,6 +39,7 @@ export default function DeckContextMenu({
                 <ContextMenuLabel>Deck ({deck.cards.length})</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuItem
+                    disabled={deck.cards.length === 0}
                     onClick={() => {
                         applyAction({
                             type: ShahrazadActionCase.Shuffle,
@@ -66,6 +67,7 @@ export default function DeckContextMenu({
                     <ContextMenuShortcut>⌘F</ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuItem
+                    disabled={deck.cards.length === 0}
                     onClick={() => {
                         applyAction({
                             type: ShahrazadActionCase.DrawTop,
@@ -83,7 +85,9 @@ export default function DeckContextMenu({
                     <ContextMenuShortcut>⌘D</ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuSub>
-                    <ContextMenuSubTrigger>Draw to</ContextMenuSubTrigger>
+                    <ContextMenuSubTrigger disabled={deck.cards.length === 0}>
+                        Draw to
+                    </ContextMenuSubTrigger>
                     <ContextMenuSubContent>
                         <ContextMenuItem
                             onClick={() => {

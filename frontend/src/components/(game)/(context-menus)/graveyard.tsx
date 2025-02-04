@@ -50,7 +50,11 @@ export default function GraveyardContextMenu({
                     Search
                 </ContextMenuItem>
                 <ContextMenuSub>
-                    <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>
+                    <ContextMenuSubTrigger
+                        disabled={graveyard.cards.length === 0}
+                    >
+                        Send to
+                    </ContextMenuSubTrigger>
                     <ContextMenuSubContent>
                         <ContextMenuItem
                             onClick={() => {

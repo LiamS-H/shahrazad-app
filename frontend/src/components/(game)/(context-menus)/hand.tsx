@@ -14,7 +14,7 @@ import {
 } from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import { usePlayer } from "@/contexts/player";
 import { useSearchContext } from "@/contexts/search";
 import { randomU64 } from "@/lib/utils/random";
@@ -22,27 +22,29 @@ import { RevealRandomCard, RevealToPlayers } from "./(menu-items)/reveal";
 export default function HandContextMenu({
     zoneId,
     children,
+    open,
 }: {
     zoneId: string;
     children: ReactNode;
+    open?: boolean;
 }) {
     const { player } = usePlayer();
     const { applyAction, getPlaymat, getZone } = useShahrazadGameContext();
     const { search } = useSearchContext();
     const playmat = getPlaymat(player);
-    const [contextOpen, setContextOpen] = useState(true);
     const hand = getZone(zoneId);
 
     return (
-        <ContextMenu modal={contextOpen} onOpenChange={setContextOpen}>
+        <ContextMenu modal>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
                 <ContextMenuLabel>Hand ({hand.cards.length})</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <RevealToPlayers cards={hand.cards} />
-                <RevealRandomCard cards={hand.cards} />
                 <ContextMenuSub>
-                    <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>
+                    <ContextMenuSubTrigger disabled={hand.cards.length === 0}>
+                        Send to
+                    </ContextMenuSubTrigger>
                     <ContextMenuSubContent>
                         <ContextMenuItem
                             onClick={() => {
@@ -51,7 +53,7 @@ export default function HandContextMenu({
                                     cards: hand.cards,
                                     index: -1,
                                     destination: playmat.exile,
-                                    state: {},
+                                    state: { face_down: false, revealed: [] },
                                 });
                             }}
                         >
@@ -64,7 +66,7 @@ export default function HandContextMenu({
                                     cards: hand.cards,
                                     index: -1,
                                     destination: playmat.graveyard,
-                                    state: {},
+                                    state: { face_down: false, revealed: [] },
                                 });
                             }}
                         >
@@ -98,6 +100,8 @@ export default function HandContextMenu({
                 >
                     Search
                 </ContextMenuItem>
+
+                <RevealRandomCard cards={hand.cards} />
             </ContextMenuContent>
         </ContextMenu>
     );

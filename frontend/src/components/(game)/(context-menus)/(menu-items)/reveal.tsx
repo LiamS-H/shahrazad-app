@@ -48,6 +48,7 @@ export function RevealRandomCard({ cards }: { cards: ShahrazadCardId[] }) {
     const { applyAction } = useShahrazadGameContext();
     return (
         <ContextMenuItem
+            disabled={cards.length === 0}
             onClick={() => {
                 const randomIndex = Math.floor(Math.random() * cards.length);
                 applyAction({
@@ -69,9 +70,10 @@ export function RevealToPlayers({ cards }: { cards: ShahrazadCardId[] }) {
     const { player: current_player } = usePlayer();
     const player_options = players.filter((id) => id !== current_player);
 
-    if (player_options.length === 1) {
+    if (player_options.length <= 1) {
         return (
             <ContextMenuItem
+                disabled={cards.length === 0}
                 onClick={() => {
                     applyAction({
                         type: ShahrazadActionCase.CardState,
@@ -90,7 +92,9 @@ export function RevealToPlayers({ cards }: { cards: ShahrazadCardId[] }) {
     return (
         <>
             <ContextMenuSub>
-                <ContextMenuSubTrigger>Reveal to</ContextMenuSubTrigger>
+                <ContextMenuSubTrigger disabled={cards.length === 0}>
+                    Reveal to
+                </ContextMenuSubTrigger>
                 <ContextMenuSubContent>
                     {player_options.map((p) => (
                         <RevealToPlayer key={p} cards={cards} player_id={p} />
