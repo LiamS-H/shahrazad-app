@@ -12,7 +12,7 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { randomU64 } from "@/lib/utils/random";
@@ -57,7 +57,7 @@ export default function DeckContextMenu({
                         applyAction({
                             type: ShahrazadActionCase.CardState,
                             cards: deck.cards,
-                            state: { face_down: false },
+                            state: { revealed: [player] },
                         });
                         search(zoneId);
                     }}

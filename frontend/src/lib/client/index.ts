@@ -86,18 +86,10 @@ export class GameClient {
                     return;
                 }
 
-                const mutated = this.applyAction(update.action);
+                this.applyAction(update.action);
                 if (update.action.type === ShahrazadActionCase.AddPlayer) {
                     this.callbacks.onPlayerJoin(
                         update.action.player.display_name
-                    );
-                }
-                if (
-                    mutated &&
-                    update.action.type === ShahrazadActionCase.SetPlayer
-                ) {
-                    this.callbacks.onMessage(
-                        `${update.action.player_id} has new name: ${update.action.player.display_name}`
                     );
                 }
             } else if (update.game) {
@@ -165,9 +157,29 @@ export class GameClient {
             this.callbacks.onPreloadCards(action.cards);
         }
 
-        const newState = this.gameState.apply_action(action);
+        const newState: ShahrazadGame = this.gameState.apply_action(action);
 
         if (newState) {
+            if (action.type === ShahrazadActionCase.Mulligan) {
+                const playmat = newState.playmats[action.player_id];
+                const mulligans = playmat.mulligans;
+                const name = playmat.player.display_name;
+                let message;
+                if (mulligans == 0) {
+                    message = `${name} drew their 7.`;
+                } else {
+                    message = `${name} mulliganed ${
+                        mulligans < 0 ? "for free" : `to ${7 - mulligans}`
+                    }.`;
+                }
+                this.callbacks.onMessage(message);
+            }
+
+            if (action.type == ShahrazadActionCase.SetPlayer) {
+                this.callbacks.onMessage(
+                    `${action.player_id} has new name: ${action.player.display_name}`
+                );
+            }
             this.callbacks.onGameUpdate(newState);
             return true;
         }

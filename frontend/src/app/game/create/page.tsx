@@ -104,8 +104,7 @@ export default function CreateGameForm() {
         const gameResult = await createGame({
             settings: {
                 starting_life,
-                free_mulligans:
-                    freeMulligans === 5 ? "∞" : freeMulligans.toString(),
+                free_mulligans: freeMulligans.toString(),
                 scry_rule: scryRule,
                 commander: commanderGame,
             },
