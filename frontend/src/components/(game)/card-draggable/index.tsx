@@ -34,6 +34,8 @@ export default function DraggableCard(props: {
         props.noDragTranslate && isDragging
             ? undefined
             : CSS.Translate.toString(transform);
+    draggableStyle.filter =
+        isDragging && props.noDragTranslate ? "grayscale(100%)" : undefined;
 
     return (
         <div
@@ -44,10 +46,7 @@ export default function DraggableCard(props: {
                 ...draggableStyle,
                 width: "fit-content",
                 cursor: "grab",
-                filter:
-                    isDragging && props.noDragTranslate
-                        ? "grayscale(100%)"
-                        : undefined,
+
                 ...props.divStyle,
             }}
         >
