@@ -1,5 +1,5 @@
 import { useDevice } from "@/contexts/device";
-import { Key, Shortcut } from "@/types/interfaces/keys";
+import { Shortcut } from "@/types/interfaces/keys";
 
 export function KeyShortcut({ keys }: { keys: Shortcut }): string {
     const device = useDevice();

@@ -14,7 +14,7 @@ import {
 } from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext } from "@/contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import { usePlayer } from "@/contexts/player";
 import { useSearchContext } from "@/contexts/search";
 import { randomU64 } from "@/lib/utils/random";

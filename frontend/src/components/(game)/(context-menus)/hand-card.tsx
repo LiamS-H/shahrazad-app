@@ -18,7 +18,7 @@ import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { usePlayer } from "@/contexts/player";
 import { isFlippable, useScrycard } from "react-scrycards";
-import { RevealRandomCard, RevealToPlayers } from "./(menu-items)/reveal";
+import { RevealToPlayers } from "./(menu-items)/reveal";
 export default function HandCardContextMenu({
     cardId,
     children,

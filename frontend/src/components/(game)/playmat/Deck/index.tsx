@@ -33,7 +33,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
             });
         }
         last_active.current = active;
-    }, [active]);
+    }, [active, applyAction, props.id]);
 
     if (searching) {
         const top = zone.cards.at(-1);

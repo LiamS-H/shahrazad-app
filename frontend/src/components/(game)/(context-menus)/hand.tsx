@@ -22,11 +22,9 @@ import { RevealRandomCard, RevealToPlayers } from "./(menu-items)/reveal";
 export default function HandContextMenu({
     zoneId,
     children,
-    open,
 }: {
     zoneId: string;
     children: ReactNode;
-    open?: boolean;
 }) {
     const { player } = usePlayer();
     const { applyAction, getPlaymat, getZone } = useShahrazadGameContext();

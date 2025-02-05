@@ -11,7 +11,7 @@ import { clamp } from "@/lib/utils/clamp";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadCardState } from "@/types/bindings/card";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 
 export function DrawTo({
     source,

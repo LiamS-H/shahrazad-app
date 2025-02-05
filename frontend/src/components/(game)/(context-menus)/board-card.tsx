@@ -17,7 +17,7 @@ import {
 } from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext } from "../../../contexts/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import { useSelection } from "@/contexts/selection";
 import { isFlippable, useScrycard } from "react-scrycards";
 import { usePlayer } from "@/contexts/player";
