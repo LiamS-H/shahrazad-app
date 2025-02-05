@@ -73,7 +73,8 @@ fn init_game() {
             "settings": {
                 "free_mulligans": "",
                 "scry_rule": true,
-                "starting_life": 20
+                "starting_life": 20,
+                "commander": true
             }
         }"#;
         let expected_json_value: Value = serde_json::from_str(expected_string).unwrap();
@@ -133,7 +134,8 @@ fn init_game() {
             "settings": {
                 "free_mulligans": "",
                 "scry_rule": true,
-                "starting_life": 20
+                "starting_life": 20,
+                "commander": true
             }
         }"#;
         let expected_json_value: Value = serde_json::from_str(expected_string).unwrap();
@@ -143,7 +145,7 @@ fn init_game() {
 }
 
 #[test]
-fn cache() {
+fn reproducibility() {
     let mut game1 = ShahrazadGame::new(DEFAULT_SETTINGS);
     let mut game2 = ShahrazadGame::new(DEFAULT_SETTINGS);
 
@@ -156,7 +158,15 @@ fn cache() {
         },
         ShahrazadAction::ZoneImport {
             zone: "ZONE_1".into(),
-            cards: ["Opt".into(), "Opt".into(), "Opt".into(), "Opt".into()].into(),
+            cards: [
+                "Opt".into(),
+                "Opt".into(),
+                "Opt".into(),
+                "Opt".into(),
+                "Opt".into(),
+                "Opt".into(),
+            ]
+            .into(),
             player_id: "1".into(),
             token: Some(false),
         },
@@ -167,7 +177,15 @@ fn cache() {
             },
         },
         ShahrazadAction::CardZone {
-            cards: ["CARD_1".into()].into(),
+            cards: [
+                "CARD_1".into(),
+                "CARD_2".into(),
+                "CARD_3".into(),
+                "CARD_4".into(),
+                "CARD_5".into(),
+                "CARD_6".into(),
+            ]
+            .into(),
             state: ShahrazadCardState {
                 inverted: Some(true),
                 flipped: Some(true),
