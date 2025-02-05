@@ -19,6 +19,7 @@ import { randomU64 } from "@/lib/utils/random";
 import { usePlayer } from "@/contexts/player";
 import { useSearchContext } from "@/contexts/search";
 import { DrawTo } from "./(menu-items)/draw-to";
+import { KeyShortcut } from "@/components/(ui)/key-shortcut";
 
 export default function DeckContextMenu({
     zoneId,
@@ -51,7 +52,9 @@ export default function DeckContextMenu({
                     }}
                 >
                     Shuffle
-                    <ContextMenuShortcut>⌘S</ContextMenuShortcut>
+                    <ContextMenuShortcut>
+                        <KeyShortcut keys={["Ctrl", "S"]} />
+                    </ContextMenuShortcut>
                 </ContextMenuItem>
 
                 <ContextMenuItem
@@ -66,7 +69,9 @@ export default function DeckContextMenu({
                     }}
                 >
                     Search
-                    <ContextMenuShortcut>⌘F</ContextMenuShortcut>
+                    <ContextMenuShortcut>
+                        <KeyShortcut keys={["Ctrl", "F"]} />
+                    </ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuItem
                     disabled={deck.cards.length === 0}
@@ -84,7 +89,9 @@ export default function DeckContextMenu({
                     }}
                 >
                     Draw
-                    <ContextMenuShortcut>⌘D</ContextMenuShortcut>
+                    <ContextMenuShortcut>
+                        <KeyShortcut keys={["Ctrl", "D"]} />
+                    </ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuSub>
                     <ContextMenuSubTrigger disabled={deck.cards.length === 0}>
