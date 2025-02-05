@@ -43,33 +43,32 @@ export function DrawTo({
     return (
         <ContextMenuItem
             className="w-full flex justify-between gap-2"
-            onClick={(e) => {
-                if (amount < 0) return;
-                if (amount > source_length) return;
+            onClick={() => {
                 applyAction({
                     type: ShahrazadActionCase.DrawTop,
-                    amount: amount,
+                    amount: clamp(amount, 0, source_length),
                     destination,
                     source,
                     state: state || { face_down: false },
                 });
             }}
-            onPointerMove={(e) => {
-                if (inputOpen) e.preventDefault();
-            }}
         >
             {label}
-            <div className="h-full">
+            <div
+                className="h-full"
+                onPointerDown={(e) => e.preventDefault()}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <Button
                     variant="outline"
                     size="icon"
                     className="h-[1.5rem] w-[1.5rem]"
                     onClick={(e) => {
                         e.stopPropagation();
-                        setAmount((a) => clamp(a - 1, 0, source_length));
+                        setAmount((a) => clamp(a - 1, 1, source_length));
                         setInputOpen(false);
                     }}
-                    disabled={amount <= 0}
+                    disabled={amount <= 1}
                 >
                     -
                 </Button>
@@ -79,6 +78,7 @@ export function DrawTo({
                         if (open) {
                             setInputOpen(open);
                         }
+                        setInputOpen(open);
                     }}
                 >
                     <PopoverTrigger asChild>
@@ -94,10 +94,7 @@ export function DrawTo({
                             {amount}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent
-                        className="p-2 w-fit"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                    <PopoverContent className="p-2 w-fit">
                         <Input
                             className="w-16"
                             value={input}
@@ -106,7 +103,7 @@ export function DrawTo({
                                 const num = parseInput(str);
                                 setInput(num ? num.toString() : str);
                                 if (num !== undefined)
-                                    setAmount(clamp(num, 0, source_length));
+                                    setAmount(clamp(num, 1, source_length));
                             }}
                         />
                     </PopoverContent>
@@ -118,7 +115,7 @@ export function DrawTo({
                     className="h-[1.5rem] w-[1.5rem]"
                     onClick={(e) => {
                         e.stopPropagation();
-                        setAmount((a) => clamp(a + 1, 0, source_length));
+                        setAmount((a) => clamp(a + 1, 1, source_length));
                         setInputOpen(false);
                     }}
                     disabled={amount >= source_length}
