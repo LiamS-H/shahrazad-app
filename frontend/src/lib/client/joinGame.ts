@@ -5,7 +5,6 @@ export async function joinGame(
     props?: JoinGameQuery
 ): Promise<JoinGameResponse | null | undefined> {
     let res: Response;
-    console.log(props);
     try {
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/join_game/${uuid}`;
         res = await fetch(url, {
