@@ -32,7 +32,7 @@ export class GameClient {
     async connect() {
         if (this.isConnecting) return;
         this.isConnecting = true;
-        console.log("connecting");
+        console.log("[ws] connecting...");
 
         try {
             const backend = process.env.NEXT_PUBLIC_BACKEND_URL || "";
