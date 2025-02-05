@@ -38,6 +38,9 @@ export default function Board({ id }: { id: ShahrazadZoneId }) {
     return (
         <div
             className="shahrazad-playmat-board h-[501px] min-w-[901px] max-w-[1301] relative"
+            style={{
+                backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`,
+            }}
             ref={setNodeRef}
         >
             <Selection cards={cards} node={node} />
