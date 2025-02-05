@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 import type { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 
 import { GRID_SIZE } from ".";

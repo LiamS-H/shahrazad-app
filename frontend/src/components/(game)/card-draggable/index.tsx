@@ -1,7 +1,7 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { ShahrazadCardId } from "@/types/bindings/card";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "../../../contexts/(game)/game";
 import { CSSProperties } from "react";
 import { IDraggableData } from "@/types/interfaces/dnd";
 import Card from "../card";

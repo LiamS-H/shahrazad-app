@@ -13,10 +13,10 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "../../../contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
-import { usePlayer } from "@/contexts/player";
+import { usePlayer } from "@/contexts/(game)/player";
 import { isFlippable, useScrycard } from "react-scrycards";
 import { RevealToPlayers } from "./(menu-items)/reveal";
 export default function HandCardContextMenu({

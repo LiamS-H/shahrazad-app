@@ -1,16 +1,16 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import HorizontalZone from "@/components/(game)/horizontal-zone";
 import { Scrycard } from "react-scrycards";
 import Card from "../../card";
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 import {
     Tooltip,
     TooltipTrigger,
     TooltipContent,
 } from "@/components/(ui)/tooltip";
 import { useState } from "react";
-import { usePlayer } from "@/contexts/player";
+import { usePlayer } from "@/contexts/(game)/player";
 import HandContextMenu from "../../(context-menus)/hand";
 
 export default function Hand(props: { id: ShahrazadZoneId }) {

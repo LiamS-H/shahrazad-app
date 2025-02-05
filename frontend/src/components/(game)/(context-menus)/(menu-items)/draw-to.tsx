@@ -6,7 +6,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/(ui)/popover";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { clamp } from "@/lib/utils/clamp";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadCardState } from "@/types/bindings/card";

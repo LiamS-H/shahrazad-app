@@ -5,9 +5,9 @@ import Hand from "./Hand";
 import Graveyard from "./Graveyard";
 import Exile from "./Exile";
 import Command from "./Command";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import Player from "./Player";
-import { PlayerProvider } from "@/contexts/player";
+import { PlayerProvider } from "@/contexts/(game)/player";
 import { UntapButton } from "./(buttons)/UntapButton";
 import { MulliganButton } from "./(buttons)/MulliganButton";
 

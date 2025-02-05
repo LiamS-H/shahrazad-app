@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import CardStack from "../card-stack";

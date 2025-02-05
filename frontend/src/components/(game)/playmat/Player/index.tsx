@@ -1,5 +1,5 @@
 import { Button } from "@/components/(ui)/button";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { Minus, Plus } from "lucide-react";
 import {
@@ -11,7 +11,7 @@ import { Input } from "@/components/(ui)/input";
 import { FormEvent, useState } from "react";
 import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
 import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
-import { usePlayer } from "@/contexts/player";
+import { usePlayer } from "@/contexts/(game)/player";
 import CommandDamageButton from "./command-damage";
 
 export default function Player() {

@@ -12,8 +12,8 @@ import {
     ContextMenuSubTrigger,
     // ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "@/contexts/game";
-import { usePlayer } from "@/contexts/player";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { usePlayer } from "@/contexts/(game)/player";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";

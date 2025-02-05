@@ -1,5 +1,5 @@
 import { Button } from "@/components/(ui)/button";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { CornerRightUp } from "lucide-react";

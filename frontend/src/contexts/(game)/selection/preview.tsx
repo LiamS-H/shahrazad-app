@@ -1,7 +1,7 @@
 import Card from "@/components/(game)/card-preview";
 import { useSelection } from ".";
 
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 
 export default function Preview() {
     const { currentPreview } = useSelection();

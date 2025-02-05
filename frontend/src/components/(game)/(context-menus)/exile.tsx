@@ -12,11 +12,11 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode } from "react";
-import { usePlayer } from "@/contexts/player";
-import { useSearchContext } from "@/contexts/search";
+import { usePlayer } from "@/contexts/(game)/player";
+import { useSearchContext } from "@/contexts/(game)/search";
 import { randomU64 } from "@/lib/utils/random";
 export default function ExileContextMenu({
     zoneId,

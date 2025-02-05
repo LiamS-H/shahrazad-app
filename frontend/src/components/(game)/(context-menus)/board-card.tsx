@@ -15,12 +15,12 @@ import {
     // ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "../../../contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode } from "react";
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 import { isFlippable, useScrycard } from "react-scrycards";
-import { usePlayer } from "@/contexts/player";
+import { usePlayer } from "@/contexts/(game)/player";
 import { ContextMenuSubContent } from "@radix-ui/react-context-menu";
 export default function BoardCardContextMenu({
     cardId,

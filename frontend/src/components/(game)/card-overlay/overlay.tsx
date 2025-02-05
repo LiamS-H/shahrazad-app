@@ -6,10 +6,10 @@ import {
     useState,
 } from "react";
 import { ScryNameCard } from "react-scrycards";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { clamp } from "@/lib/utils/clamp";
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 
 function OverlayWrapper({ children }: { children: ReactNode }) {
     const animationFrameId = useRef<number | null>(null);

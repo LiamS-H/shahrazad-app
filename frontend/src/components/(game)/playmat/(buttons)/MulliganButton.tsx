@@ -1,6 +1,6 @@
 import { Button } from "@/components/(ui)/button";
-import { useShahrazadGameContext } from "@/contexts/game";
-import { usePlayer } from "@/contexts/player";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { usePlayer } from "@/contexts/(game)/player";
 import { randomU64 } from "@/lib/utils/random";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ListRestart } from "lucide-react";

@@ -1,8 +1,8 @@
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/card/counters";
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 
 export default function Card(props: { id: ShahrazadCardId }) {
     const { getCard, player_name } = useShahrazadGameContext();

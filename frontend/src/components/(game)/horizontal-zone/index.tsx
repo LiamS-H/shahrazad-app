@@ -1,4 +1,4 @@
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "../../../contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import {
     horizontalListSortingStrategy,

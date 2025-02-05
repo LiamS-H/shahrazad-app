@@ -12,12 +12,12 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { randomU64 } from "@/lib/utils/random";
-import { usePlayer } from "@/contexts/player";
-import { useSearchContext } from "@/contexts/search";
+import { usePlayer } from "@/contexts/(game)/player";
+import { useSearchContext } from "@/contexts/(game)/search";
 import { DrawTo } from "./(menu-items)/draw-to";
 import { KeyShortcut } from "@/components/(ui)/key-shortcut";
 
