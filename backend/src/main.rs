@@ -3,7 +3,7 @@ use axum::{
         ws::{Message, WebSocket},
         Path, State, WebSocketUpgrade,
     },
-    http::{Response, StatusCode},
+    http::{Method, Response, StatusCode},
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -30,7 +30,13 @@ const PORT: u16 = 5000;
 async fn main() {
     let state = Arc::new(GameStateManager::new());
 
-    let cors = CorsLayer::permissive();
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST])
+        .allow_origin([
+            "https://shahrazad.vercel.app".parse().unwrap(),
+            "https://shahrazad-preview.vercel.app".parse().unwrap(),
+        ]);
+
     let app = Router::new()
         .route("/create_game", post(create_game))
         .route("/join_game/:game_id", post(join_game))
