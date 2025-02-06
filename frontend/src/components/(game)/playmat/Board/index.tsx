@@ -1,9 +1,9 @@
 import { useDroppable } from "@dnd-kit/core";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { IDroppableData } from "@/types/interfaces/dnd";
 import { BoardCard } from "./board-card";
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 import Selection from "./selection";
 
 import "./board.css";
@@ -38,6 +38,9 @@ export default function Board({ id }: { id: ShahrazadZoneId }) {
     return (
         <div
             className="shahrazad-playmat-board h-[501px] min-w-[901px] max-w-[1301] relative"
+            style={{
+                backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`,
+            }}
             ref={setNodeRef}
         >
             <Selection cards={cards} node={node} />

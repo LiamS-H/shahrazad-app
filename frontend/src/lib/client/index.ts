@@ -19,7 +19,8 @@ export class GameClient {
     private reconnectTimeout: NodeJS.Timeout | null = null;
     private isConnecting = false;
     private isCleanedUp = false;
-    private queuedActions: ShahrazadAction[] = [];
+    private queuedClientMessage: ClientAction[] = [];
+    // private queuedServerMessages: ServerUpdate[] = [];
 
     constructor(
         private gameId: string,
@@ -31,7 +32,7 @@ export class GameClient {
     async connect() {
         if (this.isConnecting) return;
         this.isConnecting = true;
-        console.log("connecting");
+        console.log("[ws] connecting...");
 
         try {
             const backend = process.env.NEXT_PUBLIC_BACKEND_URL || "";
@@ -56,10 +57,10 @@ export class GameClient {
     private handleOpen = () => {
         console.log("[ws] connected");
         this.reconnectAttempts = 0;
-        for (const action of this.queuedActions) {
-            this.queueAction(action);
+        for (const action of this.queuedClientMessage) {
+            this.broadcastAction(action, true);
         }
-        this.queuedActions = [];
+        this.queuedClientMessage = [];
     };
 
     private handleClose = (event: CloseEvent) => {
@@ -159,31 +160,31 @@ export class GameClient {
 
         const newState: ShahrazadGame = this.gameState.apply_action(action);
 
-        if (newState) {
-            if (action.type === ShahrazadActionCase.Mulligan) {
-                const playmat = newState.playmats[action.player_id];
-                const mulligans = playmat.mulligans;
-                const name = playmat.player.display_name;
-                let message;
-                if (mulligans == 0) {
-                    message = `${name} drew their 7.`;
-                } else {
-                    message = `${name} mulliganed ${
-                        mulligans < 0 ? "for free" : `to ${7 - mulligans}`
-                    }.`;
-                }
-                this.callbacks.onMessage(message);
-            }
-
-            if (action.type == ShahrazadActionCase.SetPlayer) {
-                this.callbacks.onMessage(
-                    `${action.player_id} has new name: ${action.player.display_name}`
-                );
-            }
-            this.callbacks.onGameUpdate(newState);
-            return true;
+        if (!newState) {
+            return false;
         }
-        return false;
+        if (action.type === ShahrazadActionCase.Mulligan) {
+            const playmat = newState.playmats[action.player_id];
+            const mulligans = playmat.mulligans;
+            const name = playmat.player.display_name;
+            let message;
+            if (mulligans == 0) {
+                message = `${name} drew their 7.`;
+            } else {
+                message = `${name} mulliganed ${
+                    mulligans < 0 ? "for free" : `to ${7 - mulligans}`
+                }.`;
+            }
+            this.callbacks.onMessage(message);
+        }
+
+        if (action.type == ShahrazadActionCase.SetPlayer) {
+            this.callbacks.onMessage(
+                `${action.player_id} has new name: ${action.player.display_name}`
+            );
+        }
+        this.callbacks.onGameUpdate(newState);
+        return true;
     }
 
     setState(game: ShahrazadGame) {
@@ -198,29 +199,33 @@ export class GameClient {
     }
 
     queueAction(action: ShahrazadAction) {
-        const success = this.applyAction(action);
-        if (!success) return;
-        this.broadcastAction(action);
-    }
-
-    private broadcastAction(action: ShahrazadAction) {
-        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-            this.attemptReconnect();
-            this.queuedActions.push(action);
+        if (!this.gameState) {
+            console.error("[ws] attempting queue action without gameState");
             return;
         }
+        const success = this.applyAction(action);
+        if (!success) return;
+        const req: ClientAction = {
+            action,
+            hash: this.gameState.get_hash(),
+        };
+        this.broadcastAction(req);
+    }
+
+    private broadcastAction(action: ClientAction, fromQueue?: true) {
         if (!this.gameState) {
             console.error("[ws] attempting broadcast without gameState");
             return;
         }
 
-        const req: ClientAction = {
-            action,
-            hash: this.gameState.get_hash(),
-        };
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            this.attemptReconnect();
+            if (!fromQueue) this.queuedClientMessage.push(action);
+            return;
+        }
 
-        console.log("[ws] broadcasting action", req);
-        this.socket.send(JSON.stringify(req));
+        console.log("[ws] broadcasting action", action);
+        this.socket.send(JSON.stringify(action));
     }
 
     cleanup() {

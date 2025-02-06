@@ -7,6 +7,7 @@ import ScrycardsContext from "@/contexts/scrycards";
 import { Toaster } from "@/components/(ui)/sonner";
 import { TooltipProvider } from "@/components/(ui)/tooltip";
 import { FullscreenContextProvider } from "@/contexts/fullscreen";
+import { DeviceContextProvider } from "@/contexts/device";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -40,12 +41,14 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     <TooltipProvider>
-                        <ScrycardsContext>
+                        <DeviceContextProvider>
                             <FullscreenContextProvider>
-                                <NavBar />
-                                {children}
+                                <ScrycardsContext>
+                                    <NavBar />
+                                    {children}
+                                </ScrycardsContext>
                             </FullscreenContextProvider>
-                        </ScrycardsContext>
+                        </DeviceContextProvider>
                     </TooltipProvider>
                     <Toaster position="bottom-center" />
                 </ThemeProvider>

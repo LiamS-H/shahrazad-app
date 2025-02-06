@@ -1,13 +1,13 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { useShahrazadGameContext } from "../../../../contexts/game";
+import { useShahrazadGameContext } from "../../../../contexts/(game)/game";
 import { useDroppable } from "@dnd-kit/core";
 import CardStack from "@/components/(game)/card-stack";
 import { IDroppableData } from "@/types/interfaces/dnd";
 import { Scrycard, Scrydeck } from "react-scrycards";
 import DeckContextMenu from "@/components/(game)/(context-menus)/deck";
-import { useSearchContext } from "@/contexts/search";
+import { useSearchContext } from "@/contexts/(game)/search";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { usePlayer } from "@/contexts/player";
+import { usePlayer } from "@/contexts/(game)/player";
 import Card from "@/components/(game)/card";
 import { useEffect, useRef } from "react";
 import { randomU64 } from "@/lib/utils/random";
@@ -33,7 +33,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
             });
         }
         last_active.current = active;
-    }, [active]);
+    }, [active, applyAction, props.id]);
 
     if (searching) {
         const top = zone.cards.at(-1);

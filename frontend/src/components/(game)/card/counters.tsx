@@ -5,7 +5,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/(ui)/popover";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import type { ShahrazadCardId, ShahrazadCounter } from "@/types/bindings/card";
 import { Minus, Plus } from "lucide-react";

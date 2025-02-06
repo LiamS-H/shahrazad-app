@@ -15,12 +15,12 @@ import {
     // ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "../../../contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { type ReactNode, useState } from "react";
-import { useSelection } from "@/contexts/selection";
+import { type ReactNode } from "react";
+import { useSelection } from "@/contexts/(game)/selection";
 import { isFlippable, useScrycard } from "react-scrycards";
-import { usePlayer } from "@/contexts/player";
+import { usePlayer } from "@/contexts/(game)/player";
 import { ContextMenuSubContent } from "@radix-ui/react-context-menu";
 export default function BoardCardContextMenu({
     cardId,
@@ -36,7 +36,6 @@ export default function BoardCardContextMenu({
     const shah_card = getCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
     const playmat = getPlaymat(player);
-    const [open, setOpen] = useState(true);
     const cards = selectedCards.includes(cardId) ? selectedCards : [cardId];
     let title = "";
     if (cards.length !== 1) {
@@ -54,7 +53,7 @@ export default function BoardCardContextMenu({
             ) || [];
 
     return (
-        <ContextMenu modal={open} onOpenChange={setOpen}>
+        <ContextMenu modal>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
                 <ContextMenuLabel>{title}</ContextMenuLabel>

@@ -18,7 +18,8 @@ import { type ReactNode } from "react";
 import { usePlayer } from "@/contexts/(game)/player";
 import { useSearchContext } from "@/contexts/(game)/search";
 import { randomU64 } from "@/lib/utils/random";
-export default function GraveyardContextMenu({
+import { RevealRandomCard, RevealToPlayers } from "./(menu-items)/reveal";
+export default function HandContextMenu({
     zoneId,
     children,
 }: {
@@ -29,29 +30,17 @@ export default function GraveyardContextMenu({
     const { applyAction, getPlaymat, getZone } = useShahrazadGameContext();
     const { search } = useSearchContext();
     const playmat = getPlaymat(player);
-    const graveyard = getZone(zoneId);
+    const hand = getZone(zoneId);
 
     return (
         <ContextMenu modal>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuLabel>
-                    Graveyard ({graveyard.cards.length})
-                </ContextMenuLabel>
+                <ContextMenuLabel>Hand ({hand.cards.length})</ContextMenuLabel>
                 <ContextMenuSeparator />
-
-                <ContextMenuItem
-                    disabled={graveyard.cards.length === 0}
-                    onClick={() => {
-                        search(zoneId);
-                    }}
-                >
-                    Search
-                </ContextMenuItem>
+                <RevealToPlayers cards={hand.cards} />
                 <ContextMenuSub>
-                    <ContextMenuSubTrigger
-                        disabled={graveyard.cards.length === 0}
-                    >
+                    <ContextMenuSubTrigger disabled={hand.cards.length === 0}>
                         Send to
                     </ContextMenuSubTrigger>
                     <ContextMenuSubContent>
@@ -59,10 +48,10 @@ export default function GraveyardContextMenu({
                             onClick={() => {
                                 applyAction({
                                     type: ShahrazadActionCase.CardZone,
-                                    cards: graveyard.cards,
+                                    cards: hand.cards,
                                     index: -1,
                                     destination: playmat.exile,
-                                    state: {},
+                                    state: { face_down: false, revealed: [] },
                                 });
                             }}
                         >
@@ -72,7 +61,20 @@ export default function GraveyardContextMenu({
                             onClick={() => {
                                 applyAction({
                                     type: ShahrazadActionCase.CardZone,
-                                    cards: graveyard.cards,
+                                    cards: hand.cards,
+                                    index: -1,
+                                    destination: playmat.graveyard,
+                                    state: { face_down: false, revealed: [] },
+                                });
+                            }}
+                        >
+                            Graveyard
+                        </ContextMenuItem>
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.CardZone,
+                                    cards: hand.cards,
                                     index: 0,
                                     destination: playmat.library,
                                     state: {},
@@ -86,39 +88,18 @@ export default function GraveyardContextMenu({
                         >
                             Deck Shuffled
                         </ContextMenuItem>
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.CardZone,
-                                    cards: graveyard.cards,
-                                    index: 0,
-                                    destination: playmat.library,
-                                    state: {},
-                                });
-                            }}
-                        >
-                            Deck Bottom
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.Shuffle,
-                                    zone: zoneId,
-                                    seed: randomU64(),
-                                });
-                                applyAction({
-                                    type: ShahrazadActionCase.CardZone,
-                                    cards: graveyard.cards,
-                                    index: 0,
-                                    destination: playmat.library,
-                                    state: {},
-                                });
-                            }}
-                        >
-                            Deck Bottom Random Order
-                        </ContextMenuItem>
                     </ContextMenuSubContent>
                 </ContextMenuSub>
+                <ContextMenuItem
+                    disabled={hand.cards.length === 0}
+                    onClick={() => {
+                        search(zoneId);
+                    }}
+                >
+                    Search
+                </ContextMenuItem>
+
+                <RevealRandomCard cards={hand.cards} />
             </ContextMenuContent>
         </ContextMenu>
     );

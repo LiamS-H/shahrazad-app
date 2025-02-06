@@ -7,7 +7,7 @@ import {
 } from "@/components/(ui)/popover";
 
 import { Tooltip } from "@/components/(ui)/tooltip";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";

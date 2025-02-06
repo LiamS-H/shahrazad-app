@@ -1,5 +1,5 @@
 "use client";
-import { useDevice } from "@/hooks/useDevice";
+import { useDevice } from "@/contexts/device";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 /* this is for webkit */
 

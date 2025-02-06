@@ -1,11 +1,11 @@
 "use client";
 import { ShahrazadGame } from "@/types/bindings/game";
 import Playmat from "../playmat";
-import { ShahrazadGameProvider } from "@/contexts/game";
-import ShahrazadDND from "@/contexts/dnd";
+import { ShahrazadGameProvider } from "@/contexts/(game)/game";
+import ShahrazadDND from "@/contexts/(game)/dnd";
 import { ShahrazadAction } from "@/types/bindings/action";
-import { SelectionProvider } from "@/contexts/selection";
-import { SearchContextProvider } from "@/contexts/search";
+import { SelectionProvider } from "@/contexts/(game)/selection";
+import { SearchContextProvider } from "@/contexts/(game)/search";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;

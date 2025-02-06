@@ -13,7 +13,7 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 import { useShahrazadGameContext } from "../game";
 // import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { DraggableOverlay } from "../../components/(game)/card-overlay/overlay";
+import { DraggableOverlay } from "../../../components/(game)/card-overlay/overlay";
 import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { useSelection } from "../selection";

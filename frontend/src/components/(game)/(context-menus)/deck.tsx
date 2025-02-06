@@ -12,12 +12,15 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
 import { randomU64 } from "@/lib/utils/random";
-import { usePlayer } from "@/contexts/player";
-import { useSearchContext } from "@/contexts/search";
+import { usePlayer } from "@/contexts/(game)/player";
+import { useSearchContext } from "@/contexts/(game)/search";
+import { DrawTo } from "./(menu-items)/draw-to";
+import { KeyShortcut } from "@/components/(ui)/key-shortcut";
+
 export default function DeckContextMenu({
     zoneId,
     children,
@@ -39,6 +42,7 @@ export default function DeckContextMenu({
                 <ContextMenuLabel>Deck ({deck.cards.length})</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuItem
+                    disabled={deck.cards.length === 0}
                     onClick={() => {
                         applyAction({
                             type: ShahrazadActionCase.Shuffle,
@@ -48,7 +52,9 @@ export default function DeckContextMenu({
                     }}
                 >
                     Shuffle
-                    <ContextMenuShortcut>⌘S</ContextMenuShortcut>
+                    <ContextMenuShortcut>
+                        <KeyShortcut keys={["Ctrl", "S"]} />
+                    </ContextMenuShortcut>
                 </ContextMenuItem>
 
                 <ContextMenuItem
@@ -63,9 +69,12 @@ export default function DeckContextMenu({
                     }}
                 >
                     Search
-                    <ContextMenuShortcut>⌘F</ContextMenuShortcut>
+                    <ContextMenuShortcut>
+                        <KeyShortcut keys={["Ctrl", "F"]} />
+                    </ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuItem
+                    disabled={deck.cards.length === 0}
                     onClick={() => {
                         applyAction({
                             type: ShahrazadActionCase.DrawTop,
@@ -80,37 +89,31 @@ export default function DeckContextMenu({
                     }}
                 >
                     Draw
-                    <ContextMenuShortcut>⌘D</ContextMenuShortcut>
+                    <ContextMenuShortcut>
+                        <KeyShortcut keys={["Ctrl", "D"]} />
+                    </ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuSub>
-                    <ContextMenuSubTrigger>Draw to</ContextMenuSubTrigger>
+                    <ContextMenuSubTrigger disabled={deck.cards.length === 0}>
+                        Draw to
+                    </ContextMenuSubTrigger>
                     <ContextMenuSubContent>
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.DrawTop,
-                                    amount: 1,
-                                    destination: playmat.graveyard,
-                                    source: playmat.library,
-                                    state: { face_down: false },
-                                });
-                            }}
-                        >
-                            Graveyard
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                            onClick={() => {
-                                applyAction({
-                                    type: ShahrazadActionCase.DrawTop,
-                                    amount: 1,
-                                    destination: playmat.exile,
-                                    source: playmat.library,
-                                    state: { face_down: false },
-                                });
-                            }}
-                        >
-                            Exile
-                        </ContextMenuItem>
+                        <DrawTo
+                            label="Graveyard"
+                            destination={playmat.graveyard}
+                            source={zoneId}
+                        />
+                        <DrawTo
+                            label="Exile"
+                            destination={playmat.exile}
+                            source={zoneId}
+                        />
+                        <DrawTo
+                            label="Hand"
+                            destination={playmat.hand}
+                            source={zoneId}
+                            state={{ revealed: [player] }}
+                        />
                     </ContextMenuSubContent>
                 </ContextMenuSub>
             </ContextMenuContent>

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import VerticalZone from "@/components/(game)/vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/(ui)/button";
 import GraveyardContextMenu from "../../(context-menus)/graveyard";
-import { useSearchContext } from "@/contexts/search";
+import { useSearchContext } from "@/contexts/(game)/search";
 import { Scrycard, Scrydeck } from "react-scrycards";
 import Card from "../../card";
 

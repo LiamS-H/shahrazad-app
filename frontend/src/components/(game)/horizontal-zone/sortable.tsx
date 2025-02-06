@@ -2,7 +2,7 @@ import { CSSProperties } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IDraggableData } from "@/types/interfaces/dnd";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import HandCardContextMenu from "../(context-menus)/hand-card";
 import Card from "../card";

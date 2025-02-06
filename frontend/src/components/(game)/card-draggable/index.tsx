@@ -1,7 +1,7 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { ShahrazadCardId } from "@/types/bindings/card";
-import { useShahrazadGameContext } from "../../../contexts/game";
+import { useShahrazadGameContext } from "../../../contexts/(game)/game";
 import { CSSProperties } from "react";
 import { IDraggableData } from "@/types/interfaces/dnd";
 import Card from "../card";
@@ -34,6 +34,8 @@ export default function DraggableCard(props: {
         props.noDragTranslate && isDragging
             ? undefined
             : CSS.Translate.toString(transform);
+    draggableStyle.filter =
+        isDragging && props.noDragTranslate ? "grayscale(100%)" : undefined;
 
     return (
         <div
@@ -44,10 +46,7 @@ export default function DraggableCard(props: {
                 ...draggableStyle,
                 width: "fit-content",
                 cursor: "grab",
-                filter:
-                    isDragging && props.noDragTranslate
-                        ? "grayscale(100%)"
-                        : undefined,
+
                 ...props.divStyle,
             }}
         >

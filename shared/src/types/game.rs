@@ -268,9 +268,13 @@ impl ShahrazadGame {
                 };
 
                 let original_cards = dest_zone.cards.clone();
-                dest_zone
-                    .cards
-                    .splice(idx..idx, migrating_cards.iter().cloned());
+                dest_zone.cards.splice(
+                    idx..idx,
+                    cards
+                        .iter()
+                        .cloned()
+                        .filter(|id| migrating_cards.contains(id)),
+                );
 
                 if dest_zone.cards != original_cards {
                     mutated = true;

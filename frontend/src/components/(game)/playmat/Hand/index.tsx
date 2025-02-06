@@ -1,16 +1,17 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { useShahrazadGameContext } from "@/contexts/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import HorizontalZone from "@/components/(game)/horizontal-zone";
 import { Scrycard } from "react-scrycards";
 import Card from "../../card";
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 import {
     Tooltip,
     TooltipTrigger,
     TooltipContent,
 } from "@/components/(ui)/tooltip";
 import { useState } from "react";
-import { usePlayer } from "@/contexts/player";
+import { usePlayer } from "@/contexts/(game)/player";
+import HandContextMenu from "../../(context-menus)/hand";
 
 export default function Hand(props: { id: ShahrazadZoneId }) {
     const { active } = usePlayer();
@@ -21,19 +22,21 @@ export default function Hand(props: { id: ShahrazadZoneId }) {
 
     const cardCountChip = (
         <div className="relative z-10">
-            <div className="absolute bottom-1">
-                <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
-                    <TooltipTrigger
-                        className="w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex justify-center items-center"
-                        onClick={() => setTooltipOpen(true)}
-                    >
-                        {zone.cards.length}
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        ({zone.cards.length}) cards in hand
-                    </TooltipContent>
-                </Tooltip>
-            </div>
+            <HandContextMenu zoneId={props.id}>
+                <div className="absolute bottom-1">
+                    <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
+                        <TooltipTrigger
+                            className="w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex justify-center items-center"
+                            onClick={() => setTooltipOpen(true)}
+                        >
+                            {zone.cards.length}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            ({zone.cards.length}) cards in hand
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
+            </HandContextMenu>
         </div>
     );
 

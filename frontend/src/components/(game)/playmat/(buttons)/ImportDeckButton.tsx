@@ -5,8 +5,8 @@ import {
     PopoverTrigger,
 } from "@/components/(ui)/popover";
 import { Textarea } from "@/components/(ui)/textarea";
-import { useShahrazadGameContext } from "@/contexts/game";
-import { usePlayer } from "@/contexts/player";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { usePlayer } from "@/contexts/(game)/player";
 import { importFromStr } from "@/lib/client/importDeck";
 import { Import } from "lucide-react";
 import { useState } from "react";

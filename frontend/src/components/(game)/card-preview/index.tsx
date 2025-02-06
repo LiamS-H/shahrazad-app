@@ -1,5 +1,5 @@
 import { Button } from "@/components/(ui)/button";
-import { useSelection } from "@/contexts/selection";
+import { useSelection } from "@/contexts/(game)/selection";
 import { ShahrazadCard } from "@/types/bindings/card";
 import { FlipHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
