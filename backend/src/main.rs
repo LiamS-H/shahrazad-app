@@ -101,6 +101,7 @@ async fn join_game(
                     player_id: player_id.into(),
                     game: game_info.game,
                     code: game_info.code,
+                    hash: game_info.hash,
                     reconnected: true
                 })
                 .to_string();
@@ -116,6 +117,7 @@ async fn join_game(
             game_id: game_info.game_id.into(),
             player_id: player_id.into(),
             game: game_info.game,
+            hash: game_info.hash,
             code: game_info.code,
             reconnected: false
         })

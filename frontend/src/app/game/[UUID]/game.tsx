@@ -63,7 +63,13 @@ export default function GamePage(props: { game_id: string }) {
             return;
         }
 
-        const { player_id, player_name, game: initialState, code } = joinResult;
+        const {
+            player_id,
+            player_name,
+            game: initialState,
+            code,
+            hash,
+        } = joinResult;
         toast(`Joined game ${code}`);
 
         setPlayerUUID(player_id);
@@ -97,7 +103,7 @@ export default function GamePage(props: { game_id: string }) {
         );
 
         gameClientRef.current = gameClient;
-        gameClient.initializeGameState(initialState);
+        gameClient.initializeGameState(initialState, hash);
         gameClient.connect();
 
         preloadCards(Object.values(initialState.cards).map((c) => c.card_name));
