@@ -130,7 +130,10 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
         return main_card_comp;
     }
 
-    const cards = selectedCards.length === 0 ? [id] : selectedCards;
+    const cards =
+        selectedCards.length === 0 || !selectedCards.includes(id)
+            ? [id]
+            : selectedCards;
 
     if (cards.length === 1) {
         return main_card_comp;
