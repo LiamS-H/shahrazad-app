@@ -1,4 +1,4 @@
-import Card from "@/components/(game)/card-preview";
+import CardPreview from "@/components/(game)/card-preview";
 import { useSelection } from ".";
 
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
@@ -10,6 +10,7 @@ export default function Preview() {
     if (currentPreview === null) return null;
 
     const shah_card = getCard(currentPreview);
+    if (!shah_card) return null;
 
-    return <Card shah_card={shah_card} />;
+    return <CardPreview shah_card={shah_card} />;
 }
