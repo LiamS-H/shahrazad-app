@@ -3,26 +3,42 @@ import { ShahrazadCardId } from "@/types/bindings/card";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/card/counters";
 import { useSelection } from "@/contexts/(game)/selection";
+import { useRef } from "react";
 
 export default function Card(props: { id: ShahrazadCardId; faceUp?: boolean }) {
     const { getCard, player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const shah_card = getCard(props.id);
+    const hover_timer = useRef<NodeJS.Timeout>(undefined);
 
     const card = useScrycard(shah_card.card_name);
 
     return (
         <div
             onMouseLeave={(e) => {
+                clearTimeout(hover_timer.current);
+                hover_timer.current = undefined;
                 if (e.buttons != 1) {
                     setPreview(null);
                     return;
                 }
-                const handler = () => {
-                    window.removeEventListener("mouseup", handler);
-                    setPreview(null);
-                };
-                window.addEventListener("mouseup", handler);
+                const controller = new AbortController();
+                window.addEventListener(
+                    "mouseup",
+                    () => {
+                        setPreview(null);
+                        controller.abort();
+                    },
+                    { signal: controller.signal }
+                );
+            }}
+            onMouseEnter={() => {
+                if (hover_timer.current) return;
+                hover_timer.current = setTimeout(() => {
+                    setPreview(props.id);
+                    clearTimeout(hover_timer.current);
+                    hover_timer.current = undefined;
+                }, 250);
             }}
             data-shahcard={props.id}
         >
