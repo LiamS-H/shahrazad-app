@@ -230,22 +230,23 @@ impl ShahrazadGame {
                 {
                     let mut migrating_zones = Vec::new();
                     for id in &cards {
-                        let Some(card) = game.cards.get(id) else {
+                        let Some(card) = game.cards.get_mut(id) else {
                             continue;
                         };
                         if !game.zones.contains_key(&card.location) {
                             continue;
                         };
                         migrating_zones.push(card.location.clone());
+                        card.migrate(dest_id.clone());
 
-                        let mut new_card = ShahrazadCard::clone(card);
-                        new_card.state.apply(&card.state);
-                        new_card.state.apply(&state);
-                        new_card.migrate(dest_id.clone());
-                        if new_card != *card {
-                            mutated = true;
-                            game.cards.insert(id.clone(), new_card);
-                        };
+                        // let mut new_card = ShahrazadCard::clone(card);
+                        // new_card.state.apply(&card.state);
+                        // new_card.state.apply(&state);
+                        // new_card.migrate(dest_id.clone());
+                        // if new_card != *card {
+                        //     mutated = true;
+                        //     game.cards.insert(id.clone(), new_card);
+                        // };
                         migrating_cards.insert(id.clone());
                     }
                     for id in &migrating_zones {
@@ -259,6 +260,18 @@ impl ShahrazadGame {
                         }
                     }
                 }
+
+                if ShahrazadGame::apply_action(
+                    ShahrazadAction::CardState {
+                        cards: cards.clone(),
+                        state,
+                    },
+                    game,
+                )
+                .is_some()
+                {
+                    mutated = true;
+                };
 
                 let dest_zone = game.zones.get_mut(&dest_id)?;
                 let idx = if index == -1 {

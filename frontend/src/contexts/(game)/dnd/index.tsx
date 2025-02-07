@@ -164,7 +164,9 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     },
                     index: -1,
                 });
-                selectCards(null);
+                if (x === 255) {
+                    selectCards(null);
+                }
             }
         },
         [applyAction, selectedCards, selectCards]
