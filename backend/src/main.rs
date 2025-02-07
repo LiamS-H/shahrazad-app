@@ -18,10 +18,10 @@ use shared::types::{
     },
     ws::ClientAction,
 };
-use std::net::SocketAddr;
 use std::sync::Arc;
+use std::{env, net::SocketAddr};
 use tokio::net::TcpListener;
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
 const PORT: u16 = 5000;
@@ -30,12 +30,23 @@ const PORT: u16 = 5000;
 async fn main() {
     let state = Arc::new(GameStateManager::new());
 
-    let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
-        .allow_origin([
-            "https://shahrazad.vercel.app".parse().unwrap(),
-            "https://shahrazad-preview.vercel.app".parse().unwrap(),
-        ]);
+    let cors = match env::var("CORS_ALLOWED_ORIGINS") {
+        Ok(val) => {
+            let origins = val
+                .split(",")
+                .map(|s| s.parse().unwrap())
+                .collect::<Vec<_>>();
+
+            CorsLayer::new()
+                .allow_headers(Any)
+                .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::CONNECT])
+                .allow_origin(origins)
+        }
+        Err(_) => CorsLayer::new()
+            .allow_headers(Any)
+            .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::CONNECT])
+            .allow_origin(Any),
+    };
 
     let app = Router::new()
         .route("/create_game", post(create_game))
