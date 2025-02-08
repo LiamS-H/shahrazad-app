@@ -43,7 +43,7 @@ export default function SortableCard(props: {
     return (
         <HandCardContextMenu cardId={props.id}>
             <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-                <Card id={props.id} />
+                <Card id={props.id} animationTime={0.3} />
                 {display_eye && (
                     <div className="relative">
                         <div className="absolute bottom-[100px] w-full flex justify-center">
