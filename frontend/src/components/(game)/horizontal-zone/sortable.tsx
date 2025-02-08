@@ -1,22 +1,20 @@
-import { CSSProperties } from "react";
+import { CSSProperties, type ReactNode } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IDraggableData } from "@/types/interfaces/dnd";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
-import { ShahrazadCardId } from "@/types/bindings/card";
-import HandCardContextMenu from "../(context-menus)/hand-card";
+import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import Card from "../card";
 import { Eye } from "lucide-react";
 
-export default function SortableCard(props: {
+function SortableWrapper(props: {
     id: ShahrazadCardId;
     index: number;
+    shah_card: ShahrazadCard;
+    children: ReactNode;
 }) {
-    const { getCard } = useShahrazadGameContext();
-    const shah_card = getCard(props.id);
-
     const data: IDraggableData = {
-        zone: shah_card.location,
+        zone: props.shah_card.location,
         index: props.index,
     };
     const {
@@ -36,22 +34,38 @@ export default function SortableCard(props: {
         filter: isDragging ? "grayscale(100%)" : undefined,
     };
 
+    return (
+        <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+            {props.children}
+        </div>
+    );
+}
+
+export default function SortableCard(props: {
+    id: ShahrazadCardId;
+    index: number;
+}) {
+    const { getCard } = useShahrazadGameContext();
+    const shah_card = getCard(props.id);
+
     const display_eye =
         !shah_card.state.face_down ||
         (shah_card.state.revealed && shah_card.state.revealed.length > 1);
 
     return (
-        <HandCardContextMenu cardId={props.id}>
-            <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-                <Card id={props.id} animationTime={0.3} />
-                {display_eye && (
-                    <div className="relative">
-                        <div className="absolute bottom-[100px] w-full flex justify-center">
-                            <Eye />
-                        </div>
+        <SortableWrapper
+            id={props.id}
+            index={props.index}
+            shah_card={shah_card}
+        >
+            <Card id={props.id} animationTime={0.3} />
+            {display_eye && (
+                <div className="relative">
+                    <div className="absolute bottom-[100px] w-full flex justify-center">
+                        <Eye />
                     </div>
-                )}
-            </div>
-        </HandCardContextMenu>
+                </div>
+            )}
+        </SortableWrapper>
     );
 }

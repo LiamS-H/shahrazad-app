@@ -11,6 +11,7 @@ import { type ReactNode, useState } from "react";
 import { usePlayer } from "@/contexts/(game)/player";
 import HandContextMenu from "../../(context-menus)/hand";
 import { LayoutGroup } from "framer-motion";
+import HandCardContextMenu from "@/components/(game)/(context-menus)/hand-card";
 
 function HandWrapper({
     id,
@@ -44,7 +45,7 @@ function HandWrapper({
                     </div>
                 </HandContextMenu>
             </div>
-            <LayoutGroup>{children}</LayoutGroup>
+            {children}
         </div>
     );
 }
@@ -57,21 +58,27 @@ export default function Hand(props: { id: ShahrazadZoneId }) {
     if (!active) {
         return (
             <HandWrapper id={props.id} length={hand.cards.length}>
-                {hand.cards.map((id) => {
-                    const shah_card = getCard(id);
-                    return (
-                        <Card
-                            id={id}
-                            key={id}
-                            animationTime={
-                                shah_card.state.face_down &&
-                                !shah_card.state.revealed?.includes(player_name)
-                                    ? 0
-                                    : undefined
-                            }
-                        />
-                    );
-                })}
+                <LayoutGroup>
+                    {hand.cards.map((id) => {
+                        const shah_card = getCard(id);
+                        return (
+                            <HandCardContextMenu cardId={props.id}>
+                                <Card
+                                    id={id}
+                                    key={id}
+                                    animationTime={
+                                        shah_card.state.face_down &&
+                                        !shah_card.state.revealed?.includes(
+                                            player_name
+                                        )
+                                            ? 0
+                                            : undefined
+                                    }
+                                />
+                            </HandCardContextMenu>
+                        );
+                    })}
+                </LayoutGroup>
             </HandWrapper>
         );
     }
