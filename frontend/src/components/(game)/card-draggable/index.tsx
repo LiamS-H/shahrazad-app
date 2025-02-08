@@ -11,7 +11,7 @@ export default function DraggableCard(props: {
     noDragTranslate?: true;
     dragDisabled?: true;
     dragNamespace?: string;
-    animationTime?: number;
+    animationTime?: number | null;
     divStyle?: CSSProperties;
 }) {
     const { getCard } = useShahrazadGameContext();
