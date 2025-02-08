@@ -4,6 +4,8 @@ import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/card/counters";
 import { useSelection } from "@/contexts/(game)/selection";
 import { useRef } from "react";
+import { motion } from "framer-motion";
+import { useDragging } from "@/contexts/(game)/dnd/dragging";
 
 export default function Card(props: { id: ShahrazadCardId; faceUp?: boolean }) {
     const { getCard, player_name } = useShahrazadGameContext();
@@ -12,10 +14,16 @@ export default function Card(props: { id: ShahrazadCardId; faceUp?: boolean }) {
     const hover_timer = useRef<NodeJS.Timeout>(undefined);
 
     const card = useScrycard(shah_card.card_name);
+    const { dragging: draggingCards } = useDragging();
+    const dragging = draggingCards?.includes(props.id);
 
     return (
-        <div
-            onMouseLeave={(e) => {
+        <motion.div
+            layoutId={props.id}
+            transition={{ duration: dragging ? 0 : 0.5, ease: "easeInOut" }}
+            animate={{ zIndex: 20 }}
+            className="relative"
+            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
                 clearTimeout(hover_timer.current);
                 hover_timer.current = undefined;
                 if (e.buttons != 1) {
@@ -55,6 +63,6 @@ export default function Card(props: { id: ShahrazadCardId; faceUp?: boolean }) {
                 }
             />
             <Counters id={props.id} />
-        </div>
+        </motion.div>
     );
 }

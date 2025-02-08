@@ -17,6 +17,7 @@ import { DraggableOverlay } from "../../../components/(game)/card-overlay/overla
 import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { useSelection } from "../selection";
+import { DraggingContextProvider } from "./dragging";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
@@ -181,6 +182,12 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         // })
     );
 
+    const dragging = activeId
+        ? selectedCards.includes(activeId)
+            ? [activeId, ...selectedCards.filter((id) => id !== activeId)]
+            : [activeId]
+        : null;
+
     return (
         <DndContext
             sensors={sensors}
@@ -190,7 +197,9 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             // collisionDetection={closestCorners}
             // collisionDetection={pointerWithin}
         >
-            {props.children}
+            <DraggingContextProvider dragging={dragging}>
+                {props.children}
+            </DraggingContextProvider>
             <DragOverlay>
                 {activeId ? <DraggableOverlay id={activeId} /> : null}
             </DragOverlay>

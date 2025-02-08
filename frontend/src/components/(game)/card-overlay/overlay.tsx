@@ -100,7 +100,6 @@ function RotationWrapper({
     const style: CSSProperties = {
         transition: "transform 0.2s ease-out",
         transform: `perspective(1000px) rotateX(${rotation[0]}deg) rotateY(${rotation[1]}deg)`,
-        zIndex: 2,
     };
     return <div style={style}>{children}</div>;
 }
