@@ -100,7 +100,6 @@ function RotationWrapper({
     const style: CSSProperties = {
         transition: "transform 0.2s ease-out",
         transform: `perspective(1000px) rotateX(${rotation[0]}deg) rotateY(${rotation[1]}deg)`,
-        zIndex: 2,
     };
     return <div style={style}>{children}</div>;
 }
@@ -130,7 +129,10 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
         return main_card_comp;
     }
 
-    const cards = selectedCards.length === 0 ? [id] : selectedCards;
+    const cards =
+        selectedCards.length === 0 || !selectedCards.includes(id)
+            ? [id]
+            : selectedCards;
 
     if (cards.length === 1) {
         return main_card_comp;

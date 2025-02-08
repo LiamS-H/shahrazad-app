@@ -13,6 +13,7 @@ type GameClientCallbacks = {
 
 export class GameClient {
     private gameState: GameState | null = null;
+    private hash: string | null = null;
     private socket: WebSocket | null = null;
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
@@ -88,6 +89,13 @@ export class GameClient {
                 }
 
                 this.applyAction(update.action);
+                if (update.hash && update.hash !== this.hash) {
+                    console.log(
+                        "[ws] client server mismatch, requesting resync"
+                    );
+                    this.broadcastAction({});
+                }
+
                 if (update.action.type === ShahrazadActionCase.AddPlayer) {
                     this.callbacks.onPlayerJoin(
                         update.action.player.display_name
@@ -95,6 +103,12 @@ export class GameClient {
                 }
             } else if (update.game) {
                 console.log("[ws] received game:", update.game);
+                if (update.hash && update.hash === this.hash) {
+                    console.log(
+                        "[ws] received game matches current, no update needed"
+                    );
+                    return;
+                }
                 this.setState(update.game);
             }
         } catch (error) {
@@ -145,8 +159,9 @@ export class GameClient {
         }, backoffMs);
     };
 
-    initializeGameState(initialState: ShahrazadGame) {
+    initializeGameState(initialState: ShahrazadGame, hash: string) {
         this.gameState = new GameState(initialState);
+        this.hash = hash;
         this.callbacks.onGameUpdate(initialState);
     }
 
@@ -159,10 +174,10 @@ export class GameClient {
         }
 
         const newState: ShahrazadGame = this.gameState.apply_action(action);
-
         if (!newState) {
             return false;
         }
+        this.hash = this.gameState.get_hash();
         if (action.type === ShahrazadActionCase.Mulligan) {
             const playmat = newState.playmats[action.player_id];
             const mulligans = playmat.mulligans;
@@ -194,6 +209,7 @@ export class GameClient {
 
         const newState = this.gameState.set_state(game);
         if (newState) {
+            this.hash = this.gameState.get_hash();
             this.callbacks.onGameUpdate(newState);
         }
     }
@@ -205,9 +221,10 @@ export class GameClient {
         }
         const success = this.applyAction(action);
         if (!success) return;
+        const hash = this.hash || this.gameState.get_hash();
         const req: ClientAction = {
             action,
-            hash: this.gameState.get_hash(),
+            hash,
         };
         this.broadcastAction(req);
     }

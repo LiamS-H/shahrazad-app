@@ -1,12 +1,13 @@
-import { useShahrazadGameContext } from "../../../contexts/(game)/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import {
     horizontalListSortingStrategy,
     SortableContext,
 } from "@dnd-kit/sortable";
-import SortableCard from "./sortable";
+import HandCard from "./hand-card";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
+import { LayoutGroup } from "framer-motion";
 
 export default function HorizontalZone(props: {
     id: ShahrazadZoneId;
@@ -29,9 +30,11 @@ export default function HorizontalZone(props: {
                 ref={setNodeRef}
                 className="w-full h-full flex flex-row flex-nowrap overflow-x-auto"
             >
-                {zone.cards.map((id, idx) => (
-                    <SortableCard id={id} key={id} index={idx} />
-                ))}
+                <LayoutGroup>
+                    {zone.cards.map((id, idx) => (
+                        <HandCard id={id} key={id} index={idx} />
+                    ))}
+                </LayoutGroup>
             </div>
         </SortableContext>
     );

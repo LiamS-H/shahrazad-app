@@ -120,16 +120,13 @@ export default function Selection({
 
     return (
         <div
+            className="z-20 pointer-events-none absolute bg-blue-700/30"
             style={{
-                position: "absolute",
                 left: selectionBounds.left,
                 top: selectionBounds.top,
                 width: selectionBounds.width,
                 height: selectionBounds.height,
-                backgroundColor: "rgba(0, 0, 255, 0.3)",
                 border: "1px dashed blue",
-                pointerEvents: "none",
-                zIndex: 1000,
             }}
         />
     );

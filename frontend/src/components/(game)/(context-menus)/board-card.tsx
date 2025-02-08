@@ -238,7 +238,7 @@ export default function BoardCardContextMenu({
                             });
                         }}
                     >
-                        Delete Token
+                        Delete Token{cards.length > 1 ? "s" : ""}
                     </ContextMenuItem>
                 )}
             </ContextMenuContent>

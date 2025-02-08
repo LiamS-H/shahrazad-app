@@ -33,6 +33,7 @@ pub struct JoinGameResponse {
     pub player_name: String,
     pub code: u32,
     pub reconnected: bool,
+    pub hash: String,
 }
 
 #[derive(Reflect, Serialize)]

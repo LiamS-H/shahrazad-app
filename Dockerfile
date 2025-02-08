@@ -69,6 +69,6 @@ COPY --from=build /bin/server /bin/
 
 # Expose the port that the application listens on.
 EXPOSE 5000
-
+ENV CORS_ALLOWED_ORIGINS="https://shahrazad.vercel.app"
 # What the container should run when it is started.
 CMD ["/bin/server"]

@@ -15,6 +15,7 @@ import { Switch } from "@/components/(ui)/switch";
 import { Label } from "@/components/(ui)/label";
 import { Input } from "@/components/(ui)/input";
 import type { ScryfallColors } from "@scryfall/api-types";
+import { LayoutGroup } from "framer-motion";
 
 interface ISort {
     type: "lands" | "creatures" | "artifacts" | "spells" | null;
@@ -224,12 +225,20 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
             </div>
             <div
                 ref={setNodeRef}
-                className="flex flex-row flex-nowrap gap-1 overflow-x-auto"
+                className="flex flex-row flex-nowrap gap-1 overflow-x-auto max-w-full"
             >
                 {cards.length === 0 ? (
                     <Scrycard card={undefined} />
                 ) : (
-                    cards.map((c) => <DraggableCard id={c} key={c} />)
+                    <LayoutGroup>
+                        {cards.map((c) => (
+                            <DraggableCard
+                                id={c}
+                                key={c}
+                                animationTime={null}
+                            />
+                        ))}
+                    </LayoutGroup>
                 )}
             </div>
         </div>

@@ -17,6 +17,7 @@ pub struct GameInfo {
     pub game_id: Uuid,
     pub name: String,
     pub game: ShahrazadGame,
+    pub hash: String,
     pub code: u32,
 }
 
@@ -28,6 +29,7 @@ pub struct GameState {
     tx: broadcast::Sender<ServerUpdate>,
     last_activity: Instant,
     code: u32,
+    hash: String,
 }
 
 #[derive(Clone)]
@@ -73,6 +75,7 @@ impl GameStateManager {
                             action: Some(ShahrazadAction::GameTerminated),
                             game: None,
                             player_id: *game_id,
+                            hash: None,
                         };
                         let _ = game_ref.tx.send(disconnect_update);
                     }
@@ -109,13 +112,16 @@ impl GameStateManager {
             code = rng.gen_range(100_000..=999_999);
         }
 
+        let game = ShahrazadGame::new(settings);
+
         let mut game_state = GameState {
-            game: ShahrazadGame::new(settings),
+            game,
             host_id,
             players: DashMap::new(),
             tx,
             last_activity: Instant::now(),
             code: code.clone(),
+            hash: "".into(),
         };
 
         self.codes.insert(code, game_id);
@@ -140,9 +146,12 @@ impl GameStateManager {
                 action: Some(add_player),
                 game: None,
                 player_id: host_id,
+                hash: None,
             };
             let _ = game_state.tx.send(update);
         }
+
+        game_state.hash = game_state.game.hash().to_string();
 
         self.games.insert(game_id, game_state);
 
@@ -154,6 +163,7 @@ impl GameStateManager {
             name: player_name.clone(),
             game: game_state.game.clone(),
             code: game_state.code,
+            hash: game_state.hash.clone(),
         })
     }
 
@@ -186,11 +196,14 @@ impl GameStateManager {
             player,
         };
 
+        game_state.hash = game_state.game.hash().to_string();
+
         if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
             let update = ServerUpdate {
                 action: Some(add_player),
                 game: None,
                 player_id,
+                hash: Some(game_state.hash.clone()),
             };
 
             let _ = game_state.tx.send(update);
@@ -202,6 +215,7 @@ impl GameStateManager {
             host_id: game_state.host_id,
             game: game_state.game.clone(),
             code: game_state.code,
+            hash: game_state.hash.clone(),
         })
     }
 
@@ -224,6 +238,7 @@ impl GameStateManager {
             host_id: game_state.host_id,
             game: game_state.game.clone(),
             code: game_state.code,
+            hash: game_state.hash.clone(),
         })
     }
 
@@ -256,6 +271,7 @@ impl GameStateManager {
             action: None,
             game: Some(game_ref.game.clone()),
             player_id,
+            hash: Some(game_ref.hash.clone()),
         });
     }
 
@@ -266,23 +282,35 @@ impl GameStateManager {
         client_action: ClientAction,
     ) -> Result<ServerUpdate, String> {
         let mut game_ref = self.games.get_mut(&game_id).ok_or("Game not found")?;
+
         game_ref.last_activity = Instant::now();
 
-        let action_applied =
-            ShahrazadGame::apply_action(client_action.action.clone(), &mut game_ref.game);
+        let action_applied = match client_action.action.clone() {
+            Some(action) => ShahrazadGame::apply_action(action, &mut game_ref.game),
+            None => None,
+        };
 
         let Some(_) = action_applied else {
-            return Ok(ServerUpdate {
+            let game_update = ServerUpdate {
                 action: None,
                 game: Some(game_ref.game.clone()),
                 player_id,
-            });
+                hash: Some(game_ref.hash.clone()),
+            };
+            let _ = game_ref.tx.send(game_update.clone());
+            return Ok(game_update);
         };
 
         let game_hash = game_ref.game.hash();
-        let client_hash: u64 = match client_action.hash.parse() {
-            Ok(num) => num,
-            Err(_) => 0,
+        game_ref.hash = game_hash.to_string();
+        let hash = Some(game_ref.hash.clone());
+
+        let client_hash: u64 = match client_action.hash {
+            Some(hash) => match hash.parse() {
+                Ok(num) => num,
+                Err(_) => 0,
+            },
+            None => 0,
         };
 
         // Handle client desync
@@ -293,22 +321,25 @@ impl GameStateManager {
                 action: None,
                 game: Some(game_ref.game.clone()),
                 player_id,
+                hash: hash.clone(),
             };
             let _ = game_ref.tx.send(full_state);
 
             let action_update = ServerUpdate {
-                action: Some(client_action.action),
+                action: client_action.action,
                 game: None,
                 player_id,
+                hash,
             };
             let _ = game_ref.tx.send(action_update.clone());
             return Ok(action_update);
         }
 
         let update = ServerUpdate {
-            action: Some(client_action.action),
+            action: client_action.action,
             game: None,
             player_id,
+            hash,
         };
 
         let _ = game_ref.tx.send(update.clone());

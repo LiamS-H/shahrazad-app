@@ -3,7 +3,7 @@ use axum::{
         ws::{Message, WebSocket},
         Path, State, WebSocketUpgrade,
     },
-    http::{Response, StatusCode},
+    http::{Method, Response, StatusCode},
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -18,10 +18,10 @@ use shared::types::{
     },
     ws::ClientAction,
 };
-use std::net::SocketAddr;
 use std::sync::Arc;
+use std::{env, net::SocketAddr};
 use tokio::net::TcpListener;
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
 const PORT: u16 = 5000;
@@ -30,7 +30,24 @@ const PORT: u16 = 5000;
 async fn main() {
     let state = Arc::new(GameStateManager::new());
 
-    let cors = CorsLayer::permissive();
+    let cors = match env::var("CORS_ALLOWED_ORIGINS") {
+        Ok(val) => {
+            let origins = val
+                .split(",")
+                .map(|s| s.parse().unwrap())
+                .collect::<Vec<_>>();
+
+            CorsLayer::new()
+                .allow_headers(Any)
+                .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::CONNECT])
+                .allow_origin(origins)
+        }
+        Err(_) => CorsLayer::new()
+            .allow_headers(Any)
+            .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::CONNECT])
+            .allow_origin(Any),
+    };
+
     let app = Router::new()
         .route("/create_game", post(create_game))
         .route("/join_game/:game_id", post(join_game))
@@ -84,6 +101,7 @@ async fn join_game(
                     player_id: player_id.into(),
                     game: game_info.game,
                     code: game_info.code,
+                    hash: game_info.hash,
                     reconnected: true
                 })
                 .to_string();
@@ -99,6 +117,7 @@ async fn join_game(
             game_id: game_info.game_id.into(),
             player_id: player_id.into(),
             game: game_info.game,
+            hash: game_info.hash,
             code: game_info.code,
             reconnected: false
         })
