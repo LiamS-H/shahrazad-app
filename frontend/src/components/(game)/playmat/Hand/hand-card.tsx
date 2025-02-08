@@ -4,8 +4,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { IDraggableData } from "@/types/interfaces/dnd";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
-import Card from "../card";
+import Card from "../../card";
 import { Eye } from "lucide-react";
+import HandCardContextMenu from "../../(context-menus)/hand-card";
 
 function SortableWrapper(props: {
     id: ShahrazadCardId;
@@ -41,7 +42,7 @@ function SortableWrapper(props: {
     );
 }
 
-export default function SortableCard(props: {
+export default function HandCard(props: {
     id: ShahrazadCardId;
     index: number;
 }) {
@@ -58,14 +59,17 @@ export default function SortableCard(props: {
             index={props.index}
             shah_card={shah_card}
         >
-            <Card id={props.id} animationTime={0.3} />
-            {display_eye && (
-                <div className="relative">
-                    <div className="absolute bottom-[100px] w-full flex justify-center">
-                        <Eye />
-                    </div>
-                </div>
-            )}
+            <HandCardContextMenu cardId={props.id}>
+                <Card id={props.id} animationTime={0.3}>
+                    {display_eye && (
+                        <div className="relative">
+                            <div className="absolute bottom-[100px] w-full flex justify-center">
+                                <Eye />
+                            </div>
+                        </div>
+                    )}
+                </Card>
+            </HandCardContextMenu>
         </SortableWrapper>
     );
 }

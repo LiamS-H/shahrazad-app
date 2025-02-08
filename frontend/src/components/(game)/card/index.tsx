@@ -3,7 +3,7 @@ import { ShahrazadCardId } from "@/types/bindings/card";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/card/counters";
 import { useSelection } from "@/contexts/(game)/selection";
-import { useCallback, useRef, useState } from "react";
+import { type ReactNode, useCallback, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDragging } from "@/contexts/(game)/dnd/dragging";
 
@@ -11,6 +11,7 @@ export default function Card(props: {
     id: ShahrazadCardId;
     faceUp?: boolean;
     animationTime?: number | null;
+    children?: ReactNode;
 }) {
     const { getCard, player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
@@ -24,13 +25,18 @@ export default function Card(props: {
     const [isAnimating, setIsAnimating] = useState(false);
 
     const handleMouseEnter = useCallback(() => {
+        if (
+            shah_card.state.face_down &&
+            !shah_card.state.revealed?.includes(player_name)
+        )
+            return;
         if (hover_timer.current) return;
         hover_timer.current = setTimeout(() => {
             setPreview(props.id);
             clearTimeout(hover_timer.current);
             hover_timer.current = undefined;
         }, 250);
-    }, [setPreview, hover_timer]);
+    }, [setPreview, hover_timer, props.id, shah_card, player_name]);
 
     const handleMouseLeave = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -69,6 +75,7 @@ export default function Card(props: {
                 faceDown={faceDown}
             />
             <Counters id={props.id} />
+            {props.children}
         </>
     );
 
