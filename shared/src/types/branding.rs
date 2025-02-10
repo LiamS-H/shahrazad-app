@@ -35,5 +35,15 @@ macro_rules! branded_string {
                 Self(value.to_string())
             }
         }
+
+        impl CompactString for $name {
+            fn to_compact(&self) -> String {
+                self.to_string()
+            }
+
+            fn from_compact(s: &str) -> Result<Self, &'static str> {
+                Ok(Self(s.to_string()))
+            }
+        }
     };
 }

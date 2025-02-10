@@ -1,28 +1,23 @@
 use crate::types::{
     action::ShahrazadAction,
     card::{ShahrazadCardState, ShahrazadCounter},
-    game::{ShahrazadGame, ShahrazadGameSettings},
+    game::ShahrazadGame,
     player::ShahrazadPlayer,
 };
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use type_reflect::serde_json;
 
-const DEFAULT_SETTINGS: ShahrazadGameSettings = ShahrazadGameSettings {
-    starting_life: 20,
-    free_mulligans: String::new(),
-    commander: true,
-    scry_rule: true,
-};
+use super::utils::create_sample_game;
 
 #[test]
 fn create_game() {
-    let _ = ShahrazadGame::new(DEFAULT_SETTINGS);
+    let _ = create_sample_game();
 }
 
 #[test]
 fn add_player() {
-    let mut game = ShahrazadGame::new(DEFAULT_SETTINGS);
+    let mut game = create_sample_game();
     {
         let action = ShahrazadAction::AddPlayer {
             player_id: "1".into(),
@@ -36,7 +31,7 @@ fn add_player() {
 }
 #[test]
 fn init_game() {
-    let mut game = ShahrazadGame::new(DEFAULT_SETTINGS);
+    let mut game = create_sample_game();
     {
         let action = ShahrazadAction::AddPlayer {
             player_id: "1".into(),
@@ -146,8 +141,8 @@ fn init_game() {
 
 #[test]
 fn reproducibility() {
-    let mut game1 = ShahrazadGame::new(DEFAULT_SETTINGS);
-    let mut game2 = ShahrazadGame::new(DEFAULT_SETTINGS);
+    let mut game1 = create_sample_game();
+    let mut game2 = create_sample_game();
 
     let actions: Vec<ShahrazadAction> = [
         ShahrazadAction::AddPlayer {

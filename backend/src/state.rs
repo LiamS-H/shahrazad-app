@@ -321,7 +321,7 @@ impl GameStateManager {
                 action: None,
                 game: Some(game_ref.game.clone()),
                 player_id,
-                hash: hash.clone(),
+                hash: Some(client_hash.to_string()),
             };
             let _ = game_ref.tx.send(full_state);
 

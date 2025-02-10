@@ -1,3 +1,4 @@
+use crate::types::ws::CompactString;
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 

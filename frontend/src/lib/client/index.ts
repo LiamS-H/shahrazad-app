@@ -1,7 +1,11 @@
 import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { ClientAction, ServerUpdate } from "@/types/bindings/ws";
-import { GameState } from "shahrazad-wasm";
+import {
+    decode_server_update,
+    encode_client_action,
+    GameState,
+} from "shahrazad-wasm";
 
 type GameClientCallbacks = {
     onGameUpdate: (game: ShahrazadGame) => void;
@@ -78,8 +82,24 @@ export class GameClient {
         }
 
         try {
-            const update: ServerUpdate = JSON.parse(event.data);
-
+            // const update: ServerUpdate = JSON.parse(event.data);
+            // console.log(event.data);
+            const update: ServerUpdate = decode_server_update(event.data);
+            // console.log(update);
+            if (!update) {
+                console.log("couldn't parse update:");
+                console.log(event.data);
+                return;
+            }
+            if (update.game) {
+                console.log("[ws] received game:", update.game);
+                if (update.hash && update.hash !== this.hash) {
+                    console.log("[ws] received game for outdated request");
+                    return;
+                }
+                this.setState(update.game);
+                return;
+            }
             if (update.action) {
                 console.log("[ws] received action:", update.action);
                 if (update.action.type === ShahrazadActionCase.GameTerminated) {
@@ -88,28 +108,17 @@ export class GameClient {
                     return;
                 }
 
-                this.applyAction(update.action);
-                if (update.hash && update.hash !== this.hash) {
-                    console.log(
-                        "[ws] client server mismatch, requesting resync"
-                    );
-                    this.broadcastAction({});
-                }
-
                 if (update.action.type === ShahrazadActionCase.AddPlayer) {
                     this.callbacks.onPlayerJoin(
                         update.action.player.display_name
                     );
                 }
-            } else if (update.game) {
-                console.log("[ws] received game:", update.game);
-                if (update.hash && update.hash === this.hash) {
-                    console.log(
-                        "[ws] received game matches current, no update needed"
-                    );
-                    return;
-                }
-                this.setState(update.game);
+
+                this.applyAction(update.action);
+            }
+            if (update.hash && update.hash !== this.hash) {
+                console.log("client move validation failed.");
+                this.broadcastAction({});
             }
         } catch (error) {
             console.error("[ws] message error:", error);
@@ -242,7 +251,8 @@ export class GameClient {
         }
 
         console.log("[ws] broadcasting action", action);
-        this.socket.send(JSON.stringify(action));
+        // this.socket.send(JSON.stringify(action));
+        this.socket.send(encode_client_action(action));
     }
 
     cleanup() {
