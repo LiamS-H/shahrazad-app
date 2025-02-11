@@ -3,7 +3,7 @@ import { ShahrazadCardId } from "@/types/bindings/card";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/card/counters";
 import { useSelection } from "@/contexts/(game)/selection";
-import { type ReactNode, useCallback, useRef, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDragging } from "@/contexts/(game)/dnd/dragging";
 
@@ -65,18 +65,21 @@ export default function Card(props: {
         (!shah_card.state.revealed?.includes(player_name) ||
             (shah_card.state.x !== null && shah_card.state.x !== undefined));
 
-    const card_comp = (
-        <>
-            <Scrycard
-                card={card}
-                symbol_text_renderer={ScryNameCardText}
-                flipped={shah_card.state.flipped}
-                tapped={shah_card.state.tapped}
-                faceDown={faceDown}
-            />
-            <Counters id={props.id} />
-            {props.children}
-        </>
+    const card_comp = useMemo(
+        () => (
+            <>
+                <Scrycard
+                    card={card}
+                    symbol_text_renderer={ScryNameCardText}
+                    flipped={shah_card.state.flipped}
+                    tapped={shah_card.state.tapped}
+                    faceDown={faceDown}
+                />
+                <Counters id={props.id} />
+                {props.children}
+            </>
+        ),
+        [card, shah_card, faceDown, props.children]
     );
 
     if (props.animationTime === null) {
@@ -85,6 +88,7 @@ export default function Card(props: {
                 onMouseLeave={handleMouseLeave}
                 onMouseEnter={handleMouseEnter}
                 data-shahcard={props.id}
+                className="relative"
             >
                 {card_comp}
             </div>
