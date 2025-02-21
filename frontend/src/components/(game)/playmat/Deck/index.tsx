@@ -41,7 +41,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
             });
         }
         last_active.current = active;
-    }, [active, applyAction, props.id]);
+    }, [active, applyAction, props.id, active_player, zone.cards]);
 
     if (searching) {
         const top = zone.cards.at(-1);
