@@ -82,13 +82,9 @@ export class GameClient {
         }
 
         try {
-            // const update: ServerUpdate = JSON.parse(event.data);
-            // console.log(event.data);
             const update: ServerUpdate = decode_server_update(event.data);
-            // console.log(update);
             if (!update) {
-                console.log("couldn't parse update:");
-                console.log(event.data);
+                console.log("[client] couldn't parse update:", event.data);
                 return;
             }
             if (update.game) {
@@ -117,7 +113,7 @@ export class GameClient {
                 this.applyAction(update.action);
             }
             if (update.hash && update.hash !== this.hash) {
-                console.log("client move validation failed.");
+                console.log("[client] move validation failed.");
                 this.broadcastAction({});
             }
         } catch (error) {

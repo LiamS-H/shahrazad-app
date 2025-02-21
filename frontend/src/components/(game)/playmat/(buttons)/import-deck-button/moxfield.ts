@@ -58,7 +58,7 @@ export async function importMoxfieldUrl(url: string): Promise<{
             sideboard,
         };
     } catch (e) {
-        console.log(e);
+        console.error(e);
     }
     return null;
 }
