@@ -7,6 +7,7 @@ import { ShahrazadAction } from "@/types/bindings/action";
 import { SelectionProvider } from "@/contexts/(game)/selection";
 import { SearchContextProvider } from "@/contexts/(game)/search";
 import { AnimatePresence } from "framer-motion";
+import { Keybinds } from "../keybinds";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -41,6 +42,7 @@ export default function Game(props: ShahrazadProps) {
             <SelectionProvider>
                 <ShahrazadDND>
                     <SearchContextProvider>
+                        <Keybinds />
                         <AnimatePresence>
                             <div className="mx-4 w-ful h-ful flex flex-col gap-4">
                                 {playmat_components}

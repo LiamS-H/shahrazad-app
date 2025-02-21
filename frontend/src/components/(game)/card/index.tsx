@@ -79,7 +79,7 @@ export default function Card(props: {
                 {props.children}
             </>
         ),
-        [card, shah_card, faceDown, props.children]
+        [card, shah_card, faceDown, props.children, props.id]
     );
 
     if (props.animationTime === null) {
