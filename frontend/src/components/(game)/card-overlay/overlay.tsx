@@ -105,7 +105,7 @@ function RotationWrapper({
 }
 
 export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
-    const { getCard, player_name } = useShahrazadGameContext();
+    const { getCard, active_player: player_name } = useShahrazadGameContext();
     const main_card = getCard(id);
     const { selectedCards } = useSelection();
     const { handleMouseMove, rotation } = useRotation();

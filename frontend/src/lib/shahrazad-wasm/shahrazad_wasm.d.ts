@@ -1,5 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
+export function encode_client_action(action: any): any;
+export function decode_server_update(code: any): any;
 export class GameState {
   free(): void;
   constructor(game: any);
@@ -17,6 +19,8 @@ export interface InitOutput {
   readonly gamestate_get_hash: (a: number) => [number, number, number];
   readonly gamestate_apply_action: (a: number, b: any) => [number, number, number];
   readonly gamestate_set_state: (a: number, b: any) => [number, number, number];
+  readonly encode_client_action: (a: any) => [number, number, number];
+  readonly decode_server_update: (a: any) => [number, number, number];
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __externref_table_alloc: () => number;
   readonly __wbindgen_export_2: WebAssembly.Table;

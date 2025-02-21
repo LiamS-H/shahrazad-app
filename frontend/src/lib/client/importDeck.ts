@@ -28,24 +28,34 @@ function parseLine(str: string): {
 export function importFromStr(
     str: string,
     deckId: ShahrazadZoneId,
-    commandId: ShahrazadZoneId,
+    sideboardId: ShahrazadZoneId,
     playerId: ShahrazadPlaymatId
-): ShahrazadAction[] {
+): ShahrazadAction[] | null {
     const importActions: ShahrazadAction[] = [];
     const card_groups = str.split("\n\n");
 
     let deck_str = "";
-    let command_str;
+    let sideboard_str;
     if (card_groups.length == 1) {
         deck_str = card_groups[0];
     }
     if (card_groups.length == 2) {
         deck_str = card_groups[0];
-        command_str = card_groups[1];
+        sideboard_str = card_groups[1];
     }
 
     const deck = [];
-    const command = [];
+    const sideboard = [];
+
+    if (sideboard_str) {
+        for (const line of sideboard_str.split("\n")) {
+            const parsed = parseLine(line);
+            if (parsed == null) continue;
+            for (let i = 0; i < parsed.amount; i++) {
+                sideboard.push(parsed.name);
+            }
+        }
+    }
 
     for (const line of deck_str.split("\n")) {
         const parsed = parseLine(line);
@@ -54,28 +64,22 @@ export function importFromStr(
             deck.push(parsed.name);
         }
     }
+    if (deck.length === 0 && sideboard.length === 0) {
+        return null;
+    }
+
+    if (sideboard.length > 0) {
+        importActions.push({
+            type: ShahrazadActionCase.ZoneImport,
+            cards: sideboard,
+            zone: sideboardId,
+            player_id: playerId,
+        });
+    }
     importActions.push({
         type: ShahrazadActionCase.ZoneImport,
         cards: deck,
         zone: deckId,
-        player_id: playerId,
-    });
-    if (!command_str) {
-        return importActions;
-    }
-
-    for (const line of command_str.split("\n")) {
-        const parsed = parseLine(line);
-        if (parsed == null) continue;
-        for (let i = 0; i < parsed.amount; i++) {
-            command.push(parsed.name);
-        }
-    }
-
-    importActions.push({
-        type: ShahrazadActionCase.ZoneImport,
-        cards: command,
-        zone: commandId,
         player_id: playerId,
     });
 

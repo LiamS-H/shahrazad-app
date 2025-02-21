@@ -139,7 +139,7 @@ export default function GamePage(props: { game_id: string }) {
         <>
             <Game
                 game={game}
-                playerName={playerName}
+                activePlayer={playerName}
                 applyAction={handleAction}
             />
             <div className="absolute top-4 right-4 flex gap-4">

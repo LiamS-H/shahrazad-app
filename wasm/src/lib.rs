@@ -1,8 +1,9 @@
 use serde::Serialize;
 use serde_wasm_bindgen::Serializer;
 use shared::types::{
-    action,
+    action::{self},
     game::{self, ShahrazadGame},
+    ws::{ClientAction, CompactString, ServerUpdate},
 };
 use wasm_bindgen::prelude::*;
 
@@ -53,4 +54,28 @@ impl GameState {
 
         to_js_value(&self.inner)
     }
+}
+
+#[wasm_bindgen]
+pub fn encode_client_action(action: JsValue) -> Result<JsValue, JsValue> {
+    let action: ClientAction = serde_wasm_bindgen::from_value(action)?;
+    // let Ok(code) = serde_json::to_string(&action) else {
+    //     return Ok(JsValue::NULL);
+    // };
+    let code = action.to_compact();
+
+    to_js_value(&code)
+}
+
+#[wasm_bindgen]
+pub fn decode_server_update(code: JsValue) -> Result<JsValue, JsValue> {
+    let code: String = serde_wasm_bindgen::from_value(code)?;
+    // let Ok(action) = serde_json::from_str::<ShahrazadAction>(&code) else {
+    //     return Ok(JsValue::NULL);
+    // };
+    let Ok(update) = ServerUpdate::from_compact(&code) else {
+        return Ok(JsValue::NULL);
+    };
+
+    to_js_value(&update)
 }

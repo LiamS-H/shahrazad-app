@@ -60,7 +60,7 @@ export class MouseSensor extends LibMouseSensor {
                 if (
                     shah_card.state.face_down &&
                     !shah_card.state.revealed?.includes(
-                        MouseSensor.ShahContext.player_name
+                        MouseSensor.ShahContext.active_player
                     )
                 ) {
                     return true;

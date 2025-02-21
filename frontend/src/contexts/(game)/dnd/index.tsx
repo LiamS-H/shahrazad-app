@@ -37,16 +37,16 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             setActiveId(null);
 
             if (event.over == undefined) {
-                console.log("draggable is over nothing");
+                console.log("[dnd] draggable is over nothing");
                 return;
             }
             if (!event.active.data.current) {
-                console.log("active draggable has no data");
+                console.log("[dnd] active draggable has no data");
                 return;
             }
 
             if (!("zone" in event.active.data.current)) {
-                console.error("active draggable has no zone");
+                console.error("[dnd] active draggable has no zone");
                 return;
             }
 
@@ -65,7 +65,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 const index = over_data.index ?? -1;
 
                 if (over_data.zone != active_data.zone) {
-                    console.log("dropping sortable from outside");
+                    console.log("[dnd] dropping sortable from outside");
                     applyAction({
                         type: ShahrazadActionCase.CardZone,
                         destination: over_data.zone,
@@ -83,7 +83,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     });
                     selectCards(null);
                 } else {
-                    console.log("dropping sortable from within");
+                    console.log("[dnd] dropping sortable from within");
                     applyAction({
                         type: ShahrazadActionCase.CardZone,
                         destination: over_data.zone,
@@ -135,7 +135,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             x = x === undefined ? 255 : x;
             y = y === undefined ? 255 : y;
             if (start_zone_id == end_zone_id) {
-                console.log("dragging to same draggable");
+                console.log("[dnd] dragging to same draggable");
                 applyAction({
                     type: ShahrazadActionCase.CardState,
                     cards: cards,
@@ -144,9 +144,9 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             }
 
             if (start_zone_id != end_zone_id) {
-                console.log("dragging between zones");
+                console.log("[dnd] dragging between zones");
                 console.log(
-                    `dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
+                    `[dnd] dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
                 );
 
                 applyAction({

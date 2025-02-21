@@ -84,7 +84,6 @@ export function FullscreenContextProvider({
             "keydown",
             (e) => {
                 if (e.key === "F11") {
-                    console.log("preventing fullscreen");
                     e.preventDefault();
                     toggleFullscreen();
                     return;

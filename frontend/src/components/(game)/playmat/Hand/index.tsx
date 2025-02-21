@@ -51,7 +51,11 @@ function HandWrapper({
 
 export default function Hand(props: { id: ShahrazadZoneId }) {
     const { active } = usePlayer();
-    const { getZone, getCard, player_name } = useShahrazadGameContext();
+    const {
+        getZone,
+        getCard,
+        active_player: player_name,
+    } = useShahrazadGameContext();
     const hand = getZone(props.id);
 
     if (!active) {

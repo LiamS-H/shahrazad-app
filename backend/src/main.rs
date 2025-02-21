@@ -16,7 +16,7 @@ use shared::types::{
     api::{
         CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
     },
-    ws::ClientAction,
+    ws::{ClientAction, CompactString},
 };
 use std::sync::Arc;
 use std::{env, net::SocketAddr};
@@ -141,15 +141,18 @@ async fn handle_socket(
         Err(_) => return,
     };
 
-    let (mut sender, mut receiver) = socket.split();
+    let (mut socket_sender, mut receiver) = socket.split();
 
     // Send initial game state
+    // if let Ok(initial_update) = (*state).get_game_state(game_id, player_id).await {
+    //     if let Ok(json) = serde_json::to_string(&initial_update) {
+    //         let _ = socket_sender.send(Message::Text(json)).await;
+    //     }
+    // }
     if let Ok(initial_update) = (*state).get_game_state(game_id, player_id).await {
-        if let Ok(json) = serde_json::to_string(&initial_update) {
-            let _ = sender.send(Message::Text(json)).await;
-        }
+        let encoded = initial_update.to_compact();
+        let _ = socket_sender.send(Message::Text(encoded)).await;
     }
-
     // Handle incoming server updates
     let send_task = tokio::spawn({
         let mut game_subscription = game_subscription;
@@ -159,6 +162,12 @@ async fn handle_socket(
                     Ok(update) => {
                         // Skip if it's our own update without game state
                         if update.player_id == player_id && update.game.is_none() {
+                            // update.action = None;
+                            // if let Ok(json) = serde_json::to_string(&update) {
+                            //     if socket_sender.send(Message::Text(json)).await.is_err() {
+                            //         break;
+                            //     }
+                            // }
                             continue;
                         }
                         // Skip if it's another player's update without an action
@@ -166,10 +175,14 @@ async fn handle_socket(
                             continue;
                         }
 
-                        if let Ok(json) = serde_json::to_string(&update) {
-                            if sender.send(Message::Text(json)).await.is_err() {
-                                break;
-                            }
+                        // if let Ok(json) = serde_json::to_string(&update) {
+                        //     if socket_sender.send(Message::Text(json)).await.is_err() {
+                        //         break;
+                        //     }
+                        // }
+                        let encoded = update.to_compact();
+                        if socket_sender.send(Message::Text(encoded)).await.is_err() {
+                            break;
                         }
                         // Check for game termination
                         if let Some(action) = &update.action {
@@ -184,7 +197,7 @@ async fn handle_socket(
                 }
             }
 
-            let _ = sender.close().await;
+            let _ = socket_sender.close().await;
         }
     });
 
@@ -195,9 +208,12 @@ async fn handle_socket(
             while let Some(message) = receiver.next().await {
                 match message {
                     Ok(Message::Text(text)) => {
-                        let client_action = match serde_json::from_str::<ClientAction>(&text) {
-                            Ok(action) => action,
-                            Err(_) => continue,
+                        // let client_action = match serde_json::from_str::<ClientAction>(&text) {
+                        //     Ok(action) => action,
+                        //     Err(_) => continue,
+                        // };
+                        let Ok(client_action) = ClientAction::from_compact(&text) else {
+                            continue;
                         };
                         if (*state)
                             .process_action(player_id, game_id, client_action)

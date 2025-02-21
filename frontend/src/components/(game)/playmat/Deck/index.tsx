@@ -13,7 +13,8 @@ import { useEffect, useRef } from "react";
 import { randomU64 } from "@/lib/utils/random";
 
 export default function Deck(props: { id: ShahrazadZoneId }) {
-    const { getZone, applyAction, getPlaymat } = useShahrazadGameContext();
+    const { getZone, applyAction, getPlaymat, active_player } =
+        useShahrazadGameContext();
     const { active } = useSearchContext();
     const last_active = useRef(active);
     const { player } = usePlayer();
@@ -32,8 +33,15 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                 zone: props.id,
             });
         }
+        if (active === props.id && last_active.current !== props.id) {
+            applyAction({
+                type: ShahrazadActionCase.CardState,
+                cards: zone.cards,
+                state: { revealed: [active_player] },
+            });
+        }
         last_active.current = active;
-    }, [active, applyAction, props.id]);
+    }, [active, applyAction, props.id, active_player, zone.cards]);
 
     if (searching) {
         const top = zone.cards.at(-1);

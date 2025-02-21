@@ -1,3 +1,4 @@
+use crate::types::ws::CompactString;
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
@@ -70,6 +71,23 @@ pub struct ShahrazadGameSettings {
     pub free_mulligans: String,
     pub commander: bool,
     pub scry_rule: bool,
+}
+
+impl CompactString for ShahrazadGame {
+    fn to_compact(&self) -> String {
+        let json = serde_json::to_string(self).unwrap();
+        json
+    }
+
+    fn from_compact(s: &str) -> Result<Self, &'static str>
+    where
+        Self: Sized,
+    {
+        let Ok(game) = serde_json::from_str::<ShahrazadGame>(s) else {
+            return Err("Invalid Game");
+        };
+        Ok(game.to_owned())
+    }
 }
 
 impl ShahrazadGame {

@@ -172,6 +172,29 @@ function takeFromExternrefTable0(idx) {
     wasm.__externref_table_dealloc(idx);
     return value;
 }
+/**
+ * @param {any} action
+ * @returns {any}
+ */
+export function encode_client_action(action) {
+    const ret = wasm.encode_client_action(action);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} code
+ * @returns {any}
+ */
+export function decode_server_update(code) {
+    const ret = wasm.decode_server_update(code);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
 
 const GameStateFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }

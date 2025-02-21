@@ -60,11 +60,6 @@ export default function DeckContextMenu({
                 <ContextMenuItem
                     disabled={deck.cards.length === 0}
                     onClick={() => {
-                        applyAction({
-                            type: ShahrazadActionCase.CardState,
-                            cards: deck.cards,
-                            state: { revealed: [player] },
-                        });
                         search(zoneId);
                     }}
                 >
