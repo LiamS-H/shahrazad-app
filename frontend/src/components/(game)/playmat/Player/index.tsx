@@ -9,7 +9,7 @@ import {
 } from "@/components/(ui)/popover";
 import { Input } from "@/components/(ui)/input";
 import { FormEvent, useState } from "react";
-import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
+import { ImportDeckButton } from "../(buttons)/import-deck-button";
 import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
 import { usePlayer } from "@/contexts/(game)/player";
 import CommandDamageButton from "./command-damage";
