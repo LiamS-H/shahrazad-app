@@ -16,7 +16,7 @@ import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ListRestart, RotateCcw } from "lucide-react";
 
 export function MulliganButton() {
-    const { applyAction, getPlaymat, getZone, active_player, settings } =
+    const { applyAction, getPlaymat, getZone, active_player } =
         useShahrazadGameContext();
     const { player: player_id } = usePlayer();
 
@@ -65,8 +65,8 @@ export function MulliganButton() {
                         : `Reset ${display_name}'s board?`}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                    This will return all of {display_name}'s cards to their
-                    deck, and draw a new starting hand.
+                    This will return all of {display_name}
+                    {"'"}s cards to their deck, and draw a new starting hand.
                 </AlertDialogDescription>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>

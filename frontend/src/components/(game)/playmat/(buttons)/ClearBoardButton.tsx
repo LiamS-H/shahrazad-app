@@ -35,7 +35,8 @@ export function ClearBoardButton() {
                         : `Delete all of ${display_name}'s cards?`}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                    This will remove all of {display_name}'s cards in all zones.
+                    This will remove all of {display_name}
+                    {"'"}s cards in all zones.
                 </AlertDialogDescription>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
