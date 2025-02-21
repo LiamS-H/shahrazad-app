@@ -13,7 +13,7 @@ export default function Card(props: {
     animationTime?: number | null;
     children?: ReactNode;
 }) {
-    const { getCard, player_name } = useShahrazadGameContext();
+    const { getCard, active_player: player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const shah_card = getCard(props.id);
     const hover_timer = useRef<NodeJS.Timeout>(undefined);

@@ -11,13 +11,13 @@ import { AnimatePresence } from "framer-motion";
 export type ShahrazadProps = {
     game: ShahrazadGame;
     applyAction: (action: ShahrazadAction) => void;
-    playerName: string;
+    activePlayer: string;
 };
 
 export default function Game(props: ShahrazadProps) {
     const players = [];
 
-    const offset = props.game.players.indexOf(props.playerName);
+    const offset = props.game.players.indexOf(props.activePlayer);
     const numPlayers = props.game.players.length;
     for (let i = 0; i < numPlayers; i++) {
         const player = props.game.players[(i + offset) % numPlayers];
@@ -25,7 +25,7 @@ export default function Game(props: ShahrazadProps) {
     }
     const playmat_components = players.map((player) => (
         <Playmat
-            active={player == props.playerName}
+            active={player == props.activePlayer}
             player={player}
             key={player}
         />
@@ -34,7 +34,7 @@ export default function Game(props: ShahrazadProps) {
     return (
         <ShahrazadGameProvider
             players={players}
-            player_name={props.playerName}
+            player_name={props.activePlayer}
             game={props.game}
             applyAction={props.applyAction}
         >

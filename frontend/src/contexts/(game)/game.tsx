@@ -12,7 +12,7 @@ import type {
 } from "@/types/bindings/playmat";
 
 export interface IShahrazadGameContext {
-    player_name: ShahrazadPlaymatId;
+    active_player: ShahrazadPlaymatId;
     players: ShahrazadPlaymatId[];
     settings: ShahrazadGameSettings;
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
@@ -44,7 +44,7 @@ export function ShahrazadGameProvider(props: {
         <ShahrazadGameContext.Provider
             value={{
                 settings: props.game.settings,
-                player_name: props.player_name,
+                active_player: props.player_name,
                 players: props.players,
                 getCard,
                 getZone,

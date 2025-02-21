@@ -29,8 +29,12 @@ export default function BoardCardContextMenu({
     cardId: string;
     children: ReactNode;
 }) {
-    const { applyAction, getCard, getPlaymat, player_name } =
-        useShahrazadGameContext();
+    const {
+        applyAction,
+        getCard,
+        getPlaymat,
+        active_player: player_name,
+    } = useShahrazadGameContext();
     const { selectedCards } = useSelection();
     const { player } = usePlayer();
     const shah_card = getCard(cardId);
