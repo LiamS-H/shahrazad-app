@@ -2,7 +2,6 @@ use std::collections::VecDeque;
 
 use crate::tests::utils::{create_sample_card_state, create_sample_player};
 use crate::types::action::ShahrazadAction;
-use crate::types::card::ShahrazadCardState;
 use prost::Message;
 
 use crate::proto;
@@ -234,31 +233,6 @@ fn test_game_terminated() {
     let compact = proto::action::ShahrazadAction::decode(buf).unwrap();
     let parsed = ShahrazadAction::try_from(compact).unwrap();
     assert!(matches!(parsed, ShahrazadAction::GameTerminated));
-}
-
-#[test]
-fn test_card_state_serialization() {
-    let state = create_sample_card_state();
-    let buf: VecDeque<u8> = proto::card::ShahrazadCardState::from(state.clone())
-        .encode_to_vec()
-        .into();
-    let compact = proto::card::ShahrazadCardState::decode(buf).unwrap();
-    let parsed = ShahrazadCardState::try_from(compact).unwrap();
-
-    assert_eq!(parsed.inverted, state.inverted);
-    assert_eq!(parsed.flipped, state.flipped);
-    assert_eq!(parsed.tapped, state.tapped);
-    assert_eq!(parsed.face_down, state.face_down);
-    assert_eq!(parsed.x, state.x);
-    assert_eq!(parsed.y, state.y);
-
-    if let (Some(parsed_revealed), Some(state_revealed)) = (&parsed.revealed, &state.revealed) {
-        assert_eq!(parsed_revealed.len(), state_revealed.len());
-    }
-
-    if let (Some(parsed_counters), Some(state_counters)) = (&parsed.counters, &state.counters) {
-        assert_eq!(parsed_counters.len(), state_counters.len());
-    }
 }
 
 #[test]

@@ -14,7 +14,9 @@ fn to_js_value<T>(value: &T) -> Result<JsValue, JsValue>
 where
     T: Serialize,
 {
-    let serializer = Serializer::new().serialize_maps_as_objects(true);
+    let serializer = Serializer::new()
+        .serialize_maps_as_objects(true)
+        .serialize_large_number_types_as_bigints(true);
     value.serialize(&serializer).map_err(|e| e.into())
 }
 
@@ -41,7 +43,7 @@ impl GameState {
     }
     #[wasm_bindgen]
     pub fn get_hash(&self) -> Result<JsValue, JsValue> {
-        to_js_value(&self.inner.hash().to_string())
+        to_js_value(&self.inner.hash())
     }
     #[wasm_bindgen]
     pub fn get_state(&self) -> Result<JsValue, JsValue> {

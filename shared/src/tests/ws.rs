@@ -21,17 +21,17 @@ fn create_sample_action() -> ShahrazadAction {
 #[test]
 fn test_client_action_compact_with_action() {
     let action = create_sample_action();
-    let hash = create_sample_game().hash().to_string();
+    let hash = create_sample_game().hash();
     let client_action = ClientAction {
         action: Some(action.clone()),
-        hash: Some(hash.to_string()),
+        hash: Some(hash),
     };
 
     let compact = client_action.encode();
     let parsed = ClientAction::decode(compact).unwrap();
 
     assert_eq!(parsed.action, Some(action));
-    assert_eq!(parsed.hash, Some(hash.to_string()));
+    assert_eq!(parsed.hash, Some(hash));
 }
 
 #[test]
@@ -53,13 +53,13 @@ fn test_server_update_compact_full() {
     let action = create_sample_action();
     let game = create_sample_game();
     let player_id = Uuid::new_v4();
-    let hash = game.hash().to_string();
+    let hash = game.hash();
 
     let server_update = ServerUpdate {
         action: Some(action.clone()),
         game: Some(game.clone()),
         player_id,
-        hash: Some(hash.clone()),
+        hash: Some(hash),
     };
 
     let compact = server_update.encode();

@@ -12,7 +12,7 @@ use super::{action::ShahrazadAction, game::ShahrazadGame};
 #[derive(Reflect, Clone, Serialize, Deserialize)]
 pub struct ClientAction {
     pub action: Option<ShahrazadAction>,
-    pub hash: Option<String>,
+    pub hash: Option<u64>,
 }
 
 #[derive(Reflect, Clone, Serialize, Deserialize)]
@@ -20,14 +20,14 @@ pub struct ServerUpdate {
     pub action: Option<ShahrazadAction>,
     pub game: Option<ShahrazadGame>,
     pub player_id: Uuid,
-    pub hash: Option<String>,
+    pub hash: Option<u64>,
 }
 
 impl From<proto::ws::ClientAction> for ClientAction {
     fn from(value: proto::ws::ClientAction) -> Self {
         ClientAction {
             action: value.action.and_then(|action| action.try_into().ok()),
-            hash: if value.hash == "" {
+            hash: if value.hash == 0 {
                 None
             } else {
                 Some(value.hash)
@@ -42,7 +42,7 @@ impl From<ClientAction> for proto::ws::ClientAction {
             action: value.action.and_then(|a| Some(a.into())),
             hash: match value.hash {
                 Some(h) => h,
-                None => "".into(),
+                None => 0,
             },
         }
     }
@@ -73,7 +73,7 @@ impl TryFrom<proto::ws::ServerUpdate> for ServerUpdate {
 
         Ok(ServerUpdate {
             action: value.action.and_then(|action| action.try_into().ok()),
-            hash: if value.hash == "" {
+            hash: if value.hash == 0 {
                 None
             } else {
                 Some(value.hash)
@@ -92,7 +92,7 @@ impl From<ServerUpdate> for proto::ws::ServerUpdate {
             player_id: value.player_id.into(),
             hash: match value.hash {
                 Some(hash) => hash,
-                None => "".into(),
+                None => 0,
             },
         }
     }

@@ -17,7 +17,7 @@ type GameClientCallbacks = {
 
 export class GameClient {
     private gameState: GameState | null = null;
-    private hash: string | null = null;
+    private hash: number | null = null; // actually BigInt
     private socket: WebSocket | null = null;
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
@@ -82,11 +82,11 @@ export class GameClient {
         }
 
         const blob: Blob = event.data;
+        const array = await blob.arrayBuffer();
+        // console.log(array);
 
         try {
-            const update: ServerUpdate = decode_server_update(
-                await blob.arrayBuffer()
-            );
+            const update: ServerUpdate = decode_server_update(array);
             if (!update) {
                 console.log("[client] couldn't parse update:", event.data);
                 return;
@@ -94,7 +94,7 @@ export class GameClient {
             if (update.game) {
                 console.log("[ws] received game:", update.game);
                 if (update.hash && update.hash !== this.hash) {
-                    console.log("[ws] received game for outdated request");
+                    console.log("[ws] received game already matched hash");
                     return;
                 }
                 this.setState(update.game);
@@ -168,9 +168,8 @@ export class GameClient {
         }, backoffMs);
     };
 
-    initializeGameState(initialState: string, hash: string): ShahrazadGame {
+    initializeGameState(initialState: string): ShahrazadGame {
         this.gameState = new GameState(initialState);
-        this.hash = hash;
         return this.gameState.get_state();
     }
 

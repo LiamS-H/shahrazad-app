@@ -17,7 +17,7 @@ pub struct GameInfo {
     pub game_id: Uuid,
     pub name: String,
     pub game: ShahrazadGame,
-    pub hash: String,
+    pub hash: u64,
     pub code: u32,
 }
 
@@ -29,7 +29,7 @@ pub struct GameState {
     tx: broadcast::Sender<ServerUpdate>,
     last_activity: Instant,
     code: u32,
-    hash: String,
+    hash: u64,
 }
 
 #[derive(Clone)]
@@ -121,7 +121,7 @@ impl GameStateManager {
             tx,
             last_activity: Instant::now(),
             code: code.clone(),
-            hash: "".into(),
+            hash: 0,
         };
 
         self.codes.insert(code, game_id);
@@ -151,7 +151,7 @@ impl GameStateManager {
             let _ = game_state.tx.send(update);
         }
 
-        game_state.hash = game_state.game.hash().to_string();
+        game_state.hash = game_state.game.hash();
 
         self.games.insert(game_id, game_state);
 
@@ -163,7 +163,7 @@ impl GameStateManager {
             name: player_name.clone(),
             game: game_state.game.clone(),
             code: game_state.code,
-            hash: game_state.hash.clone(),
+            hash: game_state.hash,
         })
     }
 
@@ -198,7 +198,7 @@ impl GameStateManager {
 
         ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game).unwrap();
 
-        game_state.hash = game_state.game.hash().to_string();
+        game_state.hash = game_state.game.hash();
 
         let update = ServerUpdate {
             action: Some(add_player),
@@ -302,16 +302,10 @@ impl GameStateManager {
         };
 
         let game_hash = game_ref.game.hash();
-        game_ref.hash = game_hash.to_string();
+        game_ref.hash = game_hash;
         let hash = Some(game_ref.hash.clone());
 
-        let client_hash: u64 = match client_action.hash {
-            Some(hash) => match hash.parse() {
-                Ok(num) => num,
-                Err(_) => 0,
-            },
-            None => 0,
-        };
+        let client_hash: u64 = client_action.hash.unwrap_or(0);
 
         // Handle client desync
         // This triggers when a client attempts to make an update and its own state is outdated
@@ -321,7 +315,7 @@ impl GameStateManager {
                 action: None,
                 game: Some(game_ref.game.clone()),
                 player_id,
-                hash: Some(client_hash.to_string()),
+                hash: Some(client_hash),
             };
             let _ = game_ref.tx.send(full_state);
 

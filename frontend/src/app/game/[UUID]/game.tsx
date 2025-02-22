@@ -63,13 +63,7 @@ export default function GamePage(props: { game_id: string }) {
             return;
         }
 
-        const {
-            player_id,
-            player_name,
-            game: initialState,
-            code,
-            hash,
-        } = joinResult;
+        const { player_id, player_name, game: initialState, code } = joinResult;
         toast(`Joined game ${code}`);
 
         setPlayerUUID(player_id);
@@ -103,7 +97,7 @@ export default function GamePage(props: { game_id: string }) {
         );
 
         gameClientRef.current = gameClient;
-        const game = gameClient.initializeGameState(initialState, hash);
+        const game = gameClient.initializeGameState(initialState);
         gameClient.connect();
         setGame(game);
 
