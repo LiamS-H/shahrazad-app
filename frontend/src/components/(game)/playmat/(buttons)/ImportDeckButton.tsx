@@ -9,12 +9,13 @@ import {
 import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { usePlayer } from "@/contexts/(game)/player";
-import { importFromStr } from "@/lib/client/importDeck";
+import { importFromStr } from "@/lib/client/import-deck/importFromStr";
 import { Import } from "lucide-react";
 import { useState } from "react";
-import { importFromUrl } from "./importFromUrl";
+import { importFromUrl } from "@/lib/client/import-deck/importFromUrl";
 import { toast } from "sonner";
 import { Label } from "@/components/(ui)/label";
+import { ShahrazadAction } from "@/types/bindings/action";
 
 export function ImportDeckButton() {
     const { applyAction, getPlaymat } = useShahrazadGameContext();
@@ -24,41 +25,35 @@ export function ImportDeckButton() {
     const [url, setUrl] = useState("");
 
     async function importDeck() {
+        let actions: ShahrazadAction[] | null | undefined;
         if (url) {
-            const actions = await importFromUrl(
-                url,
-                playmat.library,
-                playmat.command,
-                player
-            );
+            actions = await importFromUrl(url, {
+                deckId: playmat.library,
+                sideboardId: playmat.command,
+                playerId: player,
+            });
             if (actions === undefined) {
-                toast("coudln't fetch deck.");
+                toast("Coudln't fetch deck.");
                 return;
             }
-            if (actions == null) {
-                toast("no cards to load");
+        } else if (deckstr) {
+            actions = importFromStr(deckstr, {
+                deckId: playmat.library,
+                sideboardId: playmat.command,
+                playerId: player,
+            });
+            if (actions === undefined) {
+                toast("Couldn't parse deck.");
                 return;
             }
-            actions.forEach((a) => applyAction(a));
-            setOpen(false);
-            toast("deck imported");
+        }
+        if (!actions) {
+            toast("No cards to load.");
             return;
         }
-        if (deckstr) {
-            const actions = importFromStr(
-                deckstr,
-                playmat.library,
-                playmat.command,
-                player
-            );
-            if (!actions) {
-                toast("no cards to load");
-                return;
-            }
-            actions.forEach((a) => applyAction(a));
-            setOpen(false);
-            toast("deck imported");
-        }
+        actions.forEach((a) => applyAction(a));
+        setOpen(false);
+        toast("Deck imported.");
     }
 
     const [open, setOpen] = useState(false);

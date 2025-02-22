@@ -1,10 +1,5 @@
-import {
-    CardImport,
-    ShahrazadAction,
-    ShahrazadActionCase,
-} from "@/types/bindings/action";
-import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
-import { ShahrazadZoneId } from "@/types/bindings/zone";
+import { CardImport, ShahrazadAction } from "@/types/bindings/action";
+import { ILocations, toActionList } from "./toActionlist";
 
 function parseLine(str: string): {
     amount: number;
@@ -29,13 +24,10 @@ function parseLine(str: string): {
     };
 }
 
-export function importFromStr(
-    str: string,
-    deckId: ShahrazadZoneId,
-    sideboardId: ShahrazadZoneId,
-    playerId: ShahrazadPlaymatId
-): ShahrazadAction[] | null {
-    const importActions: ShahrazadAction[] = [];
+export function parseDeckstr(str: string): {
+    sideboard: CardImport[];
+    deck: CardImport[];
+} | null {
     const card_groups = str.split("\n\n");
 
     let deck_str = "";
@@ -70,23 +62,14 @@ export function importFromStr(
     if (deck.length === 0 && sideboard.length === 0) {
         return null;
     }
+    return { deck, sideboard };
+}
 
-    if (sideboard.length > 0) {
-        importActions.push({
-            type: ShahrazadActionCase.ZoneImport,
-            cards: sideboard,
-            zone: sideboardId,
-            player_id: playerId,
-            token: false,
-        });
-    }
-    importActions.push({
-        type: ShahrazadActionCase.ZoneImport,
-        cards: deck,
-        zone: deckId,
-        player_id: playerId,
-        token: false,
-    });
-
-    return importActions;
+export function importFromStr(
+    str: string,
+    locations: ILocations
+): ShahrazadAction[] | null | undefined {
+    const deck = parseDeckstr(str);
+    if (!deck) return undefined;
+    return toActionList(deck, locations);
 }
