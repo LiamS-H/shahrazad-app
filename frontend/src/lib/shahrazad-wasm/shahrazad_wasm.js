@@ -233,6 +233,16 @@ export class GameState {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
+     * @returns {any}
+     */
+    get_state() {
+        const ret = wasm.gamestate_get_state(this.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * @param {any} action
      * @returns {any}
      */

@@ -168,10 +168,10 @@ export class GameClient {
         }, backoffMs);
     };
 
-    initializeGameState(initialState: ShahrazadGame, hash: string) {
+    initializeGameState(initialState: string, hash: string): ShahrazadGame {
         this.gameState = new GameState(initialState);
         this.hash = hash;
-        this.callbacks.onGameUpdate(initialState);
+        return this.gameState.get_state();
     }
 
     private applyAction(action: ShahrazadAction): boolean {

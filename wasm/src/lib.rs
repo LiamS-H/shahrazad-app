@@ -1,3 +1,4 @@
+use base64::{prelude::BASE64_STANDARD, Engine};
 use serde::Serialize;
 use serde_wasm_bindgen::Serializer;
 use shared::types::{
@@ -26,15 +27,25 @@ pub struct GameState {
 impl GameState {
     #[wasm_bindgen(constructor)]
     pub fn new(game: JsValue) -> Self {
-        if let Ok(game) = serde_wasm_bindgen::from_value::<ShahrazadGame>(game) {
-            Self { inner: game }
-        } else {
-            panic!("Error loading game")
-        }
+        let Ok(base64) = serde_wasm_bindgen::from_value::<String>(game) else {
+            panic!("Invalid string")
+        };
+        let Ok(buf) = BASE64_STANDARD.decode(base64) else {
+            panic!("Invalid Binary")
+        };
+        let Ok(game) = ShahrazadGame::decode(buf) else {
+            panic!("Invalid Protobuf")
+        };
+
+        return Self { inner: game };
     }
     #[wasm_bindgen]
     pub fn get_hash(&self) -> Result<JsValue, JsValue> {
         to_js_value(&self.inner.hash().to_string())
+    }
+    #[wasm_bindgen]
+    pub fn get_state(&self) -> Result<JsValue, JsValue> {
+        to_js_value(&self.inner)
     }
 
     #[wasm_bindgen]

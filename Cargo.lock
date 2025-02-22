@@ -134,6 +134,7 @@ name = "backend"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "base64",
  "dashmap",
  "futures",
  "rand",
@@ -1404,6 +1405,7 @@ dependencies = [
 name = "shahrazad-wasm"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "getrandom 0.2.15",
  "serde",
  "serde-wasm-bindgen",

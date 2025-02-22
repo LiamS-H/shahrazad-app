@@ -103,10 +103,11 @@ export default function GamePage(props: { game_id: string }) {
         );
 
         gameClientRef.current = gameClient;
-        gameClient.initializeGameState(initialState, hash);
+        const game = gameClient.initializeGameState(initialState, hash);
         gameClient.connect();
+        setGame(game);
 
-        preloadCards(Object.values(initialState.cards).map((c) => c.card_name));
+        preloadCards(Object.values(game.cards).map((c) => c.card_name));
     }, [props.game_id, preloadCards, signalError]);
 
     useEffect(() => {

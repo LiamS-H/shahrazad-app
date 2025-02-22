@@ -1,8 +1,9 @@
 // use crate::types::ws::ProtoSerialize;
 use std::cmp::{max, min};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::hash::{Hash, Hasher};
 
+use prost::Message;
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
@@ -11,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
 use super::player::ShahrazadPlayer;
+use super::ws::ProtoSerialize;
 use super::{card::*, zone::*};
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -704,5 +706,21 @@ impl From<ShahrazadPlaymat> for proto::playmat::ShahrazadPlaymat {
                 .collect(),
             player: Some(value.player.into()),
         }
+    }
+}
+
+impl ProtoSerialize for ShahrazadGame {
+    fn encode(&self) -> Vec<u8> {
+        let compact = proto::game::ShahrazadGame::from(self.clone());
+        return compact.encode_to_vec();
+    }
+
+    fn decode(s: Vec<u8>) -> Result<Self, &'static str>
+    where
+        Self: Sized,
+    {
+        let buf: VecDeque<u8> = s.into();
+        let compact = proto::game::ShahrazadGame::decode(buf).unwrap();
+        return compact.try_into();
     }
 }

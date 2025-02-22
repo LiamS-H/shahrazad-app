@@ -9,6 +9,7 @@ use axum::{
     Json, Router,
 };
 use backend::state::*;
+use base64::{prelude::BASE64_STANDARD, Engine};
 use futures::{SinkExt, StreamExt};
 use serde_json;
 use shared::types::{
@@ -99,7 +100,7 @@ async fn join_game(
                     player_name: game_info.name,
                     game_id: game_info.game_id.into(),
                     player_id: player_id.into(),
-                    game: game_info.game,
+                    game: BASE64_STANDARD.encode(game_info.game.encode()),
                     code: game_info.code,
                     hash: game_info.hash,
                     reconnected: true
@@ -116,7 +117,7 @@ async fn join_game(
             player_name: game_info.name,
             game_id: game_info.game_id.into(),
             player_id: player_id.into(),
-            game: game_info.game,
+            game: BASE64_STANDARD.encode(game_info.game.encode()),
             hash: game_info.hash,
             code: game_info.code,
             reconnected: false

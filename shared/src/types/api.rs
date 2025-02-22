@@ -1,10 +1,7 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
-use super::{
-    game::{ShahrazadGame, ShahrazadGameSettings},
-    player::ShahrazadPlayer,
-};
+use super::{game::ShahrazadGameSettings, player::ShahrazadPlayer};
 
 #[derive(Reflect, Deserialize, Serialize)]
 pub struct JoinGameQuery {
@@ -27,7 +24,7 @@ pub struct CreateGameResponse {
 
 #[derive(Reflect, Serialize)]
 pub struct JoinGameResponse {
-    pub game: ShahrazadGame,
+    pub game: String,
     pub game_id: String,
     pub player_id: String,
     pub player_name: String,
