@@ -13,6 +13,12 @@ use super::{
 };
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct CardImport {
+    pub str: String,
+    pub amount: Option<u32>,
+}
+
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(tag = "type")]
 pub enum ShahrazadAction {
     DrawBottom {
@@ -43,7 +49,7 @@ pub enum ShahrazadAction {
     },
     ZoneImport {
         zone: ShahrazadZoneId,
-        cards: Vec<String>,
+        cards: Vec<CardImport>,
         token: bool,
         player_id: ShahrazadPlaymatId,
     },
@@ -139,7 +145,14 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
             },
             Action::ZoneImport(a) => ShahrazadAction::ZoneImport {
                 zone: a.zone.into(),
-                cards: a.cards,
+                cards: a
+                    .cards
+                    .iter()
+                    .map(|c| CardImport {
+                        str: c.str.clone(),
+                        amount: c.amount,
+                    })
+                    .collect(),
                 token: a.token,
                 player_id: a.player_id.into(),
             },
@@ -243,7 +256,13 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                     player_id,
                 } => Some(Action::ZoneImport(proto::action::ZoneImport {
                     zone: zone.into(),
-                    cards,
+                    cards: cards
+                        .iter()
+                        .map(|c| proto::action::CardImport {
+                            str: c.str.clone(),
+                            amount: c.amount,
+                        })
+                        .collect(),
                     token: token,
                     player_id: player_id.into(),
                 })),

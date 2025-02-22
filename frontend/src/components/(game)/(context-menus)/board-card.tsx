@@ -147,7 +147,9 @@ export default function BoardCardContextMenu({
                                     applyAction({
                                         type: ShahrazadActionCase.ZoneImport,
                                         cards: [
-                                            related_cards.at(0)?.id || "test",
+                                            {
+                                                str: related_cards[0].id,
+                                            },
                                         ],
                                         player_id: player,
                                         zone: playmat.battlefield,
@@ -171,7 +173,7 @@ export default function BoardCardContextMenu({
                                             onClick={() => {
                                                 applyAction({
                                                     type: ShahrazadActionCase.ZoneImport,
-                                                    cards: [card.id],
+                                                    cards: [{ str: card.id }],
                                                     player_id: player,
                                                     zone: playmat.battlefield,
                                                     token: true,
@@ -224,7 +226,9 @@ export default function BoardCardContextMenu({
                     onClick={() => {
                         applyAction({
                             type: ShahrazadActionCase.ZoneImport,
-                            cards: cards.map((s) => getCard(s).card_name),
+                            cards: cards.map((s) => ({
+                                str: getCard(s).card_name,
+                            })),
                             player_id: player,
                             zone: playmat.battlefield,
                             token: true,

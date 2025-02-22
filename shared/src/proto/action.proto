@@ -55,9 +55,13 @@ message Shuffle {
     string seed = 2;
 }
 
+message CardImport {
+    string str = 1;
+    optional uint32 amount = 3;
+}
 message ZoneImport {
     string zone = 1;
-    repeated string cards = 2;
+    repeated CardImport cards = 2;
     bool token = 3;
     string player_id = 4;
 }

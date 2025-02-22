@@ -1,7 +1,7 @@
 use type_reflect::*;
 
 use crate::types::{
-    action::ShahrazadAction,
+    action::{CardImport, ShahrazadAction},
     api::{
         CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
     },
@@ -18,6 +18,7 @@ pub fn export_all() {
     export_types! {
         types: [
             ShahrazadAction,
+            CardImport
         ],
         destinations: [
             TypeScript(

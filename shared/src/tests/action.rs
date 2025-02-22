@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::tests::utils::{create_sample_card_state, create_sample_player};
-use crate::types::action::ShahrazadAction;
+use crate::types::action::{CardImport, ShahrazadAction};
 use prost::Message;
 
 use crate::proto;
@@ -91,7 +91,16 @@ fn test_shuffle() {
 fn test_zone_import() {
     let action = ShahrazadAction::ZoneImport {
         zone: "deck1".into(),
-        cards: vec!["card1".to_string(), "card2".to_string()],
+        cards: vec![
+            CardImport {
+                str: "card1".into(),
+                amount: None,
+            },
+            CardImport {
+                str: "card2".into(),
+                amount: None,
+            },
+        ],
         token: false,
         player_id: "player1".into(),
     };

@@ -60,7 +60,7 @@ export type ShahrazadActionCaseShuffle = {
 export type ShahrazadActionCaseZoneImport = {
     type: ShahrazadActionCase.ZoneImport;
     zone: ShahrazadZoneId;
-    cards: Array<string>;
+    cards: Array<CardImport>;
     token: boolean;
     player_id: ShahrazadPlaymatId;
 };
@@ -132,3 +132,5 @@ export type ShahrazadAction =
     | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan
     | ShahrazadActionCaseGameTerminated;
+
+export type CardImport = { str: string; amount?: number };

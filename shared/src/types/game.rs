@@ -11,6 +11,7 @@ use seahash::SeaHasher;
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
+use super::action::CardImport;
 use super::player::ShahrazadPlayer;
 use super::ws::ProtoSerialize;
 use super::{card::*, zone::*};
@@ -336,25 +337,27 @@ impl ShahrazadGame {
             } => {
                 let mut card_ids = Vec::new();
                 let token = token;
-                for card in cards {
-                    let card_name = ShahrazadCardName::new(card);
-                    game.card_count += 1;
-                    let card_id: ShahrazadCardId =
-                        ShahrazadCardId::new(format!("C{}", game.card_count));
-                    card_ids.push(card_id.clone());
-                    game.cards.insert(
-                        card_id,
-                        ShahrazadCard {
-                            card_name,
-                            location: zone.clone(),
-                            token,
-                            state: ShahrazadCardState {
-                                counters: Some(Vec::<ShahrazadCounter>::new()),
-                                ..Default::default()
+                for CardImport { str, amount } in cards {
+                    for _ in 0..(amount.unwrap_or(1)) {
+                        let card_name = ShahrazadCardName::new(str.clone());
+                        game.card_count += 1;
+                        let card_id: ShahrazadCardId =
+                            ShahrazadCardId::new(format!("C{}", game.card_count));
+                        card_ids.push(card_id.clone());
+                        game.cards.insert(
+                            card_id,
+                            ShahrazadCard {
+                                card_name,
+                                location: zone.clone(),
+                                token,
+                                state: ShahrazadCardState {
+                                    counters: Some(Vec::<ShahrazadCounter>::new()),
+                                    ..Default::default()
+                                },
+                                owner: player_id.clone(),
                             },
-                            owner: player_id.clone(),
-                        },
-                    );
+                        );
+                    }
                 }
                 game.zones.get_mut(&zone)?.cards.append(&mut card_ids);
                 return Some(game);

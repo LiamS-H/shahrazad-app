@@ -1,4 +1,8 @@
-import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
+import {
+    CardImport,
+    ShahrazadAction,
+    ShahrazadActionCase,
+} from "@/types/bindings/action";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 
@@ -44,25 +48,24 @@ export function importFromStr(
         sideboard_str = card_groups[1];
     }
 
-    const deck = [];
-    const sideboard = [];
+    const deck: CardImport[] = [];
+    const sideboard: CardImport[] = [];
 
     if (sideboard_str) {
         for (const line of sideboard_str.split("\n")) {
             const parsed = parseLine(line);
             if (parsed == null) continue;
-            for (let i = 0; i < parsed.amount; i++) {
-                sideboard.push(parsed.name);
-            }
+            sideboard.push({
+                str: parsed.name,
+                amount: parsed.amount,
+            });
         }
     }
 
     for (const line of deck_str.split("\n")) {
         const parsed = parseLine(line);
         if (parsed == null) continue;
-        for (let i = 0; i < parsed.amount; i++) {
-            deck.push(parsed.name);
-        }
+        deck.push({ str: parsed.name, amount: parsed.amount });
     }
     if (deck.length === 0 && sideboard.length === 0) {
         return null;

@@ -83,7 +83,7 @@ export class GameClient {
 
         const blob: Blob = event.data;
         const array = await blob.arrayBuffer();
-        // console.log(array);
+        console.log(array);
 
         try {
             const update: ServerUpdate = decode_server_update(array);
@@ -178,7 +178,7 @@ export class GameClient {
             throw new Error("Game state not initialized");
         }
         if (action.type === ShahrazadActionCase.ZoneImport) {
-            this.callbacks.onPreloadCards(action.cards);
+            this.callbacks.onPreloadCards(action.cards.map(({ str }) => str));
         }
 
         const newState: ShahrazadGame = this.gameState.apply_action(action);
