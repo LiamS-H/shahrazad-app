@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export function encode_client_action(action: any): any;
+export function encode_client_action(action: any): Uint8Array;
 export function decode_server_update(code: any): any;
 export class GameState {
   free(): void;
