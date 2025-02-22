@@ -3,7 +3,7 @@ use serde_wasm_bindgen::Serializer;
 use shared::types::{
     action::{self},
     game::{self, ShahrazadGame},
-    ws::{ClientAction, CompactString, ServerUpdate},
+    ws::{ClientAction, ProtoSerialize, ServerUpdate},
 };
 use wasm_bindgen::prelude::*;
 
@@ -62,18 +62,18 @@ pub fn encode_client_action(action: JsValue) -> Result<JsValue, JsValue> {
     // let Ok(code) = serde_json::to_string(&action) else {
     //     return Ok(JsValue::NULL);
     // };
-    let code = action.to_compact();
+    let code = action.encode();
 
     to_js_value(&code)
 }
 
 #[wasm_bindgen]
 pub fn decode_server_update(code: JsValue) -> Result<JsValue, JsValue> {
-    let code: String = serde_wasm_bindgen::from_value(code)?;
+    let code: Vec<u8> = serde_wasm_bindgen::from_value(code)?;
     // let Ok(action) = serde_json::from_str::<ShahrazadAction>(&code) else {
     //     return Ok(JsValue::NULL);
     // };
-    let Ok(update) = ServerUpdate::from_compact(&code) else {
+    let Ok(update) = ServerUpdate::decode(code) else {
         return Ok(JsValue::NULL);
     };
 

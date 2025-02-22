@@ -81,7 +81,7 @@ fn init_game() {
             zone: "ZONE_1".into(),
             cards: ["Opt".into()].into(),
             player_id: "1".into(),
-            token: Some(false),
+            token: false,
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
@@ -163,7 +163,7 @@ fn reproducibility() {
             ]
             .into(),
             player_id: "1".into(),
-            token: Some(false),
+            token: false,
         },
         ShahrazadAction::SetPlayer {
             player_id: "1".into(),

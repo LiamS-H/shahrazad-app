@@ -1,6 +1,8 @@
 syntax = "proto3";
 package card;
 
+import "google/protobuf/wrappers.proto";
+
 message ShahrazadCard {
     string card_name = 1;
     string location = 2;
@@ -11,10 +13,10 @@ message ShahrazadCard {
 
 message ShahrazadCardState {
     repeated ShahrazadCounter counters = 1;
-    bool flipped = 2;
-    bool inverted = 3;
-    bool tapped = 4;
-    bool face_down = 5;
+    google.protobuf.BoolValue flipped = 2;
+    google.protobuf.BoolValue inverted = 3;
+    google.protobuf.BoolValue tapped = 4;
+    google.protobuf.BoolValue face_down = 5;
     repeated string revealed = 6;
     uint32 x = 7;
     uint32 y = 8;
