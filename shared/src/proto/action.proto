@@ -1,5 +1,5 @@
 syntax = "proto3";
-package shah_proto;
+package action;
 
 import "src/proto/playmat.proto";
 import "src/proto/card.proto";
@@ -28,24 +28,24 @@ message DrawBottom {
     uint32 amount = 1;
     string source = 2;
     string destination = 3;
-    ShahrazadCardState state = 4;
+    card.ShahrazadCardState state = 4;
 }
 
 message DrawTop {
     uint32 amount = 1;
     string source = 2;
     string destination = 3;
-    ShahrazadCardState state = 4;
+    card.ShahrazadCardState state = 4;
 }
 
 message CardState {
     repeated string cards = 1;
-    ShahrazadCardState state = 2;
+    card.ShahrazadCardState state = 2;
 }
 
 message CardZone {
     repeated string cards = 1;
-    ShahrazadCardState state = 2;
+    card.ShahrazadCardState state = 2;
     string destination = 3;
     int32 index = 4;
 }
@@ -69,12 +69,12 @@ message DeckImport {
 
 message SetPlayer {
     string player_id = 1;
-    ShahrazadPlayer player = 2;
+    playmat.ShahrazadPlayer player = 2;
 }
 
 message AddPlayer {
     string player_id = 1;
-    ShahrazadPlayer player = 2;
+    playmat.ShahrazadPlayer player = 2;
 }
 
 message SetLife {

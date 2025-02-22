@@ -1,5 +1,5 @@
 syntax = "proto3";
-package shah_proto;
+package playmat;
 
 message ShahrazadPlayer {
     string display_name = 1;

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package shah_proto;
+package card;
 
 message ShahrazadCard {
     string card_name = 1;

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package shah_proto;
+package zone;
 
 message ShahrazadZone {
     repeated string cards = 1;

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package shah_proto;
+package game;
 
 import "src/proto/card.proto";
 import "src/proto/playmat.proto";
@@ -15,9 +15,9 @@ message ShahrazadGameSettings {
 message ShahrazadGame {
     uint64 zone_count = 1;
     uint64 card_count = 2;
-    map<string, ShahrazadCard> cards = 3;
-    map<string, ShahrazadZone> zones = 4;
-    map<string, ShahrazadPlaymat> playmats = 5;
+    map<string, card.ShahrazadCard> cards = 3;
+    map<string, zone.ShahrazadZone> zones = 4;
+    map<string, playmat.ShahrazadPlaymat> playmats = 5;
     repeated string players = 6;
     ShahrazadGameSettings settings = 7;
 }
