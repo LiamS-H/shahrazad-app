@@ -1,0 +1,6 @@
+syntax = "proto3";
+package shah_proto;
+
+message ShahrazadZone {
+    repeated string cards = 1;
+}
