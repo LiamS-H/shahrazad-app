@@ -120,7 +120,7 @@ pub fn export_all() {
             TypeScript(
                 "./bindings/api.ts"
                 prefix: "\
-                import {ShahrazadGame,ShahrazadGameSettings} from './game';
+                import {ShahrazadGameSettings} from './game';
                 import {ShahrazadPlayer} from './playmat';
                 "
                 tab_size: 4,

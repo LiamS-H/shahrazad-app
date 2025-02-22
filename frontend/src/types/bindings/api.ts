@@ -1,4 +1,4 @@
-import { ShahrazadGame, ShahrazadGameSettings } from './game';
+import { ShahrazadGameSettings } from './game';
 import { ShahrazadPlayer } from './playmat';
 export type CreateGameQuery = { player?: ShahrazadPlayer;
     settings: ShahrazadGameSettings };
