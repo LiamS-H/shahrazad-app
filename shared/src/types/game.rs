@@ -1,4 +1,4 @@
-use crate::types::ws::CompactString;
+// use crate::types::ws::ProtoSerialize;
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
@@ -62,8 +62,8 @@ impl std::hash::Hash for ShahrazadPlaymat {
     }
 }
 
-use crate::branded_string;
 use crate::types::action::ShahrazadAction;
+use crate::{branded_string, proto};
 
 #[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Hash)]
 pub struct ShahrazadGameSettings {
@@ -71,23 +71,6 @@ pub struct ShahrazadGameSettings {
     pub free_mulligans: String,
     pub commander: bool,
     pub scry_rule: bool,
-}
-
-impl CompactString for ShahrazadGame {
-    fn to_compact(&self) -> String {
-        let json = serde_json::to_string(self).unwrap();
-        json
-    }
-
-    fn from_compact(s: &str) -> Result<Self, &'static str>
-    where
-        Self: Sized,
-    {
-        let Ok(game) = serde_json::from_str::<ShahrazadGame>(s) else {
-            return Err("Invalid Game");
-        };
-        Ok(game.to_owned())
-    }
 }
 
 impl ShahrazadGame {
@@ -215,8 +198,8 @@ impl ShahrazadGame {
                     new_card.state.apply(&state);
                     if let Some(transform) = &transform {
                         if let (Some(x), Some(y)) = (old_card.state.x, old_card.state.y) {
-                            let new_x = max(min(x as i16 + transform.x, 254), 0) as u8;
-                            let new_y = max(min(y as i16 + transform.y, 254), 0) as u8;
+                            let new_x = max(min(x as i16 + transform.x, 255 - 1), 0) as u32;
+                            let new_y = max(min(y as i16 + transform.y, 255 - 1), 0) as u32;
                             new_card.state.apply(&ShahrazadCardState {
                                 x: Some(new_x),
                                 y: Some(new_y),
@@ -350,7 +333,7 @@ impl ShahrazadGame {
                 token,
             } => {
                 let mut card_ids = Vec::new();
-                let token = token.unwrap_or(false);
+                let token = token;
                 for card in cards {
                     let card_name = ShahrazadCardName::new(card);
                     game.card_count += 1;
@@ -601,6 +584,125 @@ impl ShahrazadGame {
                 }
                 return Some(game);
             }
+        }
+    }
+}
+
+impl TryFrom<proto::game::ShahrazadGame> for ShahrazadGame {
+    type Error = &'static str;
+
+    fn try_from(value: proto::game::ShahrazadGame) -> Result<Self, Self::Error> {
+        Ok(ShahrazadGame {
+            zone_count: value.zone_count,
+            card_count: value.card_count,
+            cards: value
+                .cards
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone().into()))
+                .collect(),
+            zones: value
+                .zones
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone().into()))
+                .collect(),
+            playmats: value
+                .playmats
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone().try_into().unwrap()))
+                .collect(),
+            players: value.players.iter().map(|p| p.clone().into()).collect(),
+            settings: value.settings.unwrap().into(),
+        })
+    }
+}
+
+impl From<ShahrazadGame> for proto::game::ShahrazadGame {
+    fn from(value: ShahrazadGame) -> Self {
+        proto::game::ShahrazadGame {
+            zone_count: value.zone_count,
+            card_count: value.card_count,
+            cards: value
+                .cards
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone().into()))
+                .collect(),
+            zones: value
+                .zones
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone().into()))
+                .collect(),
+            playmats: value
+                .playmats
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone().try_into().unwrap()))
+                .collect(),
+            players: value.players.iter().map(|p| p.clone().into()).collect(),
+            settings: Some(value.settings.into()),
+        }
+    }
+}
+
+impl From<ShahrazadGameSettings> for proto::game::ShahrazadGameSettings {
+    fn from(value: ShahrazadGameSettings) -> Self {
+        proto::game::ShahrazadGameSettings {
+            commander: value.commander,
+            free_mulligans: value.free_mulligans,
+            scry_rule: value.scry_rule,
+            starting_life: value.starting_life,
+        }
+    }
+}
+
+impl From<proto::game::ShahrazadGameSettings> for ShahrazadGameSettings {
+    fn from(value: proto::game::ShahrazadGameSettings) -> Self {
+        ShahrazadGameSettings {
+            commander: value.commander,
+            free_mulligans: value.free_mulligans,
+            scry_rule: value.scry_rule,
+            starting_life: value.starting_life,
+        }
+    }
+}
+
+impl TryFrom<proto::playmat::ShahrazadPlaymat> for ShahrazadPlaymat {
+    type Error = &'static str;
+
+    fn try_from(value: proto::playmat::ShahrazadPlaymat) -> Result<Self, Self::Error> {
+        Ok(ShahrazadPlaymat {
+            library: value.library.into(),
+            hand: value.hand.into(),
+            graveyard: value.graveyard.into(),
+            battlefield: value.battlefield.into(),
+            exile: value.exile.into(),
+            command: value.command.into(),
+            life: value.life.into(),
+            mulligans: value.mulligans.try_into().unwrap(),
+            command_damage: value
+                .command_damage
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone()))
+                .collect(),
+            player: value.player.unwrap().into(),
+        })
+    }
+}
+impl From<ShahrazadPlaymat> for proto::playmat::ShahrazadPlaymat {
+    fn from(value: ShahrazadPlaymat) -> Self {
+        proto::playmat::ShahrazadPlaymat {
+            library: value.library.into(),
+            hand: value.hand.into(),
+            graveyard: value.graveyard.into(),
+            battlefield: value.battlefield.into(),
+            exile: value.exile.into(),
+            command: value.command.into(),
+            life: value.life,
+            mulligans: value.mulligans.into(),
+            command_damage: value
+                .command_damage
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone()))
+                .collect(),
+            player: Some(value.player.into()),
         }
     }
 }

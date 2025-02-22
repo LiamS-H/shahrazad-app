@@ -16,7 +16,7 @@ use shared::types::{
     api::{
         CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
     },
-    ws::{ClientAction, CompactString},
+    ws::{ClientAction, ProtoSerialize},
 };
 use std::sync::Arc;
 use std::{env, net::SocketAddr};
@@ -150,8 +150,8 @@ async fn handle_socket(
     //     }
     // }
     if let Ok(initial_update) = (*state).get_game_state(game_id, player_id).await {
-        let encoded = initial_update.to_compact();
-        let _ = socket_sender.send(Message::Text(encoded)).await;
+        let encoded = initial_update.encode();
+        let _ = socket_sender.send(Message::Binary(encoded)).await;
     }
     // Handle incoming server updates
     let send_task = tokio::spawn({
@@ -180,8 +180,8 @@ async fn handle_socket(
                         //         break;
                         //     }
                         // }
-                        let encoded = update.to_compact();
-                        if socket_sender.send(Message::Text(encoded)).await.is_err() {
+                        let encoded = update.encode();
+                        if socket_sender.send(Message::Binary(encoded)).await.is_err() {
                             break;
                         }
                         // Check for game termination
@@ -207,12 +207,13 @@ async fn handle_socket(
         async move {
             while let Some(message) = receiver.next().await {
                 match message {
-                    Ok(Message::Text(text)) => {
+                    Ok(Message::Binary(buf)) => {
                         // let client_action = match serde_json::from_str::<ClientAction>(&text) {
                         //     Ok(action) => action,
                         //     Err(_) => continue,
                         // };
-                        let Ok(client_action) = ClientAction::from_compact(&text) else {
+                        let Ok(client_action) = ClientAction::decode(buf.try_into().unwrap())
+                        else {
                             continue;
                         };
                         if (*state)

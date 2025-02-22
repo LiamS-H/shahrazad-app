@@ -22,12 +22,14 @@ export async function importFromUrl(
             cards: deck,
             zone: deckId,
             player_id: playerId,
+            token: false,
         });
         importActions.push({
             type: ShahrazadActionCase.ZoneImport,
             cards: sideboard,
             zone: commandId,
             player_id: playerId,
+            token: false,
         });
         return importActions;
     }

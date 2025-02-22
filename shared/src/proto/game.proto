@@ -1,0 +1,23 @@
+syntax = "proto3";
+package game;
+
+import "src/proto/card.proto";
+import "src/proto/playmat.proto";
+import "src/proto/zone.proto";
+
+message ShahrazadGameSettings {
+    int32 starting_life = 1;
+    string free_mulligans = 2;
+    bool commander = 3;
+    bool scry_rule = 4;
+}
+
+message ShahrazadGame {
+    uint64 zone_count = 1;
+    uint64 card_count = 2;
+    map<string, card.ShahrazadCard> cards = 3;
+    map<string, zone.ShahrazadZone> zones = 4;
+    map<string, playmat.ShahrazadPlaymat> playmats = 5;
+    repeated string players = 6;
+    ShahrazadGameSettings settings = 7;
+}

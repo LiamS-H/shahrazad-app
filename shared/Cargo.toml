@@ -2,7 +2,7 @@
 name = "shared"
 version = "0.1.0"
 edition = "2021"
-
+build = "build.rs"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -11,6 +11,10 @@ uuid = { version = "1.12.1", features = ["v4", "serde"] }
 seahash = "4.1.0"
 rand = "0.8.0"
 rand_chacha = "0.3.0"
+prost = "0.13.5"
 
 [dev-dependencies]
 pretty_assertions = "1"
+
+[build-dependencies]
+prost-build = "0.13.5"

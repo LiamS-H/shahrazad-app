@@ -1,7 +1,8 @@
-use crate::types::ws::CompactString;
+// use crate::types::ws::ProtoSerialize;
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
+use crate::proto;
 use crate::{branded_string, types::zone::ShahrazadZoneId};
 
 use super::game::ShahrazadPlaymatId;
@@ -11,18 +12,7 @@ branded_string!(ShahrazadCardName);
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, Default, PartialEq, Hash)]
 pub struct ShahrazadCounter {
-    pub amount: i16,
-}
-impl CompactString for ShahrazadCounter {
-    fn to_compact(&self) -> String {
-        self.amount.to_string()
-    }
-
-    fn from_compact(s: &str) -> Result<Self, &'static str> {
-        Ok(ShahrazadCounter {
-            amount: s.parse().map_err(|_| "Invalid counter amount")?,
-        })
-    }
+    pub amount: i32,
 }
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
@@ -32,8 +22,8 @@ pub struct ShahrazadCardState {
     pub tapped: Option<bool>,
     pub face_down: Option<bool>,
     pub revealed: Option<Vec<ShahrazadPlaymatId>>,
-    pub x: Option<u8>,
-    pub y: Option<u8>,
+    pub x: Option<u32>,
+    pub y: Option<u32>,
     pub counters: Option<Vec<ShahrazadCounter>>,
 }
 
@@ -69,6 +59,7 @@ impl std::hash::Hash for ShahrazadCardState {
         }
     }
 }
+
 impl ShahrazadCardState {
     pub fn apply(&mut self, other: &ShahrazadCardState) {
         if let Some(inverted) = other.inverted {
@@ -108,96 +99,6 @@ impl ShahrazadCardState {
     }
 }
 
-impl CompactString for ShahrazadCardState {
-    fn to_compact(&self) -> String {
-        let mut parts = Vec::new();
-        if let Some(inv) = self.inverted {
-            parts.push(format!("i{}", if inv { "t" } else { "f" }));
-        }
-        if let Some(flip) = self.flipped {
-            parts.push(format!("f{}", if flip { "t" } else { "f" }));
-        }
-        if let Some(tap) = self.tapped {
-            parts.push(format!("t{}", if tap { "t" } else { "f" }));
-        }
-        if let Some(fd) = self.face_down {
-            parts.push(format!("d{}", if fd { "t" } else { "f" }));
-        }
-        if let Some(rev) = &self.revealed {
-            parts.push(format!(
-                "r{}",
-                rev.iter()
-                    .map(|id| id.to_compact())
-                    .collect::<Vec<_>>()
-                    .join(",")
-            ));
-        }
-        if let Some(x) = self.x {
-            parts.push(format!("x{}", x));
-        }
-        if let Some(y) = self.y {
-            parts.push(format!("y{}", y));
-        }
-        if let Some(counters) = &self.counters {
-            parts.push(format!(
-                "c{}",
-                counters
-                    .iter()
-                    .map(|c| c.to_compact())
-                    .collect::<Vec<_>>()
-                    .join(",")
-            ));
-        }
-        parts.join(";")
-    }
-
-    fn from_compact(s: &str) -> Result<Self, &'static str> {
-        let mut state = ShahrazadCardState {
-            inverted: None,
-            flipped: None,
-            tapped: None,
-            face_down: None,
-            revealed: None,
-            x: None,
-            y: None,
-            counters: None,
-        };
-
-        for part in s.split(';') {
-            if part.is_empty() {
-                continue;
-            }
-            let (code, value) = part.split_at(1);
-            match code {
-                "i" => state.inverted = Some(value == "t"),
-                "f" => state.flipped = Some(value == "t"),
-                "t" => state.tapped = Some(value == "t"),
-                "d" => state.face_down = Some(value == "t"),
-                "r" => {
-                    state.revealed = Some(
-                        value
-                            .split(',')
-                            .map(|id| CompactString::from_compact(id).unwrap())
-                            .collect(),
-                    )
-                }
-                "x" => state.x = Some(value.parse().map_err(|_| "Invalid x coordinate")?),
-                "y" => state.y = Some(value.parse().map_err(|_| "Invalid y coordinate")?),
-                "c" => {
-                    state.counters = Some(
-                        value
-                            .split(',')
-                            .map(|c| CompactString::from_compact(c).unwrap())
-                            .collect(),
-                    )
-                }
-                _ => return Err("Unknown state code"),
-            }
-        }
-        Ok(state)
-    }
-}
-
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadCard {
     pub state: ShahrazadCardState,
@@ -223,34 +124,99 @@ impl ShahrazadCard {
     }
 }
 
-impl CompactString for ShahrazadCard {
-    fn to_compact(&self) -> String {
-        format!(
-            "{}|{}|{}|{}|{}",
-            self.state.to_compact(),
-            self.card_name.to_compact(),
-            self.location.to_compact(),
-            self.owner.to_compact(),
-            if self.token { "t" } else { "f" }
-        )
-    }
-
-    fn from_compact(s: &str) -> Result<Self, &'static str> {
-        let parts: Vec<&str> = s.split('|').collect();
-        if parts.len() != 5 {
-            return Err("Invalid card format");
-        }
-
-        Ok(ShahrazadCard {
-            state: CompactString::from_compact(parts[0])?,
-            card_name: CompactString::from_compact(parts[1])?,
-            location: CompactString::from_compact(parts[2])?,
-            owner: CompactString::from_compact(parts[3])?,
-            token: match parts[4] {
-                "t" => true,
-                "f" => false,
-                _ => return Err("Invalid token value"),
+impl From<proto::card::ShahrazadCard> for ShahrazadCard {
+    fn from(value: proto::card::ShahrazadCard) -> Self {
+        ShahrazadCard {
+            state: if let Some(s) = value.state {
+                s.into()
+            } else {
+                panic!()
             },
-        })
+            card_name: value.card_name.into(),
+            location: value.location.into(),
+            owner: value.owner.into(),
+            token: value.token,
+        }
+    }
+}
+impl From<ShahrazadCard> for proto::card::ShahrazadCard {
+    fn from(value: ShahrazadCard) -> Self {
+        proto::card::ShahrazadCard {
+            card_name: value.card_name.into(),
+            location: value.location.into(),
+            token: value.token,
+            state: Some(value.state.into()),
+            owner: value.owner.into(),
+        }
+    }
+}
+
+impl From<proto::card::ShahrazadCounter> for ShahrazadCounter {
+    fn from(value: proto::card::ShahrazadCounter) -> Self {
+        ShahrazadCounter {
+            amount: value.count,
+        }
+    }
+}
+impl From<ShahrazadCounter> for proto::card::ShahrazadCounter {
+    fn from(value: ShahrazadCounter) -> Self {
+        proto::card::ShahrazadCounter {
+            counter_type: "".into(),
+            count: value.amount,
+        }
+    }
+}
+
+impl From<proto::card::ShahrazadCardState> for ShahrazadCardState {
+    fn from(value: proto::card::ShahrazadCardState) -> Self {
+        let revealed = if value.revealed.len() == 0 {
+            None
+        } else {
+            Some(value.revealed.iter().map(|s| (s.clone()).into()).collect())
+        };
+
+        ShahrazadCardState {
+            counters: Some(value.counters.iter().map(|c| (c.clone()).into()).collect()),
+            inverted: value.inverted,
+            flipped: value.flipped,
+            tapped: value.tapped,
+            face_down: value.face_down,
+            revealed,
+            x: if value.x >= 255 { None } else { Some(value.x) },
+            y: if value.y >= 255 { None } else { Some(value.y) },
+        }
+    }
+}
+
+impl From<ShahrazadCardState> for proto::card::ShahrazadCardState {
+    fn from(value: ShahrazadCardState) -> Self {
+        let mut prot = proto::card::ShahrazadCardState::default();
+        let counters = if let Some(c) = value.counters {
+            c.iter()
+                .map(|c| proto::card::ShahrazadCounter::from(c.clone()))
+                .collect::<Vec<proto::card::ShahrazadCounter>>()
+        } else {
+            [].into()
+        };
+
+        prot.inverted = value.inverted;
+        prot.flipped = value.flipped;
+        prot.tapped = value.tapped;
+        prot.face_down = value.face_down;
+        let revealed = if let Some(c) = value.revealed {
+            c.iter().map(|p| p.clone().into()).collect()
+        } else {
+            [].into()
+        };
+        proto::card::ShahrazadCardState {
+            counters,
+            flipped: value.flipped,
+            inverted: value.inverted,
+            tapped: value.tapped,
+            face_down: value.face_down,
+            revealed,
+            x: value.x.unwrap_or(255),
+            y: value.y.unwrap_or(255),
+        }
     }
 }

@@ -4,7 +4,7 @@ use uuid::Uuid;
 use crate::types::action::ShahrazadAction;
 use crate::{
     tests::utils::create_sample_game,
-    types::ws::{ClientAction, CompactString, ServerUpdate},
+    types::ws::{ClientAction, ProtoSerialize, ServerUpdate},
 };
 
 use super::utils::create_sample_card_state;
@@ -27,8 +27,8 @@ fn test_client_action_compact_with_action() {
         hash: Some(hash.to_string()),
     };
 
-    let compact = client_action.to_compact();
-    let parsed = ClientAction::from_compact(&compact).unwrap();
+    let compact = client_action.encode();
+    let parsed = ClientAction::decode(compact).unwrap();
 
     assert_eq!(parsed.action, Some(action));
     assert_eq!(parsed.hash, Some(hash.to_string()));
@@ -41,8 +41,8 @@ fn test_client_action_compact_empty() {
         hash: None,
     };
 
-    let compact = client_action.to_compact();
-    let parsed = ClientAction::from_compact(&compact).unwrap();
+    let compact = client_action.encode();
+    let parsed = ClientAction::decode(compact).unwrap();
 
     assert!(parsed.action.is_none());
     assert!(parsed.hash.is_none());
@@ -62,8 +62,8 @@ fn test_server_update_compact_full() {
         hash: Some(hash.clone()),
     };
 
-    let compact = server_update.to_compact();
-    let parsed = ServerUpdate::from_compact(&compact).unwrap();
+    let compact = server_update.encode();
+    let parsed = ServerUpdate::decode(compact).unwrap();
 
     assert_eq!(parsed.action, Some(action));
     assert_eq!(parsed.game, Some(game));
@@ -82,18 +82,11 @@ fn test_server_update_compact_partial() {
         hash: None,
     };
 
-    let compact = server_update.to_compact();
-    let parsed = ServerUpdate::from_compact(&compact).unwrap();
+    let compact = server_update.encode();
+    let parsed = ServerUpdate::decode(compact).unwrap();
 
     assert!(parsed.action.is_none());
     assert!(parsed.game.is_none());
     assert_eq!(parsed.player_id, player_id);
     assert!(parsed.hash.is_none());
-}
-
-#[test]
-fn test_invalid_compact_strings() {
-    assert!(ClientAction::from_compact("invalid_format").is_err());
-
-    assert!(ServerUpdate::from_compact("invalid_format").is_err());
 }

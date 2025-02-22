@@ -1,0 +1,17 @@
+syntax = "proto3";
+package ws;
+
+import "src/proto/action.proto";
+import "src/proto/game.proto";
+
+message ClientAction {
+    action.ShahrazadAction action = 1;
+    string hash = 2;
+}
+
+message ServerUpdate {
+    action.ShahrazadAction action = 1;
+    game.ShahrazadGame game = 2;
+    string player_id = 3;
+    string hash = 4;
+}

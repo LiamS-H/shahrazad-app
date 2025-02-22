@@ -73,7 +73,7 @@ export class GameClient {
         this.attemptReconnect();
     };
 
-    private handleMessage = (event: MessageEvent) => {
+    private handleMessage = async (event: MessageEvent) => {
         if (!this.gameState) {
             console.error(
                 "[ws] received message before game state initialized"
@@ -81,8 +81,12 @@ export class GameClient {
             return;
         }
 
+        const blob: Blob = event.data;
+
         try {
-            const update: ServerUpdate = decode_server_update(event.data);
+            const update: ServerUpdate = decode_server_update(
+                await blob.arrayBuffer()
+            );
             if (!update) {
                 console.log("[client] couldn't parse update:", event.data);
                 return;

@@ -1,0 +1,28 @@
+syntax = "proto3";
+package card;
+
+import "google/protobuf/wrappers.proto";
+
+message ShahrazadCard {
+    string card_name = 1;
+    string location = 2;
+    bool token = 3;
+    ShahrazadCardState state = 4;
+    string owner = 5;
+}
+
+message ShahrazadCardState {
+    repeated ShahrazadCounter counters = 1;
+    google.protobuf.BoolValue flipped = 2;
+    google.protobuf.BoolValue inverted = 3;
+    google.protobuf.BoolValue tapped = 4;
+    google.protobuf.BoolValue face_down = 5;
+    repeated string revealed = 6;
+    uint32 x = 7;
+    uint32 y = 8;
+}
+
+message ShahrazadCounter {
+    string counter_type = 1;
+    int32 count = 2;
+}

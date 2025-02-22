@@ -3,9 +3,10 @@ use serde_wasm_bindgen::Serializer;
 use shared::types::{
     action::{self},
     game::{self, ShahrazadGame},
-    ws::{ClientAction, CompactString, ServerUpdate},
+    ws::{ClientAction, ProtoSerialize, ServerUpdate},
 };
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::js_sys;
 
 // Configure serialization options
 fn to_js_value<T>(value: &T) -> Result<JsValue, JsValue>
@@ -57,23 +58,23 @@ impl GameState {
 }
 
 #[wasm_bindgen]
-pub fn encode_client_action(action: JsValue) -> Result<JsValue, JsValue> {
+pub fn encode_client_action(action: JsValue) -> Result<js_sys::Uint8Array, JsValue> {
     let action: ClientAction = serde_wasm_bindgen::from_value(action)?;
     // let Ok(code) = serde_json::to_string(&action) else {
     //     return Ok(JsValue::NULL);
     // };
-    let code = action.to_compact();
+    let code = action.encode();
 
-    to_js_value(&code)
+    // to_js_value(&code)
+    Ok(js_sys::Uint8Array::from(&code[..]))
 }
 
 #[wasm_bindgen]
 pub fn decode_server_update(code: JsValue) -> Result<JsValue, JsValue> {
-    let code: String = serde_wasm_bindgen::from_value(code)?;
-    // let Ok(action) = serde_json::from_str::<ShahrazadAction>(&code) else {
-    //     return Ok(JsValue::NULL);
-    // };
-    let Ok(update) = ServerUpdate::from_compact(&code) else {
+    let array = js_sys::Uint8Array::new(&code);
+    let code: Vec<u8> = array.to_vec();
+
+    let Ok(update) = ServerUpdate::decode(code) else {
         return Ok(JsValue::NULL);
     };
 

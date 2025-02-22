@@ -74,6 +74,7 @@ export function importFromStr(
             cards: sideboard,
             zone: sideboardId,
             player_id: playerId,
+            token: false,
         });
     }
     importActions.push({
@@ -81,6 +82,7 @@ export function importFromStr(
         cards: deck,
         zone: deckId,
         player_id: playerId,
+        token: false,
     });
 
     return importActions;
