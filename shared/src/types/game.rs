@@ -340,7 +340,7 @@ impl ShahrazadGame {
                     let card_name = ShahrazadCardName::new(card);
                     game.card_count += 1;
                     let card_id: ShahrazadCardId =
-                        ShahrazadCardId::new(format!("CARD_{}", game.card_count));
+                        ShahrazadCardId::new(format!("C{}", game.card_count));
                     card_ids.push(card_id.clone());
                     game.cards.insert(
                         card_id,
@@ -385,10 +385,8 @@ impl ShahrazadGame {
                 let mut zone_ids = Vec::new();
 
                 for (index, _) in zone_types.iter().enumerate() {
-                    let zone_id = ShahrazadZoneId::new(format!(
-                        "ZONE_{}",
-                        game.zone_count + index as u64 + 1
-                    ));
+                    let zone_id =
+                        ShahrazadZoneId::new(format!("Z{}", game.zone_count + index as u64 + 1));
                     game.zones.insert(
                         zone_id.clone(),
                         ShahrazadZone {

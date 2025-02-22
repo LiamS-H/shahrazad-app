@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 import { IDraggableData, IDroppableData } from "@/types/interfaces/dnd";
 import {
     DndContext,
@@ -21,6 +21,8 @@ import { DraggingContextProvider } from "./dragging";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
+    const shah_ref = useRef(ShahContext);
+    shah_ref.current = ShahContext;
     MouseSensor.ShahContext = ShahContext;
     const { applyAction } = ShahContext;
     const SelectionContext = useSelection();
@@ -61,8 +63,13 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 ? [target_id, ...selectedCards.filter((id) => id !== target_id)]
                 : [target_id];
 
+            const shah_card = shah_ref.current.getCard(target_id);
+
             if (over_data && "zone" in over_data) {
                 const index = over_data.index ?? -1;
+                const {
+                    state: { face_down, tapped, flipped, inverted, revealed },
+                } = shah_card;
 
                 if (over_data.zone != active_data.zone) {
                     console.log("[dnd] dropping sortable from outside");
@@ -74,11 +81,11 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                         state: {
                             x: 255,
                             y: 255,
-                            face_down: false,
-                            tapped: false,
-                            flipped: false,
-                            inverted: false,
-                            counters: [],
+                            face_down: face_down === true ? false : undefined,
+                            tapped: tapped === true ? false : undefined,
+                            flipped: flipped === true ? false : undefined,
+                            inverted: inverted === true ? false : undefined,
+                            revealed: revealed?.length !== 0 ? [] : undefined,
                         },
                     });
                     selectCards(null);
@@ -95,8 +102,6 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
 
                 return;
             }
-
-            // const shah_card = shah_ref.current.getCard(target_id);
 
             const start_zone_id = active_data.zone;
             const end_zone_id = event.over.id.toString();
@@ -148,6 +153,16 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 console.log(
                     `[dnd] dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
                 );
+                const {
+                    state: {
+                        face_down,
+                        tapped,
+                        flipped,
+                        inverted,
+                        revealed,
+                        counters,
+                    },
+                } = shah_card;
 
                 applyAction({
                     type: ShahrazadActionCase.CardZone,
@@ -156,12 +171,17 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     state: {
                         x,
                         y,
-                        face_down: false,
-                        tapped: false,
-                        flipped: x === 255 ? false : undefined,
-                        inverted: x === 255 ? false : undefined,
-                        revealed: [],
-                        counters: over_data?.sortable ? [] : undefined,
+                        face_down: face_down === true ? false : undefined,
+                        tapped: tapped === true ? false : undefined,
+                        flipped:
+                            x === 255 && flipped === true ? false : undefined,
+                        inverted:
+                            x === 255 && inverted === true ? false : undefined,
+                        revealed: revealed?.length !== 0 ? [] : undefined,
+                        counters:
+                            over_data?.sortable && counters?.length !== 0
+                                ? []
+                                : undefined,
                     },
                     index: -1,
                 });
