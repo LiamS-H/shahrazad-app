@@ -196,18 +196,18 @@ impl GameStateManager {
             player,
         };
 
+        ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game).unwrap();
+
         game_state.hash = game_state.game.hash().to_string();
 
-        if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
-            let update = ServerUpdate {
-                action: Some(add_player),
-                game: None,
-                player_id,
-                hash: Some(game_state.hash.clone()),
-            };
+        let update = ServerUpdate {
+            action: Some(add_player),
+            game: None,
+            player_id,
+            hash: Some(game_state.hash.clone()),
+        };
 
-            let _ = game_state.tx.send(update);
-        }
+        let _ = game_state.tx.send(update);
 
         Ok(GameInfo {
             name: player_name.clone(),
