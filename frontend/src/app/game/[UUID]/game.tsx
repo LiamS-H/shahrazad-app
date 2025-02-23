@@ -112,6 +112,14 @@ export default function GamePage(props: { game_id: string }) {
         };
     }, [initGame, props.game_id, preloadCards]);
 
+    const handleAction = useCallback((action: ShahrazadAction) => {
+        try {
+            gameClientRef.current?.queueAction(action);
+        } catch (error) {
+            console.error("Failed to handle action:", error);
+        }
+    }, []);
+
     if (error !== null) {
         gameClientRef.current?.cleanup();
         gameClientRef.current = null;
@@ -121,14 +129,6 @@ export default function GamePage(props: { game_id: string }) {
     if (loading || !game || !playerUUID || !playerName) {
         return <h1>loading game...</h1>;
     }
-
-    const handleAction = (action: ShahrazadAction) => {
-        try {
-            gameClientRef.current?.queueAction(action);
-        } catch (error) {
-            console.error("Failed to handle action:", error);
-        }
-    };
 
     return (
         <>
