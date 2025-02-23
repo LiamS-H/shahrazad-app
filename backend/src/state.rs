@@ -30,6 +30,7 @@ pub struct GameState {
     last_activity: Instant,
     code: u32,
     hash: u64,
+    deleted: bool,
 }
 
 #[derive(Clone)]
@@ -62,27 +63,28 @@ impl GameStateManager {
                         let game_id = *entry.key();
                         let elapsed = entry.value().last_activity.elapsed();
                         if elapsed >= GAME_TIMEOUT {
-                            Some((game_id, entry.value().players.clone()))
+                            Some(game_id)
                         } else {
                             None
                         }
                     })
                     .collect();
 
-                for (game_id, _) in &games_to_remove {
-                    if let Some(game_ref) = games.get(&game_id) {
+                for game_id in &games_to_remove {
+                    if let Some(mut game_ref) = games.get_mut(&game_id) {
                         let disconnect_update = ServerUpdate {
                             action: Some(ShahrazadAction::GameTerminated),
                             game: None,
                             player_id: *game_id,
                             hash: None,
                         };
+                        game_ref.deleted = true;
                         let _ = game_ref.tx.send(disconnect_update);
                     }
                 }
                 tokio::time::sleep(GAME_CLEANUP_INTERVAL).await;
 
-                for (game_id, _) in games_to_remove {
+                for game_id in games_to_remove {
                     games.remove(&game_id);
                 }
             }
@@ -122,6 +124,7 @@ impl GameStateManager {
             last_activity: Instant::now(),
             code: code.clone(),
             hash: 0,
+            deleted: false,
         };
 
         self.codes.insert(code, game_id);
@@ -254,6 +257,9 @@ impl GameStateManager {
 
     pub async fn validate_connection(&self, game_id: Uuid, player_id: Uuid) -> bool {
         if let Some(game_ref) = self.games.get(&game_id) {
+            if game_ref.deleted {
+                return false;
+            };
             return game_ref.players.contains_key(&player_id);
         } else {
             return false;
