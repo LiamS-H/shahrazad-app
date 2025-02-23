@@ -54,12 +54,10 @@ export async function importMoxfieldUrl(url: string): Promise<{
             }
         }
         for (const card of Object.values(data.mainboard)) {
-            for (let i = 0; i < card.quantity; i++) {
-                deck.push({
-                    str: card.card.scryfall_id,
-                    amount: card.quantity,
-                });
-            }
+            deck.push({
+                str: card.card.scryfall_id,
+                amount: card.quantity,
+            });
         }
         return {
             deck,
