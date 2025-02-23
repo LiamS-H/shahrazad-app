@@ -59,12 +59,7 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
         toast("Deck imported.");
     }
 
-    const defaultOpen =
-        getZone(playmat.library).cards.length === 0 &&
-        getZone(playmat.graveyard).cards.length === 0 &&
-        getZone(playmat.exile).cards.length === 0 &&
-        getZone(playmat.battlefield).cards.length === 0;
-    const [open, setOpen] = useState(() => defaultOpen);
+    const [open, setOpen] = useState(true);
 
     return (
         <Dialog
