@@ -12,7 +12,12 @@ WORKDIR /app
 RUN rustup install nightly-2025-01-01 && rustup default nightly-2025-01-01
 
 # Install host build dependencies.
-RUN apk add --no-cache clang lld musl-dev git
+RUN apk add --no-cache \
+    clang \
+    lld \
+    musl-dev \
+    git \
+    protoc
 
 # Copy the root Cargo files to handle shared dependencies.
 COPY Cargo.toml Cargo.lock ./
