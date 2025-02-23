@@ -21,7 +21,7 @@ import {
 } from "@/components/(ui)/dialog";
 
 export function ImportDeckButton() {
-    const { applyAction, getPlaymat, active_player } =
+    const { applyAction, getPlaymat, active_player, getZone } =
         useShahrazadGameContext();
     const { player } = usePlayer();
     const playmat = getPlaymat(player);
@@ -60,7 +60,13 @@ export function ImportDeckButton() {
         toast("Deck imported.");
     }
 
-    const [open, setOpen] = useState(false);
+    const defaultOpen =
+        getZone(playmat.library).cards.length === 0 &&
+        getZone(playmat.graveyard).cards.length === 0 &&
+        getZone(playmat.exile).cards.length === 0 &&
+        getZone(playmat.battlefield).cards.length === 0;
+    const [open, setOpen] = useState(() => defaultOpen);
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
