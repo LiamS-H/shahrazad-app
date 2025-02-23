@@ -19,6 +19,7 @@ const ImportContext = createContext<IImportContext | null>(null);
 export function ImportContextProvider({ children }: { children: ReactNode }) {
     const { active_player, getPlaymat, getZone } = useShahrazadGameContext();
     const [active, setActive] = useState<ShahrazadPlaymatId | null>(null);
+    const [canDefaulOpen, setCanDefaultOpen] = useState(true);
 
     useEffect(() => {
         const playmat = getPlaymat(active_player);
@@ -27,8 +28,12 @@ export function ImportContextProvider({ children }: { children: ReactNode }) {
             getZone(playmat.graveyard).cards.length === 0 &&
             getZone(playmat.exile).cards.length === 0 &&
             getZone(playmat.battlefield).cards.length === 0;
-        if (defaultOpen) {
+        if (defaultOpen && canDefaulOpen) {
             setActive(active_player);
+            setCanDefaultOpen(false);
+        }
+        if (!defaultOpen) {
+            setCanDefaultOpen(true);
         }
     }, [active_player, getZone, getPlaymat]);
     const importFor = useCallback((player: ShahrazadPlaymatId | null) => {
