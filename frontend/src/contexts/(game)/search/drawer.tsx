@@ -10,13 +10,26 @@ export default function SearchDrawer() {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        if (active !== null) {
-            setLastActive(active);
-            setOpen(true);
-        }
         if (active === null) {
             setOpen(false);
+            return;
         }
+        setLastActive(active);
+        setOpen(true);
+        const controller = new AbortController();
+        window.addEventListener(
+            "keydown",
+            (e) => {
+                if (e.key == "Escape") {
+                    setOpen(false);
+                    search(null);
+                    controller.abort();
+                }
+            },
+            { signal: controller.signal }
+        );
+
+        return () => controller.abort();
     }, [active]);
     return (
         <Drawer2
