@@ -10,8 +10,6 @@ import { ShahrazadPlayer } from "@/types/bindings/playmat";
 import { User, UserPen } from "lucide-react";
 import { useEffect, useState } from "react";
 
-// const icons = [];
-
 export default function PlayerIcon({
     onChange,
 }: {
@@ -53,7 +51,7 @@ export default function PlayerIcon({
         >
             <PopoverTrigger asChild>
                 {player === null || !player.display_name ? (
-                    <Button variant="outline" size="icon">
+                    <Button disabled={!onChange} variant="outline" size="icon">
                         <UserPen />
                     </Button>
                 ) : (
