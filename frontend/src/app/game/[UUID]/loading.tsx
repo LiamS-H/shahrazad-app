@@ -1,4 +1,3 @@
-import { Skeleton } from "@/components/(ui)/skeleton";
 import { Loader2 } from "lucide-react";
 
 export default function Loading() {
@@ -8,6 +7,7 @@ export default function Loading() {
         </div>
     );
 }
+// import { Skeleton } from "@/components/(ui)/skeleton";
 
 // function Card() {
 //     return <Skeleton className="w-[100] h-[140] border-r-[4.75% / 3.5%]" />;
