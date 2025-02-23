@@ -174,7 +174,7 @@ function takeFromExternrefTable0(idx) {
 }
 /**
  * @param {any} action
- * @returns {any}
+ * @returns {Uint8Array}
  */
 export function encode_client_action(action) {
     const ret = wasm.encode_client_action(action);
@@ -227,6 +227,16 @@ export class GameState {
      */
     get_hash() {
         const ret = wasm.gamestate_get_hash(this.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @returns {any}
+     */
+    get_state() {
+        const ret = wasm.gamestate_get_state(this.__wbg_ptr);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -382,6 +392,10 @@ function __wbg_get_imports() {
     };
     imports.wbg.__wbg_new_a12002a7f91c75be = function(arg0) {
         const ret = new Uint8Array(arg0);
+        return ret;
+    };
+    imports.wbg.__wbg_newwithbyteoffsetandlength_d97e637ebe145a9a = function(arg0, arg1, arg2) {
+        const ret = new Uint8Array(arg0, arg1 >>> 0, arg2 >>> 0);
         return ret;
     };
     imports.wbg.__wbg_next_25feadfc0913fea9 = function(arg0) {

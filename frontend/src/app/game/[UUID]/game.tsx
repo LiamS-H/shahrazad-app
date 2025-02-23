@@ -14,6 +14,7 @@ import ShareGameButton from "./ShareGameButton";
 import FullscreenToggle from "./FullscreenToggle";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
 import PlayerIcon from "@/components/(game)/player-icon";
+import Loading from "./loading";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -29,7 +30,7 @@ export default function GamePage(props: { game_id: string }) {
     }, []);
 
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
-    const [playerName, setPlayerName] = useState<string | null>(null);
+    const [activePlayer, setActivePlayer] = useState<string | null>(null);
     const [gameCode, setGameCode] = useState<number | null>(null);
 
     const { preloadCards } = useScrycardsContext();
@@ -63,17 +64,11 @@ export default function GamePage(props: { game_id: string }) {
             return;
         }
 
-        const {
-            player_id,
-            player_name,
-            game: initialState,
-            code,
-            hash,
-        } = joinResult;
+        const { player_id, player_name, game: initialState, code } = joinResult;
         toast(`Joined game ${code}`);
 
         setPlayerUUID(player_id);
-        setPlayerName(player_name);
+        setActivePlayer(player_name);
         setGameCode(code);
         savePlayer(player_id);
         localStorage.setItem("saved-game", code.toString());
@@ -103,10 +98,11 @@ export default function GamePage(props: { game_id: string }) {
         );
 
         gameClientRef.current = gameClient;
-        gameClient.initializeGameState(initialState, hash);
+        const game = gameClient.initializeGameState(initialState);
         gameClient.connect();
+        setGame(game);
 
-        preloadCards(Object.values(initialState.cards).map((c) => c.card_name));
+        preloadCards(Object.values(game.cards).map((c) => c.card_name));
     }, [props.game_id, preloadCards, signalError]);
 
     useEffect(() => {
@@ -117,40 +113,46 @@ export default function GamePage(props: { game_id: string }) {
         };
     }, [initGame, props.game_id, preloadCards]);
 
+    const handleAction = useCallback((action: ShahrazadAction) => {
+        try {
+            gameClientRef.current?.queueAction(action);
+        } catch (error) {
+            console.error("Failed to handle action:", error);
+        }
+    }, []);
+
     if (error !== null) {
         gameClientRef.current?.cleanup();
         gameClientRef.current = null;
         return <GameError message={error} />;
     }
 
-    if (loading || !game || !playerUUID || !playerName) {
-        return <h1>loading game...</h1>;
-    }
-
-    const handleAction = (action: ShahrazadAction) => {
-        try {
-            gameClientRef.current?.queueAction(action);
-        } catch (error) {
-            console.error("Failed to handle action:", error);
-        }
-    };
+    const isLoading = loading || !game || !playerUUID || !activePlayer;
 
     return (
         <>
-            <Game
-                game={game}
-                activePlayer={playerName}
-                applyAction={handleAction}
-            />
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <Game
+                    game={game}
+                    activePlayer={activePlayer}
+                    applyAction={handleAction}
+                />
+            )}
             <div className="absolute top-4 right-4 flex gap-4">
                 <PlayerIcon
-                    onChange={(p) => {
-                        handleAction({
-                            type: ShahrazadActionCase.SetPlayer,
-                            player: p,
-                            player_id: playerName,
-                        });
-                    }}
+                    onChange={
+                        activePlayer
+                            ? (p) => {
+                                  handleAction({
+                                      type: ShahrazadActionCase.SetPlayer,
+                                      player: p,
+                                      player_id: activePlayer,
+                                  });
+                              }
+                            : undefined
+                    }
                 />
                 <ShareGameButton code={gameCode} />
                 <FullscreenToggle />

@@ -1,13 +1,22 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
+use crate::proto::action::shahrazad_action::Action;
+use crate::proto::{self};
+
 use super::{
     card::{ShahrazadCardId, ShahrazadCardState},
     game::ShahrazadPlaymatId,
     player::ShahrazadPlayer,
-    ws::CompactString,
+    // ws::ProtoSerialize,
     zone::ShahrazadZoneId,
 };
+
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct CardImport {
+    pub str: String,
+    pub amount: Option<u32>,
+}
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(tag = "type")]
@@ -40,8 +49,8 @@ pub enum ShahrazadAction {
     },
     ZoneImport {
         zone: ShahrazadZoneId,
-        cards: Vec<String>,
-        token: Option<bool>,
+        cards: Vec<CardImport>,
+        token: bool,
         player_id: ShahrazadPlaymatId,
     },
     DeckImport {
@@ -78,257 +87,239 @@ pub enum ShahrazadAction {
     GameTerminated,
 }
 
-impl CompactString for ShahrazadAction {
-    fn to_compact(&self) -> String {
-        match self {
-            ShahrazadAction::DrawBottom {
-                amount,
-                source,
-                destination,
-                state,
-            } => format!(
-                "DB|{}|{}|{}|{}",
-                amount,
-                source.to_compact(),
-                destination.to_compact(),
-                state.to_compact()
-            ),
-            ShahrazadAction::DrawTop {
-                amount,
-                source,
-                destination,
-                state,
-            } => format!(
-                "DT|{}|{}|{}|{}",
-                amount,
-                source.to_compact(),
-                destination.to_compact(),
-                state.to_compact()
-            ),
-            ShahrazadAction::CardState { cards, state } => format!(
-                "CS|{}|{}",
-                cards
-                    .iter()
-                    .map(|c| c.to_compact())
-                    .collect::<Vec<_>>()
-                    .join(","),
-                state.to_compact()
-            ),
-            ShahrazadAction::CardZone {
-                cards,
-                state,
-                destination,
-                index,
-            } => format!(
-                "CZ|{}|{}|{}|{}",
-                cards
-                    .iter()
-                    .map(|c| c.to_compact())
-                    .collect::<Vec<_>>()
-                    .join(","),
-                state.to_compact(),
-                destination.to_compact(),
-                index
-            ),
-            ShahrazadAction::Shuffle { zone, seed } => format!("SH|{}|{}", zone.to_compact(), seed),
-            ShahrazadAction::ZoneImport {
-                zone,
-                cards,
-                token,
-                player_id,
-            } => format!(
-                "ZI|{}|{}|{}|{}",
-                zone.to_compact(),
-                cards.join(","),
-                token.map_or("n".to_string(), |t| if t { "t" } else { "f" }.to_string()),
-                player_id.to_compact()
-            ),
-            ShahrazadAction::DeckImport {
-                deck_uri,
-                player_id,
-            } => format!("DI|{}|{}", deck_uri, player_id.to_compact()),
-            ShahrazadAction::SetPlayer { player_id, player } => {
-                format!("SP|{}|{}", player_id.to_compact(), player.to_compact())
-            }
-            ShahrazadAction::AddPlayer { player_id, player } => {
-                format!("AP|{}|{}", player_id.to_compact(), player.to_compact())
-            }
-            ShahrazadAction::SetLife { player_id, life } => {
-                format!("SL|{}|{}", player_id.to_compact(), life)
-            }
-            ShahrazadAction::SetCommand {
-                player_id,
-                command_id,
-                damage,
-            } => format!(
-                "SC|{}|{}|{}",
-                player_id.to_compact(),
-                command_id.to_compact(),
-                damage
-            ),
-            ShahrazadAction::ClearBoard { player_id } => format!("CB|{}", player_id.to_compact()),
-            ShahrazadAction::DeleteToken { cards } => format!(
-                "DK|{}",
-                cards
-                    .iter()
-                    .map(|c| c.to_compact())
-                    .collect::<Vec<_>>()
-                    .join(",")
-            ),
-            ShahrazadAction::Mulligan { player_id, seed } => {
-                format!("MG|{}|{}", player_id.to_compact(), seed)
-            }
-            ShahrazadAction::GameTerminated => "GT".to_string(),
-        }
-    }
+impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
+    type Error = &'static str;
+    fn try_from(value: proto::action::ShahrazadAction) -> Result<Self, Self::Error> {
+        let action = value.action.unwrap();
+        Ok(match action {
+            Action::DrawBottom(a) => {
+                let amount = a.amount.try_into().map_err(|_| "[DrawBottom] amount err")?;
+                let state = a
+                    .state
+                    .unwrap()
+                    .try_into()
+                    .unwrap_or(ShahrazadCardState::default());
 
-    fn from_compact(s: &str) -> Result<Self, &'static str> {
-        let parts: Vec<&str> = s.split('|').collect();
-        let Some(action_type) = parts.get(0) else {
-            return Err("Empty string is invalid");
-        };
-        if action_type.len() != 2 {
-            return Err("Invalid Action Type");
-        }
-        return match action_type {
-            &"DB" => Ok(ShahrazadAction::DrawBottom {
-                amount: parts
-                    .get(1)
-                    .ok_or("Missing amount")?
-                    .parse()
-                    .map_err(|_| "Invalid amount")?,
-                source: CompactString::from_compact(parts.get(2).ok_or("Missing source")?)?,
-                destination: CompactString::from_compact(
-                    parts.get(3).ok_or("Missing destination")?,
-                )?,
-                state: CompactString::from_compact(parts.get(4).ok_or("Missing state")?)?,
-            }),
-            &"DT" => Ok(ShahrazadAction::DrawTop {
-                amount: parts
-                    .get(1)
-                    .ok_or("Missing amount")?
-                    .parse()
-                    .map_err(|_| "Invalid amount")?,
-                source: CompactString::from_compact(parts.get(2).ok_or("Missing source")?)?,
-                destination: CompactString::from_compact(
-                    parts.get(3).ok_or("Missing destination")?,
-                )?,
-                state: CompactString::from_compact(parts.get(4).ok_or("Missing state")?)?,
-            }),
-            &"CS" => {
-                let cards_str = parts.get(1).ok_or("Missing cards")?;
-                let cards = if cards_str.is_empty() {
-                    vec![]
-                } else {
-                    cards_str
-                        .split(',')
-                        .map(CompactString::from_compact)
-                        .collect::<Result<Vec<_>, _>>()?
-                };
-                Ok(ShahrazadAction::CardState {
-                    cards,
-                    state: CompactString::from_compact(parts.get(2).ok_or("Missing state")?)?,
-                })
+                ShahrazadAction::DrawBottom {
+                    amount,
+                    source: a.source.into(),
+                    destination: a.destination.into(),
+                    state,
+                }
             }
-            &"CZ" => {
-                let cards_str = parts.get(1).ok_or("Missing cards")?;
-                let cards = if cards_str.is_empty() {
-                    vec![]
-                } else {
-                    cards_str
-                        .split(',')
-                        .map(CompactString::from_compact)
-                        .collect::<Result<Vec<_>, _>>()?
-                };
-                Ok(ShahrazadAction::CardZone {
-                    cards,
-                    state: CompactString::from_compact(parts.get(2).ok_or("Missing state")?)?,
-                    destination: CompactString::from_compact(
-                        parts.get(3).ok_or("Missing destination")?,
-                    )?,
-                    index: parts
-                        .get(4)
-                        .ok_or("Missing index")?
-                        .parse()
-                        .map_err(|_| "Invalid index")?,
-                })
+            Action::DrawTop(a) => {
+                let amount = a.amount.try_into().map_err(|_| "[DrawTop] amount err")?;
+                let state = a
+                    .state
+                    .unwrap()
+                    .try_into()
+                    .unwrap_or(ShahrazadCardState::default());
+                ShahrazadAction::DrawTop {
+                    amount,
+                    source: a.source.into(),
+                    destination: a.destination.into(),
+                    state,
+                }
             }
-            &"SH" => Ok(ShahrazadAction::Shuffle {
-                zone: CompactString::from_compact(parts.get(1).ok_or("Missing zone")?)?,
-                seed: parts.get(2).ok_or("Missing seed")?.to_string(),
-            }),
-            &"ZI" => {
-                let cards_str = parts.get(2).ok_or("Missing cards")?;
-                let cards = if cards_str.is_empty() {
-                    vec![]
-                } else {
-                    cards_str.split(',').map(|s| s.to_string()).collect()
-                };
-                let token = match parts.get(3).ok_or("Missing token flag")? {
-                    &"t" => Some(true),
-                    &"f" => Some(false),
-                    &"n" => None,
-                    _ => return Err("Invalid token flag"),
-                };
-                Ok(ShahrazadAction::ZoneImport {
-                    zone: CompactString::from_compact(parts.get(1).ok_or("Missing zone")?)?,
+            Action::CardState(a) => ShahrazadAction::CardState {
+                cards: a.cards.into_iter().map(Into::into).collect(),
+                state: a
+                    .state
+                    .unwrap()
+                    .try_into()
+                    .map_err(|_| "[CardState] state err")?,
+            },
+            Action::CardZone(a) => ShahrazadAction::CardZone {
+                cards: a.cards.into_iter().map(Into::into).collect(),
+                state: a
+                    .state
+                    .unwrap()
+                    .try_into()
+                    .map_err(|_| "[CardZone] state err")?,
+                destination: a.destination.into(),
+                index: a.index,
+            },
+            Action::Shuffle(a) => ShahrazadAction::Shuffle {
+                zone: a.zone.into(),
+                seed: a.seed,
+            },
+            Action::ZoneImport(a) => ShahrazadAction::ZoneImport {
+                zone: a.zone.into(),
+                cards: a
+                    .cards
+                    .iter()
+                    .map(|c| CardImport {
+                        str: c.str.clone(),
+                        amount: c.amount,
+                    })
+                    .collect(),
+                token: a.token,
+                player_id: a.player_id.into(),
+            },
+            Action::DeckImport(a) => ShahrazadAction::DeckImport {
+                deck_uri: a.deck_uri,
+                player_id: a.player_id.into(),
+            },
+            Action::SetPlayer(a) => ShahrazadAction::SetPlayer {
+                player_id: a.player_id.into(),
+                player: a
+                    .player
+                    .unwrap()
+                    .try_into()
+                    .map_err(|_| "[SetPlayer] player err")?,
+            },
+            Action::AddPlayer(a) => ShahrazadAction::AddPlayer {
+                player_id: a.player_id.into(),
+                player: a
+                    .player
+                    .unwrap()
+                    .try_into()
+                    .map_err(|_| "[AddPlayer] player err")?,
+            },
+            Action::SetLife(a) => ShahrazadAction::SetLife {
+                player_id: a.player_id.into(),
+                life: a.life,
+            },
+            Action::SetCommand(a) => ShahrazadAction::SetCommand {
+                player_id: a.player_id.into(),
+                command_id: a.command_id.into(),
+                damage: a.damage,
+            },
+            Action::ClearBoard(a) => ShahrazadAction::ClearBoard {
+                player_id: a.player_id.into(),
+            },
+            Action::DeleteToken(a) => ShahrazadAction::DeleteToken {
+                cards: a.cards.into_iter().map(Into::into).collect(),
+            },
+            Action::Mulligan(a) => ShahrazadAction::Mulligan {
+                player_id: a.player_id.into(),
+                seed: a.seed,
+            },
+            Action::GameTerminated(_) => ShahrazadAction::GameTerminated,
+        })
+    }
+}
+
+impl From<ShahrazadAction> for proto::action::ShahrazadAction {
+    fn from(value: ShahrazadAction) -> Self {
+        proto::action::ShahrazadAction {
+            action: match value {
+                ShahrazadAction::DrawBottom {
+                    amount,
+                    source,
+                    destination,
+                    state,
+                } => Some(Action::DrawBottom(proto::action::DrawBottom {
+                    amount: amount.try_into().unwrap(),
+                    source: source.into(),
+                    destination: destination.into(),
+                    state: Some(state.into()),
+                })),
+                ShahrazadAction::DrawTop {
+                    amount,
+                    source,
+                    destination,
+                    state,
+                } => Some(Action::DrawTop(proto::action::DrawTop {
+                    amount: amount.try_into().unwrap(),
+                    source: source.into(),
+                    destination: destination.into(),
+                    state: Some(state.into()),
+                })),
+                ShahrazadAction::CardState { cards, state } => {
+                    Some(Action::CardState(proto::action::CardState {
+                        cards: cards.into_iter().map(Into::into).collect(),
+                        state: Some(state.into()),
+                    }))
+                }
+                ShahrazadAction::CardZone {
+                    cards,
+                    state,
+                    destination,
+                    index,
+                } => Some(Action::CardZone(proto::action::CardZone {
+                    cards: cards.into_iter().map(Into::into).collect(),
+                    state: Some(state.into()),
+                    destination: destination.into(),
+                    index,
+                })),
+                ShahrazadAction::Shuffle { zone, seed } => {
+                    Some(Action::Shuffle(proto::action::Shuffle {
+                        zone: zone.into(),
+                        seed,
+                    }))
+                }
+                ShahrazadAction::ZoneImport {
+                    zone,
                     cards,
                     token,
-                    player_id: CompactString::from_compact(
-                        parts.get(4).ok_or("Missing player id")?,
-                    )?,
-                })
-            }
-            &"DI" => Ok(ShahrazadAction::DeckImport {
-                deck_uri: parts.get(1).ok_or("Missing deck URI")?.to_string(),
-                player_id: CompactString::from_compact(parts.get(2).ok_or("Missing player id")?)?,
-            }),
-            &"SP" => Ok(ShahrazadAction::SetPlayer {
-                player_id: CompactString::from_compact(parts.get(1).ok_or("Missing player id")?)?,
-                player: CompactString::from_compact(parts.get(2).ok_or("Missing player")?)?,
-            }),
-            &"AP" => Ok(ShahrazadAction::AddPlayer {
-                player_id: CompactString::from_compact(parts.get(1).ok_or("Missing player id")?)?,
-                player: CompactString::from_compact(parts.get(2).ok_or("Missing player")?)?,
-            }),
-            &"SL" => Ok(ShahrazadAction::SetLife {
-                player_id: CompactString::from_compact(parts.get(1).ok_or("Missing player id")?)?,
-                life: parts
-                    .get(2)
-                    .ok_or("Missing life")?
-                    .parse()
-                    .map_err(|_| "Invalid life value")?,
-            }),
-            &"SC" => Ok(ShahrazadAction::SetCommand {
-                player_id: CompactString::from_compact(parts.get(1).ok_or("Missing player id")?)?,
-                command_id: CompactString::from_compact(parts.get(2).ok_or("Missing command id")?)?,
-                damage: parts
-                    .get(3)
-                    .ok_or("Missing damage")?
-                    .parse()
-                    .map_err(|_| "Invalid damage value")?,
-            }),
-            &"CB" => Ok(ShahrazadAction::ClearBoard {
-                player_id: CompactString::from_compact(parts.get(1).ok_or("Missing player id")?)?,
-            }),
-            &"DK" => {
-                let cards_str = parts.get(1).ok_or("Missing cards")?;
-                let cards = if cards_str.is_empty() {
-                    vec![]
-                } else {
-                    cards_str
-                        .split(',')
-                        .map(CompactString::from_compact)
-                        .collect::<Result<Vec<_>, _>>()?
-                };
-                Ok(ShahrazadAction::DeleteToken { cards })
-            }
-            &"MG" => Ok(ShahrazadAction::Mulligan {
-                player_id: CompactString::from_compact(parts.get(1).ok_or("Missing player id")?)?,
-                seed: parts.get(2).ok_or("Missing seed")?.to_string(),
-            }),
-            &"GT" => Ok(ShahrazadAction::GameTerminated),
-            _ => Err("Unknown action type"),
-        };
+                    player_id,
+                } => Some(Action::ZoneImport(proto::action::ZoneImport {
+                    zone: zone.into(),
+                    cards: cards
+                        .iter()
+                        .map(|c| proto::action::CardImport {
+                            str: c.str.clone(),
+                            amount: c.amount,
+                        })
+                        .collect(),
+                    token: token,
+                    player_id: player_id.into(),
+                })),
+                ShahrazadAction::DeckImport {
+                    deck_uri,
+                    player_id,
+                } => Some(Action::DeckImport(proto::action::DeckImport {
+                    deck_uri,
+                    player_id: player_id.into(),
+                })),
+                ShahrazadAction::SetPlayer { player_id, player } => {
+                    Some(Action::SetPlayer(proto::action::SetPlayer {
+                        player_id: player_id.into(),
+                        player: Some(player.into()),
+                    }))
+                }
+                ShahrazadAction::AddPlayer { player_id, player } => {
+                    Some(Action::AddPlayer(proto::action::AddPlayer {
+                        player_id: player_id.into(),
+                        player: Some(player.into()),
+                    }))
+                }
+                ShahrazadAction::SetLife { player_id, life } => {
+                    Some(Action::SetLife(proto::action::SetLife {
+                        player_id: player_id.into(),
+                        life,
+                    }))
+                }
+                ShahrazadAction::SetCommand {
+                    player_id,
+                    command_id,
+                    damage,
+                } => Some(Action::SetCommand(proto::action::SetCommand {
+                    player_id: player_id.into(),
+                    command_id: command_id.into(),
+                    damage,
+                })),
+                ShahrazadAction::ClearBoard { player_id } => {
+                    Some(Action::ClearBoard(proto::action::ClearBoard {
+                        player_id: player_id.into(),
+                    }))
+                }
+                ShahrazadAction::DeleteToken { cards } => {
+                    Some(Action::DeleteToken(proto::action::DeleteToken {
+                        cards: cards.into_iter().map(Into::into).collect(),
+                    }))
+                }
+                ShahrazadAction::Mulligan { player_id, seed } => {
+                    Some(Action::Mulligan(proto::action::Mulligan {
+                        player_id: player_id.into(),
+                        seed,
+                    }))
+                }
+                ShahrazadAction::GameTerminated => {
+                    Some(Action::GameTerminated(proto::action::GameTerminated {}))
+                }
+            },
+        }
     }
 }

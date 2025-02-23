@@ -1,12 +1,6 @@
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useState,
-    type ReactNode,
-} from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import SearchDrawer from "./drawer";
 
 export interface ISearchContext {
@@ -25,10 +19,7 @@ export function useSearchContext() {
 }
 
 export function SearchContextProvider({ children }: { children: ReactNode }) {
-    const [searchZone, setSearchZone] = useState<ShahrazadCardId | null>(null);
-    const search = useCallback((zone: ShahrazadZoneId | null) => {
-        setSearchZone(zone);
-    }, []);
+    const [searchZone, search] = useState<ShahrazadCardId | null>(null);
 
     return (
         <SearchContext.Provider value={{ search, active: searchZone }}>

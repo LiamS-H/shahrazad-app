@@ -1,5 +1,7 @@
 "use server";
 
+import { CardImport } from "@/types/bindings/action";
+
 interface IMoxfieldCard {
     card: {
         scryfall_id: string;
@@ -25,8 +27,8 @@ function getMoxfieldDeckSlug(url: string) {
 }
 
 export async function importMoxfieldUrl(url: string): Promise<{
-    deck: string[];
-    sideboard: string[];
+    deck: CardImport[];
+    sideboard: CardImport[];
 } | null> {
     try {
         const slug = getMoxfieldDeckSlug(url);
@@ -35,23 +37,27 @@ export async function importMoxfieldUrl(url: string): Promise<{
             `https://api.moxfield.com/v2/decks/all/${slug}`
         );
         const data: IMoxfieldResponse = await resp.json();
-        const sideboard: string[] = [];
-        const deck: string[] = [];
+        const sideboard: CardImport[] = [];
+        const deck: CardImport[] = [];
         if (data.format == "commander") {
             for (const card of Object.values(data.commanders)) {
-                sideboard.push(card.card.scryfall_id);
+                sideboard.push({
+                    str: card.card.scryfall_id,
+                });
             }
         } else {
             for (const card of Object.values(data.sideboard)) {
-                for (let i = 0; i < card.quantity; i++) {
-                    sideboard.push(card.card.scryfall_id);
-                }
+                sideboard.push({
+                    str: card.card.scryfall_id,
+                    amount: card.quantity,
+                });
             }
         }
         for (const card of Object.values(data.mainboard)) {
-            for (let i = 0; i < card.quantity; i++) {
-                deck.push(card.card.scryfall_id);
-            }
+            deck.push({
+                str: card.card.scryfall_id,
+                amount: card.quantity,
+            });
         }
         return {
             deck,

@@ -1,6 +1,6 @@
 import DraggableCard from "@/components/(game)/card-draggable";
 import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
-import type { CSSProperties, ReactNode } from "react";
+import { type CSSProperties } from "react";
 import { GRID_SIZE } from ".";
 import BoardCardContextMenu from "@/components/(game)/(context-menus)/board-card";
 
@@ -25,7 +25,7 @@ export function BoardCard({
     cardId: ShahrazadCardId;
     card: ShahrazadCard;
     selected: boolean;
-}): ReactNode {
+}) {
     const left = (card.state.x ?? 0) * GRID_SIZE;
     const top = (card.state.y ?? 0) * GRID_SIZE;
 

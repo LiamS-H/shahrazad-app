@@ -1,5 +1,5 @@
 use crate::types::{
-    action::ShahrazadAction,
+    action::{CardImport, ShahrazadAction},
     card::{ShahrazadCardState, ShahrazadCounter},
     game::ShahrazadGame,
     player::ShahrazadPlayer,
@@ -47,15 +47,15 @@ fn init_game() {
             "zone_count": 6,
             "card_count": 0,
             "cards": {},
-            "zones": {"ZONE_1":{"cards":[]},"ZONE_2":{"cards":[]},"ZONE_3":{"cards":[]},"ZONE_4":{"cards":[]},"ZONE_5":{"cards":[]},"ZONE_6":{"cards":[]}},
+            "zones": {"Z1":{"cards":[]},"Z2":{"cards":[]},"Z3":{"cards":[]},"Z4":{"cards":[]},"Z5":{"cards":[]},"Z6":{"cards":[]}},
             "playmats": {
                 "1":{
-                    "library":"ZONE_1",
-                    "hand":"ZONE_2",
-                    "graveyard":"ZONE_3",
-                    "battlefield":"ZONE_4",
-                    "exile":"ZONE_5",
-                    "command":"ZONE_6",
+                    "library":"Z1",
+                    "hand":"Z2",
+                    "graveyard":"Z3",
+                    "battlefield":"Z4",
+                    "exile":"Z5",
+                    "command":"Z6",
                     "command_damage":{"1":0},
                     "life": 20,
                     "mulligans": 0,
@@ -78,10 +78,14 @@ fn init_game() {
     }
     {
         let action = ShahrazadAction::ZoneImport {
-            zone: "ZONE_1".into(),
-            cards: ["Opt".into()].into(),
+            zone: "Z1".into(),
+            cards: [CardImport {
+                str: "Opt".into(),
+                amount: None,
+            }]
+            .into(),
             player_id: "1".into(),
-            token: Some(false),
+            token: false,
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
@@ -91,7 +95,7 @@ fn init_game() {
             "zone_count": 6,
             "card_count": 1,
             "cards": {
-                "CARD_1":{
+                "C1":{
                     "state":{
                         "inverted": null,
                         "flipped": null,
@@ -105,18 +109,18 @@ fn init_game() {
                     "owner":"1",
                     "token": false,
                     "card_name": "Opt",
-                    "location":"ZONE_1"
+                    "location":"Z1"
                 }
             },
-            "zones": {"ZONE_1":{"cards":["CARD_1"]},"ZONE_2":{"cards":[]},"ZONE_3":{"cards":[]},"ZONE_4":{"cards":[]},"ZONE_5":{"cards":[]},"ZONE_6":{"cards":[]}},
+            "zones": {"Z1":{"cards":["C1"]},"Z2":{"cards":[]},"Z3":{"cards":[]},"Z4":{"cards":[]},"Z5":{"cards":[]},"Z6":{"cards":[]}},
             "playmats": {
                 "1":{
-                    "library":"ZONE_1",
-                    "hand":"ZONE_2",
-                    "graveyard":"ZONE_3",
-                    "battlefield":"ZONE_4",
-                    "exile":"ZONE_5",
-                    "command":"ZONE_6",
+                    "library":"Z1",
+                    "hand":"Z2",
+                    "graveyard":"Z3",
+                    "battlefield":"Z4",
+                    "exile":"Z5",
+                    "command":"Z6",
                     "command_damage":{"1":0},
                     "life": 20,
                     "mulligans": 0,
@@ -152,18 +156,14 @@ fn reproducibility() {
             },
         },
         ShahrazadAction::ZoneImport {
-            zone: "ZONE_1".into(),
-            cards: [
-                "Opt".into(),
-                "Opt".into(),
-                "Opt".into(),
-                "Opt".into(),
-                "Opt".into(),
-                "Opt".into(),
-            ]
+            zone: "Z1".into(),
+            cards: [CardImport {
+                str: "Opt".into(),
+                amount: Some(6),
+            }]
             .into(),
             player_id: "1".into(),
-            token: Some(false),
+            token: false,
         },
         ShahrazadAction::SetPlayer {
             player_id: "1".into(),
@@ -173,12 +173,12 @@ fn reproducibility() {
         },
         ShahrazadAction::CardZone {
             cards: [
-                "CARD_1".into(),
-                "CARD_2".into(),
-                "CARD_3".into(),
-                "CARD_4".into(),
-                "CARD_5".into(),
-                "CARD_6".into(),
+                "C1".into(),
+                "C2".into(),
+                "C3".into(),
+                "C4".into(),
+                "C5".into(),
+                "C6".into(),
             ]
             .into(),
             state: ShahrazadCardState {
@@ -191,11 +191,11 @@ fn reproducibility() {
                 y: Some(0),
                 counters: Some([ShahrazadCounter { amount: 1 }].into()),
             },
-            destination: "ZONE_2".into(),
+            destination: "Z2".into(),
             index: 0,
         },
         ShahrazadAction::CardState {
-            cards: ["CARD_1".into()].into(),
+            cards: ["C1".into()].into(),
             state: ShahrazadCardState {
                 inverted: Some(false),
                 flipped: Some(false),

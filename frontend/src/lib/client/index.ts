@@ -17,7 +17,7 @@ type GameClientCallbacks = {
 
 export class GameClient {
     private gameState: GameState | null = null;
-    private hash: string | null = null;
+    private hash: number | null = null; // actually BigInt
     private socket: WebSocket | null = null;
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
@@ -73,7 +73,7 @@ export class GameClient {
         this.attemptReconnect();
     };
 
-    private handleMessage = (event: MessageEvent) => {
+    private handleMessage = async (event: MessageEvent) => {
         if (!this.gameState) {
             console.error(
                 "[ws] received message before game state initialized"
@@ -81,8 +81,12 @@ export class GameClient {
             return;
         }
 
+        const blob: Blob = event.data;
+        const array = await blob.arrayBuffer();
+        console.log(array);
+
         try {
-            const update: ServerUpdate = decode_server_update(event.data);
+            const update: ServerUpdate = decode_server_update(array);
             if (!update) {
                 console.log("[client] couldn't parse update:", event.data);
                 return;
@@ -90,7 +94,7 @@ export class GameClient {
             if (update.game) {
                 console.log("[ws] received game:", update.game);
                 if (update.hash && update.hash !== this.hash) {
-                    console.log("[ws] received game for outdated request");
+                    console.log("[ws] received game already matched hash");
                     return;
                 }
                 this.setState(update.game);
@@ -164,10 +168,9 @@ export class GameClient {
         }, backoffMs);
     };
 
-    initializeGameState(initialState: ShahrazadGame, hash: string) {
+    initializeGameState(initialState: string): ShahrazadGame {
         this.gameState = new GameState(initialState);
-        this.hash = hash;
-        this.callbacks.onGameUpdate(initialState);
+        return this.gameState.get_state();
     }
 
     private applyAction(action: ShahrazadAction): boolean {
@@ -175,7 +178,7 @@ export class GameClient {
             throw new Error("Game state not initialized");
         }
         if (action.type === ShahrazadActionCase.ZoneImport) {
-            this.callbacks.onPreloadCards(action.cards);
+            this.callbacks.onPreloadCards(action.cards.map(({ str }) => str));
         }
 
         const newState: ShahrazadGame = this.gameState.apply_action(action);

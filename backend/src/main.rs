@@ -9,6 +9,7 @@ use axum::{
     Json, Router,
 };
 use backend::state::*;
+use base64::{prelude::BASE64_STANDARD, Engine};
 use futures::{SinkExt, StreamExt};
 use serde_json;
 use shared::types::{
@@ -16,7 +17,7 @@ use shared::types::{
     api::{
         CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
     },
-    ws::{ClientAction, CompactString},
+    ws::{ClientAction, ProtoSerialize},
 };
 use std::sync::Arc;
 use std::{env, net::SocketAddr};
@@ -90,7 +91,9 @@ async fn join_game(
     let Some(game_id) = state.parse_uuid(game_id.clone()).await else {
         return format!("{}:invalid_id", game_id);
     };
-
+    if !state.validate_game(&game_id) {
+        return "Game not found".to_string();
+    };
     // Handle reconnection
     if let Some(player_id_str) = player_id {
         if let Ok(player_id) = Uuid::parse_str(&player_id_str) {
@@ -99,9 +102,8 @@ async fn join_game(
                     player_name: game_info.name,
                     game_id: game_info.game_id.into(),
                     player_id: player_id.into(),
-                    game: game_info.game,
+                    game: BASE64_STANDARD.encode(game_info.game.encode()),
                     code: game_info.code,
-                    hash: game_info.hash,
                     reconnected: true
                 })
                 .to_string();
@@ -116,8 +118,7 @@ async fn join_game(
             player_name: game_info.name,
             game_id: game_info.game_id.into(),
             player_id: player_id.into(),
-            game: game_info.game,
-            hash: game_info.hash,
+            game: BASE64_STANDARD.encode(game_info.game.encode()),
             code: game_info.code,
             reconnected: false
         })
@@ -150,8 +151,8 @@ async fn handle_socket(
     //     }
     // }
     if let Ok(initial_update) = (*state).get_game_state(game_id, player_id).await {
-        let encoded = initial_update.to_compact();
-        let _ = socket_sender.send(Message::Text(encoded)).await;
+        let encoded = initial_update.encode();
+        let _ = socket_sender.send(Message::Binary(encoded)).await;
     }
     // Handle incoming server updates
     let send_task = tokio::spawn({
@@ -180,8 +181,8 @@ async fn handle_socket(
                         //         break;
                         //     }
                         // }
-                        let encoded = update.to_compact();
-                        if socket_sender.send(Message::Text(encoded)).await.is_err() {
+                        let encoded = update.encode();
+                        if socket_sender.send(Message::Binary(encoded)).await.is_err() {
                             break;
                         }
                         // Check for game termination
@@ -207,12 +208,13 @@ async fn handle_socket(
         async move {
             while let Some(message) = receiver.next().await {
                 match message {
-                    Ok(Message::Text(text)) => {
+                    Ok(Message::Binary(buf)) => {
                         // let client_action = match serde_json::from_str::<ClientAction>(&text) {
                         //     Ok(action) => action,
                         //     Err(_) => continue,
                         // };
-                        let Ok(client_action) = ClientAction::from_compact(&text) else {
+                        let Ok(client_action) = ClientAction::decode(buf.try_into().unwrap())
+                        else {
                             continue;
                         };
                         if (*state)

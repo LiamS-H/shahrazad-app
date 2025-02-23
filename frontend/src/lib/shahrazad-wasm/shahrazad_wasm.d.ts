@@ -1,11 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
-export function encode_client_action(action: any): any;
+export function encode_client_action(action: any): Uint8Array;
 export function decode_server_update(code: any): any;
 export class GameState {
   free(): void;
   constructor(game: any);
   get_hash(): any;
+  get_state(): any;
   apply_action(action: any): any;
   set_state(game: any): any;
 }
@@ -17,6 +18,7 @@ export interface InitOutput {
   readonly __wbg_gamestate_free: (a: number, b: number) => void;
   readonly gamestate_new: (a: any) => number;
   readonly gamestate_get_hash: (a: number) => [number, number, number];
+  readonly gamestate_get_state: (a: number) => [number, number, number];
   readonly gamestate_apply_action: (a: number, b: any) => [number, number, number];
   readonly gamestate_set_state: (a: number, b: any) => [number, number, number];
   readonly encode_client_action: (a: any) => [number, number, number];

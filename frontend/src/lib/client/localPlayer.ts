@@ -3,6 +3,11 @@ import { ShahrazadPlayer } from "@/types/bindings/playmat";
 export function loadPlayer():
     | { player?: ShahrazadPlayer; player_id?: string }
     | undefined {
+    try {
+        localStorage.getItem("");
+    } catch {
+        return undefined;
+    }
     const stored_player = localStorage.getItem("saved-player");
     const player_id = localStorage.getItem("saved-player-id");
     if (player_id === null) return undefined;

@@ -17,7 +17,7 @@ pub struct GameInfo {
     pub game_id: Uuid,
     pub name: String,
     pub game: ShahrazadGame,
-    pub hash: String,
+    pub hash: u64,
     pub code: u32,
 }
 
@@ -29,7 +29,8 @@ pub struct GameState {
     tx: broadcast::Sender<ServerUpdate>,
     last_activity: Instant,
     code: u32,
-    hash: String,
+    hash: u64,
+    deleted: bool,
 }
 
 #[derive(Clone)]
@@ -54,6 +55,7 @@ impl GameStateManager {
         };
 
         let games = manager.games.clone();
+        let codes = manager.codes.clone();
         tokio::spawn(async move {
             loop {
                 let games_to_remove: Vec<_> = games
@@ -62,33 +64,46 @@ impl GameStateManager {
                         let game_id = *entry.key();
                         let elapsed = entry.value().last_activity.elapsed();
                         if elapsed >= GAME_TIMEOUT {
-                            Some((game_id, entry.value().players.clone()))
+                            Some(game_id)
                         } else {
                             None
                         }
                     })
                     .collect();
 
-                for (game_id, _) in &games_to_remove {
-                    if let Some(game_ref) = games.get(&game_id) {
+                for game_id in &games_to_remove {
+                    if let Some(mut game_ref) = games.get_mut(&game_id) {
                         let disconnect_update = ServerUpdate {
                             action: Some(ShahrazadAction::GameTerminated),
                             game: None,
                             player_id: *game_id,
                             hash: None,
                         };
+                        game_ref.deleted = true;
                         let _ = game_ref.tx.send(disconnect_update);
+
+                        codes.remove(&game_ref.code);
                     }
                 }
                 tokio::time::sleep(GAME_CLEANUP_INTERVAL).await;
 
-                for (game_id, _) in games_to_remove {
+                for game_id in games_to_remove {
                     games.remove(&game_id);
                 }
             }
         });
 
         manager
+    }
+
+    pub fn validate_game(&self, id: &Uuid) -> bool {
+        let Some(game) = self.games.get(id) else {
+            return false;
+        };
+        if game.deleted {
+            return false;
+        }
+        return true;
     }
 
     pub async fn create_game(
@@ -121,7 +136,8 @@ impl GameStateManager {
             tx,
             last_activity: Instant::now(),
             code: code.clone(),
-            hash: "".into(),
+            hash: 0,
+            deleted: false,
         };
 
         self.codes.insert(code, game_id);
@@ -151,7 +167,7 @@ impl GameStateManager {
             let _ = game_state.tx.send(update);
         }
 
-        game_state.hash = game_state.game.hash().to_string();
+        game_state.hash = game_state.game.hash();
 
         self.games.insert(game_id, game_state);
 
@@ -163,7 +179,7 @@ impl GameStateManager {
             name: player_name.clone(),
             game: game_state.game.clone(),
             code: game_state.code,
-            hash: game_state.hash.clone(),
+            hash: game_state.hash,
         })
     }
 
@@ -196,18 +212,18 @@ impl GameStateManager {
             player,
         };
 
-        game_state.hash = game_state.game.hash().to_string();
+        ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game).unwrap();
 
-        if let Some(_) = ShahrazadGame::apply_action(add_player.clone(), &mut game_state.game) {
-            let update = ServerUpdate {
-                action: Some(add_player),
-                game: None,
-                player_id,
-                hash: Some(game_state.hash.clone()),
-            };
+        game_state.hash = game_state.game.hash();
 
-            let _ = game_state.tx.send(update);
-        }
+        let update = ServerUpdate {
+            action: Some(add_player),
+            game: None,
+            player_id,
+            hash: Some(game_state.hash.clone()),
+        };
+
+        let _ = game_state.tx.send(update);
 
         Ok(GameInfo {
             name: player_name.clone(),
@@ -254,6 +270,9 @@ impl GameStateManager {
 
     pub async fn validate_connection(&self, game_id: Uuid, player_id: Uuid) -> bool {
         if let Some(game_ref) = self.games.get(&game_id) {
+            if game_ref.deleted {
+                return false;
+            };
             return game_ref.players.contains_key(&player_id);
         } else {
             return false;
@@ -302,16 +321,10 @@ impl GameStateManager {
         };
 
         let game_hash = game_ref.game.hash();
-        game_ref.hash = game_hash.to_string();
+        game_ref.hash = game_hash;
         let hash = Some(game_ref.hash.clone());
 
-        let client_hash: u64 = match client_action.hash {
-            Some(hash) => match hash.parse() {
-                Ok(num) => num,
-                Err(_) => 0,
-            },
-            None => 0,
-        };
+        let client_hash: u64 = client_action.hash.unwrap_or(0);
 
         // Handle client desync
         // This triggers when a client attempts to make an update and its own state is outdated
@@ -321,7 +334,7 @@ impl GameStateManager {
                 action: None,
                 game: Some(game_ref.game.clone()),
                 player_id,
-                hash: Some(client_hash.to_string()),
+                hash: Some(client_hash),
             };
             let _ = game_ref.tx.send(full_state);
 

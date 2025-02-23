@@ -1,0 +1,19 @@
+syntax = "proto3";
+package playmat;
+
+message ShahrazadPlayer {
+    string display_name = 1;
+}
+
+message ShahrazadPlaymat {
+    string library = 1;
+    string hand = 2;
+    string graveyard = 3;
+    string battlefield = 4;
+    string exile = 5;
+    string command = 6;
+    int32 life = 7;
+    int32 mulligans = 8;
+    map<string, int32> command_damage = 9;
+    ShahrazadPlayer player = 10;
+}

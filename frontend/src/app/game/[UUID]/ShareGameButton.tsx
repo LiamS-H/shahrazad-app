@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/(ui)/button";
 import {
     DropdownMenu,
@@ -5,12 +6,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/(ui)/dropdown-menu";
 import { Copy, DiamondPlus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function ShareGameButton({ code }: { code: number | null }) {
     const [open, setOpen] = useState(false);
-    const link = window.location.toString();
+    const [link, setLink] = useState<string | null>(null);
+    useEffect(() => {
+        setLink(window.location.toString());
+    }, []);
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -22,7 +26,7 @@ export default function ShareGameButton({ code }: { code: number | null }) {
                     }`}
                 >
                     Invite
-                    <DiamondPlus className="transition duration-300 group-hover:rotate-[405deg]" />
+                    <DiamondPlus className="transition duration-300 group-hover:rotate-[360deg]" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="flex flex-col gap-4 w-full ">
@@ -41,7 +45,12 @@ export default function ShareGameButton({ code }: { code: number | null }) {
                 </Button>
                 <Button
                     variant="outline"
+                    disabled={!link}
                     onClick={() => {
+                        if (!link) {
+                            toast("Something went wrong");
+                            return;
+                        }
                         navigator.clipboard.writeText(link);
                         toast(`Copied sharing link to clipboard.`);
                         setOpen(false);
