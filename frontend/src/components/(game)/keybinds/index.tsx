@@ -53,7 +53,14 @@ export function Keybinds() {
         });
         setOpen(false);
         toast("Drawing Card.");
-    }, [playmat.library, playmat.hand, active_player, active, isDeckEmpty]);
+    }, [
+        playmat.library,
+        playmat.hand,
+        active_player,
+        active,
+        isDeckEmpty,
+        applyAction,
+    ]);
 
     const deckSearch = useCallback(() => {
         if (isDeckEmpty) {
@@ -66,7 +73,7 @@ export function Keybinds() {
             search(playmat.library);
         }
         setOpen(false);
-    }, [playmat.library, active, isDeckEmpty]);
+    }, [playmat.library, active, isDeckEmpty, search]);
 
     const deckShuffle = useCallback(() => {
         if (isDeckEmpty) {
@@ -79,11 +86,11 @@ export function Keybinds() {
             zone: playmat.library,
         });
         toast("Deck shuffled.");
-    }, [playmat.library, isDeckEmpty]);
+    }, [playmat.library, isDeckEmpty, applyAction]);
 
-    const deckImport = () => {
+    const deckImport = useCallback(() => {
         importFor(active_player);
-    };
+    }, [importFor, active_player]);
 
     const [open, setOpen] = useState(false);
     useEffect(() => {
@@ -123,16 +130,7 @@ export function Keybinds() {
         };
         document.addEventListener("keydown", down);
         return () => document.removeEventListener("keydown", down);
-    }, [
-        active,
-        device,
-        playmat.hand,
-        playmat.library,
-        search,
-        active_player,
-        applyAction,
-        getZone,
-    ]);
+    }, [device, deckDraw, deckImport, deckSearch, deckShuffle]);
 
     return (
         <CommandDialog

@@ -30,7 +30,7 @@ export default function SearchDrawer() {
         );
 
         return () => controller.abort();
-    }, [active]);
+    }, [active, search]);
     return (
         <Drawer2
             open={open}

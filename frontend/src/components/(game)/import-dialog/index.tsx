@@ -21,7 +21,7 @@ import { useImportContext } from "@/contexts/(game)/import";
 
 export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
     const { importFor } = useImportContext();
-    const { applyAction, getPlaymat, active_player, getZone } =
+    const { applyAction, getPlaymat, active_player } =
         useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const [deckstr, setDeckstr] = useState<string>("");
