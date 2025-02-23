@@ -21,7 +21,7 @@ interface IMoxfieldResponse {
 }
 
 function getMoxfieldDeckSlug(url: string) {
-    const regex = /^https:\/\/moxfield\.com\/decks\/([a-zA-Z0-9]{22})$/;
+    const regex = /^https:\/\/moxfield\.com\/decks\/([a-zA-Z0-9\_\-]{22})$/;
     const match = url.match(regex);
     return match ? match[1] : null;
 }

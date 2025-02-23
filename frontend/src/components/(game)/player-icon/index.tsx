@@ -51,7 +51,7 @@ export default function PlayerIcon({
         >
             <PopoverTrigger asChild>
                 {player === null || !player.display_name ? (
-                    <Button disabled={!onChange} variant="outline" size="icon">
+                    <Button variant="outline" size="icon">
                         <UserPen />
                     </Button>
                 ) : (
