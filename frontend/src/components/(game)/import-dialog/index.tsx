@@ -2,7 +2,7 @@ import { Input } from "@/components/(ui)/input";
 import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { importFromStr } from "@/lib/client/import-deck/importFromStr";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { importFromUrl } from "@/lib/client/import-deck/importFromUrl";
 import { toast } from "sonner";
 import { Label } from "@/components/(ui)/label";
@@ -61,16 +61,14 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
 
     const [open, setOpen] = useState(true);
 
+    useEffect(() => {
+        if (!open) {
+            importFor(null);
+        }
+    }, [open, importFor]);
+
     return (
-        <Dialog
-            open={open}
-            onOpenChange={(o) => {
-                setOpen(o);
-                if (!o) {
-                    importFor(null);
-                }
-            }}
-        >
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild></DialogTrigger>
             <DialogContent className="flex flex-col gap-4">
                 <DialogHeader>
