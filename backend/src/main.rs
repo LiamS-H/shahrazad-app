@@ -91,7 +91,9 @@ async fn join_game(
     let Some(game_id) = state.parse_uuid(game_id.clone()).await else {
         return format!("{}:invalid_id", game_id);
     };
-
+    if !state.validate_game(&game_id) {
+        return "Game not found".to_string();
+    };
     // Handle reconnection
     if let Some(player_id_str) = player_id {
         if let Ok(player_id) = Uuid::parse_str(&player_id_str) {

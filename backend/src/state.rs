@@ -55,6 +55,7 @@ impl GameStateManager {
         };
 
         let games = manager.games.clone();
+        let codes = manager.codes.clone();
         tokio::spawn(async move {
             loop {
                 let games_to_remove: Vec<_> = games
@@ -80,6 +81,8 @@ impl GameStateManager {
                         };
                         game_ref.deleted = true;
                         let _ = game_ref.tx.send(disconnect_update);
+
+                        codes.remove(&game_ref.code);
                     }
                 }
                 tokio::time::sleep(GAME_CLEANUP_INTERVAL).await;
@@ -91,6 +94,16 @@ impl GameStateManager {
         });
 
         manager
+    }
+
+    pub fn validate_game(&self, id: &Uuid) -> bool {
+        let Some(game) = self.games.get(id) else {
+            return false;
+        };
+        if game.deleted {
+            return false;
+        }
+        return true;
     }
 
     pub async fn create_game(
