@@ -169,14 +169,19 @@ impl From<ShahrazadCounter> for proto::card::ShahrazadCounter {
 
 impl From<proto::card::ShahrazadCardState> for ShahrazadCardState {
     fn from(value: proto::card::ShahrazadCardState) -> Self {
-        let revealed = if value.revealed.len() == 0 {
+        let revealed = if value.revealed.len() == 0 && !value.has_revealed {
             None
         } else {
             Some(value.revealed.iter().map(|s| (s.clone()).into()).collect())
         };
+        let counters = if value.counters.len() == 0 && !value.has_counters {
+            None
+        } else {
+            Some(value.counters.iter().map(|c| (c.clone()).into()).collect())
+        };
 
         ShahrazadCardState {
-            counters: Some(value.counters.iter().map(|c| (c.clone()).into()).collect()),
+            counters,
             inverted: value.inverted,
             flipped: value.flipped,
             tapped: value.tapped,
@@ -190,22 +195,20 @@ impl From<proto::card::ShahrazadCardState> for ShahrazadCardState {
 
 impl From<ShahrazadCardState> for proto::card::ShahrazadCardState {
     fn from(value: ShahrazadCardState) -> Self {
-        let mut prot = proto::card::ShahrazadCardState::default();
+        let mut has_counters = true;
         let counters = if let Some(c) = value.counters {
             c.iter()
                 .map(|c| proto::card::ShahrazadCounter::from(c.clone()))
                 .collect::<Vec<proto::card::ShahrazadCounter>>()
         } else {
+            has_counters = false;
             [].into()
         };
-
-        prot.inverted = value.inverted;
-        prot.flipped = value.flipped;
-        prot.tapped = value.tapped;
-        prot.face_down = value.face_down;
+        let mut has_revealed = true;
         let revealed = if let Some(c) = value.revealed {
             c.iter().map(|p| p.clone().into()).collect()
         } else {
+            has_revealed = false;
             [].into()
         };
         proto::card::ShahrazadCardState {
@@ -214,6 +217,8 @@ impl From<ShahrazadCardState> for proto::card::ShahrazadCardState {
             inverted: value.inverted,
             tapped: value.tapped,
             face_down: value.face_down,
+            has_revealed,
+            has_counters,
             revealed,
             x: value.x.unwrap_or(255),
             y: value.y.unwrap_or(255),
