@@ -18,14 +18,8 @@ fn test_card_state_serialization_full() {
     assert_eq!(parsed.face_down, state.face_down);
     assert_eq!(parsed.x, state.x);
     assert_eq!(parsed.y, state.y);
-
-    if let (Some(parsed_revealed), Some(state_revealed)) = (&parsed.revealed, &state.revealed) {
-        assert_eq!(parsed_revealed.len(), state_revealed.len());
-    }
-
-    if let (Some(parsed_counters), Some(state_counters)) = (&parsed.counters, &state.counters) {
-        assert_eq!(parsed_counters.len(), state_counters.len());
-    }
+    assert_eq!(parsed.revealed, state.revealed);
+    assert_eq!(parsed.counters, state.counters);
 }
 #[test]
 fn test_card_state_serialization_empty() {
@@ -42,14 +36,8 @@ fn test_card_state_serialization_empty() {
     assert_eq!(parsed.face_down, state.face_down);
     assert_eq!(parsed.x, state.x);
     assert_eq!(parsed.y, state.y);
-
-    if let (Some(parsed_revealed), Some(state_revealed)) = (&parsed.revealed, &state.revealed) {
-        assert_eq!(parsed_revealed.len(), state_revealed.len());
-    }
-
-    if let (Some(parsed_counters), Some(state_counters)) = (&parsed.counters, &state.counters) {
-        assert_eq!(parsed_counters.len(), state_counters.len());
-    }
+    assert_eq!(parsed.revealed, state.revealed);
+    assert_eq!(parsed.counters, state.counters);
 }
 #[test]
 fn test_card_state_serialization_xy_only() {
@@ -76,12 +64,6 @@ fn test_card_state_serialization_xy_only() {
     assert_eq!(parsed.face_down, state.face_down);
     assert_eq!(parsed.x, state.x);
     assert_eq!(parsed.y, state.y);
-
-    if let (Some(parsed_revealed), Some(state_revealed)) = (&parsed.revealed, &state.revealed) {
-        assert_eq!(parsed_revealed.len(), state_revealed.len());
-    }
-
-    if let (Some(parsed_counters), Some(state_counters)) = (&parsed.counters, &state.counters) {
-        assert_eq!(parsed_counters.len(), state_counters.len());
-    }
+    assert_eq!(parsed.revealed, state.revealed);
+    assert_eq!(parsed.counters, state.counters);
 }

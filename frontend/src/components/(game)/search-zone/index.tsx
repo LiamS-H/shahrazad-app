@@ -14,7 +14,7 @@ import { Button } from "@/components/(ui)/button";
 import { Switch } from "@/components/(ui)/switch";
 import { Label } from "@/components/(ui)/label";
 import { Input } from "@/components/(ui)/input";
-import type { ScryfallColors } from "@scryfall/api-types";
+import type { ScryfallCard, ScryfallColors } from "@scryfall/api-types";
 import { LayoutGroup } from "framer-motion";
 
 interface ISort {
@@ -61,10 +61,16 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
             const shah_card = getCard(card_id);
             promises.push(requestCard(shah_card.card_name));
         }
-        const scrycards = await Promise.all(promises);
-        const cards = [];
+        const scrycards = await Promise.allSettled(promises);
+        const cards: { id: string; card: ScryfallCard.Any | undefined }[] = [];
         for (let i = 0; i < scrycards.length; i++) {
-            cards.push({ id: zone.cards[i], card: scrycards[i] });
+            const card = scrycards[i];
+            const id = zone.cards[i];
+            if (card.status === "rejected") {
+                cards.push({ id, card: undefined });
+            } else {
+                cards.push({ id, card: card.value });
+            }
         }
 
         const filtered_cards = cards.filter(({ card }) => {
@@ -141,7 +147,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
 
     useEffect(() => {
         updateCards();
-    }, [zone, sort, updateCards]);
+    }, [zone, sort, updateCards, props.id]);
 
     const data: IDroppableData = { sortable: true };
 

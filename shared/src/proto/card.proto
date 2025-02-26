@@ -11,13 +11,15 @@ message ShahrazadCard {
 
 message ShahrazadCardState {
     repeated ShahrazadCounter counters = 1;
-    optional bool flipped = 2;
-    optional bool inverted = 3;
-    optional bool tapped = 4;
-    optional bool face_down = 5;
-    repeated string revealed = 6;
-    uint32 x = 7;
-    uint32 y = 8;
+    bool hasCounters = 2;
+    optional bool flipped = 3;
+    optional bool inverted = 4;
+    optional bool tapped = 5;
+    optional bool face_down = 6;
+    repeated string revealed = 7;
+    bool hasRevealed = 8;
+    uint32 x = 9;
+    uint32 y = 10;
 }
 
 message ShahrazadCounter {
