@@ -64,6 +64,7 @@ message ZoneImport {
     repeated CardImport cards = 2;
     bool token = 3;
     string player_id = 4;
+    card.ShahrazadCardState state = 5;
 }
 
 message DeckImport {

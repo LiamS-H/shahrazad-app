@@ -86,6 +86,9 @@ fn init_game() {
             .into(),
             player_id: "1".into(),
             token: false,
+            state: ShahrazadCardState {
+                ..Default::default()
+            },
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
@@ -164,6 +167,9 @@ fn reproducibility() {
             .into(),
             player_id: "1".into(),
             token: false,
+            state: ShahrazadCardState {
+                ..Default::default()
+            },
         },
         ShahrazadAction::SetPlayer {
             player_id: "1".into(),

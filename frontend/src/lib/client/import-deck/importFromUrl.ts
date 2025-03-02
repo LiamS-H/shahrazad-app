@@ -2,12 +2,12 @@
 
 import { ShahrazadAction } from "@/types/bindings/action";
 import { importMoxfieldUrl } from "./moxfield";
-import { ILocations, toActionList } from "./toActionlist";
+import { IImportOptions, toActionList } from "./toActionlist";
 import { toast } from "sonner";
 
 export async function importFromUrl(
     url: string,
-    locations: ILocations
+    locations: IImportOptions
 ): Promise<ShahrazadAction[] | null | undefined> {
     if (url.match(/^https:\/\/moxfield\.com\/decks\/[a-zA-Z0-9\_\-]{22}$/)) {
         const cards = await importMoxfieldUrl(url);

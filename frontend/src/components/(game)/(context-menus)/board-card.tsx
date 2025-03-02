@@ -154,6 +154,7 @@ function Content({
                                     player_id: player,
                                     zone: playmat.battlefield,
                                     token: true,
+                                    state: {},
                                 });
                             }}
                         >
@@ -177,6 +178,7 @@ function Content({
                                                 player_id: player,
                                                 zone: playmat.battlefield,
                                                 token: true,
+                                                state: {},
                                             });
                                         }}
                                     >
@@ -231,6 +233,7 @@ function Content({
                         player_id: player,
                         zone: playmat.battlefield,
                         token: true,
+                        state: {},
                     });
                 }}
             >

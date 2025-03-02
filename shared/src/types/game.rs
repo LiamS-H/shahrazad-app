@@ -334,6 +334,7 @@ impl ShahrazadGame {
                 cards,
                 player_id,
                 token,
+                state,
             } => {
                 let mut card_ids = Vec::new();
                 let token = token;
@@ -344,19 +345,17 @@ impl ShahrazadGame {
                         let card_id: ShahrazadCardId =
                             ShahrazadCardId::new(format!("C{}", game.card_count));
                         card_ids.push(card_id.clone());
-                        game.cards.insert(
-                            card_id,
-                            ShahrazadCard {
-                                card_name,
-                                location: zone.clone(),
-                                token,
-                                state: ShahrazadCardState {
-                                    counters: Some(Vec::<ShahrazadCounter>::new()),
-                                    ..Default::default()
-                                },
-                                owner: player_id.clone(),
+                        let mut card = ShahrazadCard {
+                            card_name,
+                            location: zone.clone(),
+                            token,
+                            state: ShahrazadCardState {
+                                ..Default::default()
                             },
-                        );
+                            owner: player_id.clone(),
+                        };
+                        card.state.apply(&state);
+                        game.cards.insert(card_id, card);
                     }
                 }
                 game.zones.get_mut(&zone)?.cards.append(&mut card_ids);

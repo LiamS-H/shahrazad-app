@@ -1,5 +1,6 @@
 import { CardImport, ShahrazadAction } from "@/types/bindings/action";
-import { ILocations, toActionList } from "./toActionlist";
+import { IImportOptions, toActionList } from "./toActionlist";
+import { ShahrazadGameSettings } from "@/types/bindings/game";
 
 function parseLine(str: string): {
     amount: number;
@@ -67,7 +68,7 @@ export function parseDeckstr(str: string): {
 
 export function importFromStr(
     str: string,
-    locations: ILocations
+    locations: IImportOptions
 ): ShahrazadAction[] | null | undefined {
     const deck = parseDeckstr(str);
     if (!deck) return undefined;
