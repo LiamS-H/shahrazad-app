@@ -36,7 +36,7 @@ export function ImportContextProvider({ children }: { children: ReactNode }) {
         if (!defaultOpen) {
             setCanDefaultOpen(true);
         }
-    }, [active_player, getZone, getPlaymat]);
+    }, [active_player, getZone, getPlaymat, canDefaulOpen]);
     const importFor = useCallback((player: ShahrazadPlaymatId | null) => {
         setActive(player);
     }, []);

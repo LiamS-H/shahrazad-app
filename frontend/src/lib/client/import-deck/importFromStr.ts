@@ -1,6 +1,5 @@
 import { CardImport, ShahrazadAction } from "@/types/bindings/action";
 import { IImportOptions, toActionList } from "./toActionlist";
-import { ShahrazadGameSettings } from "@/types/bindings/game";
 
 function parseLine(str: string): {
     amount: number;
