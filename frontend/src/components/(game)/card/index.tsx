@@ -6,6 +6,7 @@ import { useSelection } from "@/contexts/(game)/selection";
 import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDragging } from "@/contexts/(game)/dnd/dragging";
+import { Annotation } from "./annotation";
 
 export default function Card(props: {
     id: ShahrazadCardId;
@@ -76,6 +77,7 @@ export default function Card(props: {
                     faceDown={faceDown}
                 />
                 <Counters id={props.id} />
+                <Annotation id={props.id} />
                 {props.children}
             </>
         ),

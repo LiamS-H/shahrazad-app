@@ -25,6 +25,7 @@ pub struct ShahrazadCardState {
     pub x: Option<u32>,
     pub y: Option<u32>,
     pub counters: Option<Vec<ShahrazadCounter>>,
+    pub annotation: Option<String>,
 }
 
 impl std::hash::Hash for ShahrazadCardState {
@@ -56,6 +57,9 @@ impl std::hash::Hash for ShahrazadCardState {
             for player_id in revealed {
                 player_id.hash(state);
             }
+        }
+        if let Some(annotation) = &self.annotation {
+            annotation.hash(state);
         }
     }
 }
@@ -95,6 +99,9 @@ impl ShahrazadCardState {
                 }
             }
             self.revealed = Some(new_revealed.clone());
+        }
+        if let Some(annotation) = &other.annotation {
+            self.annotation = Some(annotation.clone());
         }
     }
 }
@@ -189,6 +196,7 @@ impl From<proto::card::ShahrazadCardState> for ShahrazadCardState {
             revealed,
             x: if value.x >= 255 { None } else { Some(value.x) },
             y: if value.y >= 255 { None } else { Some(value.y) },
+            annotation: value.annotation,
         }
     }
 }
@@ -222,6 +230,7 @@ impl From<ShahrazadCardState> for proto::card::ShahrazadCardState {
             revealed,
             x: value.x.unwrap_or(255),
             y: value.y.unwrap_or(255),
+            annotation: value.annotation,
         }
     }
 }

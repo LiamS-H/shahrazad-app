@@ -323,6 +323,7 @@ impl ShahrazadGame {
                         revealed: Some([].into()),
                         x: Some(255),
                         y: Some(255),
+                        annotation: Some("".into()),
                     });
                 }
 

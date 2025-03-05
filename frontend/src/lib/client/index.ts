@@ -238,7 +238,12 @@ export class GameClient {
             return;
         }
         const success = this.applyAction(action);
-        if (!success) return;
+        if (!success) {
+            console.log(
+                "[client] attempted to apply move that didn't udpate state."
+            );
+            return;
+        }
         const hash = this.hash || this.gameState.get_hash();
         const req: ClientAction = {
             action,
