@@ -1,5 +1,5 @@
-import { Button } from "@/components/(ui)/button";
 import { Input } from "@/components/(ui)/input";
+import { Button } from "@/components/(ui)/button";
 import {
     Popover,
     PopoverContent,
@@ -39,7 +39,6 @@ export function ActivePlayerIcon({
         });
         setPlayer(new_player);
     }
-    console.log(is_host);
 
     useEffect(() => {
         const stored = loadPlayer();
@@ -64,13 +63,13 @@ export function ActivePlayerIcon({
                 setOpen(open);
             }}
         >
-            <PopoverTrigger asChild>
+            <PopoverTrigger className="text-highlight" asChild>
                 {player === null || !player.display_name ? (
                     <Button variant="outline" size="icon">
                         <UserPen />
                     </Button>
                 ) : (
-                    <Button className="group text-highlight" variant="outline">
+                    <Button className="group" variant="outline">
                         <div className="h-full w-4 relative">
                             <User
                                 className={`absolute ${
@@ -103,7 +102,6 @@ export function ActivePlayerIcon({
                 <Button
                     variant="destructive"
                     onClick={() => {
-                        console.log("test", is_host);
                         if (is_host) {
                             applyAction({
                                 type: ShahrazadActionCase.GameTerminated,

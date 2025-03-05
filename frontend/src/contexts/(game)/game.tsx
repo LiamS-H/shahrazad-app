@@ -19,6 +19,7 @@ export interface IShahrazadGameContext {
     getZone: (arg0: ShahrazadZoneId) => ShahrazadZone;
     getPlaymat: (arg0: ShahrazadPlaymatId) => ShahrazadPlaymat;
     applyAction: (action: ShahrazadAction) => void;
+    isHost: boolean;
 }
 
 const ShahrazadGameContext = createContext<IShahrazadGameContext | null>(null);
@@ -47,6 +48,7 @@ export function ShahrazadGameProvider(props: {
                 settings: props.game.settings,
                 active_player: props.player_name,
                 players: props.players,
+                isHost: props.isHost,
                 getCard,
                 getZone,
                 getPlaymat,

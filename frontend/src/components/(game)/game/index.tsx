@@ -10,6 +10,8 @@ import { AnimatePresence } from "framer-motion";
 import { Keybinds } from "../keybinds";
 import { ImportContextProvider } from "@/contexts/(game)/import";
 import { ActivePlayerIcon } from "./active-player-icon";
+import { NonActivePlayerIcon } from "./non-active-player-icon";
+import { Separator } from "@/components/(ui)/separator";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -54,7 +56,17 @@ export default function Game({
                                     {playmat_components}
                                 </div>
                             </AnimatePresence>
-                            <div className="absolute top-4 right-44 flex gap-4">
+                            <div className="absolute top-4 right-44 flex gap-4 items-center">
+                                {players.slice(1).map((player_id) => (
+                                    <NonActivePlayerIcon
+                                        key={player_id}
+                                        player_id={player_id}
+                                    />
+                                ))}
+                                <Separator
+                                    orientation="vertical"
+                                    className="h-5"
+                                />
                                 <ActivePlayerIcon
                                     player_id={activePlayer}
                                     is_host={isHost}
