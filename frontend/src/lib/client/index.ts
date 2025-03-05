@@ -202,9 +202,13 @@ export class GameClient {
         }
 
         if (action.type == ShahrazadActionCase.SetPlayer) {
-            this.callbacks.onMessage(
-                `${action.player_id} has new name: ${action.player.display_name}`
-            );
+            if (action.player) {
+                this.callbacks.onMessage(
+                    `${action.player_id} has new name: ${action.player.display_name}`
+                );
+            } else {
+                this.callbacks.onMessage(`${action.player_id} has left.`);
+            }
         }
         this.callbacks.onGameUpdate(newState);
         return true;
@@ -225,6 +229,12 @@ export class GameClient {
     queueAction(action: ShahrazadAction) {
         if (!this.gameState) {
             console.error("[ws] attempting queue action without gameState");
+            return;
+        }
+        if (action.type == ShahrazadActionCase.GameTerminated) {
+            this.broadcastAction({
+                action,
+            });
             return;
         }
         const success = this.applyAction(action);

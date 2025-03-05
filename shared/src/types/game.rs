@@ -366,13 +366,39 @@ impl ShahrazadGame {
                 player_id,
             } => todo!("{}{}", deck_uri, player_id),
             ShahrazadAction::SetPlayer { player_id, player } => {
-                let Some(playmat) = game.playmats.get_mut(&player_id) else {
+                if let Some(player) = player {
+                    let Some(playmat) = game.playmats.get_mut(&player_id) else {
+                        return None;
+                    };
+                    if playmat.player == player {
+                        return None;
+                    }
+                    playmat.player = player;
+                    return Some(game);
+                };
+
+                let Some(playmat) = game.playmats.get(&player_id) else {
                     return None;
                 };
-                if playmat.player == player {
-                    return None;
+
+                game.zones.remove(&playmat.battlefield);
+                game.zones.remove(&playmat.command);
+                game.zones.remove(&playmat.exile);
+                game.zones.remove(&playmat.graveyard);
+                game.zones.remove(&playmat.hand);
+                game.zones.remove(&playmat.library);
+
+                game.cards.retain(|_, card| card.owner != player_id);
+                game.playmats.remove(&player_id);
+                game.players.retain(|p| *p != player_id);
+
+                for player in game.players.iter() {
+                    let Some(playmat) = game.playmats.get_mut(&player) else {
+                        continue;
+                    };
+                    playmat.command_damage.remove(&player_id);
                 }
-                playmat.player = player;
+
                 return Some(game);
             }
             ShahrazadAction::AddPlayer { player_id, player } => {

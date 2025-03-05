@@ -28,6 +28,7 @@ export function ShahrazadGameProvider(props: {
     applyAction: (action: ShahrazadAction) => void;
     player_name: ShahrazadPlaymatId;
     players: ShahrazadPlaymatId[];
+    isHost: boolean;
     children: ReactNode;
 }) {
     function getCard(card: ShahrazadCardId): ShahrazadCard {

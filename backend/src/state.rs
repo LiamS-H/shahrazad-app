@@ -302,6 +302,19 @@ impl GameStateManager {
     ) -> Result<ServerUpdate, String> {
         let mut game_ref = self.games.get_mut(&game_id).ok_or("Game not found")?;
 
+        if let Some(ShahrazadAction::GameTerminated) = client_action.action {
+            game_ref.deleted = true;
+            self.codes.remove(&game_ref.code);
+            let disconnect_update = ServerUpdate {
+                action: client_action.action,
+                game: None,
+                player_id: game_id,
+                hash: None,
+            };
+            let _ = game_ref.tx.send(disconnect_update.clone());
+            return Err("game disconnected".into());
+        }
+
         game_ref.last_activity = Instant::now();
 
         let action_applied = match client_action.action.clone() {

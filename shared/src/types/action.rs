@@ -60,7 +60,7 @@ pub enum ShahrazadAction {
     },
     SetPlayer {
         player_id: ShahrazadPlaymatId,
-        player: ShahrazadPlayer,
+        player: Option<ShahrazadPlayer>,
     },
     AddPlayer {
         player_id: ShahrazadPlaymatId,
@@ -164,11 +164,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
             },
             Action::SetPlayer(a) => ShahrazadAction::SetPlayer {
                 player_id: a.player_id.into(),
-                player: a
-                    .player
-                    .unwrap()
-                    .try_into()
-                    .map_err(|_| "[SetPlayer] player err")?,
+                player: a.player.map(|p| p.into()),
             },
             Action::AddPlayer(a) => ShahrazadAction::AddPlayer {
                 player_id: a.player_id.into(),
@@ -280,7 +276,7 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                 ShahrazadAction::SetPlayer { player_id, player } => {
                     Some(Action::SetPlayer(proto::action::SetPlayer {
                         player_id: player_id.into(),
-                        player: Some(player.into()),
+                        player: player.map(|p| p.into()),
                     }))
                 }
                 ShahrazadAction::AddPlayer { player_id, player } => {

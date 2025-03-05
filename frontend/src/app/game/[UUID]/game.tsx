@@ -1,8 +1,11 @@
 "use client";
 import Game from "@/components/(game)/game";
 import { joinGame } from "@/lib/client/joinGame";
-import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
-import { ShahrazadGame } from "@/types/bindings/game";
+import {
+    ShahrazadActionCase,
+    type ShahrazadAction,
+} from "@/types/bindings/action";
+import type { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
 import "react-scrycards/dist/index.css";
@@ -13,8 +16,8 @@ import { toast } from "sonner";
 import ShareGameButton from "./ShareGameButton";
 import FullscreenToggle from "./FullscreenToggle";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
-import PlayerIcon from "@/components/(game)/player-icon";
 import Loading from "./loading";
+import { UserProfile } from "@/components/(ui)/user-profile";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -32,6 +35,7 @@ export default function GamePage(props: { game_id: string }) {
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
     const [activePlayer, setActivePlayer] = useState<string | null>(null);
     const [gameCode, setGameCode] = useState<number | null>(null);
+    const [isHost, setIsHost] = useState(false);
 
     const { preloadCards } = useScrycardsContext();
 
@@ -64,9 +68,16 @@ export default function GamePage(props: { game_id: string }) {
             return;
         }
 
-        const { player_id, player_name, game: initialState, code } = joinResult;
+        const {
+            player_id,
+            player_name,
+            game: initialState,
+            code,
+            is_host,
+        } = joinResult;
         toast(`Joined game ${code}`);
 
+        setIsHost(is_host);
         setPlayerUUID(player_id);
         setActivePlayer(player_name);
         setGameCode(code);
@@ -114,6 +125,9 @@ export default function GamePage(props: { game_id: string }) {
     }, [initGame, props.game_id, preloadCards]);
 
     const handleAction = useCallback((action: ShahrazadAction) => {
+        if (action.type === ShahrazadActionCase.SetPlayer && !action.player) {
+            setActivePlayer(null);
+        }
         try {
             gameClientRef.current?.queueAction(action);
         } catch (error) {
@@ -138,22 +152,27 @@ export default function GamePage(props: { game_id: string }) {
                     game={game}
                     activePlayer={activePlayer}
                     applyAction={handleAction}
+                    isHost={isHost}
                 />
             )}
             <div className="absolute top-4 right-4 flex gap-4">
-                <PlayerIcon
-                    onChange={
-                        activePlayer
-                            ? (p) => {
-                                  handleAction({
-                                      type: ShahrazadActionCase.SetPlayer,
-                                      player: p,
-                                      player_id: activePlayer,
-                                  });
-                              }
-                            : undefined
-                    }
-                />
+                {isLoading && (
+                    // don't love rendering the profile here and within the game component,
+                    // but I want the player icon to appear before the game loads, and it has a dynamic width
+                    <UserProfile
+                        onChange={
+                            activePlayer
+                                ? (p) => {
+                                      handleAction({
+                                          type: ShahrazadActionCase.SetPlayer,
+                                          player: p,
+                                          player_id: activePlayer,
+                                      });
+                                  }
+                                : undefined
+                        }
+                    />
+                )}
                 <ShareGameButton code={gameCode} />
                 <FullscreenToggle />
             </div>

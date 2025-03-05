@@ -1,5 +1,5 @@
 "use client";
-import PlayerIcon from "@/components/(game)/player-icon";
+import { UserProfile } from "@/components/(ui)/user-profile";
 import { ThemeToggle } from "@/components/(theme)/theme-toggle";
 import { Button } from "@/components/(ui)/button";
 import { useFullscreen } from "@/contexts/fullscreen";
@@ -32,7 +32,7 @@ export default function NavBar() {
                 </li>
                 {!inGame && (
                     <li className="ml-auto">
-                        <PlayerIcon />
+                        <UserProfile />
                     </li>
                 )}
             </ul>

@@ -75,7 +75,7 @@ export type ShahrazadActionCaseDeckImport = {
 export type ShahrazadActionCaseSetPlayer = {
     type: ShahrazadActionCase.SetPlayer;
     player_id: ShahrazadPlaymatId;
-    player: ShahrazadPlayer;
+    player?: ShahrazadPlayer;
 };
 
 export type ShahrazadActionCaseAddPlayer = {

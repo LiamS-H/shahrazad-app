@@ -104,7 +104,8 @@ async fn join_game(
                     player_id: player_id.into(),
                     game: BASE64_STANDARD.encode(game_info.game.encode()),
                     code: game_info.code,
-                    reconnected: true
+                    reconnected: true,
+                    is_host: game_info.host_id == player_id
                 })
                 .to_string();
             }
@@ -120,7 +121,8 @@ async fn join_game(
             player_id: player_id.into(),
             game: BASE64_STANDARD.encode(game_info.game.encode()),
             code: game_info.code,
-            reconnected: false
+            reconnected: false,
+            is_host: game_info.host_id == player_id
         })
         .to_string(),
         Err(_) => "Game not found".to_string(),

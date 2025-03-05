@@ -173,9 +173,9 @@ fn reproducibility() {
         },
         ShahrazadAction::SetPlayer {
             player_id: "1".into(),
-            player: ShahrazadPlayer {
+            player: Some(ShahrazadPlayer {
                 display_name: "test".into(),
-            },
+            }),
         },
         ShahrazadAction::CardZone {
             cards: [

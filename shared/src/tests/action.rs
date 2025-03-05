@@ -136,7 +136,7 @@ fn test_deck_import() {
 fn test_set_player() {
     let action = ShahrazadAction::SetPlayer {
         player_id: "player1".into(),
-        player: create_sample_player(),
+        player: Some(create_sample_player()),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
