@@ -94,11 +94,12 @@ export default function GamePage(props: { game_id: string }) {
                 onMessage: (message) => {
                     toast(message);
                 },
-                onGameTermination: () => {
+                onGameTermination: (reason) => {
                     signalError({
                         status: 404,
                         message: "Game Terminated",
                         description:
+                            reason ??
                             "Games Close after 5 minutes of inactivity. This game no longer exists.",
                     });
                 },
@@ -125,9 +126,6 @@ export default function GamePage(props: { game_id: string }) {
     }, [initGame, props.game_id, preloadCards]);
 
     const handleAction = useCallback((action: ShahrazadAction) => {
-        if (action.type === ShahrazadActionCase.SetPlayer && !action.player) {
-            setActivePlayer(null);
-        }
         try {
             gameClientRef.current?.queueAction(action);
         } catch (error) {

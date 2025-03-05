@@ -10,8 +10,8 @@ import {
 type GameClientCallbacks = {
     onGameUpdate: (game: ShahrazadGame) => void;
     onPreloadCards: (cards: string[]) => void;
-    onMessage: (error: string) => void;
-    onGameTermination: () => void;
+    onMessage: (message: string) => void;
+    onGameTermination: (message?: string) => void;
     onPlayerJoin: (player: string) => void;
 };
 
@@ -30,7 +30,7 @@ export class GameClient {
     constructor(
         private gameId: string,
         private playerUUID: string,
-        private playerName: string,
+        private player_id: string,
         private callbacks: GameClientCallbacks
     ) {}
 
@@ -101,7 +101,6 @@ export class GameClient {
                 return;
             }
             if (update.action) {
-                console.log("[ws] received action:", update.action);
                 if (update.action.type === ShahrazadActionCase.GameTerminated) {
                     this.callbacks.onGameTermination();
                     this.cleanup();
@@ -180,6 +179,14 @@ export class GameClient {
         if (action.type === ShahrazadActionCase.ZoneImport) {
             this.callbacks.onPreloadCards(action.cards.map(({ str }) => str));
         }
+        if (
+            action.type === ShahrazadActionCase.SetPlayer &&
+            !action.player &&
+            action.player_id == this.player_id
+        ) {
+            localStorage.setItem("saved-player-id", "");
+            this.callbacks.onGameTermination("You were kicked from the lobby.");
+        }
 
         const newState: ShahrazadGame = this.gameState.apply_action(action);
         if (!newState) {
@@ -235,8 +242,10 @@ export class GameClient {
             this.broadcastAction({
                 action,
             });
+            this.callbacks.onGameTermination();
             return;
         }
+
         const success = this.applyAction(action);
         if (!success) {
             console.log(
