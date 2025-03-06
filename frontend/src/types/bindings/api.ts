@@ -6,6 +6,6 @@ export type JoinGameQuery = { player?: ShahrazadPlayer; player_id?: string };
 export type CreateGameResponse = { game_id: string; player_id: string;
     code: number };
 export type JoinGameResponse = { game: string; game_id: string;
-    player_id: string; player_name: string; code: number;
-    reconnected: boolean };
+    player_id: string; player_name: string; code: number; reconnected: boolean;
+    is_host: boolean };
 export type FetchGameResponse = { game_id: string; code: number };

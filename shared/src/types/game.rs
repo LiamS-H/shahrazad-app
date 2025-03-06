@@ -323,6 +323,7 @@ impl ShahrazadGame {
                         revealed: Some([].into()),
                         x: Some(255),
                         y: Some(255),
+                        annotation: Some("".into()),
                     });
                 }
 
@@ -334,6 +335,7 @@ impl ShahrazadGame {
                 cards,
                 player_id,
                 token,
+                state,
             } => {
                 let mut card_ids = Vec::new();
                 let token = token;
@@ -344,19 +346,17 @@ impl ShahrazadGame {
                         let card_id: ShahrazadCardId =
                             ShahrazadCardId::new(format!("C{}", game.card_count));
                         card_ids.push(card_id.clone());
-                        game.cards.insert(
-                            card_id,
-                            ShahrazadCard {
-                                card_name,
-                                location: zone.clone(),
-                                token,
-                                state: ShahrazadCardState {
-                                    counters: Some(Vec::<ShahrazadCounter>::new()),
-                                    ..Default::default()
-                                },
-                                owner: player_id.clone(),
+                        let mut card = ShahrazadCard {
+                            card_name,
+                            location: zone.clone(),
+                            token,
+                            state: ShahrazadCardState {
+                                ..Default::default()
                             },
-                        );
+                            owner: player_id.clone(),
+                        };
+                        card.state.apply(&state);
+                        game.cards.insert(card_id, card);
                     }
                 }
                 game.zones.get_mut(&zone)?.cards.append(&mut card_ids);
@@ -367,13 +367,39 @@ impl ShahrazadGame {
                 player_id,
             } => todo!("{}{}", deck_uri, player_id),
             ShahrazadAction::SetPlayer { player_id, player } => {
-                let Some(playmat) = game.playmats.get_mut(&player_id) else {
+                if let Some(player) = player {
+                    let Some(playmat) = game.playmats.get_mut(&player_id) else {
+                        return None;
+                    };
+                    if playmat.player == player {
+                        return None;
+                    }
+                    playmat.player = player;
+                    return Some(game);
+                };
+
+                let Some(playmat) = game.playmats.get(&player_id) else {
                     return None;
                 };
-                if playmat.player == player {
-                    return None;
+
+                game.zones.remove(&playmat.battlefield);
+                game.zones.remove(&playmat.command);
+                game.zones.remove(&playmat.exile);
+                game.zones.remove(&playmat.graveyard);
+                game.zones.remove(&playmat.hand);
+                game.zones.remove(&playmat.library);
+
+                game.cards.retain(|_, card| card.owner != player_id);
+                game.playmats.remove(&player_id);
+                game.players.retain(|p| *p != player_id);
+
+                for player in game.players.iter() {
+                    let Some(playmat) = game.playmats.get_mut(&player) else {
+                        continue;
+                    };
+                    playmat.command_damage.remove(&player_id);
                 }
-                playmat.player = player;
+
                 return Some(game);
             }
             ShahrazadAction::AddPlayer { player_id, player } => {

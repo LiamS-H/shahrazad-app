@@ -42,14 +42,9 @@ fn test_card_state_serialization_empty() {
 #[test]
 fn test_card_state_serialization_xy_only() {
     let state = ShahrazadCardState {
-        inverted: None,
-        flipped: None,
-        tapped: None,
-        face_down: None,
-        revealed: None,
         x: Some(12),
         y: Some(12),
-        counters: None,
+        ..Default::default()
     };
     let buf: VecDeque<u8> = proto::card::ShahrazadCardState::from(state.clone())
         .encode_to_vec()

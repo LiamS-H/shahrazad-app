@@ -24,6 +24,7 @@ import { usePlayer } from "@/contexts/(game)/player";
 import { ContextMenuSubContent } from "@radix-ui/react-context-menu";
 import type { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import type { ScryfallCard } from "@scryfall/api-types";
+import { Annotate } from "./(menu-items)/annotate";
 
 function Content({
     cardId,
@@ -154,6 +155,7 @@ function Content({
                                     player_id: player,
                                     zone: playmat.battlefield,
                                     token: true,
+                                    state: {},
                                 });
                             }}
                         >
@@ -177,6 +179,7 @@ function Content({
                                                 player_id: player,
                                                 zone: playmat.battlefield,
                                                 token: true,
+                                                state: {},
                                             });
                                         }}
                                     >
@@ -231,6 +234,7 @@ function Content({
                         player_id: player,
                         zone: playmat.battlefield,
                         token: true,
+                        state: {},
                     });
                 }}
             >
@@ -247,6 +251,9 @@ function Content({
                 >
                     Delete Token{cards.length > 1 ? "s" : ""}
                 </ContextMenuItem>
+            )}
+            {cards.length === 1 && (
+                <Annotate cards={cards} shah_card={shah_card} />
             )}
         </>
     );

@@ -2,6 +2,7 @@ use std::collections::VecDeque;
 
 use crate::tests::utils::{create_sample_card_state, create_sample_player};
 use crate::types::action::{CardImport, ShahrazadAction};
+use crate::types::card::ShahrazadCardState;
 use prost::Message;
 
 use crate::proto;
@@ -103,6 +104,9 @@ fn test_zone_import() {
         ],
         token: false,
         player_id: "player1".into(),
+        state: ShahrazadCardState {
+            ..Default::default()
+        },
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -132,7 +136,7 @@ fn test_deck_import() {
 fn test_set_player() {
     let action = ShahrazadAction::SetPlayer {
         player_id: "player1".into(),
-        player: create_sample_player(),
+        player: Some(create_sample_player()),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()

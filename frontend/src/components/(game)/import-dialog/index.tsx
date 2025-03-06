@@ -21,7 +21,7 @@ import { useImportContext } from "@/contexts/(game)/import";
 
 export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
     const { importFor } = useImportContext();
-    const { applyAction, getPlaymat, active_player } =
+    const { applyAction, getPlaymat, active_player, settings } =
         useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const [deckstr, setDeckstr] = useState<string>("");
@@ -34,6 +34,7 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
                 deckId: playmat.library,
                 sideboardId: playmat.command,
                 playerId: player,
+                settings,
             });
             if (actions === undefined) {
                 toast("Coudln't fetch deck.");
@@ -44,6 +45,7 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
                 deckId: playmat.library,
                 sideboardId: playmat.command,
                 playerId: player,
+                settings,
             });
             if (actions === undefined) {
                 toast("Couldn't parse deck.");

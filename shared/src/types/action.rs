@@ -52,6 +52,7 @@ pub enum ShahrazadAction {
         cards: Vec<CardImport>,
         token: bool,
         player_id: ShahrazadPlaymatId,
+        state: ShahrazadCardState,
     },
     DeckImport {
         deck_uri: String,
@@ -59,7 +60,7 @@ pub enum ShahrazadAction {
     },
     SetPlayer {
         player_id: ShahrazadPlaymatId,
-        player: ShahrazadPlayer,
+        player: Option<ShahrazadPlayer>,
     },
     AddPlayer {
         player_id: ShahrazadPlaymatId,
@@ -155,6 +156,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                     .collect(),
                 token: a.token,
                 player_id: a.player_id.into(),
+                state: a.state.unwrap_or_default().into(),
             },
             Action::DeckImport(a) => ShahrazadAction::DeckImport {
                 deck_uri: a.deck_uri,
@@ -162,11 +164,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
             },
             Action::SetPlayer(a) => ShahrazadAction::SetPlayer {
                 player_id: a.player_id.into(),
-                player: a
-                    .player
-                    .unwrap()
-                    .try_into()
-                    .map_err(|_| "[SetPlayer] player err")?,
+                player: a.player.map(|p| p.into()),
             },
             Action::AddPlayer(a) => ShahrazadAction::AddPlayer {
                 player_id: a.player_id.into(),
@@ -254,6 +252,7 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                     cards,
                     token,
                     player_id,
+                    state,
                 } => Some(Action::ZoneImport(proto::action::ZoneImport {
                     zone: zone.into(),
                     cards: cards
@@ -263,8 +262,9 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                             amount: c.amount,
                         })
                         .collect(),
-                    token: token,
+                    token,
                     player_id: player_id.into(),
+                    state: Some(state.into()),
                 })),
                 ShahrazadAction::DeckImport {
                     deck_uri,
@@ -276,7 +276,7 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                 ShahrazadAction::SetPlayer { player_id, player } => {
                     Some(Action::SetPlayer(proto::action::SetPlayer {
                         player_id: player_id.into(),
-                        player: Some(player.into()),
+                        player: player.map(|p| p.into()),
                     }))
                 }
                 ShahrazadAction::AddPlayer { player_id, player } => {

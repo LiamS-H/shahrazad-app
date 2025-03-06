@@ -20,6 +20,7 @@ message ShahrazadCardState {
     bool hasRevealed = 8;
     uint32 x = 9;
     uint32 y = 10;
+    optional string annotation = 11;
 }
 
 message ShahrazadCounter {

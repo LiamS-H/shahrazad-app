@@ -63,6 +63,7 @@ export type ShahrazadActionCaseZoneImport = {
     cards: Array<CardImport>;
     token: boolean;
     player_id: ShahrazadPlaymatId;
+    state: ShahrazadCardState;
 };
 
 export type ShahrazadActionCaseDeckImport = {
@@ -74,7 +75,7 @@ export type ShahrazadActionCaseDeckImport = {
 export type ShahrazadActionCaseSetPlayer = {
     type: ShahrazadActionCase.SetPlayer;
     player_id: ShahrazadPlaymatId;
-    player: ShahrazadPlayer;
+    player?: ShahrazadPlayer;
 };
 
 export type ShahrazadActionCaseAddPlayer = {

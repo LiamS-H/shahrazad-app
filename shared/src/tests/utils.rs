@@ -14,6 +14,7 @@ pub fn create_sample_card_state() -> ShahrazadCardState {
         x: Some(1),
         y: Some(2),
         counters: Some(vec![ShahrazadCounter { amount: 3 }]),
+        annotation: Some("test".into()),
     }
 }
 

@@ -86,6 +86,9 @@ fn init_game() {
             .into(),
             player_id: "1".into(),
             token: false,
+            state: ShahrazadCardState {
+                ..Default::default()
+            },
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
@@ -97,6 +100,7 @@ fn init_game() {
             "cards": {
                 "C1":{
                     "state":{
+                        "annotation": null,
                         "inverted": null,
                         "flipped": null,
                         "tapped": null,
@@ -104,7 +108,7 @@ fn init_game() {
                         "revealed": null,
                         "x": null,
                         "y": null,
-                        "counters" : []
+                        "counters" : null
                     },
                     "owner":"1",
                     "token": false,
@@ -164,12 +168,15 @@ fn reproducibility() {
             .into(),
             player_id: "1".into(),
             token: false,
+            state: ShahrazadCardState {
+                ..Default::default()
+            },
         },
         ShahrazadAction::SetPlayer {
             player_id: "1".into(),
-            player: ShahrazadPlayer {
+            player: Some(ShahrazadPlayer {
                 display_name: "test".into(),
-            },
+            }),
         },
         ShahrazadAction::CardZone {
             cards: [
@@ -190,6 +197,7 @@ fn reproducibility() {
                 x: Some(0),
                 y: Some(0),
                 counters: Some([ShahrazadCounter { amount: 1 }].into()),
+                annotation: Some("test".into()),
             },
             destination: "Z2".into(),
             index: 0,
@@ -205,6 +213,7 @@ fn reproducibility() {
                 x: Some(1),
                 y: Some(1),
                 counters: Some([ShahrazadCounter { amount: 2 }].into()),
+                annotation: Some("test2".into()),
             },
         },
     ]
