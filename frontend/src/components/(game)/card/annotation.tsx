@@ -62,6 +62,7 @@ export function Annotation({ id }: { id: ShahrazadCardId }) {
                     <form
                         onSubmit={(e) => {
                             annotate();
+                            setOpen(false);
                             e.preventDefault();
                         }}
                     >
