@@ -12,7 +12,7 @@ import type {
     ShahrazadPlayer,
     ShahrazadPlaymatId,
 } from "@/types/bindings/playmat";
-import { DoorOpen, Trash2, User, UserPen } from "lucide-react";
+import { DoorOpen, Home, Trash2, User, UserPen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -99,6 +99,26 @@ export function ActivePlayerIcon({
                         onChange={(e) => setNameInput(e.target.value)}
                     />
                 </form>
+                <Button
+                    onClick={() => {
+                        const player = document.getElementById(
+                            `player-${player_id}`
+                        );
+                        if (!player) {
+                            console.error(
+                                "[player-icon] unable to locate player to scroll to."
+                            );
+                            return;
+                        }
+                        window.scrollTo({
+                            top: player.offsetTop - 60,
+                            behavior: "smooth",
+                        });
+                    }}
+                >
+                    My Board
+                    <Home />
+                </Button>
                 <Button
                     variant="destructive"
                     onClick={() => {

@@ -56,7 +56,7 @@ export default function Game({
                                     {playmat_components}
                                 </div>
                             </AnimatePresence>
-                            <div className="absolute top-4 right-44 flex gap-4 items-center">
+                            <div className="fixed top-4 right-44 flex gap-4 items-center">
                                 {players.slice(1).map((player_id) => (
                                     <NonActivePlayerIcon
                                         key={player_id}
