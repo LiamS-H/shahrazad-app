@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: "Shahrazad",
-    description: "A new way to play.",
+    description: "A free fast multiplayer playtester.",
 };
 
 export default function RootLayout({
