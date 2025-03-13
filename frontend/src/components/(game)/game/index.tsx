@@ -104,10 +104,12 @@ export default function Game({
                                         player_id={player_id}
                                     />
                                 ))}
-                                <Separator
-                                    orientation="vertical"
-                                    className="h-5"
-                                />
+                                {players.length > 1 && (
+                                    <Separator
+                                        orientation="vertical"
+                                        className="h-5"
+                                    />
+                                )}
                                 <ActivePlayerIcon
                                     player_id={activePlayer}
                                     is_host={isHost}
