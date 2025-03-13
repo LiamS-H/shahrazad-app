@@ -16,6 +16,7 @@ import { Label } from "@/components/(ui)/label";
 import { Input } from "@/components/(ui)/input";
 import type { ScryfallCard, ScryfallColors } from "@scryfall/api-types";
 import { LayoutGroup } from "framer-motion";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 interface ISort {
     type: "lands" | "creatures" | "artifacts" | "spells" | null;
@@ -151,8 +152,6 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
 
     const data: IDroppableData = { sortable: true };
 
-    const { setNodeRef } = useDroppable({ id: props.id, data });
-
     const color_buttons: ReactNode[] = [];
 
     const toggleColor = (color: Color) => {
@@ -197,6 +196,14 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         );
     }
 
+    const { setNodeRef, node } = useDroppable({ id: props.id, data });
+    const colVirtualizer = useVirtualizer({
+        horizontal: true,
+        count: cards.length,
+        getScrollElement: () => node.current,
+        estimateSize: () => 100 + 8,
+    });
+
     return (
         <div className="w-full flex flex-col gap-4 h-[240px]">
             <div className="max-w-5xl flex flex-row gap-6 justify-around items-center">
@@ -229,23 +236,34 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                 </div>
                 <div className="flex flex-row space-x-2 ">{color_buttons}</div>
             </div>
-            <div
-                ref={setNodeRef}
-                className="flex flex-row flex-nowrap gap-1 overflow-x-auto max-w-full"
-            >
-                {cards.length === 0 ? (
-                    <Scrycard card={undefined} />
-                ) : (
-                    <LayoutGroup>
-                        {cards.map((c) => (
-                            <DraggableCard
-                                id={c}
-                                key={c}
-                                animationTime={null}
-                            />
-                        ))}
-                    </LayoutGroup>
-                )}
+            <div ref={setNodeRef} className="overflow-x-auto relative h-fit">
+                <div
+                    style={{
+                        width: `${colVirtualizer.getTotalSize()}px`,
+                        height: "140px",
+                        position: "relative",
+                    }}
+                >
+                    {cards.length === 0 ? (
+                        <Scrycard card={undefined} />
+                    ) : (
+                        <LayoutGroup>
+                            {colVirtualizer
+                                .getVirtualItems()
+                                .map((virtualItem) => (
+                                    <DraggableCard
+                                        id={cards[virtualItem.index]}
+                                        key={virtualItem.key}
+                                        animationTime={null}
+                                        divStyle={{
+                                            left: `${virtualItem.start}px`,
+                                            position: "absolute",
+                                        }}
+                                    />
+                                ))}
+                        </LayoutGroup>
+                    )}
+                </div>
             </div>
         </div>
     );

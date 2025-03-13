@@ -12,6 +12,8 @@ import { ImportContextProvider } from "@/contexts/(game)/import";
 import { ActivePlayerIcon } from "./active-player-icon";
 import { NonActivePlayerIcon } from "./non-active-player-icon";
 import { Separator } from "@/components/(ui)/separator";
+import { useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -26,7 +28,7 @@ export default function Game({
     activePlayer,
     isHost,
 }: ShahrazadProps) {
-    const players = [];
+    const players: string[] = [];
 
     const offset = game.players.indexOf(activePlayer);
     const numPlayers = game.players.length;
@@ -34,9 +36,14 @@ export default function Game({
         const player = game.players[(i + offset) % numPlayers];
         players.push(player);
     }
-    const playmat_components = players.map((player) => (
-        <Playmat active={player == activePlayer} player={player} key={player} />
-    ));
+
+    const scroll_ref = useRef<HTMLDivElement>(null);
+    const colVirtualizer = useVirtualizer({
+        count: players.length,
+        getScrollElement: () => scroll_ref.current,
+        estimateSize: () => 657 + 16,
+        overscan: 0,
+    });
 
     return (
         <ShahrazadGameProvider
@@ -52,8 +59,42 @@ export default function Game({
                         <ImportContextProvider>
                             <Keybinds />
                             <AnimatePresence>
-                                <div className="mx-4 w-ful h-ful flex flex-col gap-4">
-                                    {playmat_components}
+                                <div
+                                    className="pl-4 w-full overflow-y-auto"
+                                    ref={scroll_ref}
+                                >
+                                    <div
+                                        style={{
+                                            height: `${colVirtualizer.getTotalSize()}px`,
+                                            position: "relative",
+                                        }}
+                                    >
+                                        {colVirtualizer
+                                            .getVirtualItems()
+                                            .map((virtualItem) => {
+                                                const player =
+                                                    players[virtualItem.index];
+                                                return (
+                                                    <div
+                                                        style={{
+                                                            position:
+                                                                "absolute",
+                                                            top: `${virtualItem.start}px`,
+                                                            width: "100%",
+                                                        }}
+                                                        key={player}
+                                                    >
+                                                        <Playmat
+                                                            active={
+                                                                player ==
+                                                                activePlayer
+                                                            }
+                                                            player={player}
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
                                 </div>
                             </AnimatePresence>
                             <div className="absolute top-4 right-44 flex gap-4 items-center">

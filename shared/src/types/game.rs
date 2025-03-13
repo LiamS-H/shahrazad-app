@@ -378,6 +378,13 @@ impl ShahrazadGame {
                     return Some(game);
                 };
 
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::ClearBoard {
+                        player_id: player_id.clone(),
+                    },
+                    game,
+                );
+
                 let Some(playmat) = game.playmats.get(&player_id) else {
                     return None;
                 };
