@@ -110,9 +110,9 @@ export function ActivePlayerIcon({
                             );
                             return;
                         }
-                        window.scrollTo({
-                            top: player.offsetTop - 60,
+                        player.scrollIntoView({
                             behavior: "smooth",
+                            block: "start",
                         });
                     }}
                 >

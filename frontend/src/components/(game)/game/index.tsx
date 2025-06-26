@@ -94,6 +94,17 @@ export default function Game({
                                                     </div>
                                                 );
                                             })}
+                                        {players.map((player, i) => (
+                                            <div
+                                                key={player}
+                                                id={`player-${player}`}
+                                                style={{
+                                                    position: "absolute",
+                                                    top: `${i * (657 + 16)}px`,
+                                                    width: "100%",
+                                                }}
+                                            />
+                                        ))}
                                     </div>
                                 </div>
                             </AnimatePresence>
