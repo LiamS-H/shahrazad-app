@@ -8,7 +8,7 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from "@/components/(ui)/command";
-import { DialogTitle } from "@/components/(ui)/dialog";
+import { DialogDescription, DialogTitle } from "@/components/(ui)/dialog";
 import { KeyShortcut } from "@/components/(ui)/key-shortcut";
 import { VisuallyHidden } from "@/components/(ui)/visually-hidden";
 
@@ -140,6 +140,9 @@ export function Keybinds() {
         >
             <VisuallyHidden>
                 <DialogTitle>Commands</DialogTitle>
+                <DialogDescription>
+                    Search commands and their Keyboard shortcuts.
+                </DialogDescription>
             </VisuallyHidden>
             <CommandInput placeholder="Type a command or search..." />
             <CommandList>
