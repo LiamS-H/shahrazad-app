@@ -17,6 +17,7 @@ import { Input } from "@/components/(ui)/input";
 import type { ScryfallCard, ScryfallColors } from "@scryfall/api-types";
 import { LayoutGroup } from "framer-motion";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import SearchCardContextMenu from "@/components/(game)/(context-menus)/search-card";
 
 interface ISort {
     type: "lands" | "creatures" | "artifacts" | "spells" | null;
@@ -251,15 +252,20 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                             {colVirtualizer
                                 .getVirtualItems()
                                 .map((virtualItem) => (
-                                    <DraggableCard
-                                        id={cards[virtualItem.index]}
+                                    <SearchCardContextMenu
+                                        cardId={cards[virtualItem.index]}
+                                        zoneId={props.id}
                                         key={virtualItem.key}
-                                        animationTime={null}
-                                        divStyle={{
-                                            left: `${virtualItem.start}px`,
-                                            position: "absolute",
-                                        }}
-                                    />
+                                    >
+                                        <DraggableCard
+                                            id={cards[virtualItem.index]}
+                                            animationTime={null}
+                                            divStyle={{
+                                                left: `${virtualItem.start}px`,
+                                                position: "absolute",
+                                            }}
+                                        />
+                                    </SearchCardContextMenu>
                                 ))}
                         </LayoutGroup>
                     )}
