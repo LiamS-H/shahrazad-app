@@ -102,11 +102,11 @@ export default function CommandDamageButton({
                         size="icon"
                         variant="outline"
                         onClick={() => {
-                            setDamage(damage + 1);
-                            setDamageInput((damage + 1).toString());
+                            setDamage(damage - 1);
+                            setDamageInput((damage - 1).toString());
                         }}
                     >
-                        <Plus />
+                        <Minus />
                     </Button>
                     <form onSubmit={onSubmit}>
                         <Input
@@ -119,15 +119,16 @@ export default function CommandDamageButton({
                             }}
                         />
                     </form>
+
                     <Button
                         size="icon"
                         variant="outline"
                         onClick={() => {
-                            setDamage(damage - 1);
-                            setDamageInput((damage - 1).toString());
+                            setDamage(damage + 1);
+                            setDamageInput((damage + 1).toString());
                         }}
                     >
-                        <Minus />
+                        <Plus />
                     </Button>
                 </PopoverContent>
             </Popover>
