@@ -110,6 +110,10 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
     const { selectedCards } = useSelection();
     const { handleMouseMove, rotation } = useRotation();
 
+    if (!main_card) {
+        return null;
+    }
+
     const main_card_comp = (
         <div onMouseMove={handleMouseMove} className="absolute">
             <SingleCard

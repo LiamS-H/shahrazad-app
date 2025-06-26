@@ -230,6 +230,9 @@ impl ShahrazadGame {
             } => {
                 let mut mutated = false;
 
+                let dest_zone = game.zones.get(&dest_id)?;
+
+                let mut tokens = Vec::new();
                 let mut migrating_cards = HashSet::new();
                 {
                     let mut migrating_zones = Vec::new();
@@ -242,17 +245,16 @@ impl ShahrazadGame {
                         };
                         migrating_zones.push(card.location.clone());
                         card.migrate(dest_id.clone());
-
-                        // let mut new_card = ShahrazadCard::clone(card);
-                        // new_card.state.apply(&card.state);
-                        // new_card.state.apply(&state);
-                        // new_card.migrate(dest_id.clone());
-                        // if new_card != *card {
-                        //     mutated = true;
-                        //     game.cards.insert(id.clone(), new_card);
-                        // };
                         migrating_cards.insert(id.clone());
+
+                        if dest_zone.name != ZoneName::BATTLEFIELD {
+                            if card.token {
+                                tokens.push(id.clone());
+                            }
+                            card.state.counters = None;
+                        }
                     }
+
                     for id in &migrating_zones {
                         let Some(zone) = game.zones.get_mut(id) else {
                             continue;
@@ -293,9 +295,15 @@ impl ShahrazadGame {
                         .filter(|id| migrating_cards.contains(id)),
                 );
 
-                if dest_zone.cards != original_cards {
+                if dest_zone.cards.len() != original_cards.len() {
                     mutated = true;
                 }
+
+                if ShahrazadGame::apply_action(ShahrazadAction::DeleteToken { cards: tokens }, game)
+                    .is_some()
+                {
+                    mutated = true;
+                };
 
                 if mutated {
                     Some(game)
@@ -411,22 +419,25 @@ impl ShahrazadGame {
             }
             ShahrazadAction::AddPlayer { player_id, player } => {
                 let zone_types = [
-                    "library",
-                    "hand",
-                    "graveyard",
-                    "battlefield",
-                    "exile",
-                    "command",
+                    ZoneName::INVALID,
+                    ZoneName::HAND,
+                    ZoneName::LIBRARY,
+                    ZoneName::BATTLEFIELD,
+                    ZoneName::GRAVEYARD,
+                    ZoneName::EXILE,
+                    ZoneName::COMMAND,
+                    ZoneName::SIDEBOARD,
                 ];
                 let mut zone_ids = Vec::new();
 
-                for (index, _) in zone_types.iter().enumerate() {
+                for (index, name) in zone_types.iter().enumerate() {
                     let zone_id =
                         ShahrazadZoneId::new(format!("Z{}", game.zone_count + index as u64 + 1));
                     game.zones.insert(
                         zone_id.clone(),
                         ShahrazadZone {
                             cards: Vec::<ShahrazadCardId>::new(),
+                            name: name.to_owned(),
                         },
                     );
                     zone_ids.push(zone_id);

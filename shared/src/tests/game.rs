@@ -47,7 +47,40 @@ fn init_game() {
             "zone_count": 6,
             "card_count": 0,
             "cards": {},
-            "zones": {"Z1":{"cards":[]},"Z2":{"cards":[]},"Z3":{"cards":[]},"Z4":{"cards":[]},"Z5":{"cards":[]},"Z6":{"cards":[]}},
+            "zones": {
+                "Z1": {
+                    "cards":[],
+                    "name": "INVALID"
+                },
+                "Z2": {
+                    "cards":[],
+                    "name": "HAND"
+                },
+                "Z3": {
+                    "cards": [],
+                    "name": "LIBRARY"
+                },
+                "Z4": {
+                    "cards":[],
+                    "name": "BATTLEFIELD"
+                },
+                "Z5": {
+                    "cards":[],
+                    "name": "GRAVEYARD"
+                },
+                "Z6": {
+                "cards":[],
+                    "name":"EXILE"
+                },
+                "Z7": {
+                    "cards":[],
+                    "name": "COMMAND"
+                },
+                "Z8": {
+                    "cards":[],
+                    "name": "SIDEBOARD"
+                }
+            },
             "playmats": {
                 "1":{
                     "library":"Z1",
@@ -116,7 +149,40 @@ fn init_game() {
                     "location":"Z1"
                 }
             },
-            "zones": {"Z1":{"cards":["C1"]},"Z2":{"cards":[]},"Z3":{"cards":[]},"Z4":{"cards":[]},"Z5":{"cards":[]},"Z6":{"cards":[]}},
+            "zones": {
+                "Z1": {
+                    "cards":["C1"],
+                    "name": "INVALID"
+                },
+                "Z2": {
+                    "cards":[],
+                    "name": "HAND"
+                },
+                "Z3": {
+                    "cards": [],
+                    "name": "LIBRARY"
+                },
+                "Z4": {
+                    "cards":[],
+                    "name": "BATTLEFIELD"
+                },
+                "Z5": {
+                    "cards":[],
+                    "name": "GRAVEYARD"
+                },
+                "Z6": {
+                "cards":[],
+                    "name":"EXILE"
+                },
+                "Z7": {
+                    "cards":[],
+                    "name": "COMMAND"
+                },
+                "Z8": {
+                    "cards":[],
+                    "name": "SIDEBOARD"
+                }
+            },
             "playmats": {
                 "1":{
                     "library":"Z1",
