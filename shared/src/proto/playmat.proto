@@ -12,8 +12,9 @@ message ShahrazadPlaymat {
     string battlefield = 4;
     string exile = 5;
     string command = 6;
-    int32 life = 7;
-    int32 mulligans = 8;
-    map<string, int32> command_damage = 9;
-    ShahrazadPlayer player = 10;
+    string sideboard = 7;
+    int32 life = 8;
+    int32 mulligans = 9;
+    map<string, int32> command_damage = 10;
+    ShahrazadPlayer player = 11;
 }

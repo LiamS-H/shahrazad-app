@@ -11,7 +11,7 @@ use crate::types::{
     game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
     player::ShahrazadPlayer,
     ws::{ClientAction, ServerUpdate},
-    zone::{ShahrazadZone, ShahrazadZoneId},
+    zone::{ShahrazadZone, ShahrazadZoneId, ZoneName},
 };
 
 pub fn export_all() {
@@ -96,6 +96,7 @@ pub fn export_all() {
         types: [
             ShahrazadZone,
             ShahrazadZoneId,
+            ZoneName
         ],
         destinations: [
             TypeScript(

@@ -39,6 +39,7 @@ pub struct ShahrazadPlaymat {
     battlefield: ShahrazadZoneId,
     exile: ShahrazadZoneId,
     command: ShahrazadZoneId,
+    sideboard: ShahrazadZoneId,
     life: i32,
     mulligans: i8,
     command_damage: HashMap<ShahrazadPlaymatId, i32>,
@@ -419,11 +420,10 @@ impl ShahrazadGame {
             }
             ShahrazadAction::AddPlayer { player_id, player } => {
                 let zone_types = [
-                    ZoneName::INVALID,
-                    ZoneName::HAND,
                     ZoneName::LIBRARY,
-                    ZoneName::BATTLEFIELD,
+                    ZoneName::HAND,
                     ZoneName::GRAVEYARD,
+                    ZoneName::BATTLEFIELD,
                     ZoneName::EXILE,
                     ZoneName::COMMAND,
                     ZoneName::SIDEBOARD,
@@ -462,6 +462,7 @@ impl ShahrazadGame {
                     battlefield: zone_ids[3].clone(),
                     exile: zone_ids[4].clone(),
                     command: zone_ids[5].clone(),
+                    sideboard: zone_ids[6].clone(),
                     life: game.settings.starting_life.clone(),
                     mulligans: 0,
                     command_damage,
@@ -723,6 +724,7 @@ impl TryFrom<proto::playmat::ShahrazadPlaymat> for ShahrazadPlaymat {
             battlefield: value.battlefield.into(),
             exile: value.exile.into(),
             command: value.command.into(),
+            sideboard: value.sideboard.into(),
             life: value.life.into(),
             mulligans: value.mulligans.try_into().unwrap(),
             command_damage: value
@@ -743,6 +745,7 @@ impl From<ShahrazadPlaymat> for proto::playmat::ShahrazadPlaymat {
             battlefield: value.battlefield.into(),
             exile: value.exile.into(),
             command: value.command.into(),
+            sideboard: value.sideboard.into(),
             life: value.life,
             mulligans: value.mulligans.into(),
             command_damage: value
