@@ -41,7 +41,9 @@ export default function HandCardContextMenu({
                 <ContextMenuLabel>{title}</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuSub>
-                    <RevealToPlayers cards={[cardId]} />
+                    <RevealToPlayers
+                        cards={shah_card.state.face_down ? [cardId] : []}
+                    />
                     <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>
                     <ContextMenuSubContent>
                         <ContextMenuItem
