@@ -502,6 +502,7 @@ impl ShahrazadGame {
                     let free_mulligans = game.settings.free_mulligans.parse::<i8>().unwrap_or(0);
 
                     if free_mulligans == 5 {
+                        playmat.mulligans = -1;
                     } else if playmat.mulligans <= -free_mulligans {
                         playmat.mulligans = 1;
                     } else if playmat.mulligans <= 0 {
