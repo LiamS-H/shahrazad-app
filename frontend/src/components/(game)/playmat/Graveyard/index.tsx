@@ -8,6 +8,7 @@ import GraveyardContextMenu from "../../(context-menus)/graveyard";
 import { useSearchContext } from "@/contexts/(game)/search";
 import { Scrycard, Scrydeck } from "react-scrycards";
 import Card from "../../card";
+import ZoneWrapper from "../zone-wrapper";
 
 export default function Graveyard(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
@@ -28,7 +29,8 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
 
     return (
         <GraveyardContextMenu zoneId={props.id}>
-            <div
+            <ZoneWrapper
+                zoneId={props.id}
                 onMouseEnter={() => {
                     if (hovered == false && zone.cards.length > 1) {
                         setHovered(true);
@@ -53,7 +55,7 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
                         <ArrowDownToLine />
                     </Button>
                 )}
-            </div>
+            </ZoneWrapper>
         </GraveyardContextMenu>
     );
 }

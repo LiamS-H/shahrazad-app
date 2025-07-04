@@ -4,6 +4,7 @@ import { ShahrazadZoneId } from "@/types/bindings/zone";
 import VerticalZone from "@/components/(game)/vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/(ui)/button";
+import ZoneWrapper from "../zone-wrapper";
 
 export default function Command(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
@@ -11,7 +12,8 @@ export default function Command(props: { id: ShahrazadZoneId }) {
     const [opened, setOpened] = useState(false);
     const [hovered, setHovered] = useState(false);
     return (
-        <div
+        <ZoneWrapper
+            zoneId={props.id}
             onMouseEnter={() => {
                 if (hovered == false && zone.cards.length > 1) {
                     setHovered(true);
@@ -36,6 +38,6 @@ export default function Command(props: { id: ShahrazadZoneId }) {
                     <ArrowDownToLine />
                 </Button>
             )}
-        </div>
+        </ZoneWrapper>
     );
 }

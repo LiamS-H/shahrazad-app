@@ -11,6 +11,7 @@ import { usePlayer } from "@/contexts/(game)/player";
 import Card from "@/components/(game)/card";
 import { useEffect, useRef } from "react";
 import { randomU64 } from "@/lib/utils/random";
+import ZoneWrapper from "../zone-wrapper";
 
 export default function Deck(props: { id: ShahrazadZoneId }) {
     const { getZone, applyAction, getPlaymat, active_player } =
@@ -53,7 +54,11 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
     }
 
     return (
-        <div className="shahrazad-deck w-fit" ref={(ref) => setNodeRef(ref)}>
+        <ZoneWrapper
+            zoneId={props.id}
+            className="shahrazad-deck w-fit"
+            ref={(ref) => setNodeRef(ref)}
+        >
             <DeckContextMenu zoneId={props.id}>
                 <div
                     onClick={(e) => {
@@ -74,6 +79,6 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                     />
                 </div>
             </DeckContextMenu>
-        </div>
+        </ZoneWrapper>
     );
 }

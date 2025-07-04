@@ -5,6 +5,7 @@ import VerticalZone from "../../vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/(ui)/button";
 import ExileContextMenu from "../../(context-menus)/exile";
+import ZoneWrapper from "../zone-wrapper";
 
 export default function Exile(props: { id: ShahrazadZoneId }) {
     const { getZone } = useShahrazadGameContext();
@@ -12,7 +13,10 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
     const [opened, setOpened] = useState(false);
     return (
         <ExileContextMenu zoneId={props.id}>
-            <div className="shahrazad-exile relative w-fit">
+            <ZoneWrapper
+                zoneId={props.id}
+                className="shahrazad-exile relative w-fit"
+            >
                 <div
                     onClick={() => {
                         setOpened((o) => !o);
@@ -34,7 +38,7 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
                         <ArrowDownToLine />
                     </Button>
                 )}
-            </div>
+            </ZoneWrapper>
         </ExileContextMenu>
     );
 }

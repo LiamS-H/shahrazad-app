@@ -7,6 +7,7 @@ import { useSelection } from "@/contexts/(game)/selection";
 import Selection from "./selection";
 
 import "./board.css";
+import ZoneWrapper from "../zone-wrapper";
 
 export const GRID_SIZE = 20;
 
@@ -36,7 +37,7 @@ export default function Board({ id }: { id: ShahrazadZoneId }) {
         data,
     });
     return (
-        <div className="relative" ref={setNodeRef}>
+        <ZoneWrapper zoneId={id} className="relative" ref={setNodeRef}>
             <div
                 className="shahrazad-playmat-board h-[501px] min-w-[901px] max-w-[1301] relative -z-10"
                 style={{
@@ -52,6 +53,6 @@ export default function Board({ id }: { id: ShahrazadZoneId }) {
                     key={id}
                 />
             ))}
-        </div>
+        </ZoneWrapper>
     );
 }

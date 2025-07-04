@@ -11,6 +11,7 @@ import { type ReactNode, useState } from "react";
 import { usePlayer } from "@/contexts/(game)/player";
 import HandContextMenu from "../../(context-menus)/hand";
 import { LayoutGroup } from "framer-motion";
+import ZoneWrapper from "../zone-wrapper";
 
 function HandWrapper({
     id,
@@ -23,7 +24,10 @@ function HandWrapper({
 }) {
     const [tooltipOpen, setTooltipOpen] = useState(false);
     return (
-        <div className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]">
+        <ZoneWrapper
+            zoneId={id}
+            className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]"
+        >
             <div className="relative z-10">
                 <HandContextMenu zoneId={id}>
                     <div className="absolute bottom-1">
@@ -45,7 +49,7 @@ function HandWrapper({
                 </HandContextMenu>
             </div>
             {children}
-        </div>
+        </ZoneWrapper>
     );
 }
 

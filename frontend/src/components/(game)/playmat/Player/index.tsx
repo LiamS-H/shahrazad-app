@@ -58,7 +58,10 @@ export default function Player() {
     }
 
     return (
-        <div className={`flex h-[140px] ${active && "text-highlight"}`}>
+        <div
+            data-shahplayer={player}
+            className={`flex h-[140px] ${active && "text-highlight"}`}
+        >
             <div className="flex flex-col justify-around">
                 <ImportDeckButton />
                 <ClearBoardButton />
