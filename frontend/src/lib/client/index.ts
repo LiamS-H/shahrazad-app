@@ -83,18 +83,17 @@ export class GameClient {
 
         const blob: Blob = event.data;
         const array = await blob.arrayBuffer();
-        console.log(array);
 
         try {
             const update: ServerUpdate = decode_server_update(array);
+            console.log(`[ws] ${array.byteLength}B received:`, update);
             if (!update) {
                 console.log("[client] couldn't parse update:", event.data);
                 return;
             }
             if (update.game) {
-                console.log("[ws] received game:", update.game);
-                if (update.hash && update.hash !== this.hash) {
-                    console.log("[ws] received game already matched hash");
+                if (update.hash && update.hash === this.hash) {
+                    console.log("[client] received game already matched hash");
                     return;
                 }
                 this.setState(update.game);
@@ -249,14 +248,14 @@ export class GameClient {
         const success = this.applyAction(action);
         if (!success) {
             console.log(
-                "[client] attempted to apply move that didn't udpate state."
+                "[client] attempted to apply move that didn't update state."
             );
             return;
         }
-        const hash = this.hash || this.gameState.get_hash();
+        this.hash ??= this.gameState.get_hash() as number;
         const req: ClientAction = {
             action,
-            hash,
+            hash: this.hash,
         };
         this.broadcastAction(req);
     }
@@ -274,11 +273,11 @@ export class GameClient {
         }
 
         console.log("[ws] broadcasting action", action);
-        // this.socket.send(JSON.stringify(action));
+        console.log("[client] current hash", this.gameState.get_hash());
         this.socket.send(encode_client_action(action));
     }
 
-    cleanup() {
+    public cleanup() {
         this.isCleanedUp = true;
         if (this.gameState) {
             this.gameState.free();

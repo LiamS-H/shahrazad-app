@@ -194,8 +194,8 @@ impl From<proto::card::ShahrazadCardState> for ShahrazadCardState {
             tapped: value.tapped,
             face_down: value.face_down,
             revealed,
-            x: if value.x >= 255 { None } else { Some(value.x) },
-            y: if value.y >= 255 { None } else { Some(value.y) },
+            x: if value.x <= 255 { Some(value.x) } else { None },
+            y: if value.y <= 255 { Some(value.y) } else { None },
             annotation: value.annotation,
         }
     }
@@ -228,8 +228,8 @@ impl From<ShahrazadCardState> for proto::card::ShahrazadCardState {
             has_revealed,
             has_counters,
             revealed,
-            x: value.x.unwrap_or(255),
-            y: value.y.unwrap_or(255),
+            x: value.x.unwrap_or(255 + 1),
+            y: value.y.unwrap_or(255 + 1),
             annotation: value.annotation,
         }
     }
