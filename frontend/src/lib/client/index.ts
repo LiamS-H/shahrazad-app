@@ -70,7 +70,9 @@ export class GameClient {
 
     private handleClose = (event: CloseEvent) => {
         console.log("[ws] closed", event);
-        this.attemptReconnect();
+        if (event.wasClean === false) {
+            this.attemptReconnect();
+        }
     };
 
     private handleMessage = async (event: MessageEvent) => {
@@ -86,20 +88,26 @@ export class GameClient {
 
         try {
             const update: ServerUpdate = decode_server_update(array);
-            console.log(`[ws] ${array.byteLength}B received:`, update);
             if (!update) {
-                console.log("[client] couldn't parse update:", event.data);
+                console.error("[client] couldn't parse update:", event.data);
                 return;
             }
             if (update.game) {
+                console.log(`[ws] ${array.byteLength}B game received:`, update);
                 if (update.hash && update.hash === this.hash) {
-                    console.log("[client] received game already matched hash");
+                    console.log(
+                        "[client] received a game that already matched hash"
+                    );
                     return;
                 }
                 this.setState(update.game);
                 return;
             }
             if (update.action) {
+                console.log(
+                    `[ws] ${array.byteLength}B move received:`,
+                    update.action.type
+                );
                 if (update.action.type === ShahrazadActionCase.GameTerminated) {
                     this.callbacks.onGameTermination();
                     this.cleanup();
@@ -115,7 +123,9 @@ export class GameClient {
                 this.applyAction(update.action);
             }
             if (update.hash && update.hash !== this.hash) {
-                console.log("[client] move validation failed.");
+                console.error(
+                    "[client] move validation failed, requesting new state."
+                );
                 this.broadcastAction({});
             }
         } catch (error) {
@@ -248,7 +258,8 @@ export class GameClient {
         const success = this.applyAction(action);
         if (!success) {
             console.log(
-                "[client] attempted to apply move that didn't update state."
+                "[client] attempted to apply move that didn't update state.",
+                action.type
             );
             return;
         }
@@ -273,7 +284,6 @@ export class GameClient {
         }
 
         console.log("[ws] broadcasting action", action);
-        console.log("[client] current hash", this.gameState.get_hash());
         this.socket.send(encode_client_action(action));
     }
 
