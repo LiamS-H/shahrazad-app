@@ -44,13 +44,13 @@ fn init_game() {
         let Some(new_state) = mutation else { panic!() };
 
         let expected_string = r#"{
-            "zone_count": 6,
+            "zone_count": 7,
             "card_count": 0,
             "cards": {},
             "zones": {
                 "Z1": {
                     "cards":[],
-                    "name": "INVALID"
+                    "name": "LIBRARY"
                 },
                 "Z2": {
                     "cards":[],
@@ -58,7 +58,7 @@ fn init_game() {
                 },
                 "Z3": {
                     "cards": [],
-                    "name": "LIBRARY"
+                    "name": "GRAVEYARD"
                 },
                 "Z4": {
                     "cards":[],
@@ -66,17 +66,13 @@ fn init_game() {
                 },
                 "Z5": {
                     "cards":[],
-                    "name": "GRAVEYARD"
+                    "name": "EXILE"
                 },
                 "Z6": {
-                "cards":[],
-                    "name":"EXILE"
+                    "cards":[],
+                    "name":"COMMAND"
                 },
                 "Z7": {
-                    "cards":[],
-                    "name": "COMMAND"
-                },
-                "Z8": {
                     "cards":[],
                     "name": "SIDEBOARD"
                 }
@@ -89,6 +85,7 @@ fn init_game() {
                     "battlefield":"Z4",
                     "exile":"Z5",
                     "command":"Z6",
+                    "sideboard":"Z7",
                     "command_damage":{"1":0},
                     "life": 20,
                     "mulligans": 0,
@@ -128,7 +125,7 @@ fn init_game() {
         let Some(new_state) = mutation else { panic!() };
 
         let expected_string = r#"{
-            "zone_count": 6,
+            "zone_count": 7,
             "card_count": 1,
             "cards": {
                 "C1":{
@@ -145,6 +142,7 @@ fn init_game() {
                     },
                     "owner":"1",
                     "token": false,
+                    "commander": false,
                     "card_name": "Opt",
                     "location":"Z1"
                 }
@@ -152,7 +150,7 @@ fn init_game() {
             "zones": {
                 "Z1": {
                     "cards":["C1"],
-                    "name": "INVALID"
+                    "name": "LIBRARY"
                 },
                 "Z2": {
                     "cards":[],
@@ -160,7 +158,7 @@ fn init_game() {
                 },
                 "Z3": {
                     "cards": [],
-                    "name": "LIBRARY"
+                    "name": "GRAVEYARD"
                 },
                 "Z4": {
                     "cards":[],
@@ -168,17 +166,13 @@ fn init_game() {
                 },
                 "Z5": {
                     "cards":[],
-                    "name": "GRAVEYARD"
+                    "name": "EXILE"
                 },
                 "Z6": {
-                "cards":[],
-                    "name":"EXILE"
+                    "cards":[],
+                    "name":"COMMAND"
                 },
                 "Z7": {
-                    "cards":[],
-                    "name": "COMMAND"
-                },
-                "Z8": {
                     "cards":[],
                     "name": "SIDEBOARD"
                 }
@@ -191,6 +185,7 @@ fn init_game() {
                     "battlefield":"Z4",
                     "exile":"Z5",
                     "command":"Z6",
+                    "sideboard":"Z7",
                     "command_damage":{"1":0},
                     "life": 20,
                     "mulligans": 0,
