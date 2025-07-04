@@ -14,6 +14,8 @@ export default function PreviewCard({
 
     const { currentPreview, setPreview } = useSelection();
 
+    // console.log("[preview] card:", shah_card);
+
     useEffect(() => {
         setFlipped(null);
     }, [currentPreview]);
