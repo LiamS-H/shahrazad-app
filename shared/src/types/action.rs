@@ -7,6 +7,7 @@ use crate::proto::{self};
 use super::{
     card::{ShahrazadCardId, ShahrazadCardState},
     game::ShahrazadPlaymatId,
+    message::Message,
     player::ShahrazadPlayer,
     // ws::ProtoSerialize,
     zone::ShahrazadZoneId,
@@ -84,6 +85,11 @@ pub enum ShahrazadAction {
     Mulligan {
         player_id: ShahrazadPlaymatId,
         seed: String,
+    },
+    SendMessage {
+        messages: Vec<Message>,
+        player_id: ShahrazadPlaymatId,
+        created_at: u32,
     },
     GameTerminated,
 }
@@ -192,6 +198,15 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
             Action::Mulligan(a) => ShahrazadAction::Mulligan {
                 player_id: a.player_id.into(),
                 seed: a.seed,
+            },
+            Action::SendMessage(a) => ShahrazadAction::SendMessage {
+                messages: a
+                    .messages
+                    .into_iter()
+                    .map(|m| m.try_into().unwrap())
+                    .collect(),
+                player_id: a.player_id.into(),
+                created_at: a.created_at,
             },
             Action::GameTerminated(_) => ShahrazadAction::GameTerminated,
         })
@@ -316,6 +331,15 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                         seed,
                     }))
                 }
+                ShahrazadAction::SendMessage {
+                    messages,
+                    player_id,
+                    created_at,
+                } => Some(Action::SendMessage(proto::action::SendMessage {
+                    messages: messages.into_iter().map(|m| m.into()).collect(),
+                    player_id: player_id.into(),
+                    created_at: created_at,
+                })),
                 ShahrazadAction::GameTerminated => {
                     Some(Action::GameTerminated(proto::action::GameTerminated {}))
                 }

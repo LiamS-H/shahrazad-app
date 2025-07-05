@@ -9,6 +9,7 @@ use crate::types::{
         ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState, ShahrazadCounter,
     },
     game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
+    message::{ArrowType, Message},
     player::ShahrazadPlayer,
     ws::{ClientAction, ServerUpdate},
     zone::{ShahrazadZone, ShahrazadZoneId, ZoneName},
@@ -23,10 +24,10 @@ pub fn export_all() {
         destinations: [
             TypeScript(
                 "./bindings/action.ts"
-                prefix: "\
-                import {ShahrazadCardId,ShahrazadCardState} from './card';
+                prefix: "import {ShahrazadCardId, ShahrazadCardState} from './card';
                 import {ShahrazadZoneId} from './zone';
                 import { ShahrazadPlaymatId, ShahrazadPlayer } from './playmat';
+                import { Message } from './message';
                 type usize = number;
                 ",
                 tab_size: 4,
@@ -86,6 +87,21 @@ pub fn export_all() {
                 "./bindings/playmat.ts"
                 prefix: "import {ShahrazadZoneId} from './zone';
                 ",
+                tab_size: 4,
+            ),
+        ]
+    }
+    .unwrap();
+
+    export_types! {
+        types: [
+            Message,
+            ArrowType
+        ],
+        destinations: [
+            TypeScript(
+                "./bindings/message.ts"
+                prefix: "",
                 tab_size: 4,
             ),
         ]

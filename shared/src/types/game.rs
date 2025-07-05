@@ -2,6 +2,7 @@
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::hash::{Hash, Hasher};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use prost::Message;
 use rand::seq::SliceRandom;
@@ -28,6 +29,7 @@ pub struct ShahrazadGame {
     playmats: HashMap<ShahrazadPlaymatId, ShahrazadPlaymat>,
     players: Vec<ShahrazadPlaymatId>,
     settings: ShahrazadGameSettings,
+    created_at: u64,
 }
 
 use super::zone::ShahrazadZoneId;
@@ -106,6 +108,7 @@ impl ShahrazadGame {
             playmat.hash(&mut state);
         }
         self.settings.hash(&mut state);
+        self.created_at.hash(&mut state);
 
         state.finish()
     }
@@ -118,6 +121,10 @@ impl ShahrazadGame {
             playmats: HashMap::new(),
             players: Vec::new(),
             settings,
+            created_at: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
         }
     }
 
@@ -635,6 +642,7 @@ impl ShahrazadGame {
                 );
                 Some(game)
             }
+            ShahrazadAction::SendMessage { .. } => Some(game),
             ShahrazadAction::GameTerminated => None,
             ShahrazadAction::DeleteToken { cards } => {
                 let mut mutated = false;
@@ -697,6 +705,7 @@ impl TryFrom<proto::game::ShahrazadGame> for ShahrazadGame {
                 .collect(),
             players: value.players.iter().map(|p| p.clone().into()).collect(),
             settings: value.settings.unwrap().into(),
+            created_at: value.created_at,
         })
     }
 }
@@ -723,6 +732,7 @@ impl From<ShahrazadGame> for proto::game::ShahrazadGame {
                 .collect(),
             players: value.players.iter().map(|p| p.clone().into()).collect(),
             settings: Some(value.settings.into()),
+            created_at: value.created_at,
         }
     }
 }
