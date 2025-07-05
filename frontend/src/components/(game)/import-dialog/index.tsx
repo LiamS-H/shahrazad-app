@@ -29,10 +29,13 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
 
     async function importDeck() {
         let actions: ShahrazadAction[] | null | undefined;
+        const sideboardId = settings.commander
+            ? playmat.command
+            : playmat.sideboard;
         if (url) {
             actions = await importFromUrl(url, {
                 deckId: playmat.library,
-                sideboardId: playmat.command,
+                sideboardId,
                 playerId: player,
                 settings,
             });
@@ -43,7 +46,7 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
         } else if (deckstr) {
             actions = importFromStr(deckstr, {
                 deckId: playmat.library,
-                sideboardId: playmat.command,
+                sideboardId,
                 playerId: player,
                 settings,
             });

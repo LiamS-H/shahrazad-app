@@ -8,6 +8,7 @@ import { SelectionProvider } from "@/contexts/(game)/selection";
 import { SearchContextProvider } from "@/contexts/(game)/search";
 import { AnimatePresence } from "framer-motion";
 import { Keybinds } from "../keybinds";
+import { Arrows } from "../arrows";
 import { ImportContextProvider } from "@/contexts/(game)/import";
 import { ActivePlayerIcon } from "./active-player-icon";
 import { NonActivePlayerIcon } from "./non-active-player-icon";
@@ -57,6 +58,7 @@ export default function Game({
                 <ShahrazadDND>
                     <SearchContextProvider>
                         <ImportContextProvider>
+                            <Arrows />
                             <Keybinds />
                             <AnimatePresence>
                                 <div
