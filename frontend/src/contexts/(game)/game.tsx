@@ -15,6 +15,7 @@ export interface IShahrazadGameContext {
     active_player: ShahrazadPlaymatId;
     players: ShahrazadPlaymatId[];
     settings: ShahrazadGameSettings;
+    created_at: bigint;
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
     getZone: (arg0: ShahrazadZoneId) => ShahrazadZone;
     getPlaymat: (arg0: ShahrazadPlaymatId) => ShahrazadPlaymat;
@@ -49,6 +50,7 @@ export function ShahrazadGameProvider(props: {
                 active_player: props.player_name,
                 players: props.players,
                 isHost: props.isHost,
+                created_at: props.game.created_at as unknown as bigint,
                 getCard,
                 getZone,
                 getPlaymat,

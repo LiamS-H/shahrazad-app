@@ -89,7 +89,7 @@ export default function Card(props: {
             <div
                 onMouseLeave={handleMouseLeave}
                 onMouseEnter={handleMouseEnter}
-                data-shahcard={props.id}
+                data-shahcard={dragging ? undefined : props.id}
                 className="relative"
             >
                 {card_comp}
@@ -112,7 +112,7 @@ export default function Card(props: {
             className={`relative${isAnimating ? " z-20" : ""}`}
             onMouseLeave={handleMouseLeave}
             onMouseEnter={handleMouseEnter}
-            data-shahcard={props.id}
+            data-shahcard={dragging ? undefined : props.id}
         >
             {card_comp}
         </motion.div>
