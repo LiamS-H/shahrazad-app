@@ -1,4 +1,4 @@
-import { ContextMenuItem } from "@/components/(ui)/context-menu";
+import { ContextMenuItem } from "@/components/(game)/(context-menus)/context-menu";
 import { Input } from "@/components/(ui)/input";
 import {
     Popover,

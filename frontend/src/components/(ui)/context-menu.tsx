@@ -5,24 +5,10 @@ import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
 
 import { cn } from "@/lib/utils/tw-merge";
-import { useArrowsContext } from "@/contexts/(game)/arrows";
 
 const ContextMenu = ContextMenuPrimitive.Root;
 
-const ContextMenuTrigger = React.forwardRef<
-    React.ElementRef<typeof ContextMenuPrimitive.Trigger>,
-    React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Trigger>
->(({ ...props }, ref) => {
-    const { isActive } = useArrowsContext();
-    return (
-        <ContextMenuPrimitive.Trigger
-            disabled={isActive}
-            ref={ref}
-            {...props}
-        />
-    );
-});
-ContextMenuTrigger.displayName = ContextMenuPrimitive.Trigger.displayName;
+const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
 
 const ContextMenuGroup = ContextMenuPrimitive.Group;
 

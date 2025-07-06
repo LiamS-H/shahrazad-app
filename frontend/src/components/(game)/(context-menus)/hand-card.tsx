@@ -12,7 +12,7 @@ import {
     ContextMenuSubContent,
     ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/(ui)/context-menu";
+} from "@/components/(game)/(context-menus)/context-menu";
 import { useShahrazadGameContext } from "../../../contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode, useState } from "react";
