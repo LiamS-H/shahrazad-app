@@ -19,6 +19,7 @@ import { usePlayer } from "@/contexts/(game)/player";
 import { useSearchContext } from "@/contexts/(game)/search";
 import { randomU64 } from "@/lib/utils/random";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 export function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
     const { player } = usePlayer();
@@ -82,14 +83,18 @@ export function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
 
 export default function ExileContextMenu({
     zoneId,
+    cardId,
     children,
 }: {
-    zoneId: string;
+    zoneId: ShahrazadZoneId;
+    cardId: ShahrazadCardId;
     children: ReactNode;
 }) {
     return (
         <ContextMenu>
-            <ContextMenuTrigger>{children}</ContextMenuTrigger>
+            <ContextMenuTrigger cardId={cardId} zoneId={zoneId}>
+                {children}
+            </ContextMenuTrigger>
             <ContextMenuContent>
                 <Content zoneId={zoneId} />
             </ContextMenuContent>

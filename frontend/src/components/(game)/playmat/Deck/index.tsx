@@ -60,7 +60,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                 className="shahrazad-deck w-fit"
                 ref={(ref) => setNodeRef(ref)}
             >
-                <DeckContextMenu zoneId={props.id}>
+                <DeckContextMenu cardId={zone.cards[0]} zoneId={props.id}>
                     <div
                         onClick={(e) => {
                             if (e.buttons !== 0) return;

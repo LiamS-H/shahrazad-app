@@ -28,7 +28,7 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
         }
 
         return (
-            <GraveyardContextMenu zoneId={props.id}>
+            <GraveyardContextMenu cardId={zone.cards[0]} zoneId={props.id}>
                 <ZoneWrapper
                     zoneId={props.id}
                     onMouseEnter={() => {

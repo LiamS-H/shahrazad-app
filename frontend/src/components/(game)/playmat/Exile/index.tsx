@@ -12,7 +12,7 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
     const [opened, setOpened] = useState(false);
     return useMemo(
         () => (
-            <ExileContextMenu zoneId={props.id}>
+            <ExileContextMenu cardId={zone.cards[0]} zoneId={props.id}>
                 <ZoneWrapper
                     zoneId={props.id}
                     className="shahrazad-exile relative w-fit"

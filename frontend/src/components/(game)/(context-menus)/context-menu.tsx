@@ -26,13 +26,14 @@ const ContextMenu = ContextMenuPrimitive.Root;
 const ContextMenuTrigger = React.forwardRef<
     React.ElementRef<typeof ContextMenuPrimitive.Trigger>,
     React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Trigger> & {
-        id?: ShahrazadCardId;
+        cardId: ShahrazadCardId;
+        zoneId?: ShahrazadCardId;
     }
->(({ id, ...props }, ref) => {
+>(({ zoneId, cardId, ...props }, ref) => {
     const { isActive, active } = useArrowsContext();
     return (
         <ContextMenuPrimitive.Trigger
-            disabled={isActive && active !== id}
+            disabled={isActive && active !== zoneId && active !== cardId}
             ref={ref}
             {...props}
         />

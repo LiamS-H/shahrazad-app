@@ -113,7 +113,7 @@ export default function HandCardContextMenu({
 
     return (
         <ContextMenu modal={open} onOpenChange={setOpen}>
-            <ContextMenuTrigger id={cardId}>{children}</ContextMenuTrigger>
+            <ContextMenuTrigger cardId={cardId}>{children}</ContextMenuTrigger>
             {content}
         </ContextMenu>
     );

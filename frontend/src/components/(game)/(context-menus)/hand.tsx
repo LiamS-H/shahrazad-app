@@ -105,7 +105,7 @@ export default function HandContextMenu({
 }) {
     return (
         <ContextMenu modal>
-            <ContextMenuTrigger>{children}</ContextMenuTrigger>
+            <ContextMenuTrigger cardId={zoneId}>{children}</ContextMenuTrigger>
             <ContextMenuContent>
                 <Content zoneId={zoneId} />
             </ContextMenuContent>

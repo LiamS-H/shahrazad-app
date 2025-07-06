@@ -107,38 +107,34 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
                         continue;
                     }
                     if (cur.dataset.shahcard) {
-                        if (cur.dataset.shah_card === source_card.current) {
+                        if (cur.dataset.shahcard === source_card.current) {
                             setActive(null);
                             return;
                         }
-                        event.preventDefault();
-                        event.stopPropagation();
                         addArrow({
                             arrow_type: ArrowType.CARD,
                             to: cur.dataset.shahcard,
                         });
-                        return;
+                        break;
                     }
                     if (cur.dataset.shahzone) {
-                        event.preventDefault();
-                        event.stopPropagation();
                         addArrow({
                             arrow_type: ArrowType.ZONE,
                             to: cur.dataset.shahzone,
                         });
-                        return;
+                        break;
                     }
                     if (cur.dataset.shahplayer) {
-                        event.preventDefault();
-                        event.stopPropagation();
                         addArrow({
                             arrow_type: ArrowType.PLAYER,
                             to: cur.dataset.shahplayer,
                         });
-                        return;
+                        break;
                     }
                     cur = cur.parentElement;
                 }
+                event.preventDefault();
+                event.stopPropagation();
                 setActive(null);
             },
             options

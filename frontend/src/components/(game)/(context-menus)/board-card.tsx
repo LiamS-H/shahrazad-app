@@ -272,7 +272,9 @@ export default function BoardCardContextMenu({
     return useMemo(() => {
         return (
             <ContextMenu modal>
-                <ContextMenuTrigger id={cardId}>{children}</ContextMenuTrigger>
+                <ContextMenuTrigger cardId={cardId}>
+                    {children}
+                </ContextMenuTrigger>
                 <ContextMenuContent>
                     <Content
                         cardId={cardId}

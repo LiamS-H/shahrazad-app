@@ -21,6 +21,7 @@ import { useSearchContext } from "@/contexts/(game)/search";
 import { DrawTo } from "./(menu-items)/draw-to";
 import { KeyShortcut } from "@/components/(ui)/key-shortcut";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
     const { player } = usePlayer();
@@ -107,14 +108,18 @@ function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
 
 export default function DeckContextMenu({
     zoneId,
+    cardId,
     children,
 }: {
-    zoneId: string;
+    zoneId: ShahrazadZoneId;
+    cardId: ShahrazadCardId;
     children: ReactNode;
 }) {
     return (
         <ContextMenu>
-            <ContextMenuTrigger>{children}</ContextMenuTrigger>
+            <ContextMenuTrigger cardId={cardId} zoneId={zoneId}>
+                {children}
+            </ContextMenuTrigger>
             <ContextMenuContent>
                 <Content zoneId={zoneId} />
             </ContextMenuContent>

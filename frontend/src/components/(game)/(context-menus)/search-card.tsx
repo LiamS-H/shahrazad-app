@@ -157,7 +157,9 @@ export default function SearchCardContextMenu({
 }) {
     return (
         <ContextMenu modal>
-            <ContextMenuTrigger>{children}</ContextMenuTrigger>
+            <ContextMenuTrigger zoneId={zoneId} cardId={cardId}>
+                {children}
+            </ContextMenuTrigger>
             <ContextMenuContent>
                 <Content cardId={cardId} zoneId={zoneId} />
             </ContextMenuContent>
