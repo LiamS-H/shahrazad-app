@@ -11,6 +11,11 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
     const zone = getZone(props.id);
     const [opened, setOpened] = useState(false);
     const [hovered, setHovered] = useState(false);
+
+    if (zone.cards.length === 0) {
+        return null;
+    }
+
     return (
         <ZoneWrapper
             zoneId={props.id}
