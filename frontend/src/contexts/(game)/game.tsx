@@ -16,7 +16,7 @@ import type {
     ShahrazadPlaymat,
     ShahrazadPlaymatId,
 } from "@/types/bindings/playmat";
-import { compareCards } from "@/lib/utils/compare";
+import { compareCards, compareZones } from "@/lib/utils/compare";
 
 export interface IShahrazadGameContext {
     active_player: ShahrazadPlaymatId;
@@ -91,4 +91,20 @@ export function useCard(id: ShahrazadCardId) {
     }, [getCard, id]);
 
     return card;
+}
+
+export function useZone(id: ShahrazadZoneId) {
+    const { getZone } = useShahrazadGameContext();
+    const [zone, setZone] = useState(() => getZone(id));
+
+    useEffect(() => {
+        // recomparison check would not be necessary since duped invocation shouldn't occur
+        setZone((old) => {
+            const card = getZone(id);
+            if (compareZones(card, old)) return old;
+            return card;
+        });
+    }, [getZone, id]);
+
+    return zone;
 }
