@@ -1,6 +1,6 @@
 import { Scrycard, Scrydeck } from "react-scrycards";
 import { ShahrazadCardId } from "@/types/bindings/card";
-import DraggableCard from "../card-draggable";
+import { DraggableCard } from "@/components/(game)/card-draggable";
 import type { ReactNode } from "react";
 import { LayoutGroup, motion } from "framer-motion";
 

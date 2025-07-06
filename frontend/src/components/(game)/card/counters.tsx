@@ -5,7 +5,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/(ui)/popover";
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { useCard, useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import type { ShahrazadCardId, ShahrazadCounter } from "@/types/bindings/card";
 import { Minus, Plus } from "lucide-react";
@@ -98,8 +98,8 @@ function Counter({
 }
 
 export default function Counters({ id }: { id: ShahrazadCardId }) {
-    const { applyAction, getCard } = useShahrazadGameContext();
-    const shah_card = getCard(id);
+    const { applyAction } = useShahrazadGameContext();
+    const shah_card = useCard(id);
     if (!shah_card.state.counters) {
         return null;
     }

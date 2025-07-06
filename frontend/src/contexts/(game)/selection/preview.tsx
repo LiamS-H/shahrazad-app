@@ -1,16 +1,34 @@
 import CardPreview from "@/components/(game)/card-preview";
 import { useSelection } from ".";
 
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { useEffect, useMemo, useState } from "react";
+import { ShahrazadCard } from "@/types/bindings/card";
+import { useShahrazadGameContext } from "../game";
+import { compareCards } from "@/lib/utils/compare";
 
 export default function Preview() {
     const { currentPreview } = useSelection();
     const { getCard } = useShahrazadGameContext();
 
-    if (currentPreview === null) return null;
+    const [shah_card, setCard] = useState<ShahrazadCard | null>(null);
 
-    const shah_card = getCard(currentPreview);
-    if (!shah_card) return null;
+    useEffect(() => {
+        if (!currentPreview) {
+            setCard(null);
+            return;
+        }
+        const card = getCard(currentPreview);
 
-    return <CardPreview shah_card={shah_card} />;
+        setCard((old) => {
+            if (!card) return null;
+            if (!old) return card;
+            if (compareCards(old, card)) return old;
+            return card;
+        });
+    }, [getCard, currentPreview]);
+
+    return useMemo(() => {
+        if (!shah_card) return null;
+        return <CardPreview shah_card={shah_card} />;
+    }, [shah_card]);
 }

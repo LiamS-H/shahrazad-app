@@ -2,7 +2,7 @@ import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import DraggableCard from "../card-draggable";
+import { DraggableCardWrapper } from "@/components/(game)/card-draggable";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import {
@@ -18,6 +18,7 @@ import type { ScryfallCard, ScryfallColors } from "@scryfall/api-types";
 import { LayoutGroup } from "framer-motion";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import SearchCardContextMenu from "@/components/(game)/(context-menus)/search-card";
+import Card from "@/components/(game)/card";
 
 interface ISort {
     type: "lands" | "creatures" | "artifacts" | "spells" | null;
@@ -252,20 +253,24 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                             {colVirtualizer
                                 .getVirtualItems()
                                 .map((virtualItem) => (
-                                    <SearchCardContextMenu
-                                        cardId={cards[virtualItem.index]}
-                                        zoneId={props.id}
+                                    <DraggableCardWrapper
                                         key={virtualItem.key}
+                                        id={cards[virtualItem.index]}
+                                        divStyle={{
+                                            left: `${virtualItem.start}px`,
+                                            position: "absolute",
+                                        }}
                                     >
-                                        <DraggableCard
-                                            id={cards[virtualItem.index]}
-                                            animationTime={null}
-                                            divStyle={{
-                                                left: `${virtualItem.start}px`,
-                                                position: "absolute",
-                                            }}
-                                        />
-                                    </SearchCardContextMenu>
+                                        <SearchCardContextMenu
+                                            cardId={cards[virtualItem.index]}
+                                            zoneId={props.id}
+                                        >
+                                            <Card
+                                                id={cards[virtualItem.index]}
+                                                animationTime={null}
+                                            />
+                                        </SearchCardContextMenu>
+                                    </DraggableCardWrapper>
                                 ))}
                         </LayoutGroup>
                     )}

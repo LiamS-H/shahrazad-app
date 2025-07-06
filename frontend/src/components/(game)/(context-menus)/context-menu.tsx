@@ -19,17 +19,20 @@ import {
     ContextMenuSubContent,
     ContextMenuSubTrigger,
 } from "@/components/(ui)/context-menu";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 const ContextMenu = ContextMenuPrimitive.Root;
 
 const ContextMenuTrigger = React.forwardRef<
     React.ElementRef<typeof ContextMenuPrimitive.Trigger>,
-    React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Trigger>
->(({ ...props }, ref) => {
-    const { isActive } = useArrowsContext();
+    React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Trigger> & {
+        id?: ShahrazadCardId;
+    }
+>(({ id, ...props }, ref) => {
+    const { isActive, active } = useArrowsContext();
     return (
         <ContextMenuPrimitive.Trigger
-            disabled={isActive}
+            disabled={isActive && active !== id}
             ref={ref}
             {...props}
         />

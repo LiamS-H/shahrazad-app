@@ -9,7 +9,8 @@ import {
 } from "react";
 
 interface IDraggingContext {
-    dragging: null | ShahrazadCardId[];
+    dragging: ShahrazadCardId[];
+    isDragging: boolean;
 }
 
 const DraggingContext = createContext<null | IDraggingContext>(null);
@@ -29,7 +30,7 @@ export function DraggingContextProvider({
     children: ReactNode;
     dragging: null | ShahrazadCardId[];
 }) {
-    const [cards, setCards] = useState<null | ShahrazadCardId[]>(null);
+    const [cards, setCards] = useState<[] | ShahrazadCardId[]>([]);
     const timer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     useEffect(() => {
@@ -42,7 +43,7 @@ export function DraggingContextProvider({
         if (!dragging) {
             clearTimeout(timer.current);
             timer.current = setTimeout(() => {
-                setCards(null);
+                setCards([]);
                 clearTimeout(timer.current);
                 timer.current = undefined;
             }, 0);
@@ -50,7 +51,9 @@ export function DraggingContextProvider({
     }, [dragging]);
 
     return (
-        <DraggingContext.Provider value={{ dragging: cards }}>
+        <DraggingContext.Provider
+            value={{ dragging: cards, isDragging: cards.length !== 0 }}
+        >
             {children}
         </DraggingContext.Provider>
     );

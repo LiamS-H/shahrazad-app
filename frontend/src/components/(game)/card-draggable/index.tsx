@@ -1,25 +1,45 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { ShahrazadCardId } from "@/types/bindings/card";
-import { useShahrazadGameContext } from "../../../contexts/(game)/game";
-import { CSSProperties } from "react";
+import { useCard } from "@/contexts/(game)/game";
+import { CSSProperties, ReactNode, useEffect, useMemo } from "react";
 import { IDraggableData } from "@/types/interfaces/dnd";
 import Card from "../card";
 
-export default function DraggableCard(props: {
+interface DraggableCardWrapperProps {
     id: ShahrazadCardId;
     noDragTranslate?: true;
     dragDisabled?: true;
     dragNamespace?: string;
-    animationTime?: number | null;
     divStyle?: CSSProperties;
-}) {
-    const { getCard } = useShahrazadGameContext();
-    const shah_card = getCard(props.id);
+    children: ReactNode;
+}
 
-    const data: IDraggableData = {
-        zone: shah_card.location,
-    };
+type DraggableCardProps = Omit<DraggableCardWrapperProps, "children"> & {
+    animationTime?: number | null;
+};
+
+export function DraggableCard({
+    id,
+    animationTime,
+    ...props
+}: DraggableCardProps) {
+    return (
+        <DraggableCardWrapper id={id} {...props}>
+            <Card id={id} animationTime={animationTime} />
+        </DraggableCardWrapper>
+    );
+}
+
+export function DraggableCardWrapper(props: DraggableCardWrapperProps) {
+    const shah_card = useCard(props.id);
+
+    const data: IDraggableData = useMemo(
+        () => ({
+            zone: shah_card.location,
+        }),
+        [shah_card]
+    );
     const drag_id = props.dragNamespace
         ? `${props.dragNamespace}:${props.id}`
         : props.id;
@@ -30,28 +50,40 @@ export default function DraggableCard(props: {
             disabled: props.dragDisabled,
         });
 
-    const draggableStyle: CSSProperties = {};
-    draggableStyle.transform =
-        props.noDragTranslate && isDragging
-            ? undefined
-            : CSS.Translate.toString(transform);
-    draggableStyle.filter =
-        isDragging && props.noDragTranslate ? "grayscale(100%)" : undefined;
+    const draggableStyle: CSSProperties = useMemo(() => {
+        const draggableStyle: CSSProperties = {};
+        if (!(props.noDragTranslate && isDragging)) {
+            draggableStyle.transform = CSS.Translate.toString(transform);
+        }
+        if (isDragging && props.noDragTranslate) {
+            draggableStyle.filter = "grayscale(100%)";
+        }
+        return draggableStyle;
+    }, [transform, isDragging, props.noDragTranslate]);
 
-    return (
-        <div
-            ref={setNodeRef}
-            {...listeners}
-            {...attributes}
-            style={{
-                ...draggableStyle,
-                width: "fit-content",
-                cursor: "grab",
+    return useMemo(() => {
+        return (
+            <div
+                ref={setNodeRef}
+                {...listeners}
+                {...attributes}
+                style={{
+                    ...draggableStyle,
+                    width: "fit-content",
+                    cursor: "grab",
 
-                ...props.divStyle,
-            }}
-        >
-            <Card id={props.id} animationTime={props.animationTime} />
-        </div>
-    );
+                    ...props.divStyle,
+                }}
+            >
+                {props.children}
+            </div>
+        );
+    }, [
+        attributes,
+        draggableStyle,
+        listeners,
+        props.children,
+        props.divStyle,
+        setNodeRef,
+    ]);
 }

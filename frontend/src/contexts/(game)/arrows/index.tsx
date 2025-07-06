@@ -107,6 +107,10 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
                         continue;
                     }
                     if (cur.dataset.shahcard) {
+                        if (cur.dataset.shah_card === source_card.current) {
+                            setActive(null);
+                            return;
+                        }
                         event.preventDefault();
                         event.stopPropagation();
                         addArrow({

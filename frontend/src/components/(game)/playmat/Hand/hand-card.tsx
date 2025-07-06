@@ -1,8 +1,8 @@
-import { CSSProperties, type ReactNode } from "react";
+import { CSSProperties, useMemo, type ReactNode } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IDraggableData } from "@/types/interfaces/dnd";
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { useCard } from "@/contexts/(game)/game";
 import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import Card from "../../card";
 import { Eye } from "lucide-react";
@@ -46,30 +46,30 @@ export default function HandCard(props: {
     id: ShahrazadCardId;
     index: number;
 }) {
-    const { getCard } = useShahrazadGameContext();
-    const shah_card = getCard(props.id);
+    const shah_card = useCard(props.id);
 
-    const display_eye =
-        !shah_card.state.face_down ||
-        (shah_card.state.revealed && shah_card.state.revealed.length > 1);
-
-    return (
-        <SortableWrapper
-            id={props.id}
-            index={props.index}
-            shah_card={shah_card}
-        >
-            <HandCardContextMenu cardId={props.id}>
-                <Card id={props.id} animationTime={0.3}>
-                    {display_eye && (
-                        <div className="relative">
-                            <div className="absolute bottom-[100px] w-full flex justify-center">
-                                <Eye />
+    return useMemo(() => {
+        const display_eye =
+            !shah_card.state.face_down ||
+            (shah_card.state.revealed && shah_card.state.revealed.length > 1);
+        return (
+            <SortableWrapper
+                id={props.id}
+                index={props.index}
+                shah_card={shah_card}
+            >
+                <HandCardContextMenu cardId={props.id}>
+                    <Card id={props.id} animationTime={0.3}>
+                        {display_eye && (
+                            <div className="relative">
+                                <div className="absolute bottom-[100px] w-full flex justify-center">
+                                    <Eye />
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </Card>
-            </HandCardContextMenu>
-        </SortableWrapper>
-    );
+                        )}
+                    </Card>
+                </HandCardContextMenu>
+            </SortableWrapper>
+        );
+    }, [props.id, props.index, shah_card]);
 }

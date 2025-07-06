@@ -1,4 +1,4 @@
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { useCard, useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { Scrycard, ScryNameCardText, useScrycard } from "react-scrycards";
 import Counters from "@/components/(game)/card/counters";
@@ -14,16 +14,14 @@ export default function Card(props: {
     animationTime?: number | null;
     children?: ReactNode;
 }) {
-    const { getCard, active_player: player_name } = useShahrazadGameContext();
+    const { active_player: player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
-    const shah_card = getCard(props.id);
     const hover_timer = useRef<NodeJS.Timeout>(undefined);
 
-    const card = useScrycard(shah_card.card_name);
+    const shah_card = useCard(props.id);
+    const scry_card = useScrycard(shah_card.card_name);
     const { dragging: draggingCards } = useDragging();
-    const dragging = draggingCards?.includes(props.id);
-
-    const [isAnimating, setIsAnimating] = useState(false);
+    const dragging = draggingCards.includes(props.id);
 
     const handleMouseEnter = useCallback(() => {
         if (
@@ -37,7 +35,13 @@ export default function Card(props: {
             clearTimeout(hover_timer.current);
             hover_timer.current = undefined;
         }, 250);
-    }, [setPreview, hover_timer, props.id, shah_card, player_name]);
+    }, [
+        setPreview,
+        props.id,
+        shah_card.state.face_down,
+        shah_card.state.revealed,
+        player_name,
+    ]);
 
     const handleMouseLeave = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -57,7 +61,7 @@ export default function Card(props: {
                 { signal: controller.signal }
             );
         },
-        [setPreview, hover_timer]
+        [setPreview]
     );
 
     const faceDown =
@@ -70,7 +74,7 @@ export default function Card(props: {
         () => (
             <>
                 <Scrycard
-                    card={card}
+                    card={scry_card}
                     symbol_text_renderer={ScryNameCardText}
                     flipped={shah_card.state.flipped}
                     tapped={shah_card.state.tapped}
@@ -81,40 +85,89 @@ export default function Card(props: {
                 {props.children}
             </>
         ),
-        [card, shah_card, faceDown, props.children, props.id]
+        [scry_card, shah_card, faceDown, props.children, props.id]
     );
 
-    if (props.animationTime === null) {
+    return useMemo(() => {
+        if (props.animationTime === null) {
+            return (
+                <div
+                    onMouseLeave={handleMouseLeave}
+                    onMouseEnter={handleMouseEnter}
+                    data-shahcard={dragging ? undefined : props.id}
+                    className="relative"
+                >
+                    {card_comp}
+                </div>
+            );
+        }
+
+        const duration =
+            props.animationTime !== undefined ? props.animationTime : 0.5;
+
         return (
-            <div
-                onMouseLeave={handleMouseLeave}
-                onMouseEnter={handleMouseEnter}
-                data-shahcard={dragging ? undefined : props.id}
-                className="relative"
+            <MotionCard
+                id={props.id}
+                dragging={dragging}
+                duration={duration}
+                handleMouseEnter={handleMouseEnter}
+                handleMouseLeave={handleMouseLeave}
             >
                 {card_comp}
-            </div>
+            </MotionCard>
         );
-    }
+    }, [
+        card_comp,
+        dragging,
+        handleMouseEnter,
+        handleMouseLeave,
+        props.animationTime,
+        props.id,
+    ]);
+}
 
-    const duration =
-        props.animationTime !== undefined ? props.animationTime : 0.5;
-
-    return (
-        <motion.div
-            layoutId={props.id}
-            transition={{
-                duration: dragging ? 0 : duration,
-                ease: "easeInOut",
-            }}
-            onAnimationStart={() => setIsAnimating(true)}
-            onAnimationEnd={() => setIsAnimating(false)}
-            className={`relative${isAnimating ? " z-20" : ""}`}
-            onMouseLeave={handleMouseLeave}
-            onMouseEnter={handleMouseEnter}
-            data-shahcard={dragging ? undefined : props.id}
-        >
-            {card_comp}
-        </motion.div>
+function MotionCard({
+    id,
+    dragging,
+    duration,
+    handleMouseEnter,
+    handleMouseLeave,
+    children,
+}: {
+    id: ShahrazadCardId;
+    dragging?: boolean;
+    duration: number;
+    handleMouseEnter: () => void;
+    handleMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void;
+    children: ReactNode;
+}) {
+    const [isAnimating, setIsAnimating] = useState(false);
+    return useMemo(
+        () => (
+            <motion.div
+                layoutId={id}
+                transition={{
+                    duration: dragging ? 0 : duration,
+                    ease: "easeInOut",
+                }}
+                onAnimationStart={() => setIsAnimating(true)}
+                onAnimationEnd={() => setIsAnimating(false)}
+                className={`relative${isAnimating ? " z-20" : ""}`}
+                onMouseLeave={handleMouseLeave}
+                onMouseEnter={handleMouseEnter}
+                data-shahcard={dragging ? undefined : id}
+            >
+                {children}
+            </motion.div>
+        ),
+        [
+            id,
+            dragging,
+            duration,
+            handleMouseEnter,
+            handleMouseLeave,
+            children,
+            isAnimating,
+        ]
     );
 }

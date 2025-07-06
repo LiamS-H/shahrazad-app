@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext } from "react";
+import {
+    createContext,
+    ReactNode,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import type { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import type { ShahrazadZone, ShahrazadZoneId } from "@/types/bindings/zone";
 import type {
@@ -10,6 +16,7 @@ import type {
     ShahrazadPlaymat,
     ShahrazadPlaymatId,
 } from "@/types/bindings/playmat";
+import { compareCards } from "@/lib/utils/compare";
 
 export interface IShahrazadGameContext {
     active_player: ShahrazadPlaymatId;
@@ -68,4 +75,20 @@ export function useShahrazadGameContext() {
         throw new Error("useShahrazadGameContext only works inside provider.");
     }
     return context;
+}
+
+export function useCard(id: ShahrazadCardId) {
+    const { getCard } = useShahrazadGameContext();
+    const [card, setCard] = useState(() => getCard(id));
+
+    useEffect(() => {
+        // TODO: Avoid recomparison somehow, ie. a draggable board card with check 4 times on the same id wether it has change in the various wrappers
+        setCard((old) => {
+            const card = getCard(id);
+            if (compareCards(card, old)) return old;
+            return card;
+        });
+    }, [getCard, id]);
+
+    return card;
 }
