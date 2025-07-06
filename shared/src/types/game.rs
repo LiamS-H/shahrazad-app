@@ -191,20 +191,31 @@ impl ShahrazadGame {
                     pub y: i16,
                 }
 
-                let transform = if let (Some(x), Some(y)) = (state.x, state.y) {
-                    let Some(first_card) = game.cards.get(&cards[0]) else {
-                        return None;
+                let transform = 'transform_block: {
+                    let (Some(x), Some(y)) = (state.x, state.y) else {
+                        break 'transform_block None;
                     };
-                    if let (Some(sx), Some(sy)) = (first_card.state.x, first_card.state.y) {
-                        Some(Pos {
-                            x: x as i16 - sx as i16,
-                            y: y as i16 - sy as i16,
-                        })
-                    } else {
-                        None
+
+                    if x == 255 && y == 255 {
+                        break 'transform_block None;
                     }
-                } else {
-                    None
+
+                    if cards.is_empty() || cards.len() == 1 {
+                        break 'transform_block None;
+                    }
+
+                    let Some(first_card) = game.cards.get(&cards[0]) else {
+                        break 'transform_block None;
+                    };
+
+                    let (Some(sx), Some(sy)) = (first_card.state.x, first_card.state.y) else {
+                        break 'transform_block None;
+                    };
+
+                    Some(Pos {
+                        x: x as i16 - sx as i16,
+                        y: y as i16 - sy as i16,
+                    })
                 };
 
                 for card_id in &cards {
