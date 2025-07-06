@@ -2,7 +2,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { useCard } from "@/contexts/(game)/game";
-import { CSSProperties, ReactNode, useEffect, useMemo } from "react";
+import { CSSProperties, ReactNode, useMemo } from "react";
 import { IDraggableData } from "@/types/interfaces/dnd";
 import Card from "../card";
 

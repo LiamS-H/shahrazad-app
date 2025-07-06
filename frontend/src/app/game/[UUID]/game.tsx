@@ -8,7 +8,6 @@ import {
 import type { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
-import "react-scrycards/dist/index.css";
 import init from "shahrazad-wasm";
 import { GameClient, type GameClientOnMessage } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
