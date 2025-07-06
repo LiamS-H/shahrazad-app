@@ -100,9 +100,9 @@ export function useZone(id: ShahrazadZoneId) {
     useEffect(() => {
         // recomparison check would not be necessary since duped invocation shouldn't occur
         setZone((old) => {
-            const card = getZone(id);
-            if (compareZones(card, old)) return old;
-            return card;
+            const zone = getZone(id);
+            if (compareZones(zone, old)) return old;
+            return zone;
         });
     }, [getZone, id]);
 

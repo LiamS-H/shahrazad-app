@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { useZone } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import VerticalZone from "@/components/(game)/vertical-zone";
 import { ArrowDownToLine } from "lucide-react";
@@ -7,8 +7,7 @@ import { Button } from "@/components/(ui)/button";
 import ZoneWrapper from "../zone-wrapper";
 
 export default function Command(props: { id: ShahrazadZoneId }) {
-    const { getZone } = useShahrazadGameContext();
-    const zone = getZone(props.id);
+    const zone = useZone(props.id);
     const [opened, setOpened] = useState(false);
     const [hovered, setHovered] = useState(false);
     return (

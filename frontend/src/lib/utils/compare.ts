@@ -1,4 +1,53 @@
 import { ShahrazadCard } from "@/types/bindings/card";
+import { ShahrazadPlaymat } from "@/types/bindings/playmat";
+import { ShahrazadZone } from "@/types/bindings/zone";
+
+/**
+ * returns true if cards are equal
+ */
+export function comparePlaymats(
+    playmat1: ShahrazadPlaymat,
+    playmat2: ShahrazadPlaymat
+): boolean {
+    if (playmat1.library !== playmat2.library) return false;
+    if (playmat1.hand !== playmat2.hand) return false;
+    if (playmat1.graveyard !== playmat2.graveyard) return false;
+    if (playmat1.battlefield !== playmat2.battlefield) return false;
+    if (playmat1.exile !== playmat2.exile) return false;
+    if (playmat1.command !== playmat2.command) return false;
+    if (playmat1.sideboard !== playmat2.sideboard) return false;
+    if (playmat1.life !== playmat2.life) return false;
+    if (playmat1.mulligans !== playmat2.mulligans) return false;
+    if (playmat1.player.display_name !== playmat2.player.display_name)
+        return false;
+
+    const cd1 = playmat1.command_damage;
+    const cd2 = playmat2.command_damage;
+    const cd1Keys = Object.keys(cd1);
+    const cd2Keys = Object.keys(cd2);
+
+    if (cd1Keys.length !== cd2Keys.length) return false;
+
+    for (const key of cd1Keys) {
+        if (!Object.hasOwn(cd2, key) || cd1[key] !== cd2[key]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * returns true if cards are equal
+ */
+export function compareZones(
+    zone1: ShahrazadZone,
+    zone2: ShahrazadZone
+): boolean {
+    if (!compareList(zone1.cards, zone2.cards)) return false;
+
+    return true;
+}
 
 /**
  * returns true if cards are equal
