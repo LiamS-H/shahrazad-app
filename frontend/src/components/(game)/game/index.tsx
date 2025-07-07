@@ -19,7 +19,6 @@ import { MessagesContextProvider } from "@/contexts/(game)/messages";
 import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
 import { MessagesButton, MessagesDialog } from "../messages";
-import { Button } from "@/components/(ui)/button";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;

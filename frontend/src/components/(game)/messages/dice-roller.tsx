@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@/components/(ui)/button";
-import { useMessagesContext } from "@/contexts/(game)/messages";
-import { MessageCase } from "@/types/bindings/message";
 import { DiceIcon } from "@/components/(ui)/dice";
 import { Input } from "@/components/(ui)/input";
 import {
