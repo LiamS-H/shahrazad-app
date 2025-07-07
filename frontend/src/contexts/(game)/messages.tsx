@@ -7,6 +7,8 @@ import { MessageCase } from "@/types/bindings/message";
 import { IArrowMessage, IMessage } from "@/types/interfaces/message";
 import {
     createContext,
+    Dispatch,
+    SetStateAction,
     useCallback,
     useContext,
     useEffect,
@@ -24,6 +26,8 @@ interface IMessagesContext {
     messages: readonly IMessage[];
     arrows: readonly IArrowMessage[];
     sendMessage: (props: IMessageAction) => void;
+    isOpen: boolean;
+    setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const messagesContext = createContext<null | IMessagesContext>(null);
@@ -45,6 +49,7 @@ export function MessagesContextProvider({
 }) {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [arrows, setArrows] = useState<IArrowMessage[]>([]);
+    const [isOpen, setIsOpen] = useState(false);
 
     const { applyAction, created_at } = useShahrazadGameContext();
 
@@ -121,7 +126,9 @@ export function MessagesContextProvider({
     );
 
     return (
-        <messagesContext.Provider value={{ messages, arrows, sendMessage }}>
+        <messagesContext.Provider
+            value={{ messages, arrows, sendMessage, isOpen, setIsOpen }}
+        >
             {children}
         </messagesContext.Provider>
     );
