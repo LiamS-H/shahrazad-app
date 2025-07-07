@@ -5,6 +5,7 @@ export type ShahrazadGame = { zone_count: number; card_count: number;
     cards: { [key: ShahrazadCardId]: ShahrazadCard };
     zones: { [key: ShahrazadZoneId]: ShahrazadZone };
     playmats: { [key: ShahrazadPlaymatId]: ShahrazadPlaymat };
-    players: Array<ShahrazadPlaymatId>; settings: ShahrazadGameSettings };
+    players: Array<ShahrazadPlaymatId>; settings: ShahrazadGameSettings;
+    created_at: number };
 export type ShahrazadGameSettings = { starting_life: number;
     free_mulligans: string; commander: boolean; scry_rule: boolean };

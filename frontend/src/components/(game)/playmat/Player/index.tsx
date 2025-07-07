@@ -59,7 +59,7 @@ export default function Player() {
 
     return (
         <div
-            id={`player-${player}`}
+            data-shahplayer={player}
             className={`flex h-[140px] ${active && "text-highlight"}`}
         >
             <div className="flex flex-col justify-around">

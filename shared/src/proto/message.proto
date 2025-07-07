@@ -1,0 +1,20 @@
+syntax = "proto3";
+package message;
+
+message DiceRoll {
+    int32 sides = 1;
+    int32 result = 2;
+}
+
+message Arrow {
+    string from = 1;
+    string to = 2;
+    int32 arrow_type = 3;
+}
+
+message Message {
+    oneof message {
+        DiceRoll dice_roll = 1;
+        Arrow arrow = 2;
+    }
+}

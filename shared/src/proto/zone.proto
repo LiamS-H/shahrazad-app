@@ -1,6 +1,17 @@
 syntax = "proto3";
 package zone;
 
+enum ZoneName {
+    HAND = 0;
+    LIBRARY = 1;
+    BATTLEFIELD = 2;
+    GRAVEYARD = 3;
+    EXILE = 4;
+    COMMAND = 5;
+    SIDEBOARD = 6;
+}
+
 message ShahrazadZone {
     repeated string cards = 1;
+    ZoneName name = 2;
 }

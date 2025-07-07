@@ -1,4 +1,8 @@
-import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
+import {
+    ShahrazadAction,
+    ShahrazadActionCase,
+    ShahrazadActionCaseSendMessage,
+} from "@/types/bindings/action";
 import { ShahrazadGame } from "@/types/bindings/game";
 import { ClientAction, ServerUpdate } from "@/types/bindings/ws";
 import {
@@ -7,13 +11,18 @@ import {
     GameState,
 } from "shahrazad-wasm";
 
-type GameClientCallbacks = {
+export type GameClientOnMessage = (
+    messages: ShahrazadActionCaseSendMessage
+) => void;
+
+export interface GameClientCallbacks {
     onGameUpdate: (game: ShahrazadGame) => void;
     onPreloadCards: (cards: string[]) => void;
-    onMessage: (message: string) => void;
+    onToast: (message: string) => void;
     onGameTermination: (message?: string) => void;
     onPlayerJoin: (player: string) => void;
-};
+    onMessage: GameClientOnMessage;
+}
 
 export class GameClient {
     private gameState: GameState | null = null;
@@ -70,7 +79,9 @@ export class GameClient {
 
     private handleClose = (event: CloseEvent) => {
         console.log("[ws] closed", event);
-        this.attemptReconnect();
+        if (event.wasClean === false) {
+            this.attemptReconnect();
+        }
     };
 
     private handleMessage = async (event: MessageEvent) => {
@@ -83,24 +94,29 @@ export class GameClient {
 
         const blob: Blob = event.data;
         const array = await blob.arrayBuffer();
-        console.log(array);
 
         try {
             const update: ServerUpdate = decode_server_update(array);
             if (!update) {
-                console.log("[client] couldn't parse update:", event.data);
+                console.error("[client] couldn't parse update:", event.data);
                 return;
             }
             if (update.game) {
-                console.log("[ws] received game:", update.game);
-                if (update.hash && update.hash !== this.hash) {
-                    console.log("[ws] received game already matched hash");
+                console.log(`[ws] ${array.byteLength}B game received:`, update);
+                if (update.hash && update.hash === this.hash) {
+                    console.log(
+                        "[client] received a game that already matched hash"
+                    );
                     return;
                 }
                 this.setState(update.game);
                 return;
             }
             if (update.action) {
+                console.log(
+                    `[ws] ${array.byteLength}B move received:`,
+                    update.action.type
+                );
                 if (update.action.type === ShahrazadActionCase.GameTerminated) {
                     this.callbacks.onGameTermination();
                     this.cleanup();
@@ -116,22 +132,24 @@ export class GameClient {
                 this.applyAction(update.action);
             }
             if (update.hash && update.hash !== this.hash) {
-                console.log("[client] move validation failed.");
+                console.error(
+                    "[client] move validation failed, requesting new state."
+                );
                 this.broadcastAction({});
             }
         } catch (error) {
             console.error("[ws] message error:", error);
-            this.callbacks.onMessage("Error processing action.");
+            this.callbacks.onToast("Error processing action.");
         }
     };
 
     private handleError = (error: Event) => {
         console.log("[ws] error:", error, this.socket);
         if (this.reconnectAttempts === 1) {
-            this.callbacks.onMessage("Game Disconnected.");
+            this.callbacks.onToast("Game Disconnected.");
         }
         if (this.reconnectAttempts > 1) {
-            this.callbacks.onMessage("Reconnect failed.");
+            this.callbacks.onToast("Reconnect failed.");
         }
         if (this.socket?.OPEN) {
             this.socket?.close();
@@ -157,7 +175,7 @@ export class GameClient {
         this.reconnectTimeout = setTimeout(() => {
             if (this.isCleanedUp) return;
             if (this.reconnectAttempts > 1) {
-                this.callbacks.onMessage("Reconnecting...");
+                this.callbacks.onToast("Reconnecting...");
             }
             if (this.reconnectTimeout) {
                 clearTimeout(this.reconnectTimeout);
@@ -205,18 +223,22 @@ export class GameClient {
                     mulligans < 0 ? "for free" : `to ${7 - mulligans}`
                 }.`;
             }
-            this.callbacks.onMessage(message);
+            this.callbacks.onToast(message);
         }
 
         if (action.type == ShahrazadActionCase.SetPlayer) {
             if (action.player) {
-                this.callbacks.onMessage(
+                this.callbacks.onToast(
                     `${action.player_id} has new name: ${action.player.display_name}`
                 );
             } else {
-                this.callbacks.onMessage(`${action.player_id} has left.`);
+                this.callbacks.onToast(`${action.player_id} has left.`);
             }
         }
+        if (action.type === ShahrazadActionCase.SendMessage) {
+            this.callbacks.onMessage(action);
+        }
+
         this.callbacks.onGameUpdate(newState);
         return true;
     }
@@ -249,14 +271,15 @@ export class GameClient {
         const success = this.applyAction(action);
         if (!success) {
             console.log(
-                "[client] attempted to apply move that didn't udpate state."
+                "[client] attempted to apply move that didn't update state.",
+                action.type
             );
             return;
         }
-        const hash = this.hash || this.gameState.get_hash();
+        this.hash ??= this.gameState.get_hash() as number;
         const req: ClientAction = {
             action,
-            hash,
+            hash: this.hash,
         };
         this.broadcastAction(req);
     }
@@ -274,11 +297,10 @@ export class GameClient {
         }
 
         console.log("[ws] broadcasting action", action);
-        // this.socket.send(JSON.stringify(action));
         this.socket.send(encode_client_action(action));
     }
 
-    cleanup() {
+    public cleanup() {
         this.isCleanedUp = true;
         if (this.gameState) {
             this.gameState.free();

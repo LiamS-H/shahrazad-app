@@ -1,4 +1,5 @@
 import { ShahrazadCardId, ShahrazadCardState } from './card';
+import { Message } from './message';
 import { ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
 type usize = number;
@@ -18,6 +19,7 @@ export enum ShahrazadActionCase {
     ClearBoard = 'ClearBoard',
     DeleteToken = 'DeleteToken',
     Mulligan = 'Mulligan',
+    SendMessage = 'SendMessage',
     GameTerminated = 'GameTerminated',
 }
 
@@ -113,6 +115,13 @@ export type ShahrazadActionCaseMulligan = {
     seed: string;
 };
 
+export type ShahrazadActionCaseSendMessage = {
+    type: ShahrazadActionCase.SendMessage;
+    messages: Array<Message>;
+    player_id: ShahrazadPlaymatId;
+    created_at: number;
+};
+
 export type ShahrazadActionCaseGameTerminated = {
     type: ShahrazadActionCase.GameTerminated;
 };
@@ -132,6 +141,7 @@ export type ShahrazadAction =
     | ShahrazadActionCaseClearBoard
     | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan
+    | ShahrazadActionCaseSendMessage
     | ShahrazadActionCaseGameTerminated;
 
 export type CardImport = { str: string; amount?: number };

@@ -8,11 +8,11 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from "@/components/(ui)/command";
-import { DialogTitle } from "@/components/(ui)/dialog";
+import { DialogDescription, DialogTitle } from "@/components/(ui)/dialog";
 import { KeyShortcut } from "@/components/(ui)/key-shortcut";
 import { VisuallyHidden } from "@/components/(ui)/visually-hidden";
 
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { useShahrazadGameContext, useZone } from "@/contexts/(game)/game";
 import { useImportContext } from "@/contexts/(game)/import";
 import { useSearchContext } from "@/contexts/(game)/search";
 import { useDevice } from "@/contexts/device";
@@ -22,7 +22,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function Keybinds() {
-    const { active_player, applyAction, getPlaymat, getZone } =
+    const { active_player, applyAction, getPlaymat } =
         useShahrazadGameContext();
     const { search, active } = useSearchContext();
     const { importFor } = useImportContext();
@@ -30,7 +30,7 @@ export function Keybinds() {
     const playmat = getPlaymat(active_player);
     const device = useDevice();
 
-    const isDeckEmpty = getZone(playmat.library).cards.length === 0;
+    const isDeckEmpty = useZone(playmat.library).cards.length === 0;
 
     const deckDraw = useCallback(() => {
         if (isDeckEmpty) {
@@ -140,6 +140,9 @@ export function Keybinds() {
         >
             <VisuallyHidden>
                 <DialogTitle>Commands</DialogTitle>
+                <DialogDescription>
+                    Search commands and their Keyboard shortcuts.
+                </DialogDescription>
             </VisuallyHidden>
             <CommandInput placeholder="Type a command or search..." />
             <CommandList>

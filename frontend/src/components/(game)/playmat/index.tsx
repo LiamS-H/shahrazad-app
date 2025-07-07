@@ -10,6 +10,7 @@ import Player from "./Player";
 import { PlayerProvider } from "@/contexts/(game)/player";
 import { UntapButton } from "./(buttons)/UntapButton";
 import { MulliganButton } from "./(buttons)/MulliganButton";
+import Sideboard from "./Sideboard";
 
 export default function Playmat(props: {
     player: ShahrazadPlaymatId;
@@ -38,7 +39,11 @@ export default function Playmat(props: {
                 <div className="flex flex-col gap-4 w-full">
                     <Board id={playmat.battlefield} />
                     <div className="flex gap-4">
-                        {settings.commander && <Command id={playmat.command} />}
+                        {settings.commander ? (
+                            <Command id={playmat.command} />
+                        ) : (
+                            <Sideboard id={playmat.sideboard} />
+                        )}
                         <Hand id={playmat.hand} />
                     </div>
                 </div>

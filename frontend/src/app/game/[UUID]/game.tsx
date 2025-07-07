@@ -8,9 +8,8 @@ import {
 import type { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
-import "react-scrycards/dist/index.css";
 import init from "shahrazad-wasm";
-import { GameClient } from "@/lib/client";
+import { GameClient, type GameClientOnMessage } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
 import { toast } from "sonner";
 import ShareGameButton from "./ShareGameButton";
@@ -23,6 +22,11 @@ export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
     const [error, setError] = useState<IErrorMessage | null>(null);
+
+    const onMessageRef = useRef<null | GameClientOnMessage>(null);
+    const registerOnMessage = useCallback((onMessage: GameClientOnMessage) => {
+        onMessageRef.current = onMessage;
+    }, []);
 
     const [loading, setLoading] = useState(true);
     const init_ref = useRef(false);
@@ -91,7 +95,7 @@ export default function GamePage(props: { game_id: string }) {
             {
                 onGameUpdate: setGame,
                 onPreloadCards: preloadCards,
-                onMessage: (message) => {
+                onToast: (message) => {
                     toast(message);
                 },
                 onGameTermination: (reason) => {
@@ -105,6 +109,9 @@ export default function GamePage(props: { game_id: string }) {
                 },
                 onPlayerJoin: () => {
                     toast("A new player joined.");
+                },
+                onMessage: (message) => {
+                    onMessageRef.current?.(message);
                 },
             }
         );
@@ -147,6 +154,7 @@ export default function GamePage(props: { game_id: string }) {
                 <Loading />
             ) : (
                 <Game
+                    registerOnMessage={registerOnMessage}
                     game={game}
                     activePlayer={activePlayer}
                     applyAction={handleAction}

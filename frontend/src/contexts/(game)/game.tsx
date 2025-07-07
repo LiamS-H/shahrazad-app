@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext } from "react";
+import {
+    createContext,
+    ReactNode,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import type { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
 import type { ShahrazadZone, ShahrazadZoneId } from "@/types/bindings/zone";
 import type {
@@ -10,11 +16,13 @@ import type {
     ShahrazadPlaymat,
     ShahrazadPlaymatId,
 } from "@/types/bindings/playmat";
+import { compareCards, compareZones } from "@/lib/utils/compare";
 
 export interface IShahrazadGameContext {
     active_player: ShahrazadPlaymatId;
     players: ShahrazadPlaymatId[];
     settings: ShahrazadGameSettings;
+    created_at: bigint;
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
     getZone: (arg0: ShahrazadZoneId) => ShahrazadZone;
     getPlaymat: (arg0: ShahrazadPlaymatId) => ShahrazadPlaymat;
@@ -49,6 +57,7 @@ export function ShahrazadGameProvider(props: {
                 active_player: props.player_name,
                 players: props.players,
                 isHost: props.isHost,
+                created_at: props.game.created_at as unknown as bigint,
                 getCard,
                 getZone,
                 getPlaymat,
@@ -66,4 +75,36 @@ export function useShahrazadGameContext() {
         throw new Error("useShahrazadGameContext only works inside provider.");
     }
     return context;
+}
+
+export function useCard(id: ShahrazadCardId) {
+    const { getCard } = useShahrazadGameContext();
+    const [card, setCard] = useState(() => getCard(id));
+
+    useEffect(() => {
+        // TODO: Avoid recomparison somehow, ie. a draggable board card with check 4 times on the same id wether it has change in the various wrappers
+        setCard((old) => {
+            const card = getCard(id);
+            if (compareCards(card, old)) return old;
+            return card;
+        });
+    }, [getCard, id]);
+
+    return card;
+}
+
+export function useZone(id: ShahrazadZoneId) {
+    const { getZone } = useShahrazadGameContext();
+    const [zone, setZone] = useState(() => getZone(id));
+
+    useEffect(() => {
+        // recomparison check would not be necessary since duped invocation shouldn't occur
+        setZone((old) => {
+            const zone = getZone(id);
+            if (compareZones(zone, old)) return old;
+            return zone;
+        });
+    }, [getZone, id]);
+
+    return zone;
 }

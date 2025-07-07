@@ -33,9 +33,9 @@ export function NonActivePlayerIcon({
                         );
                         return;
                     }
-                    window.scrollTo({
-                        top: player.offsetTop - 60,
+                    player.scrollIntoView({
                         behavior: "smooth",
+                        block: "start",
                     });
                 }}
                 className="group"

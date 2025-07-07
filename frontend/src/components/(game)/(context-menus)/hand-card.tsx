@@ -12,10 +12,10 @@ import {
     ContextMenuSubContent,
     ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "../../../contexts/(game)/game";
+} from "@/components/(game)/(context-menus)/context-menu";
+import { useCard, useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { usePlayer } from "@/contexts/(game)/player";
 import { isFlippable, useScrycard } from "react-scrycards";
 import { RevealToPlayers } from "./(menu-items)/reveal";
@@ -27,21 +27,22 @@ export default function HandCardContextMenu({
     children: ReactNode;
 }) {
     const { player } = usePlayer();
-    const { applyAction, getPlaymat, getCard } = useShahrazadGameContext();
+    const { applyAction, getPlaymat } = useShahrazadGameContext();
     const playmat = getPlaymat(player);
-    const shah_card = getCard(cardId);
+    const shah_card = useCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
     const [open, setOpen] = useState(true);
     const title = scry_card?.name || shah_card.card_name;
 
-    return (
-        <ContextMenu modal={open} onOpenChange={setOpen}>
-            <ContextMenuTrigger>{children}</ContextMenuTrigger>
+    const content = useMemo(
+        () => (
             <ContextMenuContent>
                 <ContextMenuLabel>{title}</ContextMenuLabel>
                 <ContextMenuSeparator />
                 <ContextMenuSub>
-                    <RevealToPlayers cards={[cardId]} />
+                    <RevealToPlayers
+                        cards={shah_card.state.face_down ? [cardId] : []}
+                    />
                     <ContextMenuSubTrigger>Send to</ContextMenuSubTrigger>
                     <ContextMenuSubContent>
                         <ContextMenuItem
@@ -106,6 +107,14 @@ export default function HandCardContextMenu({
                     )}
                 </ContextMenuSub>
             </ContextMenuContent>
+        ),
+        [title, shah_card, cardId, applyAction, playmat, player, scry_card]
+    );
+
+    return (
+        <ContextMenu modal={open} onOpenChange={setOpen}>
+            <ContextMenuTrigger cardId={cardId}>{children}</ContextMenuTrigger>
+            {content}
         </ContextMenu>
     );
 }

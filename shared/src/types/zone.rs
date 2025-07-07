@@ -7,8 +7,52 @@ use crate::{branded_string, proto, types::card::ShahrazadCardId};
 branded_string!(ShahrazadZoneId);
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum ZoneName {
+    INVALID = 0,
+    HAND = 1,
+    LIBRARY = 2,
+    BATTLEFIELD = 3,
+    GRAVEYARD = 4,
+    EXILE = 5,
+    COMMAND = 6,
+    SIDEBOARD = 7,
+}
+
+impl From<i32> for ZoneName {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => ZoneName::INVALID,
+            1 => ZoneName::HAND,
+            2 => ZoneName::LIBRARY,
+            3 => ZoneName::BATTLEFIELD,
+            4 => ZoneName::GRAVEYARD,
+            5 => ZoneName::EXILE,
+            6 => ZoneName::COMMAND,
+            7 => ZoneName::SIDEBOARD,
+            _ => ZoneName::INVALID,
+        }
+    }
+}
+
+impl From<ZoneName> for i32 {
+    fn from(value: ZoneName) -> Self {
+        match value {
+            ZoneName::INVALID => 0,
+            ZoneName::HAND => 1,
+            ZoneName::LIBRARY => 2,
+            ZoneName::BATTLEFIELD => 3,
+            ZoneName::GRAVEYARD => 4,
+            ZoneName::EXILE => 5,
+            ZoneName::COMMAND => 6,
+            ZoneName::SIDEBOARD => 7,
+        }
+    }
+}
+
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ShahrazadZone {
     pub cards: Vec<ShahrazadCardId>,
+    pub name: ZoneName,
 }
 
 impl std::hash::Hash for ShahrazadZone {
@@ -23,6 +67,7 @@ impl From<ShahrazadZone> for proto::zone::ShahrazadZone {
     fn from(value: ShahrazadZone) -> Self {
         proto::zone::ShahrazadZone {
             cards: value.cards.iter().map(|c| c.clone().into()).collect(),
+            name: i32::from(value.name),
         }
     }
 }
@@ -30,6 +75,7 @@ impl From<proto::zone::ShahrazadZone> for ShahrazadZone {
     fn from(value: proto::zone::ShahrazadZone) -> ShahrazadZone {
         ShahrazadZone {
             cards: value.cards.iter().map(|c| c.clone().into()).collect(),
+            name: ZoneName::from(value.name),
         }
     }
 }

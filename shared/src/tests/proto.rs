@@ -262,3 +262,83 @@ fn test_error_handling() {
     // Test invalid card state
     assert!(proto::card::ShahrazadCardState::decode(&b"xInvalid_State"[..]).is_err());
 }
+
+#[test]
+fn test_game() {
+    use crate::proto::game::ShahrazadGame as ProtoGame;
+    use crate::types::game::ShahrazadGame;
+    use prost::Message;
+
+    let mut game = crate::tests::utils::create_sample_game();
+    let actions = vec![
+        ShahrazadAction::AddPlayer {
+            player_id: "1".into(),
+            player: crate::types::player::ShahrazadPlayer {
+                display_name: "Alice".into(),
+            },
+        },
+        ShahrazadAction::AddPlayer {
+            player_id: "2".into(),
+            player: crate::types::player::ShahrazadPlayer {
+                display_name: "Bob".into(),
+            },
+        },
+        ShahrazadAction::ZoneImport {
+            zone: "Z1".into(),
+            cards: vec![
+                CardImport {
+                    str: "Opt".into(),
+                    amount: Some(4),
+                },
+                CardImport {
+                    str: "Island".into(),
+                    amount: Some(2),
+                },
+            ],
+            player_id: "1".into(),
+            token: false,
+            state: ShahrazadCardState {
+                ..Default::default()
+            },
+        },
+        ShahrazadAction::ZoneImport {
+            zone: "Z2".into(),
+            cards: vec![CardImport {
+                str: "Mountain".into(),
+                amount: Some(3),
+            }],
+            player_id: "2".into(),
+            token: false,
+            state: ShahrazadCardState {
+                ..Default::default()
+            },
+        },
+        ShahrazadAction::SetLife {
+            player_id: "1".into(),
+            life: 18,
+        },
+        ShahrazadAction::SetLife {
+            player_id: "2".into(),
+            life: 22,
+        },
+        ShahrazadAction::CardState {
+            cards: vec!["C1".into()],
+            state: ShahrazadCardState {
+                tapped: Some(true),
+                annotation: Some("test annotation!".into()),
+                ..Default::default()
+            },
+        },
+    ];
+
+    for action in actions {
+        ShahrazadGame::apply_action(action, &mut game);
+    }
+
+    let proto_game: ProtoGame = game.clone().into();
+    let encoded = proto_game.encode_to_vec();
+    let decoded = ProtoGame::decode(&*encoded).unwrap();
+    let roundtrip: ShahrazadGame = decoded.try_into().unwrap();
+
+    assert_eq!(game, roundtrip);
+}

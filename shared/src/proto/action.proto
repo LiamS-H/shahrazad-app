@@ -3,6 +3,7 @@ package action;
 
 import "src/proto/playmat.proto";
 import "src/proto/card.proto";
+import "src/proto/message.proto";
 
 message ShahrazadAction {
     oneof action {
@@ -21,6 +22,7 @@ message ShahrazadAction {
         DeleteToken delete_token = 13;
         Mulligan mulligan = 14;
         GameTerminated game_terminated = 15;
+        SendMessage send_message = 16;
     }
 }
 
@@ -107,6 +109,12 @@ message Mulligan {
 }
 
 message GameTerminated {}
+
+message SendMessage {
+    repeated message.Message messages = 1;
+    string player_id = 2;
+    uint32 created_at = 3;
+}
 
 // message JoinGameResponse {
 //     ShahrazadGame game = 1;

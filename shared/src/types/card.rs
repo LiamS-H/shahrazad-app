@@ -101,8 +101,26 @@ impl ShahrazadCardState {
             self.revealed = Some(new_revealed.clone());
         }
         if let Some(annotation) = &other.annotation {
-            self.annotation = Some(annotation.clone());
+            self.annotation = if annotation == "" {
+                None
+            } else {
+                Some(annotation.clone())
+            };
         }
+    }
+
+    pub fn reset() -> Self {
+        return ShahrazadCardState {
+            flipped: Some(false),
+            inverted: Some(false),
+            tapped: Some(false),
+            face_down: Some(false),
+            counters: Some([].into()),
+            revealed: Some([].into()),
+            x: Some(255),
+            y: Some(255),
+            annotation: Some("".into()),
+        };
     }
 }
 
@@ -113,6 +131,7 @@ pub struct ShahrazadCard {
     pub location: ShahrazadZoneId,
     pub owner: ShahrazadPlaymatId,
     pub token: bool,
+    pub commander: bool,
 }
 
 impl std::hash::Hash for ShahrazadCard {
@@ -122,6 +141,7 @@ impl std::hash::Hash for ShahrazadCard {
         self.location.hash(state);
         self.owner.hash(state);
         self.token.hash(state);
+        self.commander.hash(state);
     }
 }
 
@@ -143,6 +163,7 @@ impl From<proto::card::ShahrazadCard> for ShahrazadCard {
             location: value.location.into(),
             owner: value.owner.into(),
             token: value.token,
+            commander: value.commander,
         }
     }
 }
@@ -154,6 +175,7 @@ impl From<ShahrazadCard> for proto::card::ShahrazadCard {
             token: value.token,
             state: Some(value.state.into()),
             owner: value.owner.into(),
+            commander: value.commander,
         }
     }
 }
@@ -194,8 +216,8 @@ impl From<proto::card::ShahrazadCardState> for ShahrazadCardState {
             tapped: value.tapped,
             face_down: value.face_down,
             revealed,
-            x: if value.x >= 255 { None } else { Some(value.x) },
-            y: if value.y >= 255 { None } else { Some(value.y) },
+            x: if value.x <= 255 { Some(value.x) } else { None },
+            y: if value.y <= 255 { Some(value.y) } else { None },
             annotation: value.annotation,
         }
     }
@@ -228,8 +250,8 @@ impl From<ShahrazadCardState> for proto::card::ShahrazadCardState {
             has_revealed,
             has_counters,
             revealed,
-            x: value.x.unwrap_or(255),
-            y: value.y.unwrap_or(255),
+            x: value.x.unwrap_or(255 + 1),
+            y: value.y.unwrap_or(255 + 1),
             annotation: value.annotation,
         }
     }

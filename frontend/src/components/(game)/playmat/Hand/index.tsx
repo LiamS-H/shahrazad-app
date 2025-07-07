@@ -1,5 +1,9 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import {
+    useCard,
+    useShahrazadGameContext,
+    useZone,
+} from "@/contexts/(game)/game";
 import HorizontalZone from "@/components/(game)/playmat/Hand/horizontal-zone";
 import Card from "../../card";
 import {
@@ -7,10 +11,12 @@ import {
     TooltipTrigger,
     TooltipContent,
 } from "@/components/(ui)/tooltip";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { usePlayer } from "@/contexts/(game)/player";
 import HandContextMenu from "../../(context-menus)/hand";
 import { LayoutGroup } from "framer-motion";
+import ZoneWrapper from "../zone-wrapper";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 function HandWrapper({
     id,
@@ -23,7 +29,10 @@ function HandWrapper({
 }) {
     const [tooltipOpen, setTooltipOpen] = useState(false);
     return (
-        <div className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]">
+        <ZoneWrapper
+            zoneId={id}
+            className="shahrazad-hand flex flex-grow min-w-[100px] h-[140px]"
+        >
             <div className="relative z-10">
                 <HandContextMenu zoneId={id}>
                     <div className="absolute bottom-1">
@@ -45,40 +54,40 @@ function HandWrapper({
                 </HandContextMenu>
             </div>
             {children}
-        </div>
+        </ZoneWrapper>
+    );
+}
+
+function InactiveHand({ id }: { id: ShahrazadCardId }) {
+    const { active_player } = useShahrazadGameContext();
+    const shah_card = useCard(id);
+    return useMemo(
+        () => (
+            <Card
+                id={id}
+                animationTime={
+                    shah_card.state.face_down &&
+                    !shah_card.state.revealed?.includes(active_player)
+                        ? 0
+                        : undefined
+                }
+            />
+        ),
+        [shah_card, active_player, id]
     );
 }
 
 export default function Hand(props: { id: ShahrazadZoneId }) {
     const { active } = usePlayer();
-    const {
-        getZone,
-        getCard,
-        active_player: player_name,
-    } = useShahrazadGameContext();
-    const hand = getZone(props.id);
+    const hand = useZone(props.id);
 
     if (!active) {
         return (
             <HandWrapper id={props.id} length={hand.cards.length}>
                 <LayoutGroup>
-                    {hand.cards.map((id) => {
-                        const shah_card = getCard(id);
-                        return (
-                            <Card
-                                key={id}
-                                id={id}
-                                animationTime={
-                                    shah_card.state.face_down &&
-                                    !shah_card.state.revealed?.includes(
-                                        player_name
-                                    )
-                                        ? 0
-                                        : undefined
-                                }
-                            />
-                        );
-                    })}
+                    {hand.cards.map((id) => (
+                        <InactiveHand key={id} id={id} />
+                    ))}
                 </LayoutGroup>
             </HandWrapper>
         );

@@ -11,7 +11,7 @@ import {
     ContextMenuSubContent,
     ContextMenuSubTrigger,
     // ContextMenuTrigger,
-} from "@/components/(ui)/context-menu";
+} from "@/components/(game)/(context-menus)/context-menu";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { usePlayer } from "@/contexts/(game)/player";
 import { ShahrazadActionCase } from "@/types/bindings/action";
@@ -70,27 +70,30 @@ export function RevealToPlayers({ cards }: { cards: ShahrazadCardId[] }) {
     const { player: current_player } = usePlayer();
     const player_options = players.filter((id) => id !== current_player);
 
+    const reveal = (
+        <ContextMenuItem
+            disabled={cards.length === 0}
+            onClick={() => {
+                applyAction({
+                    type: ShahrazadActionCase.CardState,
+                    cards: cards,
+                    state: {
+                        face_down: false,
+                    },
+                });
+            }}
+        >
+            Reveal
+        </ContextMenuItem>
+    );
+
     if (player_options.length <= 1) {
-        return (
-            <ContextMenuItem
-                disabled={cards.length === 0}
-                onClick={() => {
-                    applyAction({
-                        type: ShahrazadActionCase.CardState,
-                        cards: cards,
-                        state: {
-                            face_down: false,
-                        },
-                    });
-                }}
-            >
-                Reveal
-            </ContextMenuItem>
-        );
+        return reveal;
     }
 
     return (
         <>
+            {reveal}
             <ContextMenuSub>
                 <ContextMenuSubTrigger disabled={cards.length === 0}>
                     Reveal to

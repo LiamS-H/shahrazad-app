@@ -322,7 +322,7 @@ impl GameStateManager {
             None => None,
         };
 
-        let Some(_) = action_applied else {
+        if action_applied.is_none() {
             let game_update = ServerUpdate {
                 action: None,
                 game: Some(game_ref.game.clone()),
@@ -347,7 +347,7 @@ impl GameStateManager {
                 action: None,
                 game: Some(game_ref.game.clone()),
                 player_id,
-                hash: Some(client_hash),
+                hash: Some(game_hash),
             };
             let _ = game_ref.tx.send(full_state);
 

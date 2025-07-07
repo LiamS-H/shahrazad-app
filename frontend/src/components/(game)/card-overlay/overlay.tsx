@@ -13,11 +13,13 @@ import { useSelection } from "@/contexts/(game)/selection";
 import { GRID_SIZE } from "../playmat/Board";
 
 function SingleCard({
+    id,
     card,
     faceup,
     selected,
     rotation,
 }: {
+    id: ShahrazadCardId;
     card: ShahrazadCard;
     faceup?: boolean;
     selected?: number;
@@ -34,6 +36,7 @@ function SingleCard({
                           }
                         : undefined
                 }
+                data-shahcard={id}
             >
                 <ScryNameCard
                     card_name={card.card_name}
@@ -110,9 +113,14 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
     const { selectedCards } = useSelection();
     const { handleMouseMove, rotation } = useRotation();
 
+    if (!main_card) {
+        return null;
+    }
+
     const main_card_comp = (
         <div onMouseMove={handleMouseMove} className="absolute">
             <SingleCard
+                id={id}
                 rotation={rotation}
                 card={main_card}
                 faceup={main_card.state.revealed?.includes(player_name)}
@@ -169,6 +177,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                                 }}
                             >
                                 <SingleCard
+                                    id={c.id}
                                     rotation={rotation}
                                     card={c.card}
                                     faceup={c.card.state.revealed?.includes(

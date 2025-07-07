@@ -1,8 +1,9 @@
-import DraggableCard from "@/components/(game)/card-draggable";
+import { DraggableCardWrapper } from "@/components/(game)/card-draggable";
 import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
-import { type CSSProperties } from "react";
+import { useMemo, type CSSProperties } from "react";
 import { GRID_SIZE } from ".";
 import BoardCardContextMenu from "@/components/(game)/(context-menus)/board-card";
+import Card from "../../card";
 
 const BLUE_TINT = `url('data:image/svg+xml,\
   <svg xmlns="http://www.w3.org/2000/svg">\
@@ -47,9 +48,13 @@ export function BoardCard({
         divStyle.borderRadius = "4.75% / 3.5%";
     }
 
+    const card_comp = useMemo(() => <Card id={cardId} />, [cardId]);
+
     return (
-        <BoardCardContextMenu cardId={cardId}>
-            <DraggableCard divStyle={divStyle} noDragTranslate id={cardId} />
-        </BoardCardContextMenu>
+        <DraggableCardWrapper divStyle={divStyle} noDragTranslate id={cardId}>
+            <BoardCardContextMenu cardId={cardId}>
+                {card_comp}
+            </BoardCardContextMenu>
+        </DraggableCardWrapper>
     );
 }

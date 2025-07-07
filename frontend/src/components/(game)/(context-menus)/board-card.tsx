@@ -14,10 +14,10 @@ import {
     // ContextMenuSubContent,
     // ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/(ui)/context-menu";
-import { useShahrazadGameContext } from "../../../contexts/(game)/game";
+} from "@/components/(game)/(context-menus)/context-menu";
+import { useCard, useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useSelection } from "@/contexts/(game)/selection";
 import { isFlippable, useScrycard } from "react-scrycards";
 import { usePlayer } from "@/contexts/(game)/player";
@@ -266,19 +266,23 @@ export default function BoardCardContextMenu({
     cardId: ShahrazadCardId;
     children: ReactNode;
 }) {
-    const { getCard } = useShahrazadGameContext();
-    const shah_card = getCard(cardId);
+    const shah_card = useCard(cardId);
     const scry_card = useScrycard(shah_card.card_name);
-    return (
-        <ContextMenu modal>
-            <ContextMenuTrigger>{children}</ContextMenuTrigger>
-            <ContextMenuContent>
-                <Content
-                    cardId={cardId}
-                    scry_card={scry_card}
-                    shah_card={shah_card}
-                />
-            </ContextMenuContent>
-        </ContextMenu>
-    );
+
+    return useMemo(() => {
+        return (
+            <ContextMenu modal>
+                <ContextMenuTrigger cardId={cardId}>
+                    {children}
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                    <Content
+                        cardId={cardId}
+                        scry_card={scry_card}
+                        shah_card={shah_card}
+                    />
+                </ContextMenuContent>
+            </ContextMenu>
+        );
+    }, [shah_card, scry_card, children, cardId]);
 }

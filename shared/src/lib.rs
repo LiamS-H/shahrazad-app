@@ -7,6 +7,9 @@ pub mod proto {
     pub mod card {
         include!(concat!(env!("OUT_DIR"), "/card.rs"));
     }
+    pub mod message {
+        include!(concat!(env!("OUT_DIR"), "/message.rs"));
+    }
     pub mod game {
         include!(concat!(env!("OUT_DIR"), "/game.rs"));
     }
