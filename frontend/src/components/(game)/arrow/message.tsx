@@ -64,19 +64,18 @@ export function MessageArrow({
     useEffect(() => {
         cancelAnimationFrame(animationRef.current);
         if (
-            !active ||
-            (active.id !== message.from && active.id !== message.to)
+            active &&
+            (active.id === message.from || active.id === message.to)
         ) {
-            return () => {
-                cancelAnimationFrame(animationRef.current);
+            const frame = () => {
+                update();
+                animationRef.current = requestAnimationFrame(frame);
             };
-        }
-
-        const frame = () => {
-            update();
             animationRef.current = requestAnimationFrame(frame);
+        }
+        return () => {
+            cancelAnimationFrame(animationRef.current);
         };
-        animationRef.current = requestAnimationFrame(frame);
     }, [active, message, update]);
 
     if (!chord) {
