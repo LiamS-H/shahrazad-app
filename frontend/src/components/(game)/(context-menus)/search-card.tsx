@@ -8,9 +8,8 @@ import {
     ContextMenuSubContent,
     ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/(game)/(context-menus)/context-menu";
+} from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext, useZone } from "@/contexts/(game)/game";
-import { usePlayer } from "@/contexts/(game)/player";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode } from "react";
 import { useSearchContext } from "@/contexts/(game)/search";
@@ -25,8 +24,11 @@ function Content({
     zoneId: ShahrazadZoneId;
     cardId: ShahrazadCardId;
 }) {
-    const { applyAction, getPlaymat } = useShahrazadGameContext();
-    const { player } = usePlayer();
+    const {
+        applyAction,
+        getPlaymat,
+        active_player: player,
+    } = useShahrazadGameContext();
     const { search } = useSearchContext();
     const playmat = getPlaymat(player);
     const zone = useZone(zoneId);
@@ -157,9 +159,7 @@ export default function SearchCardContextMenu({
 }) {
     return (
         <ContextMenu modal>
-            <ContextMenuTrigger zoneId={zoneId} cardId={cardId}>
-                {children}
-            </ContextMenuTrigger>
+            <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent>
                 <Content cardId={cardId} zoneId={zoneId} />
             </ContextMenuContent>
