@@ -10,7 +10,6 @@ import {
     ContextMenuTrigger,
 } from "@/components/(ui)/context-menu";
 import { useShahrazadGameContext, useZone } from "@/contexts/(game)/game";
-import { usePlayer } from "@/contexts/(game)/player";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { type ReactNode } from "react";
 import { useSearchContext } from "@/contexts/(game)/search";
