@@ -14,7 +14,7 @@ export function BezierArrow({ from, to }: { from: pos; to: pos }) {
     const dy = to.y - from.y;
     const length = Math.sqrt(dx * dx + dy * dy);
 
-    if (length === 0) {
+    if (length < 50) {
         return null;
     }
 
