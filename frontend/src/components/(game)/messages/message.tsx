@@ -23,8 +23,22 @@ export function Message({
                     }`}
                 >
                     <span className="font-bold">{sender}</span>
-                    <span>rolled a</span>
-                    <span className="font-bold text-lg">{result}</span>
+                    {sides === 2 ? (
+                        <>
+                            <span>
+                                {" "}
+                                {result === 1
+                                    ? "won the flip"
+                                    : "lost the flip"}
+                            </span>
+                            <span className="font-bold text-lg">{result}</span>
+                        </>
+                    ) : (
+                        <>
+                            <span>rolled a</span>
+                            <span className="font-bold text-lg">{result}</span>
+                        </>
+                    )}
                     <DiceIcon className="h-8 w-8" sides={sides} />
                 </div>
             );

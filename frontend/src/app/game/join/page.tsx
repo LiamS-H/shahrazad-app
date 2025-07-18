@@ -74,7 +74,12 @@ export default function JoinGameForm() {
         return () => controller.abort();
     }, [gameCode, readClipboard]);
     const handleJoinGame = async (gameCode: string) => {
+        if (gameCode.length < 6) {
+            toast("Code too short.");
+        }
+
         setLoading(true);
+
         toast("Joining Game...");
         const stored_player = loadPlayer();
         const joinResult = await joinGame(gameCode, stored_player);
@@ -94,59 +99,61 @@ export default function JoinGameForm() {
 
         pushRoute(`/game/${code}`);
     };
-    const joinDisabled =
-        gameCode.length !== 6 || loading || invalids_ref.current.has(gameCode);
 
     return (
         <TabsContent value="join">
             <div className="space-y-4 pt-4">
-                <Label>Game Code</Label>
-                <div className="flex justify-between items-center">
-                    <Button
-                        size="icon"
-                        variant="destructive"
-                        onClick={() => setGameCode("")}
-                        disabled={gameCode === ""}
-                    >
-                        <X />
-                    </Button>
-                    <CodeInput
-                        code={gameCode}
-                        setCode={setGameCode}
-                        invalid={invalids_ref.current.has(gameCode)}
-                    />
-                    <Button
-                        size="icon"
-                        variant={pasteButtonDisabled ? "outline" : "default"}
-                        disabled={pasteButtonDisabled}
-                        onClick={() => {
-                            if (clipboard) setGameCode(clipboard);
-                        }}
-                    >
-                        <ClipboardPaste />
-                    </Button>
-                </div>
-
-                <Button
-                    className="w-full"
-                    variant={joinDisabled ? "outline" : "default"}
-                    disabled={joinDisabled}
-                    onClick={() => handleJoinGame(gameCode)}
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleJoinGame(gameCode);
+                    }}
                 >
-                    {loading ? "loading..." : "Join Game"}
-                </Button>
-                {reconnect && !invalids_ref.current.has(reconnect) && (
-                    <Button
-                        className="w-full"
-                        variant="highlight"
-                        disabled={
-                            loading || invalids_ref.current.has(reconnect)
-                        }
-                        onClick={() => handleJoinGame(reconnect)}
-                    >
-                        {loading ? "loading..." : `Reconnect - ${reconnect}`}
-                    </Button>
-                )}
+                    <Label>Game Code</Label>
+                    <div className="flex justify-between items-center">
+                        <Button
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => setGameCode("")}
+                            disabled={gameCode === ""}
+                        >
+                            <X />
+                        </Button>
+                        <CodeInput
+                            code={gameCode}
+                            setCode={setGameCode}
+                            invalid={invalids_ref.current.has(gameCode)}
+                            onSubmit={() => handleJoinGame(gameCode)}
+                        />
+                        <Button
+                            size="icon"
+                            variant={
+                                pasteButtonDisabled ? "outline" : "default"
+                            }
+                            disabled={pasteButtonDisabled}
+                            onClick={() => {
+                                if (clipboard) setGameCode(clipboard);
+                            }}
+                        >
+                            <ClipboardPaste />
+                        </Button>
+                    </div>
+
+                    {reconnect && !invalids_ref.current.has(reconnect) && (
+                        <Button
+                            className="w-full"
+                            variant="highlight"
+                            disabled={
+                                loading || invalids_ref.current.has(reconnect)
+                            }
+                            onClick={() => handleJoinGame(reconnect)}
+                        >
+                            {loading
+                                ? "loading..."
+                                : `Reconnect - ${reconnect}`}
+                        </Button>
+                    )}
+                </form>
             </div>
         </TabsContent>
     );

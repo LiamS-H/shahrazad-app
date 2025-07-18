@@ -2,7 +2,7 @@ import { Input } from "@/components/(ui)/input";
 import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { importFromStr } from "@/lib/client/import-deck/importFromStr";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { importFromUrl } from "@/lib/client/import-deck/importFromUrl";
 import { toast } from "sonner";
 import { Label } from "@/components/(ui)/label";
@@ -26,12 +26,24 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
     const playmat = getPlaymat(player);
     const [deckstr, setDeckstr] = useState<string>("");
     const [url, setUrl] = useState("");
+    const [loading, _setLoading] = useState(false);
+    const loadingRef = useRef(false);
+
+    function setLoading(l: boolean) {
+        _setLoading(l);
+        loadingRef.current = l;
+    }
 
     async function importDeck() {
+        if (loadingRef.current) {
+            return false;
+        }
+        loadingRef.current = true;
         let actions: ShahrazadAction[] | null | undefined;
         const sideboardId = settings.commander
             ? playmat.command
             : playmat.sideboard;
+        setLoading(true);
         if (url) {
             actions = await importFromUrl(url, {
                 deckId: playmat.library,
@@ -41,6 +53,7 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
             });
             if (actions === undefined) {
                 toast("Coudln't fetch deck.");
+                setLoading(false);
                 return;
             }
         } else if (deckstr) {
@@ -52,15 +65,18 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
             });
             if (actions === undefined) {
                 toast("Couldn't parse deck.");
+                setLoading(false);
                 return;
             }
         }
         if (!actions) {
             toast("No cards to load.");
+            setLoading(false);
             return;
         }
         actions.forEach((a) => applyAction(a));
         setOpen(false);
+        setLoading(false);
         toast("Deck imported.");
     }
 
@@ -110,8 +126,11 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
                         onChange={(e) => setDeckstr(e.target.value)}
                     />
                 </div>
-                <Button disabled={!url && !deckstr} onClick={importDeck}>
-                    Import
+                <Button
+                    disabled={(!url && !deckstr) || loading}
+                    onClick={importDeck}
+                >
+                    {loading ? "Loading..." : "Import"}
                 </Button>
             </DialogContent>
         </Dialog>
