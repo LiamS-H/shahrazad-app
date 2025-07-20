@@ -44,7 +44,7 @@ export default function Collapsable(props: {
             onFocus={() => props.setHovered(props.id)}
             onBlur={() => props.setHovered(null)}
         >
-            <Card id={props.id} />
+            <Card id={props.id} animationTime={0} />
         </div>
     );
 }
