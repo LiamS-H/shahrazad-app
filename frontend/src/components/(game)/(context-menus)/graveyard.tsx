@@ -21,7 +21,13 @@ import { randomU64 } from "@/lib/utils/random";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { ShahrazadCardId } from "@/types/bindings/card";
 
-function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
+function Content({
+    zoneId,
+    onPopOut,
+}: {
+    zoneId: ShahrazadZoneId;
+    onPopOut?: () => void;
+}) {
     const { player } = usePlayer();
     const { applyAction, getPlaymat } = useShahrazadGameContext();
     const { search } = useSearchContext();
@@ -33,6 +39,9 @@ function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
                 Graveyard ({graveyard.cards.length})
             </ContextMenuLabel>
             <ContextMenuSeparator />
+            {onPopOut && (
+                <ContextMenuItem onClick={onPopOut}>Pop out</ContextMenuItem>
+            )}
             <ContextMenuItem
                 disabled={graveyard.cards.length === 0}
                 onClick={() => {
@@ -118,10 +127,12 @@ export default function GraveyardContextMenu({
     zoneId,
     cardId,
     children,
+    onPopOut,
 }: {
     zoneId: ShahrazadZoneId;
     cardId: ShahrazadCardId;
     children: ReactNode;
+    onPopOut?: () => void;
 }) {
     return (
         <ContextMenu modal>
@@ -129,7 +140,7 @@ export default function GraveyardContextMenu({
                 {children}
             </ContextMenuTrigger>
             <ContextMenuContent>
-                <Content zoneId={zoneId} />
+                <Content zoneId={zoneId} onPopOut={onPopOut} />
             </ContextMenuContent>
         </ContextMenu>
     );

@@ -21,7 +21,13 @@ import { randomU64 } from "@/lib/utils/random";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { ShahrazadCardId } from "@/types/bindings/card";
 
-export function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
+export function Content({
+    zoneId,
+    onPopOut,
+}: {
+    zoneId: ShahrazadZoneId;
+    onPopOut?: () => void;
+}) {
     const { player } = usePlayer();
     const { applyAction, getPlaymat } = useShahrazadGameContext();
     const { search } = useSearchContext();
@@ -31,6 +37,9 @@ export function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
         <>
             <ContextMenuLabel>Exile ({exile.cards.length})</ContextMenuLabel>
             <ContextMenuSeparator />
+            {onPopOut && (
+                <ContextMenuItem onClick={onPopOut}>Pop out</ContextMenuItem>
+            )}
             <ContextMenuItem
                 disabled={exile.cards.length === 0}
                 onClick={() => {
@@ -85,10 +94,12 @@ export default function ExileContextMenu({
     zoneId,
     cardId,
     children,
+    onPopOut,
 }: {
     zoneId: ShahrazadZoneId;
     cardId: ShahrazadCardId;
     children: ReactNode;
+    onPopOut?: () => void;
 }) {
     return (
         <ContextMenu>
@@ -96,7 +107,7 @@ export default function ExileContextMenu({
                 {children}
             </ContextMenuTrigger>
             <ContextMenuContent>
-                <Content zoneId={zoneId} />
+                <Content zoneId={zoneId} onPopOut={onPopOut} />
             </ContextMenuContent>
         </ContextMenu>
     );
