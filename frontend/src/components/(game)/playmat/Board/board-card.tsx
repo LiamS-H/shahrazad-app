@@ -48,7 +48,10 @@ export function BoardCard({
         divStyle.borderRadius = "4.75% / 3.5%";
     }
 
-    const card_comp = useMemo(() => <Card id={cardId} />, [cardId]);
+    const card_comp = useMemo(
+        () => <Card id={cardId} previewDelay={100} />,
+        [cardId]
+    );
 
     return (
         <DraggableCardWrapper divStyle={divStyle} noDragTranslate id={cardId}>
