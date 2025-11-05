@@ -120,7 +120,7 @@ function PoppedOutZoneContent(props: {
 
     return useMemo(
         () => (
-            <div style={{ width: "100px" }} ref={(ref) => setNodeRef(ref)}>
+            <div className="w-full h-full" ref={(ref) => setNodeRef(ref)}>
                 <div
                     style={{
                         display: "flex",
@@ -143,7 +143,7 @@ function PoppedOutZoneContent(props: {
                 </div>
             </div>
         ),
-        [hoveredItem, props.emptyMessage, setHover, setNodeRef, zone.cards]
+        [hoveredItem, setHover, setNodeRef, zone.cards]
     );
 }
 

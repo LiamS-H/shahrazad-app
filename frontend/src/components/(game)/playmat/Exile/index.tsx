@@ -1,8 +1,8 @@
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useZone } from "@/contexts/(game)/game";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import VerticalZone from "@/components/(game)/vertical-zone";
-import { ArrowDownToLine } from "lucide-react";
+import { ArrowDownToLine, ExternalLink } from "lucide-react";
 import { Button } from "@/components/(ui)/button";
 import ExileContextMenu from "@/components/(game)/(context-menus)/exile";
 import ZoneWrapper from "../zone-wrapper";
@@ -17,6 +17,11 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
     const [poppedOut, setPoppedOut] = useState(false);
     const { active } = useSearchContext();
     const searching = active === props.id;
+
+    const onClose = useCallback(() => {
+        setOpened(false);
+        setPoppedOut(false);
+    }, [setPoppedOut]);
 
     return useMemo(() => {
         if (searching) {
@@ -34,10 +39,18 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
                     <PoppedOutZone
                         id={props.id}
                         name="Exile"
-                        onClose={() => setPoppedOut(false)}
+                        onClose={onClose}
                         pos={{ x: window.innerWidth - 500, y: 80 }}
                     />
-                    <div className="w-[100px] h-[140px] bg-gray-500 rounded-lg opacity-50" />
+                    <button
+                        onClick={onClose}
+                        className="w-[100px] h-[140px] bg-muted rounded-lg opacity-50 flex flex-col justify-center items-center cursor-pointer"
+                    >
+                        <span className="text-muted-foreground">exile</span>
+                        <span className="text-muted-foreground">
+                            (popped out)
+                        </span>
+                    </button>
                 </>
             );
         }
@@ -64,20 +77,33 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
                         />
                     </div>
                     {opened && zone.cards.length > 1 && (
-                        <Button
-                            size="icon"
-                            variant="outline"
-                            className="absolute -bottom-2 -left-2 z-10"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setOpened(false);
-                            }}
-                        >
-                            <ArrowDownToLine />
-                        </Button>
+                        <>
+                            <Button
+                                size="icon"
+                                variant="outline"
+                                className="absolute -bottom-2 -left-2 z-10"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpened(false);
+                                }}
+                            >
+                                <ArrowDownToLine />
+                            </Button>
+                            <Button
+                                size="icon"
+                                variant="outline"
+                                className="absolute -bottom-2 -right-2 z-10"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPoppedOut(true);
+                                }}
+                            >
+                                <ExternalLink />
+                            </Button>
+                        </>
                     )}
                 </ZoneWrapper>
             </ExileContextMenu>
         );
-    }, [zone, opened, props.id, searching, poppedOut]);
+    }, [zone, opened, props.id, searching, poppedOut, onClose]);
 }
