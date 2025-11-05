@@ -78,7 +78,6 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
 
             if (over_data.zone !== active_data.zone) {
                 console.log("[dnd] dropping sortable from outside");
-                console.log(over_data.zone, active_data.zone);
                 if (
                     getZone(active_data.zone).name === ZoneName.LIBRARY &&
                     getZone(over_data.zone).name === ZoneName.HAND
