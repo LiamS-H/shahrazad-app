@@ -52,6 +52,7 @@ export default function Card({
         shah_card.state.face_down,
         shah_card.state.revealed,
         player_name,
+        previewDelay,
     ]);
 
     const handleMouseLeave = useCallback(

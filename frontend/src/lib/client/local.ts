@@ -1,7 +1,7 @@
 import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadGame, ShahrazadGameSettings } from "@/types/bindings/game";
 import { GameState } from "shahrazad-wasm";
-import { GameClientCallbacks, GameClientOnMessage } from ".";
+import { GameClientCallbacks } from ".";
 
 export class LocalGameClient {
     private gameState: GameState | null = null;
