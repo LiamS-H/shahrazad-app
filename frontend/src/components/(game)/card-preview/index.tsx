@@ -67,7 +67,7 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
     return useMemo(() => {
         if (size === 0) return null;
         return (
-            <div className="fixed">
+            <div className="relative">
                 <ScryNameCard
                     card_name={shah_card.card_name}
                     flipped={
@@ -86,7 +86,7 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
                                 setFlipped(
                                     flipped === null
                                         ? !shah_card.state.flipped
-                                        : !flipped
+                                        : !flipped,
                                 );
                             }}
                         >
@@ -110,6 +110,47 @@ export default function PreviewCard({ id }: { id: ShahrazadCardId | null }) {
     const { getCard } = useShahrazadGameContext();
     const [pos, setPos] = useState({ x: 1470, y: 80 });
     const [size, setSize] = useState<number>(400);
+    const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+    const clampPosition = useCallback(
+        (p: { x: number; y: number }) => {
+            if (windowSize.width === 0) {
+                return p;
+            }
+
+            const cardHeight = size * 1.393;
+            const buttonOffset = 16;
+
+            const minX = buttonOffset;
+            const minY = buttonOffset;
+            const maxX = windowSize.width - Math.max(size, 120);
+            const maxY = windowSize.height - cardHeight;
+
+            return {
+                x: Math.max(minX, Math.min(p.x, maxX)),
+                y: Math.max(minY, Math.min(p.y, maxY)),
+            };
+        },
+        [size, windowSize.width, windowSize.height],
+    );
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    useEffect(() => {
+        setPos(clampPosition);
+    }, [clampPosition]);
 
     const [shah_card, setCard] = useState<ShahrazadCard | null>(null);
     const { currentPreview, setPreview } = useSelection();
@@ -129,13 +170,18 @@ export default function PreviewCard({ id }: { id: ShahrazadCardId | null }) {
         });
     }, [getCard, id]);
 
-    const onDragEnd = useCallback((event: DragEndEvent) => {
-        const { delta } = event;
-        setPos(({ x, y }) => ({
-            x: x + delta.x,
-            y: y + delta.y,
-        }));
-    }, []);
+    const onDragEnd = useCallback(
+        (event: DragEndEvent) => {
+            const { delta } = event;
+            setPos(({ x, y }) =>
+                clampPosition({
+                    x: x + delta.x,
+                    y: y + delta.y,
+                }),
+            );
+        },
+        [clampPosition],
+    );
 
     const card = useMemo(() => {
         if (shah_card) return <Card size={size} shah_card={shah_card} />;
