@@ -3,7 +3,7 @@ use serde::Serialize;
 use serde_wasm_bindgen::Serializer;
 use shared::types::{
     action::{self},
-    game::{self, ShahrazadGame},
+    game::{self, ShahrazadGame, ShahrazadGameSettings},
     ws::{ClientAction, ProtoSerialize, ServerUpdate},
 };
 use wasm_bindgen::prelude::*;
@@ -22,25 +22,46 @@ where
 
 #[wasm_bindgen]
 pub struct GameState {
-    inner: game::ShahrazadGame,
+    inner: Box<game::ShahrazadGame>,
 }
 
 #[wasm_bindgen]
 impl GameState {
     #[wasm_bindgen(constructor)]
     pub fn new(game: JsValue) -> Self {
-        let Ok(base64) = serde_wasm_bindgen::from_value::<String>(game) else {
-            panic!("Invalid string")
-        };
-        let Ok(buf) = BASE64_STANDARD.decode(base64) else {
-            panic!("Invalid Binary")
-        };
-        let Ok(game) = ShahrazadGame::decode(buf) else {
-            panic!("Invalid Protobuf")
-        };
-
-        return Self { inner: game };
+        let base64 = serde_wasm_bindgen::from_value::<String>(game)
+            .expect("Failed to convert JsValue to String");
+        let buf = BASE64_STANDARD
+            .decode(&base64)
+            .expect("Failed to decode base64");
+        let game = ShahrazadGame::decode(buf.as_slice().into())
+            .expect("Failed to decode protobuf for ShahrazadGame");
+        Self {
+            inner: Box::new(game),
+        }
     }
+
+    pub fn new_local(settings: JsValue, time: JsValue) -> Self {
+        let settings = match serde_wasm_bindgen::from_value::<ShahrazadGameSettings>(settings) {
+            Ok(settings) => settings,
+            Err(_) => ShahrazadGameSettings {
+                starting_life: 20,
+                free_mulligans: "0".into(),
+                commander: false,
+                scry_rule: false,
+            },
+        };
+        let time = match serde_wasm_bindgen::from_value::<u64>(time) {
+            Ok(time) => time,
+            Err(_) => 0,
+        };
+        let game = ShahrazadGame::new_time(settings, time);
+
+        Self {
+            inner: Box::new(game),
+        }
+    }
+
     #[wasm_bindgen]
     pub fn get_hash(&self) -> Result<JsValue, JsValue> {
         to_js_value(&self.inner.hash())
@@ -64,7 +85,7 @@ impl GameState {
     #[wasm_bindgen]
     pub fn set_state(&mut self, game: JsValue) -> Result<JsValue, JsValue> {
         let game: game::ShahrazadGame = serde_wasm_bindgen::from_value(game)?;
-        self.inner = game;
+        self.inner = Box::new(game);
 
         to_js_value(&self.inner)
     }
