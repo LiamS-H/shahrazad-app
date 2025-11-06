@@ -21,6 +21,7 @@ pub fn create_sample_card_state() -> ShahrazadCardState {
 pub fn create_sample_player() -> ShahrazadPlayer {
     ShahrazadPlayer {
         display_name: "TestPlayer|;".to_string(),
+        ..Default::default()
     }
 }
 

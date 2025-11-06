@@ -3,6 +3,7 @@ package playmat;
 
 message ShahrazadPlayer {
     string display_name = 1;
+    int32 reveal_deck_top = 2;
 }
 
 message ShahrazadPlaymat {

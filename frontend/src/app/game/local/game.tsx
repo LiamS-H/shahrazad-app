@@ -15,6 +15,7 @@ import { UserProfile } from "@/components/(ui)/user-profile";
 import { useRouter } from "next/navigation";
 import { loadPlayer } from "@/lib/client/localPlayer";
 import Loading from "../[UUID]/loading";
+import { DeckTopReveal } from "@/types/bindings/playmat";
 
 const activePlayer = "P0";
 
@@ -65,7 +66,10 @@ export default function LocalGame() {
         gameClient.beginGame();
         gameClient.queueAction({
             type: ShahrazadActionCase.AddPlayer,
-            player: { display_name: stored_player },
+            player: {
+                display_name: stored_player,
+                reveal_deck_top: DeckTopReveal.NONE,
+            },
             player_id: activePlayer,
         });
     }, [preloadCards, router]);

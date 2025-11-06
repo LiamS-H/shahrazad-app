@@ -118,6 +118,7 @@ impl GameStateManager {
             Some(p) => p,
             None => ShahrazadPlayer {
                 display_name: "P0".into(),
+                ..Default::default()
             },
         };
 
@@ -196,6 +197,7 @@ impl GameStateManager {
             Some(p) => p,
             None => ShahrazadPlayer {
                 display_name: player_name.clone(),
+                ..Default::default()
             },
         };
 

@@ -23,6 +23,7 @@ fn add_player() {
             player_id: "1".into(),
             player: ShahrazadPlayer {
                 display_name: "Test".into(),
+                ..Default::default()
             },
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game).is_some();
@@ -37,12 +38,14 @@ fn init_game() {
             player_id: "1".into(),
             player: ShahrazadPlayer {
                 display_name: "Test".into(),
+                ..Default::default()
             },
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
         let Some(new_state) = mutation else { panic!() };
 
+        let actual_json_value: Value = serde_json::to_value(new_state).unwrap();
         let expected_string = r#"{
             "zone_count": 7,
             "card_count": 0,
@@ -90,7 +93,8 @@ fn init_game() {
                     "life": 20,
                     "mulligans": 0,
                     "player": {
-                        "display_name": "Test"
+                        "display_name": "Test",
+                        "reveal_deck_top": "NONE"
                     }
                 }
             },
@@ -102,8 +106,12 @@ fn init_game() {
                 "commander": true
             }
         }"#;
-        let expected_json_value: Value = serde_json::from_str(expected_string).unwrap();
-        let actual_json_value: Value = serde_json::to_value(new_state).unwrap();
+        let mut expected_json_value: Value = serde_json::from_str(expected_string).unwrap();
+        if let Some(map) = expected_json_value.as_object_mut() {
+            if let Some(created_at) = actual_json_value.get("created_at") {
+                map.insert("created_at".to_string(), created_at.clone());
+            }
+        }
         assert_eq!(expected_json_value, actual_json_value);
     }
     {
@@ -124,6 +132,7 @@ fn init_game() {
         assert!(mutation.is_some());
         let Some(new_state) = mutation else { panic!() };
 
+        let actual_json_value: Value = serde_json::to_value(new_state).unwrap();
         let expected_string = r#"{
             "zone_count": 7,
             "card_count": 1,
@@ -190,7 +199,8 @@ fn init_game() {
                     "life": 20,
                     "mulligans": 0,
                     "player": {
-                        "display_name": "Test"
+                        "display_name": "Test",
+                        "reveal_deck_top": "NONE"
                     }
                 }
             },
@@ -202,8 +212,12 @@ fn init_game() {
                 "commander": true
             }
         }"#;
-        let expected_json_value: Value = serde_json::from_str(expected_string).unwrap();
-        let actual_json_value: Value = serde_json::to_value(new_state).unwrap();
+        let mut expected_json_value: Value = serde_json::from_str(expected_string).unwrap();
+        if let Some(map) = expected_json_value.as_object_mut() {
+            if let Some(created_at) = actual_json_value.get("created_at") {
+                map.insert("created_at".to_string(), created_at.clone());
+            }
+        }
         assert_eq!(expected_json_value, actual_json_value);
     }
 }
@@ -218,6 +232,7 @@ fn reproducibility() {
             player_id: "1".into(),
             player: ShahrazadPlayer {
                 display_name: "Test".into(),
+                ..Default::default()
             },
         },
         ShahrazadAction::ZoneImport {
@@ -237,6 +252,7 @@ fn reproducibility() {
             player_id: "1".into(),
             player: Some(ShahrazadPlayer {
                 display_name: "test".into(),
+                ..Default::default()
             }),
         },
         ShahrazadAction::CardZone {

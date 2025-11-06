@@ -12,6 +12,7 @@ import type {
     ShahrazadPlayer,
     ShahrazadPlaymatId,
 } from "@/types/bindings/playmat";
+import { DeckTopReveal } from "@/types/bindings/playmat";
 import { DoorOpen, Home, Trash2, User, UserPen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,15 +30,21 @@ export function ActivePlayerIcon({
     const { applyAction } = useShahrazadGameContext();
     const { push: pushRoute } = useRouter();
 
-    function updatePlayer(new_player: ShahrazadPlayer | null) {
+    function updatePlayer(
+        new_player: Omit<ShahrazadPlayer, "reveal_deck_top"> | null
+    ) {
         if (player?.display_name === new_player?.display_name) return;
         if (new_player === null) return;
+        const player_updated: ShahrazadPlayer = {
+            ...new_player,
+            reveal_deck_top: player?.reveal_deck_top ?? DeckTopReveal.NONE,
+        };
         applyAction({
             type: ShahrazadActionCase.SetPlayer,
             player_id,
-            player: new_player,
+            player: player_updated,
         });
-        setPlayer(new_player);
+        setPlayer(player);
     }
 
     useEffect(() => {
@@ -58,7 +65,10 @@ export function ActivePlayerIcon({
                 if (open) {
                     setNameInput(player?.display_name || "");
                 } else {
-                    updatePlayer({ ...player, display_name: nameInput });
+                    updatePlayer({
+                        ...player,
+                        display_name: nameInput,
+                    });
                 }
                 setOpen(open);
             }}
@@ -89,7 +99,10 @@ export function ActivePlayerIcon({
             <PopoverContent className="flex flex-col gap-2">
                 <form
                     onSubmit={(e) => {
-                        updatePlayer({ ...player, display_name: nameInput });
+                        updatePlayer({
+                            ...player,
+                            display_name: nameInput,
+                        });
                         setOpen(false);
                         e.preventDefault();
                     }}

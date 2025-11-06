@@ -10,7 +10,7 @@ use crate::types::{
     },
     game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
     message::{ArrowType, Message},
-    player::ShahrazadPlayer,
+    player::{DeckTopReveal, ShahrazadPlayer},
     ws::{ClientAction, ServerUpdate},
     zone::{ShahrazadZone, ShahrazadZoneId, ZoneName},
 };
@@ -80,7 +80,8 @@ pub fn export_all() {
         types: [
             ShahrazadPlaymat,
             ShahrazadPlaymatId,
-            ShahrazadPlayer
+            ShahrazadPlayer,
+            DeckTopReveal
         ],
         destinations: [
             TypeScript(

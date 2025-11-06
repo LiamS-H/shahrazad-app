@@ -16,6 +16,7 @@ fn mulligan_resets_state() {
         player_id: "1".into(),
         player: ShahrazadPlayer {
             display_name: "Test".into(),
+            ..Default::default()
         },
     };
     ShahrazadGame::apply_action(action, &mut game);

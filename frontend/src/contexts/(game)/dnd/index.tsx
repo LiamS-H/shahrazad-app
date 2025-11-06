@@ -107,7 +107,10 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                         tapped: tapped === true ? false : undefined,
                         flipped: flipped === true ? false : undefined,
                         inverted: inverted === true ? false : undefined,
-                        revealed: revealed?.length !== 0 ? [] : undefined,
+                        revealed:
+                            revealed?.length !== 0 || face_down === false
+                                ? []
+                                : undefined,
                     },
                 });
                 selectCards(null);
@@ -200,6 +203,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     state: {
                         x,
                         y,
+                        revealed: face_down === false ? [] : undefined,
                     },
                     index: -1,
                 });
@@ -217,7 +221,10 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                             x === 255 && flipped === true ? false : undefined,
                         inverted:
                             x === 255 && inverted === true ? false : undefined,
-                        revealed: revealed?.length !== 0 ? [] : undefined,
+                        revealed:
+                            face_down === false || revealed?.length !== 0
+                                ? []
+                                : undefined,
                         counters:
                             over_data?.sortable && counters?.length !== 0
                                 ? []
