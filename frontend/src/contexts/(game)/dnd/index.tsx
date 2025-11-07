@@ -18,6 +18,7 @@ import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { useSelection } from "../selection";
 import { DraggingContextProvider } from "./dragging";
+import { ZoneName } from "@/types/bindings/zone";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
@@ -39,7 +40,8 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
     const handleDragEnd = useCallback((event: DragEndEvent) => {
         setActiveId(null);
         const { selectedCards, selectCards } = selection_ref.current;
-        const { getCard, applyAction } = shah_ref.current;
+        const { getCard, getZone, applyAction, active_player } =
+            shah_ref.current;
 
         if (event.over == undefined) {
             console.log("[dnd] draggable is over nothing");
@@ -74,8 +76,25 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 state: { face_down, tapped, flipped, inverted, revealed },
             } = shah_card;
 
-            if (over_data.zone != active_data.zone) {
+            if (over_data.zone !== active_data.zone) {
                 console.log("[dnd] dropping sortable from outside");
+                if (
+                    getZone(active_data.zone).name === ZoneName.LIBRARY &&
+                    getZone(over_data.zone).name === ZoneName.HAND
+                ) {
+                    applyAction({
+                        type: ShahrazadActionCase.CardZone,
+                        destination: over_data.zone,
+                        index: index,
+                        cards: cards,
+                        state: {
+                            x: 255,
+                            y: 255,
+                            revealed: face_down ? [active_player] : [],
+                        },
+                    });
+                    return;
+                }
                 applyAction({
                     type: ShahrazadActionCase.CardZone,
                     destination: over_data.zone,
@@ -88,7 +107,10 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                         tapped: tapped === true ? false : undefined,
                         flipped: flipped === true ? false : undefined,
                         inverted: inverted === true ? false : undefined,
-                        revealed: revealed?.length !== 0 ? [] : undefined,
+                        revealed:
+                            revealed?.length !== 0 || face_down === false
+                                ? []
+                                : undefined,
                     },
                 });
                 selectCards(null);
@@ -107,10 +129,12 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         }
 
         const start_zone_id = active_data.zone;
+        const { name: start_zone_name } = getZone(start_zone_id);
         const end_zone_id = event.over.id.toString();
         const end_zone_gridsize: undefined | number = over_data
             ? over_data.grid
             : undefined;
+        const { name: end_zone_name } = getZone(end_zone_id);
 
         const card_height = event.active.rect.current.translated?.height ?? 0;
         const card_width = event.active.rect.current.translated?.width ?? 0;
@@ -168,26 +192,52 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 },
             } = shah_card;
 
-            applyAction({
-                type: ShahrazadActionCase.CardZone,
-                cards,
-                destination: end_zone_id,
-                state: {
-                    x,
-                    y,
-                    face_down: face_down === true ? false : undefined,
-                    tapped: tapped === true ? false : undefined,
-                    flipped: x === 255 && flipped === true ? false : undefined,
-                    inverted:
-                        x === 255 && inverted === true ? false : undefined,
-                    revealed: revealed?.length !== 0 ? [] : undefined,
-                    counters:
-                        over_data?.sortable && counters?.length !== 0
-                            ? []
-                            : undefined,
-                },
-                index: -1,
-            });
+            if (
+                start_zone_name === ZoneName.HAND &&
+                end_zone_name === ZoneName.LIBRARY
+            ) {
+                applyAction({
+                    type: ShahrazadActionCase.CardZone,
+                    cards,
+                    destination: end_zone_id,
+                    state: {
+                        x,
+                        y,
+                        revealed: face_down === false ? [] : undefined,
+                    },
+                    index: -1,
+                });
+            } else {
+                applyAction({
+                    type: ShahrazadActionCase.CardZone,
+                    cards,
+                    destination: end_zone_id,
+                    state: {
+                        x,
+                        y,
+                        face_down: face_down === true ? false : undefined,
+                        tapped: tapped === true ? false : undefined,
+                        flipped:
+                            x === 255 && flipped === true ? false : undefined,
+                        inverted:
+                            x === 255 && inverted === true ? false : undefined,
+                        revealed:
+                            face_down === false || revealed?.length !== 0
+                                ? []
+                                : undefined,
+                        counters:
+                            over_data?.sortable && counters?.length !== 0
+                                ? []
+                                : undefined,
+                    },
+                    index: -1,
+                });
+            }
+            // const reset = !(
+            //     start_zone_name === ZoneName.HAND &&
+            //     end_zone_name === ZoneName.LIBRARY
+            // );
+
             if (x === 255) {
                 selectCards(null);
             }

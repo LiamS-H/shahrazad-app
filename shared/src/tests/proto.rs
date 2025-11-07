@@ -275,12 +275,14 @@ fn test_game() {
             player_id: "1".into(),
             player: crate::types::player::ShahrazadPlayer {
                 display_name: "Alice".into(),
+                ..Default::default()
             },
         },
         ShahrazadAction::AddPlayer {
             player_id: "2".into(),
             player: crate::types::player::ShahrazadPlayer {
                 display_name: "Bob".into(),
+                ..Default::default()
             },
         },
         ShahrazadAction::ZoneImport {

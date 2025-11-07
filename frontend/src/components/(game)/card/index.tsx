@@ -8,20 +8,27 @@ import { motion } from "framer-motion";
 import { useDragging } from "@/contexts/(game)/dnd/dragging";
 import { Annotation } from "./annotation";
 
-export default function Card(props: {
+export default function Card({
+    id,
+    faceUp,
+    animationTime,
+    previewDelay = 0,
+    children,
+}: {
     id: ShahrazadCardId;
     faceUp?: boolean;
     animationTime?: number | null;
+    previewDelay?: number;
     children?: ReactNode;
 }) {
     const { active_player: player_name } = useShahrazadGameContext();
     const { setPreview } = useSelection();
     const hover_timer = useRef<NodeJS.Timeout>(undefined);
 
-    const shah_card = useCard(props.id);
+    const shah_card = useCard(id);
     const scry_card = useScrycard(shah_card.card_name);
     const { dragging: draggingCards } = useDragging();
-    const dragging = draggingCards.includes(props.id);
+    const dragging = draggingCards.includes(id);
 
     const handleMouseEnter = useCallback(() => {
         if (
@@ -30,17 +37,22 @@ export default function Card(props: {
         )
             return;
         if (hover_timer.current) return;
+        if (!previewDelay) {
+            setPreview(id);
+            return;
+        }
         hover_timer.current = setTimeout(() => {
-            setPreview(props.id);
+            setPreview(id);
             clearTimeout(hover_timer.current);
             hover_timer.current = undefined;
-        }, 250);
+        }, previewDelay);
     }, [
         setPreview,
-        props.id,
+        id,
         shah_card.state.face_down,
         shah_card.state.revealed,
         player_name,
+        previewDelay,
     ]);
 
     const handleMouseLeave = useCallback(
@@ -65,7 +77,7 @@ export default function Card(props: {
     );
 
     const faceDown =
-        !props.faceUp &&
+        !faceUp &&
         shah_card.state.face_down &&
         (!shah_card.state.revealed?.includes(player_name) ||
             (shah_card.state.x !== null && shah_card.state.x !== undefined));
@@ -80,21 +92,21 @@ export default function Card(props: {
                     tapped={shah_card.state.tapped}
                     faceDown={faceDown}
                 />
-                <Counters id={props.id} />
-                <Annotation id={props.id} />
-                {props.children}
+                <Counters id={id} />
+                <Annotation id={id} />
+                {children}
             </>
         ),
-        [scry_card, shah_card, faceDown, props.children, props.id]
+        [scry_card, shah_card, faceDown, children, id]
     );
 
     return useMemo(() => {
-        if (props.animationTime === null) {
+        if (animationTime === null) {
             return (
                 <div
                     onMouseLeave={handleMouseLeave}
                     onMouseEnter={handleMouseEnter}
-                    data-shahcard={dragging ? undefined : props.id}
+                    data-shahcard={dragging ? undefined : id}
                     className="relative"
                 >
                     {card_comp}
@@ -102,12 +114,11 @@ export default function Card(props: {
             );
         }
 
-        const duration =
-            props.animationTime !== undefined ? props.animationTime : 0.5;
+        const duration = animationTime !== undefined ? animationTime : 0.5;
 
         return (
             <MotionCard
-                id={props.id}
+                id={id}
                 dragging={dragging}
                 duration={duration}
                 handleMouseEnter={handleMouseEnter}
@@ -121,8 +132,8 @@ export default function Card(props: {
         dragging,
         handleMouseEnter,
         handleMouseLeave,
-        props.animationTime,
-        props.id,
+        animationTime,
+        id,
     ]);
 }
 

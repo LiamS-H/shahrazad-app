@@ -6,7 +6,7 @@ import {
     PopoverTrigger,
 } from "@/components/(ui)/popover";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
-import { ShahrazadPlayer } from "@/types/bindings/playmat";
+import { DeckTopReveal, ShahrazadPlayer } from "@/types/bindings/playmat";
 import { User, UserPen } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -19,11 +19,17 @@ export function UserProfile({
     const [open, setOpen] = useState(false);
     const [nameInput, setNameInput] = useState(player?.display_name || "");
 
-    function updatePlayer(new_player: ShahrazadPlayer | null) {
+    function updatePlayer(
+        new_player: Omit<ShahrazadPlayer, "reveal_deck_top"> | null
+    ) {
         if (player?.display_name === new_player?.display_name) return;
         if (new_player === null) return;
-        if (onChange) onChange(new_player);
-        setPlayer(new_player);
+        const player_updated: ShahrazadPlayer = {
+            ...new_player,
+            reveal_deck_top: player?.reveal_deck_top ?? DeckTopReveal.NONE,
+        };
+        if (onChange) onChange(player_updated);
+        setPlayer(player_updated);
     }
 
     useEffect(() => {

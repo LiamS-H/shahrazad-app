@@ -12,9 +12,11 @@ import Card from "@/components/(game)/card";
 import { useEffect, useMemo, useRef } from "react";
 import { randomU64 } from "@/lib/utils/random";
 import ZoneWrapper from "../zone-wrapper";
+import { Eye } from "lucide-react";
+import { DeckTopReveal } from "@/types/bindings/playmat";
 
 export default function Deck(props: { id: ShahrazadZoneId }) {
-    const { applyAction, active_player, getPlaymat } =
+    const { applyAction, active_player, getPlaymat, getCard } =
         useShahrazadGameContext();
     const { active } = useSearchContext();
     const last_active = useRef(active);
@@ -45,14 +47,28 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
     }, [active, applyAction, props.id, active_player, zone.cards]);
 
     return useMemo(() => {
+        const top = zone.cards.at(-1);
         if (searching) {
-            const top = zone.cards.at(-1);
             return (
                 <Scrydeck count={zone.cards.length}>
                     {top ? <Card id={top} /> : <Scrycard card={undefined} />}
                 </Scrydeck>
             );
         }
+
+        const state = top ? getCard(top).state : undefined;
+        const face_up =
+            state?.face_down === false ||
+            playmat.player.reveal_deck_top === DeckTopReveal.PUBLIC ||
+            (playmat.player.reveal_deck_top === DeckTopReveal.PRIVATE &&
+                player === active_player);
+
+        const top_revealed =
+            player === active_player &&
+            (face_up === true ||
+                (face_up === false &&
+                    state?.revealed &&
+                    state?.revealed.some((r) => r !== active_player)));
 
         return (
             <ZoneWrapper
@@ -81,17 +97,27 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                             cards={zone.cards}
                             dragNamespace={searching ? "disabled" : undefined}
                         />
+                        {top_revealed && (
+                            <div className="relative">
+                                <div className="absolute bottom-[100px] w-full flex justify-center">
+                                    <Eye />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </DeckContextMenu>
             </ZoneWrapper>
         );
     }, [
         applyAction,
+        getCard,
         player,
         playmat.hand,
+        playmat.player.reveal_deck_top,
         props.id,
         searching,
         setNodeRef,
         zone.cards,
+        active_player,
     ]);
 }

@@ -60,6 +60,7 @@ impl std::hash::Hash for ShahrazadZone {
         for card in &self.cards {
             card.hash(state);
         }
+        i32::from(self.name.clone()).hash(state);
     }
 }
 

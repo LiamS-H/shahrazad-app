@@ -3,6 +3,7 @@
 export const memory: WebAssembly.Memory;
 export const __wbg_gamestate_free: (a: number, b: number) => void;
 export const gamestate_new: (a: any) => number;
+export const gamestate_new_local: (a: any, b: any) => number;
 export const gamestate_get_hash: (a: number) => [number, number, number];
 export const gamestate_get_state: (a: number) => [number, number, number];
 export const gamestate_apply_action: (a: number, b: any) => [number, number, number];

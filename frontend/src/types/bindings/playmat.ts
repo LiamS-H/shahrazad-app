@@ -6,4 +6,10 @@ export type ShahrazadPlaymat = { library: ShahrazadZoneId;
     mulligans: number; command_damage: { [key: ShahrazadPlaymatId]: number };
     player: ShahrazadPlayer };
 export type ShahrazadPlaymatId = string;
-export type ShahrazadPlayer = { display_name: string };
+export type ShahrazadPlayer = { display_name: string;
+    reveal_deck_top: DeckTopReveal };
+export enum DeckTopReveal {
+    NONE = 'NONE',
+    PRIVATE = 'PRIVATE',
+    PUBLIC = 'PUBLIC',
+}

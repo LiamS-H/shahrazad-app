@@ -2,7 +2,7 @@
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::hash::{Hash, Hasher};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use prost::Message;
 use rand::seq::SliceRandom;
@@ -123,8 +123,20 @@ impl ShahrazadGame {
             settings,
             created_at: SystemTime::now()
                 .duration_since(UNIX_EPOCH)
-                .unwrap()
+                .unwrap_or(Duration::new(0, 0))
                 .as_secs(),
+        }
+    }
+    pub fn new_time(settings: ShahrazadGameSettings, created_at: u64) -> Self {
+        Self {
+            zone_count: 0,
+            card_count: 0,
+            cards: HashMap::new(),
+            zones: HashMap::new(),
+            playmats: HashMap::new(),
+            players: Vec::new(),
+            settings,
+            created_at,
         }
     }
 
