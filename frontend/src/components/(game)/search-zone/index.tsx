@@ -19,6 +19,7 @@ import { LayoutGroup } from "framer-motion";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import SearchCardContextMenu from "@/components/(game)/(context-menus)/search-card";
 import Card from "@/components/(game)/card";
+import { LoaderCircle } from "lucide-react";
 
 interface ISort {
     type: "lands" | "creatures" | "artifacts" | "spells" | null;
@@ -57,14 +58,34 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         search: "",
     });
     const [cards, setCards] = useState<ShahrazadCardId[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const updateCards = useCallback(async () => {
-        const promises = [];
-        for (const card_id of zone.cards) {
+        setLoading(true);
+        const promises = zone.cards.map((card_id) => {
             const shah_card = getCard(card_id);
-            promises.push(requestCard(shah_card.card_name));
-        }
-        const scrycards = await Promise.allSettled(promises);
+            return requestCard(shah_card.card_name);
+        });
+
+        const scrycards = await Promise.race([
+            Promise.allSettled(promises),
+            new Promise<PromiseSettledResult<ScryfallCard.Any>[]>((resolve) =>
+                setTimeout(() => {
+                    resolve(
+                        promises.map((p) => {
+                            if (!p || p instanceof Promise) {
+                                return {
+                                    status: "rejected",
+                                    reason: new Error("requestCard timeout"),
+                                };
+                            }
+                            return { status: "fulfilled", value: p };
+                        })
+                    );
+                }, 1000)
+            ),
+        ]);
+        setLoading(false);
         const cards: { id: string; card: ScryfallCard.Any | undefined }[] = [];
         for (let i = 0; i < scrycards.length; i++) {
             const card = scrycards[i];
@@ -77,7 +98,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         }
 
         const filtered_cards = cards.filter(({ card }) => {
-            if (!card) return false;
+            if (!card) return true;
             switch (sort.type) {
                 case "lands":
                 case "creatures":
@@ -137,7 +158,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         );
 
         const searched_cards = sorted_cards.filter(({ card }) => {
-            if (!card) return false;
+            if (!card) return true;
             if (!card.name.toLowerCase().includes(sort.search.toLowerCase()))
                 return false;
             return true;
@@ -145,7 +166,15 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
 
         const new_cards = searched_cards.map(({ id }) => id);
 
-        setCards((old) => (new_cards === old ? old : new_cards));
+        setCards((old) => {
+            if (
+                old.length === new_cards.length &&
+                old.every((card, i) => card === new_cards[i])
+            ) {
+                return old;
+            }
+            return new_cards;
+        });
     }, [zone, sort, getCard, requestCard]);
 
     useEffect(() => {
@@ -247,7 +276,11 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                     }}
                 >
                     {cards.length === 0 ? (
-                        <Scrycard card={undefined} />
+                        loading === true ? (
+                            <LoaderCircle className="animate-spin" />
+                        ) : (
+                            <Scrycard card={undefined} />
+                        )
                     ) : (
                         <LayoutGroup>
                             {colVirtualizer
