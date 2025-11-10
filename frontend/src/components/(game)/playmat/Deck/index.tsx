@@ -56,7 +56,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
             );
         }
 
-        const state = top ? getCard(top).state : undefined;
+        const state = top ? getCard(top)?.state : undefined;
         const face_up =
             state?.face_down === false ||
             playmat.player.reveal_deck_top === DeckTopReveal.PUBLIC ||
