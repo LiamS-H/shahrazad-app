@@ -207,6 +207,21 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     },
                     index: -1,
                 });
+            } else if (
+                start_zone_name === ZoneName.LIBRARY &&
+                end_zone_name === ZoneName.HAND
+            ) {
+                applyAction({
+                    type: ShahrazadActionCase.DrawTop,
+                    destination: end_zone_id,
+                    source: start_zone_id,
+                    amount: 1,
+                    state: {
+                        x,
+                        y,
+                        revealed: face_down === false ? [] : undefined,
+                    },
+                });
             } else {
                 applyAction({
                     type: ShahrazadActionCase.CardZone,
