@@ -21,8 +21,21 @@ import SearchCardContextMenu from "@/components/(game)/(context-menus)/search-ca
 import Card from "@/components/(game)/card";
 import { LoaderCircle } from "lucide-react";
 
+const colors = ["C", "W", "U", "B", "R", "G"] as const;
+const card_types = [
+    "land",
+    "creature",
+    "artifact",
+    "instant",
+    "sorcery",
+    "enchantment",
+    "other",
+] as const;
+
+type CardType = (typeof card_types)[number];
+
 interface ISort {
-    type: "lands" | "creatures" | "artifacts" | "spells" | null;
+    type: CardType | null;
     colors:
         | null
         | {
@@ -45,7 +58,7 @@ interface ISort {
     search: string;
 }
 
-type Color = "C" | "W" | "U" | "B" | "R" | "G";
+type Color = (typeof colors)[number];
 
 export default function SearchZone(props: { id: ShahrazadZoneId }) {
     const { getZone, getCard } = useShahrazadGameContext();
@@ -58,54 +71,90 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         search: "",
     });
     const [cards, setCards] = useState<ShahrazadCardId[]>([]);
+    const [allCards, setAllCards] = useState<
+        { id: string; card: ScryfallCard.Any | undefined }[]
+    >([]);
+    const [availableColors, setAvailableColors] = useState<Color[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const updateCards = useCallback(async () => {
-        setLoading(true);
-        const promises = zone.cards.map((card_id) => {
-            const shah_card = getCard(card_id);
-            return requestCard(shah_card.card_name);
-        });
+    useEffect(() => {
+        const fetchCards = async () => {
+            setLoading(true);
+            const promises = zone.cards.map((card_id) => {
+                const shah_card = getCard(card_id);
+                return requestCard(shah_card.card_name);
+            });
 
-        const scrycards = await Promise.race([
-            Promise.allSettled(promises),
-            new Promise<PromiseSettledResult<ScryfallCard.Any>[]>((resolve) =>
-                setTimeout(() => {
-                    resolve(
-                        promises.map((p) => {
-                            if (!p || p instanceof Promise) {
-                                return {
-                                    status: "rejected",
-                                    reason: new Error("requestCard timeout"),
-                                };
-                            }
-                            return { status: "fulfilled", value: p };
-                        })
-                    );
-                }, 1000)
-            ),
-        ]);
-        setLoading(false);
-        const cards: { id: string; card: ScryfallCard.Any | undefined }[] = [];
-        for (let i = 0; i < scrycards.length; i++) {
-            const card = scrycards[i];
-            const id = zone.cards[i];
-            if (card.status === "rejected") {
-                cards.push({ id, card: undefined });
-            } else {
-                cards.push({ id, card: card.value });
+            const scrycards = await Promise.race([
+                Promise.allSettled(promises),
+                new Promise<PromiseSettledResult<ScryfallCard.Any>[]>(
+                    (resolve) =>
+                        setTimeout(() => {
+                            resolve(
+                                promises.map((p) => {
+                                    if (!p || p instanceof Promise) {
+                                        return {
+                                            status: "rejected",
+                                            reason: new Error(
+                                                "requestCard timeout"
+                                            ),
+                                        };
+                                    }
+                                    return { status: "fulfilled", value: p };
+                                })
+                            );
+                        }, 1000)
+                ),
+            ]);
+            setLoading(false);
+            const fetched_cards: {
+                id: string;
+                card: ScryfallCard.Any | undefined;
+            }[] = [];
+            const colors_in_zone = new Set<Color>();
+            for (let i = 0; i < scrycards.length; i++) {
+                const scry_card = scrycards[i];
+                const id = zone.cards[i];
+                if (scry_card.status === "rejected") {
+                    fetched_cards.push({ id, card: undefined });
+                    continue;
+                }
+                fetched_cards.push({ id, card: scry_card.value });
+                if (!scry_card.value) continue;
+                if (scry_card.value.color_identity.length === 0) {
+                    colors_in_zone.add("C");
+                } else {
+                    for (const color of scry_card.value.color_identity) {
+                        colors_in_zone.add(color as Color);
+                    }
+                }
             }
-        }
+            setAllCards(fetched_cards);
+            setAvailableColors(colors.filter((c) => colors_in_zone.has(c)));
+        };
+        fetchCards();
+    }, [zone.cards, getCard, requestCard]);
 
-        const filtered_cards = cards.filter(({ card }) => {
+    const updateCards = useCallback(() => {
+        const filtered_cards = allCards.filter(({ card }) => {
             if (!card) return true;
-            switch (sort.type) {
-                case "lands":
-                case "creatures":
-                case "artifacts":
-                case "spells":
-                default:
+
+            if (sort.type) {
+                const type_line =
+                    "type_line" in card
+                        ? card.type_line.toLowerCase()
+                        : card.card_faces[0].type_line.toLowerCase();
+                let matches_type = false;
+                if (sort.type === "other") {
+                    matches_type = !card_types.some(
+                        (t) => t !== "other" && type_line.includes(t)
+                    );
+                } else {
+                    matches_type = type_line.includes(sort.type);
+                }
+                if (!matches_type) return false;
             }
+
             if (sort.colors === null) return true;
             const color_identity =
                 card.color_identity.length === 0
@@ -113,29 +162,21 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                     : card.color_identity;
             if (sort.match) {
                 for (const color of color_identity) {
-                    if (sort.colors[color]) return true;
+                    if (sort.colors[color as Color]) return true;
                 }
                 return false;
             }
             for (const color of color_identity) {
-                if (!sort.colors[color]) return false;
+                if (!sort.colors[color as Color]) return false;
             }
             for (const color of Object.keys(sort.colors) as ScryfallColors) {
-                if (!sort.colors[color]) continue;
+                if (!sort.colors[color as Color]) continue;
                 if (!(color_identity as string[]).includes(color)) return false;
             }
 
             return true;
         });
-        if (filtered_cards.length === 0 && sort.search) {
-            setSort((s) => ({
-                colors: null,
-                type: null,
-                match: s.match,
-                search: s.search,
-            }));
-            return;
-        }
+
         const sorted_cards = filtered_cards.toSorted(
             ({ card: card1 }, { card: card2 }) => {
                 let cost1 = 0;
@@ -175,11 +216,11 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
             }
             return new_cards;
         });
-    }, [zone, sort, getCard, requestCard]);
+    }, [allCards, sort]);
 
     useEffect(() => {
         updateCards();
-    }, [zone, sort, updateCards, props.id]);
+    }, [sort, updateCards]);
 
     const data: IDroppableData = { sortable: true };
 
@@ -189,17 +230,42 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         switch (color) {
             case "C":
                 setSort((sort) => {
-                    if (sort.colors?.C)
-                        return {
-                            ...sort,
-                            colors: { C: true },
-                        };
+                    if (sort.colors === null) {
+                        return { ...sort, colors: { C: true } };
+                    }
+                    if (sort.colors.C) {
+                        if (
+                            colors.every(
+                                (c) =>
+                                    sort.colors &&
+                                    (color == c
+                                        ? sort.colors[c] === true
+                                        : sort.colors[c] !== true)
+                            )
+                        ) {
+                            return { ...sort, colors: null };
+                        }
+
+                        return { ...sort, colors: { C: true } };
+                    }
+
                     return { ...sort, colors: { C: false } };
                 });
             default:
                 setSort((sort) => {
                     if (sort.colors === null) {
                         return { ...sort, colors: { C: false, [color]: true } };
+                    }
+                    if (
+                        colors.every(
+                            (c) =>
+                                sort.colors &&
+                                (color == c
+                                    ? sort.colors[c] === true
+                                    : sort.colors[c] !== true)
+                        )
+                    ) {
+                        return { ...sort, colors: null };
                     }
                     return {
                         ...sort,
@@ -213,7 +279,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         }
     };
 
-    for (const color of ["C", "W", "U", "B", "R", "G"] as const) {
+    for (const color of availableColors) {
         color_buttons.push(
             <Button
                 onClick={() => toggleColor(color)}
@@ -227,6 +293,24 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         );
     }
 
+    const toggleType = (type: CardType) => {
+        setSort((s) => ({
+            ...s,
+            type: s.type === type ? null : type,
+        }));
+    };
+
+    const type_buttons: ReactNode[] = card_types.map((card_type) => (
+        <Button
+            key={card_type}
+            onClick={() => toggleType(card_type)}
+            variant={sort.type === card_type ? "default" : "ghost"}
+            className="capitalize"
+        >
+            {card_type}
+        </Button>
+    ));
+
     const { setNodeRef, node } = useDroppable({ id: props.id, data });
     const colVirtualizer = useVirtualizer({
         horizontal: true,
@@ -237,35 +321,42 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
 
     return (
         <div className="w-full flex flex-col gap-4 h-[240px]">
-            <div className="max-w-5xl flex flex-row gap-6 justify-around items-center">
-                <div>
-                    <Input
-                        value={sort.search}
-                        onChange={(e) =>
-                            setSort((s) => ({
-                                ...s,
-                                search: e.target.value,
-                            }))
-                        }
-                        placeholder="Search 🔎︎"
-                    />
+            <div className="ml-16 max-w-7xl flex flex-col gap-2">
+                <div className="flex flex-row gap-6 items-center">
+                    <div>
+                        <Input
+                            value={sort.search}
+                            onChange={(e) =>
+                                setSort((s) => ({
+                                    ...s,
+                                    search: e.target.value,
+                                }))
+                            }
+                            placeholder="Search 🔎︎"
+                        />
+                    </div>
+                    <div className="flex flex-row space-x-2 min-w-24 items-center">
+                        <Switch
+                            id="match-switch"
+                            checked={sort.match}
+                            onCheckedChange={() =>
+                                setSort((sort) => ({
+                                    ...sort,
+                                    match: !sort.match,
+                                }))
+                            }
+                        />
+                        <Label htmlFor="match-switch">
+                            {sort.match ? "Includes" : "Exactly"}
+                        </Label>
+                    </div>
+                    <div className="flex flex-row space-x-2 ">
+                        {color_buttons}
+                    </div>
+                    <div className="flex flex-row space-x-2 justify-center">
+                        {type_buttons}
+                    </div>
                 </div>
-                <div className="flex flex-row space-x-2 min-w-24 items-center">
-                    <Switch
-                        id="match-switch"
-                        checked={sort.match}
-                        onCheckedChange={() =>
-                            setSort((sort) => ({
-                                ...sort,
-                                match: !sort.match,
-                            }))
-                        }
-                    />
-                    <Label htmlFor="match-switch">
-                        {sort.match ? "Includes" : "Exactly"}
-                    </Label>
-                </div>
-                <div className="flex flex-row space-x-2 ">{color_buttons}</div>
             </div>
             <div ref={setNodeRef} className="overflow-x-auto relative h-fit">
                 <div
