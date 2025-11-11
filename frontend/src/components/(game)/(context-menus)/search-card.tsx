@@ -16,6 +16,7 @@ import { useSearchContext } from "@/contexts/(game)/search";
 import { randomU64 } from "@/lib/utils/random";
 import { ShahrazadZoneId, ZoneName } from "@/types/bindings/zone";
 import { ShahrazadCardId } from "@/types/bindings/card";
+import { useScrycard } from "react-scrycards";
 
 function Content({
     zoneId,
@@ -27,15 +28,19 @@ function Content({
     const {
         applyAction,
         getPlaymat,
+        getCard,
         active_player: player,
     } = useShahrazadGameContext();
     const { search } = useSearchContext();
     const playmat = getPlaymat(player);
     const zone = useZone(zoneId);
+    const shah_card = getCard(cardId);
+    const scry_card = useScrycard(shah_card.card_name);
+    const title = scry_card?.name || shah_card.card_name;
 
     return (
         <>
-            <ContextMenuLabel> ({zone.cards.length})</ContextMenuLabel>
+            <ContextMenuLabel>{title}</ContextMenuLabel>
             <ContextMenuSeparator />
             <ContextMenuSub>
                 <ContextMenuSubTrigger disabled={zone.cards.length === 0}>
