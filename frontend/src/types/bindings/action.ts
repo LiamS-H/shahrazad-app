@@ -21,6 +21,7 @@ export enum ShahrazadActionCase {
     DeleteToken = 'DeleteToken',
     Mulligan = 'Mulligan',
     SendMessage = 'SendMessage',
+    ResetPlaymat = 'ResetPlaymat',
     GameTerminated = 'GameTerminated',
 }
 
@@ -129,6 +130,12 @@ export type ShahrazadActionCaseSendMessage = {
     created_at: number;
 };
 
+export type ShahrazadActionCaseResetPlaymat = {
+    type: ShahrazadActionCase.ResetPlaymat;
+    player_id: ShahrazadPlaymatId;
+    seed: string;
+};
+
 export type ShahrazadActionCaseGameTerminated = {
     type: ShahrazadActionCase.GameTerminated;
 };
@@ -150,6 +157,7 @@ export type ShahrazadAction =
     | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan
     | ShahrazadActionCaseSendMessage
+    | ShahrazadActionCaseResetPlaymat
     | ShahrazadActionCaseGameTerminated;
 
 export type CardImport = { str: string; amount?: number };
