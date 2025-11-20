@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
-use super::{game::ShahrazadGameSettings, player::ShahrazadPlayer};
+use super::{game::ShahrazadGameSettings, playmat::ShahrazadPlayer};
 
 #[derive(Reflect, Deserialize, Serialize)]
 pub struct JoinGameQuery {

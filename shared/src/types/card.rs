@@ -5,7 +5,7 @@ use type_reflect::*;
 use crate::proto;
 use crate::{branded_string, types::zone::ShahrazadZoneId};
 
-use super::game::ShahrazadPlaymatId;
+use super::playmat::ShahrazadPlaymatId;
 
 branded_string!(ShahrazadCardId);
 branded_string!(ShahrazadCardName);

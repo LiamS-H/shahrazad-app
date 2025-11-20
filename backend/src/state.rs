@@ -1,7 +1,7 @@
 use dashmap::DashMap;
 use rand::Rng;
-use shared::types::game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymatId};
-use shared::types::player::ShahrazadPlayer;
+use shared::types::game::{ShahrazadGame, ShahrazadGameSettings};
+use shared::types::playmat::{ShahrazadPlayer, ShahrazadPlaymatId};
 use shared::types::{
     action::ShahrazadAction,
     ws::{ClientAction, ServerUpdate},

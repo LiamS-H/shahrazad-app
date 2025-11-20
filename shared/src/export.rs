@@ -9,9 +9,9 @@ use crate::types::{
         ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState,
         ShahrazadCardStateTransform, ShahrazadCounter,
     },
-    game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
+    game::{ShahrazadGame, ShahrazadGameSettings},
     message::{ArrowType, Message},
-    player::{DeckTopReveal, ShahrazadPlayer},
+    playmat::{DeckTopReveal, ShahrazadPlayer, ShahrazadPlaymat, ShahrazadPlaymatId},
     ws::{ClientAction, ServerUpdate},
     zone::{ShahrazadZone, ShahrazadZoneId, ZoneName},
 };

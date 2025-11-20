@@ -1,8 +1,8 @@
 use crate::types::{
     action::{CardImport, ShahrazadAction},
-    card::{ShahrazadCardState, ShahrazadCardStateTransform, ShahrazadCounter},
+    card::{ShahrazadCardStateTransform, ShahrazadCounter},
     game::ShahrazadGame,
-    player::ShahrazadPlayer,
+    playmat::ShahrazadPlayer,
 };
 use pretty_assertions::assert_eq;
 use serde_json::Value;

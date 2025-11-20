@@ -13,9 +13,13 @@ use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
 use super::action::CardImport;
-use super::player::ShahrazadPlayer;
 use super::ws::ProtoSerialize;
 use super::{card::*, zone::*};
+
+use super::playmat::ShahrazadPlaymat;
+use crate::proto;
+use crate::types::action::ShahrazadAction;
+use crate::types::playmat::ShahrazadPlaymatId;
 
 #[path = "../tests/game_internal.rs"]
 mod game_internal;
@@ -33,46 +37,6 @@ pub struct ShahrazadGame {
 }
 
 use super::zone::ShahrazadZoneId;
-
-branded_string!(ShahrazadPlaymatId);
-
-#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct ShahrazadPlaymat {
-    library: ShahrazadZoneId,
-    hand: ShahrazadZoneId,
-    graveyard: ShahrazadZoneId,
-    battlefield: ShahrazadZoneId,
-    exile: ShahrazadZoneId,
-    command: ShahrazadZoneId,
-    sideboard: ShahrazadZoneId,
-    life: i32,
-    mulligans: i8,
-    command_damage: HashMap<ShahrazadPlaymatId, i32>,
-    player: ShahrazadPlayer,
-}
-
-impl std::hash::Hash for ShahrazadPlaymat {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.library.hash(state);
-        self.hand.hash(state);
-        self.graveyard.hash(state);
-        self.battlefield.hash(state);
-        self.exile.hash(state);
-        self.command.hash(state);
-        self.life.hash(state);
-        self.mulligans.hash(state);
-        let mut damages: Vec<_> = self.command_damage.iter().collect();
-        damages.sort_by(|a, b| a.0.cmp(b.0));
-        for damage in damages {
-            damage.0.hash(state);
-            damage.1.hash(state);
-        }
-        self.player.hash(state);
-    }
-}
-
-use crate::types::action::ShahrazadAction;
-use crate::{branded_string, proto};
 
 #[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Hash)]
 pub struct ShahrazadGameSettings {

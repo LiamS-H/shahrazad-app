@@ -5,10 +5,10 @@ use crate::proto::action::shahrazad_action::Action;
 use crate::proto::{self};
 
 use super::{
-    card::{ShahrazadCardId, ShahrazadCardState, ShahrazadCardStateTransform},
-    game::ShahrazadPlaymatId,
+    card::{ShahrazadCardId, ShahrazadCardStateTransform},
     message::Message,
-    player::ShahrazadPlayer,
+    playmat::ShahrazadPlayer,
+    playmat::ShahrazadPlaymatId,
     // ws::ProtoSerialize,
     zone::ShahrazadZoneId,
 };

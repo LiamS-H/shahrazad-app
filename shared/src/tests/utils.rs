@@ -1,7 +1,7 @@
 use crate::types::{
-    card::{ShahrazadCardState, ShahrazadCardStateTransform, ShahrazadCounter},
+    card::{ShahrazadCardStateTransform, ShahrazadCounter},
     game::{ShahrazadGame, ShahrazadGameSettings},
-    player::ShahrazadPlayer,
+    playmat::ShahrazadPlayer,
 };
 
 pub fn create_sample_card_transform() -> ShahrazadCardStateTransform {

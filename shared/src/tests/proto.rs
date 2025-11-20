@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::tests::utils::{create_sample_card_transform, create_sample_player};
 use crate::types::action::{CardImport, ShahrazadAction};
-use crate::types::card::{ShahrazadCardState, ShahrazadCardStateTransform};
+use crate::types::card::ShahrazadCardStateTransform;
 use prost::Message;
 
 use crate::proto;
@@ -273,14 +273,14 @@ fn test_game() {
     let actions = vec![
         ShahrazadAction::AddPlayer {
             player_id: "1".into(),
-            player: crate::types::player::ShahrazadPlayer {
+            player: crate::types::playmat::ShahrazadPlayer {
                 display_name: "Alice".into(),
                 ..Default::default()
             },
         },
         ShahrazadAction::AddPlayer {
             player_id: "2".into(),
-            player: crate::types::player::ShahrazadPlayer {
+            player: crate::types::playmat::ShahrazadPlayer {
                 display_name: "Bob".into(),
                 ..Default::default()
             },

@@ -1,7 +1,8 @@
 // rust analyzer gets angry no matter what
+#![allow(unused)]
 use crate::types::card::{ShahrazadCardState, ShahrazadCardStateTransform, ShahrazadCounter};
 use crate::types::game::{CardImport, ShahrazadGameSettings};
-use crate::types::{action::ShahrazadAction, game::ShahrazadGame, player::ShahrazadPlayer};
+use crate::types::{action::ShahrazadAction, game::ShahrazadGame, playmat::ShahrazadPlayer};
 
 #[test]
 fn mulligan_resets_state() {
