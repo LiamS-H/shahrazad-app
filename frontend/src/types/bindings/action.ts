@@ -1,4 +1,5 @@
-import { ShahrazadCardId, ShahrazadCardState } from './card';
+import { ShahrazadCardId, ShahrazadCardState,
+    ShahrazadCardStateTransform } from './card';
 import { Message } from './message';
 import { ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
@@ -28,7 +29,7 @@ export type ShahrazadActionCaseDrawBottom = {
     amount: usize;
     source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseDrawTop = {
@@ -36,19 +37,19 @@ export type ShahrazadActionCaseDrawTop = {
     amount: usize;
     source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseCardState = {
     type: ShahrazadActionCase.CardState;
     cards: Array<ShahrazadCardId>;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseCardZone = {
     type: ShahrazadActionCase.CardZone;
     cards: Array<ShahrazadCardId>;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
     destination: ShahrazadZoneId;
     index: number;
 };
@@ -65,7 +66,7 @@ export type ShahrazadActionCaseZoneImport = {
     cards: Array<CardImport>;
     token: boolean;
     player_id: ShahrazadPlaymatId;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseDeckImport = {

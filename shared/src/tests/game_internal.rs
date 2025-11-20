@@ -1,5 +1,5 @@
 // rust analyzer gets angry no matter what
-use crate::types::card::{ShahrazadCardState, ShahrazadCounter};
+use crate::types::card::{ShahrazadCardState, ShahrazadCardStateTransform, ShahrazadCounter};
 use crate::types::game::{CardImport, ShahrazadGameSettings};
 use crate::types::{action::ShahrazadAction, game::ShahrazadGame, player::ShahrazadPlayer};
 
@@ -57,7 +57,7 @@ fn mulligan_resets_state() {
         cards: vec!["C2".into(), "C3".into()].into(),
         destination: battlefield_id.clone(),
         index: 0,
-        state: ShahrazadCardState {
+        state: ShahrazadCardStateTransform {
             tapped: Some(true),
             counters: Some(vec![ShahrazadCounter { amount: 1 }].into()),
             ..Default::default()
@@ -67,8 +67,8 @@ fn mulligan_resets_state() {
 
     let card2_before = game.cards.get(&"C2".into()).unwrap();
     assert_eq!(card2_before.location, battlefield_id);
-    assert_eq!(card2_before.state.tapped, Some(true));
-    assert!(card2_before.state.counters.is_some());
+    assert_eq!(card2_before.state.tapped, true);
+    assert!(card2_before.state.counters[0] == ShahrazadCounter { amount: 1 });
 
     let card3_before = game.cards.get(&"C3".into()).unwrap();
     assert_eq!(card3_before.location, battlefield_id);
@@ -86,15 +86,15 @@ fn mulligan_resets_state() {
     assert_eq!(card1_after.location, command_zone_id); // Commander stays
 
     let expected_state = ShahrazadCardState {
-        flipped: Some(false),
-        inverted: Some(false),
-        tapped: Some(false),
-        face_down: Some(true),
-        counters: Some([].into()),
-        revealed: Some(["1".into()].into()),
+        flipped: false,
+        inverted: false,
+        tapped: false,
+        face_down: true,
+        counters: [].into(),
+        revealed: ["1".into()].into(),
         x: None,
         y: None,
-        annotation: None,
+        annotation: "".into(),
     };
     let card2_after = game.cards.get(&"C2".into()).unwrap();
     assert_eq!(card2_after.location, hand_id);

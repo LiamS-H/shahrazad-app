@@ -239,6 +239,17 @@ export class GameState {
         wasm.__wbg_gamestate_free(ptr, 0);
     }
     /**
+     * @param {any} action
+     * @returns {any}
+     */
+    apply_action(action) {
+        const ret = wasm.gamestate_apply_action(this.__wbg_ptr, action);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * @param {any} game
      */
     constructor(game) {
@@ -246,15 +257,6 @@ export class GameState {
         this.__wbg_ptr = ret >>> 0;
         GameStateFinalization.register(this, this.__wbg_ptr, this);
         return this;
-    }
-    /**
-     * @param {any} settings
-     * @param {any} time
-     * @returns {GameState}
-     */
-    static new_local(settings, time) {
-        const ret = wasm.gamestate_new_local(settings, time);
-        return GameState.__wrap(ret);
     }
     /**
      * @returns {any}
@@ -277,15 +279,13 @@ export class GameState {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
-     * @param {any} action
-     * @returns {any}
+     * @param {any} settings
+     * @param {any} time
+     * @returns {GameState}
      */
-    apply_action(action) {
-        const ret = wasm.gamestate_apply_action(this.__wbg_ptr, action);
-        if (ret[2]) {
-            throw takeFromExternrefTable0(ret[1]);
-        }
-        return takeFromExternrefTable0(ret[0]);
+    static new_local(settings, time) {
+        const ret = wasm.gamestate_new_local(settings, time);
+        return GameState.__wrap(ret);
     }
     /**
      * @param {any} game

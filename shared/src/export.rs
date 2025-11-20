@@ -6,7 +6,8 @@ use crate::types::{
         CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
     },
     card::{
-        ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState, ShahrazadCounter,
+        ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState,
+        ShahrazadCardStateTransform, ShahrazadCounter,
     },
     game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
     message::{ArrowType, Message},
@@ -24,7 +25,7 @@ pub fn export_all() {
         destinations: [
             TypeScript(
                 "./bindings/action.ts"
-                prefix: "import {ShahrazadCardId, ShahrazadCardState} from './card';
+                prefix: "import {ShahrazadCardId, ShahrazadCardState, ShahrazadCardStateTransform} from './card';
                 import {ShahrazadZoneId} from './zone';
                 import { ShahrazadPlaymatId, ShahrazadPlayer } from './playmat';
                 import { Message } from './message';
@@ -42,7 +43,8 @@ pub fn export_all() {
             ShahrazadCardId,
             ShahrazadCardName,
             ShahrazadCardState,
-            ShahrazadCounter
+            ShahrazadCounter,
+            ShahrazadCardStateTransform
         ],
         destinations: [
             TypeScript(

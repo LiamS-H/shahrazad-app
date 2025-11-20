@@ -1,8 +1,8 @@
 use std::collections::VecDeque;
 
-use crate::tests::utils::{create_sample_card_state, create_sample_player};
+use crate::tests::utils::{create_sample_card_transform, create_sample_player};
 use crate::types::action::{CardImport, ShahrazadAction};
-use crate::types::card::ShahrazadCardState;
+use crate::types::card::{ShahrazadCardState, ShahrazadCardStateTransform};
 use prost::Message;
 
 use crate::proto;
@@ -13,7 +13,7 @@ fn test_draw_bottom() {
         amount: 3,
         source: "deck1".into(),
         destination: "hand1".into(),
-        state: create_sample_card_state(),
+        state: create_sample_card_transform(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -30,7 +30,7 @@ fn test_draw_top() {
         amount: 1,
         source: "deck1".into(),
         destination: "hand1".into(),
-        state: create_sample_card_state(),
+        state: create_sample_card_transform(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -45,7 +45,7 @@ fn test_draw_top() {
 fn test_card_state() {
     let action = ShahrazadAction::CardState {
         cards: vec!["card1".into(), "card2".into()],
-        state: create_sample_card_state(),
+        state: create_sample_card_transform(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -60,7 +60,7 @@ fn test_card_state() {
 fn test_card_zone() {
     let action = ShahrazadAction::CardZone {
         cards: vec!["card1".into(), "card2".into()],
-        state: create_sample_card_state(),
+        state: create_sample_card_transform(),
         destination: "zone1".into(),
         index: 0,
     };
@@ -104,7 +104,7 @@ fn test_zone_import() {
         ],
         token: false,
         player_id: "player1".into(),
-        state: ShahrazadCardState {
+        state: ShahrazadCardStateTransform {
             ..Default::default()
         },
     };
@@ -299,7 +299,7 @@ fn test_game() {
             ],
             player_id: "1".into(),
             token: false,
-            state: ShahrazadCardState {
+            state: ShahrazadCardStateTransform {
                 ..Default::default()
             },
         },
@@ -311,7 +311,7 @@ fn test_game() {
             }],
             player_id: "2".into(),
             token: false,
-            state: ShahrazadCardState {
+            state: ShahrazadCardStateTransform {
                 ..Default::default()
             },
         },
@@ -325,7 +325,7 @@ fn test_game() {
         },
         ShahrazadAction::CardState {
             cards: vec!["C1".into()],
-            state: ShahrazadCardState {
+            state: ShahrazadCardStateTransform {
                 tapped: Some(true),
                 annotation: Some("test annotation!".into()),
                 ..Default::default()

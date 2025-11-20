@@ -234,13 +234,13 @@ impl ShahrazadGame {
                     let old_card = game.cards.get(&card_id)?;
                     let mut new_card = ShahrazadCard { ..old_card.clone() };
 
-                    new_card.state.apply(&old_card.state);
+                    new_card.state = old_card.state.clone();
                     new_card.state.apply(&state);
                     if let Some(transform) = &transform {
                         if let (Some(x), Some(y)) = (old_card.state.x, old_card.state.y) {
                             let new_x = max(min(x as i16 + transform.x, 255 - 1), 0) as u32;
                             let new_y = max(min(y as i16 + transform.y, 255 - 1), 0) as u32;
-                            new_card.state.apply(&ShahrazadCardState {
+                            new_card.state.apply(&&ShahrazadCardStateTransform {
                                 x: Some(new_x),
                                 y: Some(new_y),
                                 ..Default::default()
@@ -292,8 +292,8 @@ impl ShahrazadGame {
                                 tokens.push(id.clone());
                             }
                             if !card.commander {
-                                card.state.counters = None;
-                                card.state.annotation = None;
+                                card.state.counters = [].into();
+                                card.state.annotation = "".into();
                             }
                         }
                     }
@@ -365,8 +365,8 @@ impl ShahrazadGame {
                 cards.shuffle(&mut rng);
                 for card_id in &cards {
                     let card = game.cards.get_mut(card_id)?;
-                    card.state.apply(&ShahrazadCardState::reset());
-                    card.state.apply(&ShahrazadCardState {
+                    card.state.apply(&&ShahrazadCardStateTransform::reset());
+                    card.state.apply(&&ShahrazadCardStateTransform {
                         face_down: Some(true),
                         ..Default::default()
                     });
@@ -624,7 +624,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
                         cards: cards.clone(),
-                        state: ShahrazadCardState {
+                        state: ShahrazadCardStateTransform {
                             ..Default::default()
                         },
                         destination: library_id.clone(),
@@ -636,7 +636,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
                         cards: commanders,
-                        state: ShahrazadCardState::reset(),
+                        state: ShahrazadCardStateTransform::reset(),
                         destination: command_id,
                         index: 0,
                     },
@@ -656,7 +656,7 @@ impl ShahrazadGame {
                         amount: 7,
                         source: library_id.clone(),
                         destination: hand_id,
-                        state: ShahrazadCardState {
+                        state: ShahrazadCardStateTransform {
                             revealed: Some([player_id].into()),
                             ..Default::default()
                         },

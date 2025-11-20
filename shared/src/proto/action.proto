@@ -30,24 +30,24 @@ message DrawBottom {
     uint32 amount = 1;
     string source = 2;
     string destination = 3;
-    card.ShahrazadCardState state = 4;
+    card.ShahrazadCardStateTransform state = 4;
 }
 
 message DrawTop {
     uint32 amount = 1;
     string source = 2;
     string destination = 3;
-    card.ShahrazadCardState state = 4;
+    card.ShahrazadCardStateTransform state = 4;
 }
 
 message CardState {
     repeated string cards = 1;
-    card.ShahrazadCardState state = 2;
+    card.ShahrazadCardStateTransform state = 2;
 }
 
 message CardZone {
     repeated string cards = 1;
-    card.ShahrazadCardState state = 2;
+    card.ShahrazadCardStateTransform state = 2;
     string destination = 3;
     int32 index = 4;
 }
@@ -66,7 +66,7 @@ message ZoneImport {
     repeated CardImport cards = 2;
     bool token = 3;
     string player_id = 4;
-    card.ShahrazadCardState state = 5;
+    card.ShahrazadCardStateTransform state = 5;
 }
 
 message DeckImport {

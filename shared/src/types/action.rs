@@ -5,7 +5,7 @@ use crate::proto::action::shahrazad_action::Action;
 use crate::proto::{self};
 
 use super::{
-    card::{ShahrazadCardId, ShahrazadCardState},
+    card::{ShahrazadCardId, ShahrazadCardState, ShahrazadCardStateTransform},
     game::ShahrazadPlaymatId,
     message::Message,
     player::ShahrazadPlayer,
@@ -26,21 +26,21 @@ pub enum ShahrazadAction {
         amount: usize,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     DrawTop {
         amount: usize,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     CardState {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     CardZone {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
         destination: ShahrazadZoneId,
         index: i32,
     },
@@ -53,7 +53,7 @@ pub enum ShahrazadAction {
         cards: Vec<CardImport>,
         token: bool,
         player_id: ShahrazadPlaymatId,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     DeckImport {
         deck_uri: String,
@@ -105,7 +105,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                     .state
                     .unwrap()
                     .try_into()
-                    .unwrap_or(ShahrazadCardState::default());
+                    .unwrap_or(ShahrazadCardStateTransform::default());
 
                 ShahrazadAction::DrawBottom {
                     amount,
@@ -120,7 +120,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                     .state
                     .unwrap()
                     .try_into()
-                    .unwrap_or(ShahrazadCardState::default());
+                    .unwrap_or(ShahrazadCardStateTransform::default());
                 ShahrazadAction::DrawTop {
                     amount,
                     source: a.source.into(),

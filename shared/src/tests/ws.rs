@@ -7,14 +7,14 @@ use crate::{
     types::ws::{ClientAction, ProtoSerialize, ServerUpdate},
 };
 
-use super::utils::create_sample_card_state;
+use super::utils::create_sample_card_transform;
 
 fn create_sample_action() -> ShahrazadAction {
     ShahrazadAction::DrawTop {
         amount: 1,
         source: "deck1".into(),
         destination: "hand1".into(),
-        state: create_sample_card_state(),
+        state: create_sample_card_transform(),
     }
 }
 

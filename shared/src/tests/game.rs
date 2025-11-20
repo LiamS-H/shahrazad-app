@@ -1,6 +1,6 @@
 use crate::types::{
     action::{CardImport, ShahrazadAction},
-    card::{ShahrazadCardState, ShahrazadCounter},
+    card::{ShahrazadCardState, ShahrazadCardStateTransform, ShahrazadCounter},
     game::ShahrazadGame,
     player::ShahrazadPlayer,
 };
@@ -124,9 +124,7 @@ fn init_game() {
             .into(),
             player_id: "1".into(),
             token: false,
-            state: ShahrazadCardState {
-                ..Default::default()
-            },
+            state: ShahrazadCardStateTransform::reset(),
         };
         let mutation = ShahrazadGame::apply_action(action, &mut game);
         assert!(mutation.is_some());
@@ -139,15 +137,15 @@ fn init_game() {
             "cards": {
                 "C1":{
                     "state":{
-                        "annotation": null,
-                        "inverted": null,
-                        "flipped": null,
-                        "tapped": null,
-                        "face_down": null,
-                        "revealed": null,
+                        "annotation": "",
+                        "inverted": false,
+                        "flipped": false,
+                        "tapped": false,
+                        "face_down": false,
+                        "revealed": [],
                         "x": null,
                         "y": null,
-                        "counters" : null
+                        "counters" : []
                     },
                     "owner":"1",
                     "token": false,
@@ -244,7 +242,7 @@ fn reproducibility() {
             .into(),
             player_id: "1".into(),
             token: false,
-            state: ShahrazadCardState {
+            state: ShahrazadCardStateTransform {
                 ..Default::default()
             },
         },
@@ -265,7 +263,7 @@ fn reproducibility() {
                 "C6".into(),
             ]
             .into(),
-            state: ShahrazadCardState {
+            state: ShahrazadCardStateTransform {
                 inverted: Some(true),
                 flipped: Some(true),
                 tapped: Some(true),
@@ -281,7 +279,7 @@ fn reproducibility() {
         },
         ShahrazadAction::CardState {
             cards: ["C1".into()].into(),
-            state: ShahrazadCardState {
+            state: ShahrazadCardStateTransform {
                 inverted: Some(false),
                 flipped: Some(false),
                 tapped: Some(false),

@@ -86,7 +86,7 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
                                 setFlipped(
                                     flipped === null
                                         ? !shah_card.state.flipped
-                                        : !flipped,
+                                        : !flipped
                                 );
                             }}
                         >
@@ -101,6 +101,11 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
                         </Button>
                     </div>
                 )}
+                {/* <div className="absolute w-full top-0 -left-full">
+                    <pre className="text-foreground">
+                        {JSON.stringify(shah_card, null, 2)}
+                    </pre>
+                </div> */}
             </div>
         );
     }, [shah_card.card_name, shah_card.state.flipped, flipped, size, scrycard]);
@@ -131,7 +136,7 @@ export default function PreviewCard({ id }: { id: ShahrazadCardId | null }) {
                 y: Math.max(minY, Math.min(p.y, maxY)),
             };
         },
-        [size, windowSize.width, windowSize.height],
+        [size, windowSize.width, windowSize.height]
     );
 
     useEffect(() => {
@@ -177,10 +182,10 @@ export default function PreviewCard({ id }: { id: ShahrazadCardId | null }) {
                 clampPosition({
                     x: x + delta.x,
                     y: y + delta.y,
-                }),
+                })
             );
         },
-        [clampPosition],
+        [clampPosition]
     );
 
     const card = useMemo(() => {
