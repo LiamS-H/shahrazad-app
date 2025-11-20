@@ -27,7 +27,7 @@ pub fn export_all() {
                 "./bindings/action.ts"
                 prefix: "import {ShahrazadCardId, ShahrazadCardStateTransform} from './card';
                 import {ShahrazadZoneId} from './zone';
-                import { ShahrazadPlaymatId, ShahrazadPlayer } from './playmat';
+                import { ShahrazadPlaymatId, ShahrazadPlayer, DeckTopReveal } from './playmat';
                 import { Message } from './message';
                 type usize = number;
                 ",

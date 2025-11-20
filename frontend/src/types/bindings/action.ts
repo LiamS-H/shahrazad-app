@@ -1,6 +1,6 @@
 import { ShahrazadCardId, ShahrazadCardStateTransform } from './card';
 import { Message } from './message';
-import { ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
+import { DeckTopReveal, ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
 type usize = number;
 
@@ -103,7 +103,7 @@ export type ShahrazadActionCaseSetCommand = {
 export type ShahrazadActionCaseSetPlaymat = {
     type: ShahrazadActionCase.SetPlaymat;
     player_id: ShahrazadPlaymatId;
-    reveal_deck_top: number;
+    reveal_deck_top: DeckTopReveal;
 };
 
 export type ShahrazadActionCaseClearBoard = {

@@ -197,7 +197,7 @@ fn test_set_command() {
 fn test_set_playmat() {
     let action = ShahrazadAction::SetPlaymat {
         player_id: "player1".into(),
-        reveal_deck_top: 1,
+        reveal_deck_top: crate::types::playmat::DeckTopReveal::NONE,
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()

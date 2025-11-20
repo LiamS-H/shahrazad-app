@@ -588,6 +588,7 @@ impl ShahrazadGame {
                     for player_id in &game.players {
                         let playmat = game.playmats.get_mut(player_id)?;
                         playmat.life = game.settings.starting_life;
+                        playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
                     }
                 }
 

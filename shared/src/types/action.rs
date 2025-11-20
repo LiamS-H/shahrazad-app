@@ -3,6 +3,7 @@ use type_reflect::*;
 
 use crate::proto::action::shahrazad_action::Action;
 use crate::proto::{self};
+use crate::types::playmat::DeckTopReveal;
 
 use super::{
     card::{ShahrazadCardId, ShahrazadCardStateTransform},
@@ -78,7 +79,7 @@ pub enum ShahrazadAction {
     },
     SetPlaymat {
         player_id: ShahrazadPlaymatId,
-        reveal_deck_top: i32,
+        reveal_deck_top: DeckTopReveal,
     },
     ClearBoard {
         player_id: ShahrazadPlaymatId,
@@ -195,7 +196,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
             },
             Action::SetPlaymat(a) => ShahrazadAction::SetPlaymat {
                 player_id: a.player_id.into(),
-                reveal_deck_top: a.reveal_deck_top,
+                reveal_deck_top: a.reveal_deck_top.into(),
             },
             Action::ClearBoard(a) => ShahrazadAction::ClearBoard {
                 player_id: a.player_id.into(),
@@ -328,7 +329,7 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                     reveal_deck_top,
                 } => Some(Action::SetPlaymat(proto::action::SetPlaymat {
                     player_id: player_id.into(),
-                    reveal_deck_top,
+                    reveal_deck_top: reveal_deck_top.into(),
                 })),
                 ShahrazadAction::ClearBoard { player_id } => {
                     Some(Action::ClearBoard(proto::action::ClearBoard {

@@ -17,16 +17,18 @@ interface DraggableCardWrapperProps {
 
 type DraggableCardProps = Omit<DraggableCardWrapperProps, "children"> & {
     animationTime?: number | null;
+    face_up?: boolean;
 };
 
 export function DraggableCard({
     id,
     animationTime,
+    face_up,
     ...props
 }: DraggableCardProps) {
     return (
         <DraggableCardWrapper id={id} {...props}>
-            <Card id={id} animationTime={animationTime} />
+            <Card id={id} animationTime={animationTime} faceUp={face_up} />
         </DraggableCardWrapper>
     );
 }

@@ -59,15 +59,17 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
         const state = top ? getCard(top)?.state : undefined;
         const face_up =
             state?.face_down === false ||
-            playmat.reveal_deck_top === DeckTopReveal.PUBLIC ||
-            (playmat.reveal_deck_top === DeckTopReveal.PRIVATE &&
-                player === active_player);
+            playmat.reveal_deck_top === DeckTopReveal.PUBLIC;
+        console.log(face_up, "up");
+
+        const revealed =
+            playmat.reveal_deck_top === DeckTopReveal.PRIVATE &&
+            player === active_player;
 
         const top_revealed =
             player === active_player &&
             (face_up === true ||
                 (face_up === false &&
-                    state?.revealed &&
                     state?.revealed.some((r) => r !== active_player)));
 
         return (
@@ -96,6 +98,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                             emptyMessage={() => <Scrycard card={undefined} />}
                             cards={zone.cards}
                             dragNamespace={searching ? "disabled" : undefined}
+                            topRevealed={face_up || revealed}
                         />
                         {top_revealed && (
                             <div className="relative">
