@@ -59,8 +59,8 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
         const state = top ? getCard(top)?.state : undefined;
         const face_up =
             state?.face_down === false ||
-            playmat.player.reveal_deck_top === DeckTopReveal.PUBLIC ||
-            (playmat.player.reveal_deck_top === DeckTopReveal.PRIVATE &&
+            playmat.reveal_deck_top === DeckTopReveal.PUBLIC ||
+            (playmat.reveal_deck_top === DeckTopReveal.PRIVATE &&
                 player === active_player);
 
         const top_revealed =
@@ -113,7 +113,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
         getCard,
         player,
         playmat.hand,
-        playmat.player.reveal_deck_top,
+        playmat.reveal_deck_top,
         props.id,
         searching,
         setNodeRef,

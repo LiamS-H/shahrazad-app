@@ -76,6 +76,10 @@ pub enum ShahrazadAction {
         command_id: ShahrazadPlaymatId,
         damage: i32,
     },
+    SetPlaymat {
+        player_id: ShahrazadPlaymatId,
+        reveal_deck_top: i32,
+    },
     ClearBoard {
         player_id: ShahrazadPlaymatId,
     },
@@ -188,6 +192,10 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                 player_id: a.player_id.into(),
                 command_id: a.command_id.into(),
                 damage: a.damage,
+            },
+            Action::SetPlaymat(a) => ShahrazadAction::SetPlaymat {
+                player_id: a.player_id.into(),
+                reveal_deck_top: a.reveal_deck_top,
             },
             Action::ClearBoard(a) => ShahrazadAction::ClearBoard {
                 player_id: a.player_id.into(),
@@ -314,6 +322,13 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                     player_id: player_id.into(),
                     command_id: command_id.into(),
                     damage,
+                })),
+                ShahrazadAction::SetPlaymat {
+                    player_id,
+                    reveal_deck_top,
+                } => Some(Action::SetPlaymat(proto::action::SetPlaymat {
+                    player_id: player_id.into(),
+                    reveal_deck_top,
                 })),
                 ShahrazadAction::ClearBoard { player_id } => {
                     Some(Action::ClearBoard(proto::action::ClearBoard {

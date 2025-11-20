@@ -25,26 +25,12 @@ pub struct ShahrazadPlaymat {
     pub mulligans: i8,
     pub command_damage: HashMap<ShahrazadPlaymatId, i32>,
     pub player: ShahrazadPlayer,
+    pub reveal_deck_top: DeckTopReveal,
 }
 
-impl std::hash::Hash for ShahrazadPlaymat {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.library.hash(state);
-        self.hand.hash(state);
-        self.graveyard.hash(state);
-        self.battlefield.hash(state);
-        self.exile.hash(state);
-        self.command.hash(state);
-        self.life.hash(state);
-        self.mulligans.hash(state);
-        let mut damages: Vec<_> = self.command_damage.iter().collect();
-        damages.sort_by(|a, b| a.0.cmp(b.0));
-        for damage in damages {
-            damage.0.hash(state);
-            damage.1.hash(state);
-        }
-        self.player.hash(state);
-    }
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Default)]
+pub struct ShahrazadPlayer {
+    pub display_name: String,
 }
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -81,17 +67,10 @@ impl From<DeckTopReveal> for i32 {
     }
 }
 
-#[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Default)]
-pub struct ShahrazadPlayer {
-    pub display_name: String,
-    pub reveal_deck_top: DeckTopReveal,
-}
-
 impl From<ShahrazadPlayer> for proto::playmat::ShahrazadPlayer {
     fn from(value: ShahrazadPlayer) -> Self {
         proto::playmat::ShahrazadPlayer {
             display_name: value.display_name,
-            reveal_deck_top: value.reveal_deck_top.into(),
         }
     }
 }
@@ -100,7 +79,6 @@ impl From<proto::playmat::ShahrazadPlayer> for ShahrazadPlayer {
     fn from(value: proto::playmat::ShahrazadPlayer) -> Self {
         ShahrazadPlayer {
             display_name: value.display_name,
-            reveal_deck_top: value.reveal_deck_top.into(),
         }
     }
 }
@@ -108,6 +86,76 @@ impl From<proto::playmat::ShahrazadPlayer> for ShahrazadPlayer {
 impl std::hash::Hash for ShahrazadPlayer {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.display_name.hash(state);
+    }
+}
+
+impl std::hash::Hash for ShahrazadPlaymat {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.library.hash(state);
+        self.hand.hash(state);
+        self.graveyard.hash(state);
+        self.battlefield.hash(state);
+        self.exile.hash(state);
+        self.command.hash(state);
+        self.life.hash(state);
+        self.mulligans.hash(state);
+        let mut damages: Vec<_> = self.command_damage.iter().collect();
+        damages.sort_by(|a, b| a.0.cmp(b.0));
+        for damage in damages {
+            damage.0.hash(state);
+            damage.1.hash(state);
+        }
+        self.player.hash(state);
+
         i32::from(self.reveal_deck_top.clone()).hash(state);
+    }
+}
+
+impl TryFrom<proto::playmat::ShahrazadPlaymat> for ShahrazadPlaymat {
+    type Error = &'static str;
+
+    fn try_from(value: proto::playmat::ShahrazadPlaymat) -> Result<Self, Self::Error> {
+        Ok(ShahrazadPlaymat {
+            library: value.library.into(),
+            hand: value.hand.into(),
+            graveyard: value.graveyard.into(),
+            battlefield: value.battlefield.into(),
+            exile: value.exile.into(),
+            command: value.command.into(),
+            sideboard: value.sideboard.into(),
+            life: value.life.into(),
+            mulligans: value.mulligans.try_into().unwrap(),
+            command_damage: value
+                .command_damage
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone()))
+                .collect(),
+            player: value.player.unwrap().into(),
+
+            reveal_deck_top: value.reveal_deck_top.into(),
+        })
+    }
+}
+impl From<ShahrazadPlaymat> for proto::playmat::ShahrazadPlaymat {
+    fn from(value: ShahrazadPlaymat) -> Self {
+        proto::playmat::ShahrazadPlaymat {
+            library: value.library.into(),
+            hand: value.hand.into(),
+            graveyard: value.graveyard.into(),
+            battlefield: value.battlefield.into(),
+            exile: value.exile.into(),
+            command: value.command.into(),
+            sideboard: value.sideboard.into(),
+            life: value.life,
+            mulligans: value.mulligans.into(),
+            command_damage: value
+                .command_damage
+                .iter()
+                .map(|(k, v)| (k.clone().into(), v.clone()))
+                .collect(),
+            player: Some(value.player.into()),
+
+            reveal_deck_top: value.reveal_deck_top.into(),
+        }
     }
 }

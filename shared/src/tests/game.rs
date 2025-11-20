@@ -93,9 +93,9 @@ fn init_game() {
                     "life": 20,
                     "mulligans": 0,
                     "player": {
-                        "display_name": "Test",
-                        "reveal_deck_top": "NONE"
-                    }
+                        "display_name": "Test"
+                    },
+                    "reveal_deck_top": "NONE"
                 }
             },
             "players": ["1"],
@@ -197,9 +197,9 @@ fn init_game() {
                     "life": 20,
                     "mulligans": 0,
                     "player": {
-                        "display_name": "Test",
-                        "reveal_deck_top": "NONE"
-                    }
+                        "display_name": "Test"
+                    },
+                    "reveal_deck_top": "NONE"
                 }
             },
             "players": ["1"],

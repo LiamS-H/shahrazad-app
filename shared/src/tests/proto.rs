@@ -194,6 +194,21 @@ fn test_set_command() {
 }
 
 #[test]
+fn test_set_playmat() {
+    let action = ShahrazadAction::SetPlaymat {
+        player_id: "player1".into(),
+        reveal_deck_top: 1,
+    };
+    let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
+        .encode_to_vec()
+        .try_into()
+        .unwrap();
+    let compact = proto::action::ShahrazadAction::decode(buf).unwrap();
+    let parsed = ShahrazadAction::try_from(compact).unwrap();
+    assert!(matches!(parsed, ShahrazadAction::SetPlaymat { .. }));
+}
+
+#[test]
 fn test_clear_board() {
     let action = ShahrazadAction::ClearBoard {
         player_id: "player1".into(),

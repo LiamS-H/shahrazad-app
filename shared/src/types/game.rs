@@ -475,6 +475,7 @@ impl ShahrazadGame {
                     mulligans: 0,
                     command_damage,
                     player,
+                    reveal_deck_top: crate::types::playmat::DeckTopReveal::NONE,
                 };
 
                 game.zone_count += zone_types.len() as u64;
@@ -498,6 +499,18 @@ impl ShahrazadGame {
             } => {
                 let playmat = game.playmats.get_mut(&player_id)?;
                 playmat.command_damage.insert(command_id, damage);
+                Some(game)
+            }
+            ShahrazadAction::SetPlaymat {
+                player_id,
+                reveal_deck_top,
+            } => {
+                let playmat = game.playmats.get_mut(&player_id)?;
+                let reveal_deck_top = reveal_deck_top.into();
+                if playmat.reveal_deck_top == reveal_deck_top {
+                    return None;
+                }
+                playmat.reveal_deck_top = reveal_deck_top;
                 Some(game)
             }
             ShahrazadAction::ClearBoard { player_id } => {
@@ -742,51 +755,6 @@ impl From<proto::game::ShahrazadGameSettings> for ShahrazadGameSettings {
             free_mulligans: value.free_mulligans,
             scry_rule: value.scry_rule,
             starting_life: value.starting_life,
-        }
-    }
-}
-
-impl TryFrom<proto::playmat::ShahrazadPlaymat> for ShahrazadPlaymat {
-    type Error = &'static str;
-
-    fn try_from(value: proto::playmat::ShahrazadPlaymat) -> Result<Self, Self::Error> {
-        Ok(ShahrazadPlaymat {
-            library: value.library.into(),
-            hand: value.hand.into(),
-            graveyard: value.graveyard.into(),
-            battlefield: value.battlefield.into(),
-            exile: value.exile.into(),
-            command: value.command.into(),
-            sideboard: value.sideboard.into(),
-            life: value.life.into(),
-            mulligans: value.mulligans.try_into().unwrap(),
-            command_damage: value
-                .command_damage
-                .iter()
-                .map(|(k, v)| (k.clone().into(), v.clone()))
-                .collect(),
-            player: value.player.unwrap().into(),
-        })
-    }
-}
-impl From<ShahrazadPlaymat> for proto::playmat::ShahrazadPlaymat {
-    fn from(value: ShahrazadPlaymat) -> Self {
-        proto::playmat::ShahrazadPlaymat {
-            library: value.library.into(),
-            hand: value.hand.into(),
-            graveyard: value.graveyard.into(),
-            battlefield: value.battlefield.into(),
-            exile: value.exile.into(),
-            command: value.command.into(),
-            sideboard: value.sideboard.into(),
-            life: value.life,
-            mulligans: value.mulligans.into(),
-            command_damage: value
-                .command_damage
-                .iter()
-                .map(|(k, v)| (k.clone().into(), v.clone()))
-                .collect(),
-            player: Some(value.player.into()),
         }
     }
 }

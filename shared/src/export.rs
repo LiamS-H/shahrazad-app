@@ -25,7 +25,7 @@ pub fn export_all() {
         destinations: [
             TypeScript(
                 "./bindings/action.ts"
-                prefix: "import {ShahrazadCardId, ShahrazadCardState, ShahrazadCardStateTransform} from './card';
+                prefix: "import {ShahrazadCardId, ShahrazadCardStateTransform} from './card';
                 import {ShahrazadZoneId} from './zone';
                 import { ShahrazadPlaymatId, ShahrazadPlayer } from './playmat';
                 import { Message } from './message';

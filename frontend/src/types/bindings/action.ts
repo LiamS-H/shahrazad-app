@@ -1,5 +1,4 @@
-import { ShahrazadCardId, ShahrazadCardState,
-    ShahrazadCardStateTransform } from './card';
+import { ShahrazadCardId, ShahrazadCardStateTransform } from './card';
 import { Message } from './message';
 import { ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
@@ -17,6 +16,7 @@ export enum ShahrazadActionCase {
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
     SetCommand = 'SetCommand',
+    SetPlaymat = 'SetPlaymat',
     ClearBoard = 'ClearBoard',
     DeleteToken = 'DeleteToken',
     Mulligan = 'Mulligan',
@@ -100,6 +100,12 @@ export type ShahrazadActionCaseSetCommand = {
     damage: number;
 };
 
+export type ShahrazadActionCaseSetPlaymat = {
+    type: ShahrazadActionCase.SetPlaymat;
+    player_id: ShahrazadPlaymatId;
+    reveal_deck_top: number;
+};
+
 export type ShahrazadActionCaseClearBoard = {
     type: ShahrazadActionCase.ClearBoard;
     player_id: ShahrazadPlaymatId;
@@ -139,6 +145,7 @@ export type ShahrazadAction =
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
     | ShahrazadActionCaseSetCommand
+    | ShahrazadActionCaseSetPlaymat
     | ShahrazadActionCaseClearBoard
     | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan
