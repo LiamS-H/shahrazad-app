@@ -96,6 +96,10 @@ pub enum ShahrazadAction {
         player_id: ShahrazadPlaymatId,
         created_at: u32,
     },
+    ResetPlaymat {
+        player_id: ShahrazadPlaymatId,
+        seed: String,
+    },
     GameTerminated,
 }
 
@@ -216,6 +220,10 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                     .collect(),
                 player_id: a.player_id.into(),
                 created_at: a.created_at,
+            },
+            Action::ResetPlaymat(a) => ShahrazadAction::ResetPlaymat {
+                player_id: a.player_id.into(),
+                seed: a.seed,
             },
             Action::GameTerminated(_) => ShahrazadAction::GameTerminated,
         })
@@ -356,6 +364,12 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                     player_id: player_id.into(),
                     created_at: created_at,
                 })),
+                ShahrazadAction::ResetPlaymat { player_id, seed } => {
+                    Some(Action::ResetPlaymat(proto::action::ResetPlaymat {
+                        player_id: player_id.into(),
+                        seed,
+                    }))
+                }
                 ShahrazadAction::GameTerminated => {
                     Some(Action::GameTerminated(proto::action::GameTerminated {}))
                 }

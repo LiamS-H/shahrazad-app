@@ -23,6 +23,8 @@ use crate::types::playmat::ShahrazadPlaymatId;
 
 #[path = "../tests/game_internal.rs"]
 mod game_internal;
+#[path = "../tests/reset_playmat.rs"]
+mod reset_playmat;
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadGame {
@@ -578,18 +580,104 @@ impl ShahrazadGame {
                     cards.push(card_id.clone());
                 }
                 if is_reset {
-                    {
-                        let playmat = game.playmats.get_mut(&player_id)?;
-                        playmat.mulligans = 0;
-                        for k in &game.players {
-                            playmat.command_damage.insert(k.clone(), 0);
-                        }
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::ResetPlaymat {
+                            player_id: player_id.clone(),
+                            seed: seed.clone(),
+                        },
+                        game,
+                    );
+                } else {
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::DeleteToken {
+                            cards: cards.clone(),
+                        },
+                        game,
+                    );
+
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::CardZone {
+                            cards: cards.clone(),
+                            state: ShahrazadCardStateTransform {
+                                ..Default::default()
+                            },
+                            destination: library_id.clone(),
+                            index: 0,
+                        },
+                        game,
+                    );
+
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::CardZone {
+                            cards: commanders,
+                            state: ShahrazadCardStateTransform::reset(),
+                            destination: command_id,
+                            index: 0,
+                        },
+                        game,
+                    );
+
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::Shuffle {
+                            zone: library_id.clone(),
+                            seed,
+                        },
+                        game,
+                    );
+
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::DrawTop {
+                            amount: 7,
+                            source: library_id.clone(),
+                            destination: hand_id,
+                            state: ShahrazadCardStateTransform {
+                                revealed: Some([player_id].into()),
+                                ..Default::default()
+                            },
+                        },
+                        game,
+                    );
+                }
+                Some(game)
+            }
+            ShahrazadAction::ResetPlaymat { player_id, seed } => {
+                {
+                    let playmat = game.playmats.get_mut(&player_id)?;
+                    playmat.mulligans = 0;
+                    for k in &game.players {
+                        playmat.command_damage.insert(k.clone(), 0);
                     }
-                    for player_id in &game.players {
-                        let playmat = game.playmats.get_mut(player_id)?;
-                        playmat.life = game.settings.starting_life;
-                        playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
+                }
+                for player_id in &game.players {
+                    let playmat = game.playmats.get_mut(player_id)?;
+                    playmat.life = game.settings.starting_life;
+                    playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
+                }
+
+                let playmat = game.playmats.get(&player_id)?;
+                let library_id = playmat.library.clone();
+                let hand_id = playmat.hand.clone();
+                let command_id = playmat.command.clone();
+                let sideboard_id = playmat.sideboard.clone();
+
+                let mut cards: Vec<ShahrazadCardId> = Vec::new();
+                let mut commanders: Vec<ShahrazadCardId> = Vec::new();
+                let mut sideboard: Vec<ShahrazadCardId> = Vec::new();
+
+                for (card_id, card) in &game.cards {
+                    if card.owner != player_id {
+                        continue;
                     }
+
+                    if card.location == sideboard_id {
+                        sideboard.push(card_id.clone());
+                        continue;
+                    };
+                    if card.commander {
+                        commanders.push(card_id.clone());
+                        continue;
+                    }
+                    cards.push(card_id.clone());
                 }
 
                 ShahrazadGame::apply_action(
@@ -624,7 +712,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::Shuffle {
                         zone: library_id.clone(),
-                        seed,
+                        seed: seed.clone(),
                     },
                     game,
                 );

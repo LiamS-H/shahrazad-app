@@ -24,6 +24,7 @@ message ShahrazadAction {
         Mulligan mulligan = 15;
         GameTerminated game_terminated = 16;
         SendMessage send_message = 17;
+        ResetPlaymat reset_playmat = 18;
     }
 }
 
@@ -110,6 +111,11 @@ message DeleteToken {
 }
 
 message Mulligan {
+    string player_id = 1;
+    string seed = 2;
+}
+
+message ResetPlaymat {
     string player_id = 1;
     string seed = 2;
 }
