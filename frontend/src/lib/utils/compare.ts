@@ -3,7 +3,7 @@ import { ShahrazadPlaymat } from "@/types/bindings/playmat";
 import { ShahrazadZone } from "@/types/bindings/zone";
 
 /**
- * returns true if cards are equal
+ * returns true if playmats are equal
  */
 export function comparePlaymats(
     playmat1: ShahrazadPlaymat,
@@ -38,7 +38,7 @@ export function comparePlaymats(
 }
 
 /**
- * returns true if cards are equal
+ * returns true if zones are equal
  */
 export function compareZones(
     zone1: ShahrazadZone,
