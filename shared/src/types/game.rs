@@ -334,6 +334,7 @@ impl ShahrazadGame {
                     card.state.apply(&&ShahrazadCardStateTransform::reset());
                     card.state.apply(&&ShahrazadCardStateTransform {
                         face_down: Some(true),
+                        revealed: Some([].into()),
                         ..Default::default()
                     });
                 }
@@ -624,20 +625,20 @@ impl ShahrazadGame {
                         },
                         game,
                     );
-
-                    ShahrazadGame::apply_action(
-                        ShahrazadAction::DrawTop {
-                            amount: 7,
-                            source: library_id.clone(),
-                            destination: hand_id,
-                            state: ShahrazadCardStateTransform {
-                                revealed: Some([player_id].into()),
-                                ..Default::default()
-                            },
-                        },
-                        game,
-                    );
                 }
+
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::DrawTop {
+                        amount: 7,
+                        source: library_id.clone(),
+                        destination: hand_id,
+                        state: ShahrazadCardStateTransform {
+                            revealed: Some([player_id].into()),
+                            ..Default::default()
+                        },
+                    },
+                    game,
+                );
                 Some(game)
             }
             ShahrazadAction::ResetPlaymat { player_id, seed } => {
@@ -717,18 +718,6 @@ impl ShahrazadGame {
                     game,
                 );
 
-                ShahrazadGame::apply_action(
-                    ShahrazadAction::DrawTop {
-                        amount: 7,
-                        source: library_id.clone(),
-                        destination: hand_id,
-                        state: ShahrazadCardStateTransform {
-                            revealed: Some([player_id].into()),
-                            ..Default::default()
-                        },
-                    },
-                    game,
-                );
                 Some(game)
             }
             ShahrazadAction::SendMessage { .. } => Some(game),
