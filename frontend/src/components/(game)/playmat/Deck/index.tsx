@@ -60,7 +60,6 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
         const face_up =
             state?.face_down === false ||
             playmat.reveal_deck_top === DeckTopReveal.PUBLIC;
-        console.log(face_up, "up");
 
         const revealed =
             playmat.reveal_deck_top === DeckTopReveal.PRIVATE &&
