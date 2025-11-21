@@ -1,3 +1,4 @@
+#![allow(unused)]
 use crate::types::card::{ShahrazadCardState, ShahrazadCardStateTransform, ShahrazadCounter};
 use crate::types::game::{CardImport, ShahrazadGameSettings};
 use crate::types::{action::ShahrazadAction, game::ShahrazadGame, playmat::ShahrazadPlayer};

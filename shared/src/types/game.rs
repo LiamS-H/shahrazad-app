@@ -657,7 +657,6 @@ impl ShahrazadGame {
 
                 let playmat = game.playmats.get(&player_id)?;
                 let library_id = playmat.library.clone();
-                let hand_id = playmat.hand.clone();
                 let command_id = playmat.command.clone();
                 let sideboard_id = playmat.sideboard.clone();
 
