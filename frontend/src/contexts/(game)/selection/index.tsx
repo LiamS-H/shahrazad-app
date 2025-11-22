@@ -1,4 +1,3 @@
-import PreviewCard from "@/components/(game)/card-preview";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import {
     createContext,
@@ -101,7 +100,6 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             value={{ selectedCards, selectCards, currentPreview, setPreview }}
         >
             {children}
-            <PreviewCard id={currentPreview} />
         </SelectionContext.Provider>
     );
 }

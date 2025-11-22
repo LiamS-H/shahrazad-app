@@ -111,11 +111,12 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
     }, [shah_card.card_name, shah_card.state.flipped, flipped, size, scrycard]);
 }
 
-export default function PreviewCard({ id }: { id: ShahrazadCardId | null }) {
+export function PreviewCard() {
     const { getCard } = useShahrazadGameContext();
     const [pos, setPos] = useState({ x: 1470, y: 80 });
     const [size, setSize] = useState<number>(400);
     const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+    const { currentPreview: id } = useSelection();
 
     const clampPosition = useCallback(
         (p: { x: number; y: number }) => {

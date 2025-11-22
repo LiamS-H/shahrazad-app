@@ -19,6 +19,7 @@ import { MessagesContextProvider } from "@/contexts/(game)/messages";
 import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
 import { MessagesButton, MessagesDialog } from "../messages";
+import { PreviewCard } from "@/components/(game)/card-preview";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -69,6 +70,7 @@ export default function Game({
                                 <ArrowsContextProvider>
                                     <Keybinds />
                                     <MessagesDialog />
+                                    <PreviewCard />
                                     <AnimatePresence>
                                         <div
                                             className="pl-4 w-full overflow-y-auto relative"
