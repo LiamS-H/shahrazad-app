@@ -108,7 +108,6 @@ export default function SideboardingModal({
 
     const moveCard = useCallback(
         (cardId: ShahrazadCardId, destId: ShahrazadZoneId) => {
-            console.log(cardId, destId);
             applyAction({
                 type: ShahrazadActionCase.CardZone,
                 cards: [cardId],
@@ -121,13 +120,7 @@ export default function SideboardingModal({
     );
 
     return (
-        <Dialog
-            open={open}
-            onOpenChange={(o) => {
-                console.log("test");
-                onOpenChange(o);
-            }}
-        >
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle>Sideboarding</DialogTitle>
