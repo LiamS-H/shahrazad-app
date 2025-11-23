@@ -137,7 +137,7 @@ export default function SideboardingModal({
                 },
             });
         }
-    }, [open]);
+    }, [open, applyAction, deck.cards, deckId, active_player]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

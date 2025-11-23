@@ -1,6 +1,6 @@
 import { Button } from "@/components/(ui)/button";
 import { useSelection } from "@/contexts/(game)/selection";
-import { ShahrazadCard, ShahrazadCardId } from "@/types/bindings/card";
+import { ShahrazadCard } from "@/types/bindings/card";
 import { DndContext, DragEndEvent, useDraggable } from "@dnd-kit/core";
 import { Eye, EyeOff, FlipHorizontal, Grip, Scaling } from "lucide-react";
 import {
