@@ -10,11 +10,11 @@ import { useScrycardsList } from "@/hooks/useScrycardsList";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { ScryfallCard } from "@scryfall/api-types";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { LoaderCircle } from "lucide-react";
 import { PreviewCard } from "@/components/(game)/card-preview";
 import Card from "@/components/(game)/card";
-import { randomU64 } from "@/lib/utils/random";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 interface SideboardingModalProps {
     open: boolean;
@@ -29,7 +29,7 @@ export default function SideboardingModal({
     deckId,
     sideboardId,
 }: SideboardingModalProps) {
-    const { applyAction, active_player } = useShahrazadGameContext();
+    const { applyAction } = useShahrazadGameContext();
     const deck = useZone(deckId);
     const sideboard = useZone(sideboardId);
 
@@ -107,7 +107,7 @@ export default function SideboardingModal({
     }, [sideboardCards]);
 
     const moveCard = useCallback(
-        (cardId: string, destId: ShahrazadZoneId) => {
+        (cardId: ShahrazadCardId, destId: ShahrazadZoneId) => {
             applyAction({
                 type: ShahrazadActionCase.CardZone,
                 cards: [cardId],
@@ -118,26 +118,6 @@ export default function SideboardingModal({
         },
         [applyAction]
     );
-
-    useEffect(() => {
-        if (!open) {
-            applyAction({
-                type: ShahrazadActionCase.Shuffle,
-                seed: randomU64(),
-                zone: deckId,
-            });
-        }
-        if (open) {
-            applyAction({
-                type: ShahrazadActionCase.CardState,
-                cards: deck.cards,
-                state: {
-                    face_down: true,
-                    revealed: [active_player],
-                },
-            });
-        }
-    }, [open, applyAction, deck.cards, deckId, active_player]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -160,9 +140,7 @@ export default function SideboardingModal({
                                     style={{
                                         marginTop: index === 0 ? 0 : "-120px",
                                     }}
-                                    onClick={() =>
-                                        moveCard(item.id, sideboardId)
-                                    }
+                                    onClick={() => moveCard(item.id, deckId)}
                                 >
                                     <Card id={item.id} animationTime={null} />
                                 </div>
@@ -195,7 +173,10 @@ export default function SideboardingModal({
                                                             : "-120px",
                                                 }}
                                                 onClick={() =>
-                                                    moveCard(item.id, deckId)
+                                                    moveCard(
+                                                        item.id,
+                                                        sideboardId
+                                                    )
                                                 }
                                             >
                                                 <Card
