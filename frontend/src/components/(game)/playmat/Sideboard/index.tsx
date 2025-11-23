@@ -53,7 +53,7 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
         <>
             <ZoneWrapper
                 zoneId={props.id}
-                onMouseEnter={() => {
+                onClick={() => {
                     if (hovered == false && zone.cards.length > 1) {
                         setHovered(true);
                         setOpened(true);
@@ -72,7 +72,10 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
                         size="icon"
                         variant="outline"
                         className="absolute -bottom-2 -left-2 z-10"
-                        onClick={() => setOpened(false)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setOpened(false);
+                        }}
                     >
                         <ArrowDownToLine />
                     </Button>
@@ -81,7 +84,10 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
                     size="icon"
                     variant="outline"
                     className="absolute -top-2 -right-2 z-10"
-                    onClick={() => onOpenChange(true)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onOpenChange(true);
+                    }}
                 >
                     <Layers />
                 </Button>
