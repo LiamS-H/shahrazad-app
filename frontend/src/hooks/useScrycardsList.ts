@@ -21,6 +21,7 @@ export function useScrycardsList(card_ids: ShahrazadCardId[]) {
             setLoading(true);
             const promises = card_ids.map((card_id) => {
                 const shah_card = getCard(card_id);
+                if (!shah_card) return;
                 return requestCard(shah_card.card_name);
             });
 

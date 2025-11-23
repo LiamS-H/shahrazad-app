@@ -16,7 +16,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import SearchCardContextMenu from "@/components/(game)/(context-menus)/search-card";
 import Card from "@/components/(game)/card";
 import { LoaderCircle } from "lucide-react";
-import { useScrycardsList } from "@/hooks/useScrycards";
+import { useScrycardsList } from "@/hooks/useScrycardsList";
 import { compareList } from "@/lib/utils/compare";
 
 const colors = ["C", "W", "U", "B", "R", "G"] as const;
