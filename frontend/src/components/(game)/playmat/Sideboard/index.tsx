@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useShahrazadGameContext, useZone } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import VerticalZone from "@/components/(game)/vertical-zone";
@@ -7,6 +7,8 @@ import { Button } from "@/components/(ui)/button";
 import ZoneWrapper from "../zone-wrapper";
 import { usePlayer } from "@/contexts/(game)/player";
 import SideboardingModal from "@/components/(game)/sideboarding-modal";
+import { ShahrazadActionCase } from "@/types/bindings/action";
+import { randomU64 } from "@/lib/utils/random";
 
 export default function Sideboard(props: { id: ShahrazadZoneId }) {
     const zone = useZone(props.id);
@@ -14,13 +16,38 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
     const [hovered, setHovered] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const { active, player } = usePlayer();
-    const { getPlaymat } = useShahrazadGameContext();
+    const { getPlaymat, getZone, applyAction, active_player } =
+        useShahrazadGameContext();
+
+    const playmat = getPlaymat(player);
+
+    const onOpenChange = useCallback(
+        (o: boolean) => {
+            setModalOpen(o);
+            if (o) {
+                applyAction({
+                    type: ShahrazadActionCase.CardState,
+                    cards: getZone(playmat.library).cards,
+                    state: {
+                        face_down: true,
+                        revealed: [active_player],
+                    },
+                });
+            }
+            if (!o) {
+                applyAction({
+                    type: ShahrazadActionCase.Shuffle,
+                    seed: randomU64(),
+                    zone: playmat.library,
+                });
+            }
+        },
+        [applyAction, getZone, playmat.library, active_player]
+    );
 
     if (!active) {
         return null;
     }
-
-    const playmat = getPlaymat(player);
 
     return (
         <>
@@ -54,14 +81,14 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
                     size="icon"
                     variant="outline"
                     className="absolute -top-2 -right-2 z-10"
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => onOpenChange(true)}
                 >
                     <Layers />
                 </Button>
             </ZoneWrapper>
             <SideboardingModal
                 open={modalOpen}
-                onOpenChange={setModalOpen}
+                onOpenChange={onOpenChange}
                 deckId={playmat.library}
                 sideboardId={props.id}
             />
