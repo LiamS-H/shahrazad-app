@@ -18,11 +18,13 @@ message ShahrazadAction {
         AddPlayer add_player = 9;
         SetLife set_life = 10;
         SetCommand set_command = 11;
-        ClearBoard clear_board = 12;
-        DeleteToken delete_token = 13;
-        Mulligan mulligan = 14;
-        GameTerminated game_terminated = 15;
-        SendMessage send_message = 16;
+        SetPlaymat set_playmat = 12;
+        ClearBoard clear_board = 13;
+        DeleteToken delete_token = 14;
+        Mulligan mulligan = 15;
+        GameTerminated game_terminated = 16;
+        SendMessage send_message = 17;
+        ResetPlaymat reset_playmat = 18;
     }
 }
 
@@ -30,24 +32,24 @@ message DrawBottom {
     uint32 amount = 1;
     string source = 2;
     string destination = 3;
-    card.ShahrazadCardState state = 4;
+    card.ShahrazadCardStateTransform state = 4;
 }
 
 message DrawTop {
     uint32 amount = 1;
     string source = 2;
     string destination = 3;
-    card.ShahrazadCardState state = 4;
+    card.ShahrazadCardStateTransform state = 4;
 }
 
 message CardState {
     repeated string cards = 1;
-    card.ShahrazadCardState state = 2;
+    card.ShahrazadCardStateTransform state = 2;
 }
 
 message CardZone {
     repeated string cards = 1;
-    card.ShahrazadCardState state = 2;
+    card.ShahrazadCardStateTransform state = 2;
     string destination = 3;
     int32 index = 4;
 }
@@ -66,7 +68,7 @@ message ZoneImport {
     repeated CardImport cards = 2;
     bool token = 3;
     string player_id = 4;
-    card.ShahrazadCardState state = 5;
+    card.ShahrazadCardStateTransform state = 5;
 }
 
 message DeckImport {
@@ -95,6 +97,11 @@ message SetCommand {
     int32 damage = 3;
 }
 
+message SetPlaymat {
+    string player_id = 1;
+    int32 reveal_deck_top = 2;
+}
+
 message ClearBoard {
     string player_id = 1;
 }
@@ -104,6 +111,11 @@ message DeleteToken {
 }
 
 message Mulligan {
+    string player_id = 1;
+    string seed = 2;
+}
+
+message ResetPlaymat {
     string player_id = 1;
     string seed = 2;
 }

@@ -1,11 +1,11 @@
 use crate::types::{
-    card::{ShahrazadCardState, ShahrazadCounter},
+    card::{ShahrazadCardStateTransform, ShahrazadCounter},
     game::{ShahrazadGame, ShahrazadGameSettings},
-    player::ShahrazadPlayer,
+    playmat::ShahrazadPlayer,
 };
 
-pub fn create_sample_card_state() -> ShahrazadCardState {
-    ShahrazadCardState {
+pub fn create_sample_card_transform() -> ShahrazadCardStateTransform {
+    ShahrazadCardStateTransform {
         inverted: Some(true),
         flipped: Some(false),
         tapped: Some(true),

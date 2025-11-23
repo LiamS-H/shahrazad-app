@@ -1,6 +1,6 @@
-import { ShahrazadCardId, ShahrazadCardState } from './card';
+import { ShahrazadCardId, ShahrazadCardStateTransform } from './card';
 import { Message } from './message';
-import { ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
+import { DeckTopReveal, ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
 type usize = number;
 
@@ -16,10 +16,12 @@ export enum ShahrazadActionCase {
     AddPlayer = 'AddPlayer',
     SetLife = 'SetLife',
     SetCommand = 'SetCommand',
+    SetPlaymat = 'SetPlaymat',
     ClearBoard = 'ClearBoard',
     DeleteToken = 'DeleteToken',
     Mulligan = 'Mulligan',
     SendMessage = 'SendMessage',
+    ResetPlaymat = 'ResetPlaymat',
     GameTerminated = 'GameTerminated',
 }
 
@@ -28,7 +30,7 @@ export type ShahrazadActionCaseDrawBottom = {
     amount: usize;
     source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseDrawTop = {
@@ -36,19 +38,19 @@ export type ShahrazadActionCaseDrawTop = {
     amount: usize;
     source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseCardState = {
     type: ShahrazadActionCase.CardState;
     cards: Array<ShahrazadCardId>;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseCardZone = {
     type: ShahrazadActionCase.CardZone;
     cards: Array<ShahrazadCardId>;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
     destination: ShahrazadZoneId;
     index: number;
 };
@@ -65,7 +67,7 @@ export type ShahrazadActionCaseZoneImport = {
     cards: Array<CardImport>;
     token: boolean;
     player_id: ShahrazadPlaymatId;
-    state: ShahrazadCardState;
+    state: ShahrazadCardStateTransform;
 };
 
 export type ShahrazadActionCaseDeckImport = {
@@ -99,6 +101,12 @@ export type ShahrazadActionCaseSetCommand = {
     damage: number;
 };
 
+export type ShahrazadActionCaseSetPlaymat = {
+    type: ShahrazadActionCase.SetPlaymat;
+    player_id: ShahrazadPlaymatId;
+    reveal_deck_top: DeckTopReveal;
+};
+
 export type ShahrazadActionCaseClearBoard = {
     type: ShahrazadActionCase.ClearBoard;
     player_id: ShahrazadPlaymatId;
@@ -122,6 +130,12 @@ export type ShahrazadActionCaseSendMessage = {
     created_at: number;
 };
 
+export type ShahrazadActionCaseResetPlaymat = {
+    type: ShahrazadActionCase.ResetPlaymat;
+    player_id: ShahrazadPlaymatId;
+    seed: string;
+};
+
 export type ShahrazadActionCaseGameTerminated = {
     type: ShahrazadActionCase.GameTerminated;
 };
@@ -138,10 +152,12 @@ export type ShahrazadAction =
     | ShahrazadActionCaseAddPlayer
     | ShahrazadActionCaseSetLife
     | ShahrazadActionCaseSetCommand
+    | ShahrazadActionCaseSetPlaymat
     | ShahrazadActionCaseClearBoard
     | ShahrazadActionCaseDeleteToken
     | ShahrazadActionCaseMulligan
     | ShahrazadActionCaseSendMessage
+    | ShahrazadActionCaseResetPlaymat
     | ShahrazadActionCaseGameTerminated;
 
 export type CardImport = { str: string; amount?: number };

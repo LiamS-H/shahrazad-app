@@ -3,23 +3,21 @@ import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
 import { DraggableCardWrapper } from "@/components/(game)/card-draggable";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ShahrazadCardId } from "@/types/bindings/card";
-import {
-    Scrycard,
-    ScryNameCardText,
-    useScrycardsContext,
-} from "react-scrycards";
+import { Scrycard, ScryNameCardText } from "react-scrycards";
 import { Button } from "@/components/(ui)/button";
 import { Switch } from "@/components/(ui)/switch";
 import { Label } from "@/components/(ui)/label";
 import { Input } from "@/components/(ui)/input";
-import type { ScryfallCard, ScryfallColors } from "@scryfall/api-types";
+import type { ScryfallColors } from "@scryfall/api-types";
 import { LayoutGroup } from "framer-motion";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import SearchCardContextMenu from "@/components/(game)/(context-menus)/search-card";
 import Card from "@/components/(game)/card";
 import { LoaderCircle } from "lucide-react";
+import { useScrycardsList } from "@/hooks/useScrycardsList";
+import { compareList } from "@/lib/utils/compare";
 
 const colors = ["C", "W", "U", "B", "R", "G"] as const;
 const card_types = [
@@ -61,8 +59,8 @@ interface ISort {
 type Color = (typeof colors)[number];
 
 export default function SearchZone(props: { id: ShahrazadZoneId }) {
-    const { getZone, getCard } = useShahrazadGameContext();
-    const { requestCard } = useScrycardsContext();
+    const { getZone } = useShahrazadGameContext();
+
     const zone = getZone(props.id);
     const [sort, setSort] = useState<ISort>({
         colors: null,
@@ -70,74 +68,23 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
         match: true,
         search: "",
     });
+
     const [cards, setCards] = useState<ShahrazadCardId[]>([]);
-    const [allCards, setAllCards] = useState<
-        { id: string; card: ScryfallCard.Any | undefined }[]
-    >([]);
+    const { cards: allCards, loading } = useScrycardsList(zone.cards);
     const [availableColors, setAvailableColors] = useState<Color[]>([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        const fetchCards = async () => {
-            setLoading(true);
-            const promises = zone.cards.map((card_id) => {
-                const shah_card = getCard(card_id);
-                return requestCard(shah_card.card_name);
-            });
-
-            const scrycards = await Promise.race([
-                Promise.allSettled(promises),
-                new Promise<PromiseSettledResult<ScryfallCard.Any>[]>(
-                    (resolve) =>
-                        setTimeout(() => {
-                            resolve(
-                                promises.map((p) => {
-                                    if (!p || p instanceof Promise) {
-                                        return {
-                                            status: "rejected",
-                                            reason: new Error(
-                                                "requestCard timeout"
-                                            ),
-                                        };
-                                    }
-                                    return { status: "fulfilled", value: p };
-                                })
-                            );
-                        }, 1000)
-                ),
-            ]);
-            setLoading(false);
-            const fetched_cards: {
-                id: string;
-                card: ScryfallCard.Any | undefined;
-            }[] = [];
-            const colors_in_zone = new Set<Color>();
-            for (let i = 0; i < scrycards.length; i++) {
-                const scry_card = scrycards[i];
-                const id = zone.cards[i];
-                if (scry_card.status === "rejected") {
-                    fetched_cards.push({ id, card: undefined });
-                    continue;
-                }
-                fetched_cards.push({ id, card: scry_card.value });
-                if (!scry_card.value) continue;
-                if (scry_card.value.color_identity.length === 0) {
-                    colors_in_zone.add("C");
-                } else {
-                    for (const color of scry_card.value.color_identity) {
-                        colors_in_zone.add(color as Color);
-                    }
-                }
-            }
-            setAllCards(fetched_cards);
-            setAvailableColors(colors.filter((c) => colors_in_zone.has(c)));
-        };
-        fetchCards();
-    }, [zone.cards, getCard, requestCard]);
 
     const updateCards = useCallback(() => {
+        const colors_in_zone = new Set<Color>();
+
         const filtered_cards = allCards.filter(({ card }) => {
             if (!card) return true;
+            if (card.color_identity.length === 0) {
+                colors_in_zone.add("C");
+            } else {
+                for (const color of card.color_identity) {
+                    colors_in_zone.add(color as Color);
+                }
+            }
 
             if (sort.type) {
                 const type_line =
@@ -175,6 +122,15 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
             }
 
             return true;
+        });
+        setAvailableColors((old_colors) => {
+            const new_colors = Array.from(colors_in_zone).sort((a, b) => {
+                return colors.indexOf(a) - colors.indexOf(b);
+            });
+            if (compareList(old_colors, new_colors)) {
+                return old_colors;
+            }
+            return new_colors;
         });
 
         const sorted_cards = filtered_cards.toSorted(
@@ -224,37 +180,36 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
 
     const data: IDroppableData = { sortable: true };
 
-    const color_buttons: ReactNode[] = [];
-
-    const toggleColor = (color: Color) => {
-        switch (color) {
-            case "C":
-                setSort((sort) => {
+    const toggleColor = useCallback((color: Color) => {
+        setSort((sort) => {
+            switch (color) {
+                case "C":
                     if (sort.colors === null) {
                         return { ...sort, colors: { C: true } };
                     }
-                    if (sort.colors.C) {
-                        if (
-                            colors.every(
-                                (c) =>
-                                    sort.colors &&
-                                    (color == c
-                                        ? sort.colors[c] === true
-                                        : sort.colors[c] !== true)
-                            )
-                        ) {
-                            return { ...sort, colors: null };
-                        }
-
+                    if (!sort.colors.C) {
                         return { ...sort, colors: { C: true } };
+                    }
+
+                    if (
+                        colors.every(
+                            (c) =>
+                                sort.colors &&
+                                (color == c
+                                    ? sort.colors[c] === true
+                                    : sort.colors[c] !== true)
+                        )
+                    ) {
+                        return { ...sort, colors: null };
                     }
 
                     return { ...sort, colors: { C: false } };
-                });
-            default:
-                setSort((sort) => {
+                default:
                     if (sort.colors === null) {
-                        return { ...sort, colors: { C: false, [color]: true } };
+                        return {
+                            ...sort,
+                            colors: { C: false, [color]: true },
+                        };
                     }
                     if (
                         colors.every(
@@ -275,41 +230,48 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                             [color]: !sort.colors[color],
                         },
                     };
-                });
-        }
-    };
+            }
+        });
+        return;
+    }, []);
 
-    for (const color of availableColors) {
-        color_buttons.push(
-            <Button
-                onClick={() => toggleColor(color)}
-                variant={
-                    sort.colors && sort.colors[color] ? "default" : "ghost"
-                }
-                key={color}
-            >
-                <ScryNameCardText>{`{${color}}`}</ScryNameCardText>
-            </Button>
-        );
-    }
+    const color_buttons = useMemo(
+        () =>
+            availableColors.map((color) => (
+                <Button
+                    onClick={() => toggleColor(color)}
+                    variant={
+                        sort.colors && sort.colors[color] ? "default" : "ghost"
+                    }
+                    key={color}
+                >
+                    <ScryNameCardText>{`{${color}}`}</ScryNameCardText>
+                </Button>
+            )),
+        [availableColors, sort.colors, toggleColor]
+    );
 
-    const toggleType = (type: CardType) => {
+    const setType = useCallback((type: CardType) => {
         setSort((s) => ({
             ...s,
             type: s.type === type ? null : type,
         }));
-    };
+    }, []);
 
-    const type_buttons: ReactNode[] = card_types.map((card_type) => (
-        <Button
-            key={card_type}
-            onClick={() => toggleType(card_type)}
-            variant={sort.type === card_type ? "default" : "ghost"}
-            className="capitalize"
-        >
-            {card_type}
-        </Button>
-    ));
+    const type_buttons = useMemo(
+        () =>
+            card_types.map((card_type) => (
+                <Button
+                    key={card_type}
+                    onClick={() => setType(card_type)}
+                    variant={sort.type === card_type ? "default" : "ghost"}
+                    className="capitalize"
+                >
+                    {card_type}
+                </Button>
+            )),
+        [setType, sort.type]
+    );
 
     const { setNodeRef, node } = useDroppable({ id: props.id, data });
     const colVirtualizer = useVirtualizer({

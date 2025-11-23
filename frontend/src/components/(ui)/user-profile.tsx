@@ -6,7 +6,7 @@ import {
     PopoverTrigger,
 } from "@/components/(ui)/popover";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
-import { DeckTopReveal, ShahrazadPlayer } from "@/types/bindings/playmat";
+import { ShahrazadPlayer } from "@/types/bindings/playmat";
 import { User, UserPen } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -26,7 +26,6 @@ export function UserProfile({
         if (new_player === null) return;
         const player_updated: ShahrazadPlayer = {
             ...new_player,
-            reveal_deck_top: player?.reveal_deck_top ?? DeckTopReveal.NONE,
         };
         if (onChange) onChange(player_updated);
         setPlayer(player_updated);

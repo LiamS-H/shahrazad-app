@@ -12,7 +12,6 @@ import type {
     ShahrazadPlayer,
     ShahrazadPlaymatId,
 } from "@/types/bindings/playmat";
-import { DeckTopReveal } from "@/types/bindings/playmat";
 import { DoorOpen, Home, Trash2, User, UserPen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -37,7 +36,6 @@ export function ActivePlayerIcon({
         if (new_player === null) return;
         const player_updated: ShahrazadPlayer = {
             ...new_player,
-            reveal_deck_top: player?.reveal_deck_top ?? DeckTopReveal.NONE,
         };
         applyAction({
             type: ShahrazadActionCase.SetPlayer,

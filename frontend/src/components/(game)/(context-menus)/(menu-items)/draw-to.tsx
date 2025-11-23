@@ -9,7 +9,7 @@ import {
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { clamp } from "@/lib/utils/clamp";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { ShahrazadCardState } from "@/types/bindings/card";
+import { ShahrazadCardStateTransform } from "@/types/bindings/card";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useState } from "react";
 
@@ -22,7 +22,7 @@ export function DrawTo({
     source: ShahrazadZoneId;
     destination: ShahrazadZoneId;
     label: string;
-    state?: ShahrazadCardState;
+    state?: ShahrazadCardStateTransform;
 }) {
     const { applyAction, getZone } = useShahrazadGameContext();
 

@@ -38,6 +38,14 @@ export function MulliganButton() {
         cards: { length: ex_length },
     } = useZone(exile);
 
+    const resetPlaymat = useCallback(() => {
+        applyAction({
+            type: ShahrazadActionCase.ResetPlaymat,
+            player_id,
+            seed: randomU64(),
+        });
+    }, [applyAction, player_id]);
+
     const mulligan = useCallback(() => {
         applyAction({
             type: ShahrazadActionCase.Mulligan,
@@ -72,14 +80,13 @@ export function MulliganButton() {
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         This will return all of {display_name}
-                        {"'"}s cards to their deck, and draw a new starting
-                        hand.
+                        {"'"}s cards to their deck.
                     </AlertDialogDescription>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             variant="destructive"
-                            onClick={mulligan}
+                            onClick={resetPlaymat}
                         >
                             Reset
                         </AlertDialogAction>
@@ -87,5 +94,12 @@ export function MulliganButton() {
                 </AlertDialogContent>
             </AlertDialog>
         );
-    }, [isEmpty, mulligan, active_player, display_name, player_id]);
+    }, [
+        isEmpty,
+        mulligan,
+        resetPlaymat,
+        active_player,
+        display_name,
+        player_id,
+    ]);
 }

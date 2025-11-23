@@ -1,11 +1,10 @@
-// rust analyzer gets angry no matter what
 #![allow(unused)]
 use crate::types::card::{ShahrazadCardState, ShahrazadCardStateTransform, ShahrazadCounter};
 use crate::types::game::{CardImport, ShahrazadGameSettings};
 use crate::types::{action::ShahrazadAction, game::ShahrazadGame, playmat::ShahrazadPlayer};
 
 #[test]
-fn mulligan_resets_state() {
+fn reset_playmat_resets_state() {
     let mut game = ShahrazadGame::new(ShahrazadGameSettings {
         commander: true,
         free_mulligans: "1".into(),
@@ -74,7 +73,8 @@ fn mulligan_resets_state() {
     let card3_before = game.cards.get(&"C3".into()).unwrap();
     assert_eq!(card3_before.location, battlefield_id);
 
-    let action = ShahrazadAction::Mulligan {
+    // Call ResetPlaymat directly
+    let action = ShahrazadAction::ResetPlaymat {
         player_id: "1".into(),
         seed: "test".into(),
     };

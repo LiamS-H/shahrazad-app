@@ -12,6 +12,19 @@ message ShahrazadCard {
 
 message ShahrazadCardState {
     repeated ShahrazadCounter counters = 1;
+    bool flipped = 2;
+    bool inverted = 3;
+    bool tapped = 4;
+    bool face_down = 5;
+    repeated string revealed = 6;
+    uint32 x = 7;
+    uint32 y = 8;
+    string annotation = 9;
+}
+
+
+message ShahrazadCardStateTransform {
+    repeated ShahrazadCounter counters = 1;
     bool hasCounters = 2;
     optional bool flipped = 3;
     optional bool inverted = 4;

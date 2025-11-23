@@ -2,15 +2,20 @@ use std::collections::VecDeque;
 
 use prost::Message;
 
-use crate::{proto, tests::utils::create_sample_card_state, types::card::ShahrazadCardState};
+use crate::{
+    proto::{self},
+    tests::utils::create_sample_card_transform,
+    types::card::ShahrazadCardState,
+    types::card::ShahrazadCardStateTransform,
+};
 #[test]
 fn test_card_state_serialization_full() {
-    let state = create_sample_card_state();
-    let buf: VecDeque<u8> = proto::card::ShahrazadCardState::from(state.clone())
+    let state = create_sample_card_transform();
+    let buf: VecDeque<u8> = proto::card::ShahrazadCardStateTransform::from(state.clone())
         .encode_to_vec()
         .into();
-    let compact = proto::card::ShahrazadCardState::decode(buf).unwrap();
-    let parsed = ShahrazadCardState::try_from(compact).unwrap();
+    let compact = proto::card::ShahrazadCardStateTransform::decode(buf).unwrap();
+    let parsed = ShahrazadCardStateTransform::try_from(compact).unwrap();
 
     assert_eq!(parsed.inverted, state.inverted);
     assert_eq!(parsed.flipped, state.flipped);
@@ -65,8 +70,8 @@ fn test_card_state_serialization_xy_only() {
 #[test]
 fn test_card_state_serialization_xy_max_only() {
     let state = ShahrazadCardState {
-        x: Some(255),
-        y: Some(255),
+        x: Some(255 - 1),
+        y: Some(255 - 1),
         ..Default::default()
     };
     let buf: VecDeque<u8> = proto::card::ShahrazadCardState::from(state.clone())

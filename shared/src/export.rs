@@ -6,11 +6,12 @@ use crate::types::{
         CreateGameQuery, CreateGameResponse, FetchGameResponse, JoinGameQuery, JoinGameResponse,
     },
     card::{
-        ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState, ShahrazadCounter,
+        ShahrazadCard, ShahrazadCardId, ShahrazadCardName, ShahrazadCardState,
+        ShahrazadCardStateTransform, ShahrazadCounter,
     },
-    game::{ShahrazadGame, ShahrazadGameSettings, ShahrazadPlaymat, ShahrazadPlaymatId},
+    game::{ShahrazadGame, ShahrazadGameSettings},
     message::{ArrowType, Message},
-    player::{DeckTopReveal, ShahrazadPlayer},
+    playmat::{DeckTopReveal, ShahrazadPlayer, ShahrazadPlaymat, ShahrazadPlaymatId},
     ws::{ClientAction, ServerUpdate},
     zone::{ShahrazadZone, ShahrazadZoneId, ZoneName},
 };
@@ -24,9 +25,9 @@ pub fn export_all() {
         destinations: [
             TypeScript(
                 "./bindings/action.ts"
-                prefix: "import {ShahrazadCardId, ShahrazadCardState} from './card';
+                prefix: "import {ShahrazadCardId, ShahrazadCardStateTransform} from './card';
                 import {ShahrazadZoneId} from './zone';
-                import { ShahrazadPlaymatId, ShahrazadPlayer } from './playmat';
+                import { ShahrazadPlaymatId, ShahrazadPlayer, DeckTopReveal } from './playmat';
                 import { Message } from './message';
                 type usize = number;
                 ",
@@ -42,7 +43,8 @@ pub fn export_all() {
             ShahrazadCardId,
             ShahrazadCardName,
             ShahrazadCardState,
-            ShahrazadCounter
+            ShahrazadCounter,
+            ShahrazadCardStateTransform
         ],
         destinations: [
             TypeScript(

@@ -13,12 +13,18 @@ use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
 use super::action::CardImport;
-use super::player::ShahrazadPlayer;
 use super::ws::ProtoSerialize;
 use super::{card::*, zone::*};
 
+use super::playmat::ShahrazadPlaymat;
+use crate::proto;
+use crate::types::action::ShahrazadAction;
+use crate::types::playmat::ShahrazadPlaymatId;
+
 #[path = "../tests/game_internal.rs"]
 mod game_internal;
+#[path = "../tests/reset_playmat.rs"]
+mod reset_playmat;
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadGame {
@@ -33,46 +39,6 @@ pub struct ShahrazadGame {
 }
 
 use super::zone::ShahrazadZoneId;
-
-branded_string!(ShahrazadPlaymatId);
-
-#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct ShahrazadPlaymat {
-    library: ShahrazadZoneId,
-    hand: ShahrazadZoneId,
-    graveyard: ShahrazadZoneId,
-    battlefield: ShahrazadZoneId,
-    exile: ShahrazadZoneId,
-    command: ShahrazadZoneId,
-    sideboard: ShahrazadZoneId,
-    life: i32,
-    mulligans: i8,
-    command_damage: HashMap<ShahrazadPlaymatId, i32>,
-    player: ShahrazadPlayer,
-}
-
-impl std::hash::Hash for ShahrazadPlaymat {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.library.hash(state);
-        self.hand.hash(state);
-        self.graveyard.hash(state);
-        self.battlefield.hash(state);
-        self.exile.hash(state);
-        self.command.hash(state);
-        self.life.hash(state);
-        self.mulligans.hash(state);
-        let mut damages: Vec<_> = self.command_damage.iter().collect();
-        damages.sort_by(|a, b| a.0.cmp(b.0));
-        for damage in damages {
-            damage.0.hash(state);
-            damage.1.hash(state);
-        }
-        self.player.hash(state);
-    }
-}
-
-use crate::types::action::ShahrazadAction;
-use crate::{branded_string, proto};
 
 #[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Hash)]
 pub struct ShahrazadGameSettings {
@@ -234,13 +200,13 @@ impl ShahrazadGame {
                     let old_card = game.cards.get(&card_id)?;
                     let mut new_card = ShahrazadCard { ..old_card.clone() };
 
-                    new_card.state.apply(&old_card.state);
+                    new_card.state = old_card.state.clone();
                     new_card.state.apply(&state);
                     if let Some(transform) = &transform {
                         if let (Some(x), Some(y)) = (old_card.state.x, old_card.state.y) {
                             let new_x = max(min(x as i16 + transform.x, 255 - 1), 0) as u32;
                             let new_y = max(min(y as i16 + transform.y, 255 - 1), 0) as u32;
-                            new_card.state.apply(&ShahrazadCardState {
+                            new_card.state.apply(&&ShahrazadCardStateTransform {
                                 x: Some(new_x),
                                 y: Some(new_y),
                                 ..Default::default()
@@ -292,8 +258,8 @@ impl ShahrazadGame {
                                 tokens.push(id.clone());
                             }
                             if !card.commander {
-                                card.state.counters = None;
-                                card.state.annotation = None;
+                                card.state.counters = [].into();
+                                card.state.annotation = "".into();
                             }
                         }
                     }
@@ -365,9 +331,10 @@ impl ShahrazadGame {
                 cards.shuffle(&mut rng);
                 for card_id in &cards {
                     let card = game.cards.get_mut(card_id)?;
-                    card.state.apply(&ShahrazadCardState::reset());
-                    card.state.apply(&ShahrazadCardState {
+                    card.state.apply(&&ShahrazadCardStateTransform::reset());
+                    card.state.apply(&&ShahrazadCardStateTransform {
                         face_down: Some(true),
+                        revealed: Some([].into()),
                         ..Default::default()
                     });
                 }
@@ -511,6 +478,7 @@ impl ShahrazadGame {
                     mulligans: 0,
                     command_damage,
                     player,
+                    reveal_deck_top: crate::types::playmat::DeckTopReveal::NONE,
                 };
 
                 game.zone_count += zone_types.len() as u64;
@@ -534,6 +502,18 @@ impl ShahrazadGame {
             } => {
                 let playmat = game.playmats.get_mut(&player_id)?;
                 playmat.command_damage.insert(command_id, damage);
+                Some(game)
+            }
+            ShahrazadAction::SetPlaymat {
+                player_id,
+                reveal_deck_top,
+            } => {
+                let playmat = game.playmats.get_mut(&player_id)?;
+                let reveal_deck_top = reveal_deck_top.into();
+                if playmat.reveal_deck_top == reveal_deck_top {
+                    return None;
+                }
+                playmat.reveal_deck_top = reveal_deck_top;
                 Some(game)
             }
             ShahrazadAction::ClearBoard { player_id } => {
@@ -601,17 +581,103 @@ impl ShahrazadGame {
                     cards.push(card_id.clone());
                 }
                 if is_reset {
-                    {
-                        let playmat = game.playmats.get_mut(&player_id)?;
-                        playmat.mulligans = 0;
-                        for k in &game.players {
-                            playmat.command_damage.insert(k.clone(), 0);
-                        }
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::ResetPlaymat {
+                            player_id: player_id.clone(),
+                            seed: seed.clone(),
+                        },
+                        game,
+                    );
+                } else {
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::DeleteToken {
+                            cards: cards.clone(),
+                        },
+                        game,
+                    );
+
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::CardZone {
+                            cards: cards.clone(),
+                            state: ShahrazadCardStateTransform {
+                                ..Default::default()
+                            },
+                            destination: library_id.clone(),
+                            index: 0,
+                        },
+                        game,
+                    );
+
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::CardZone {
+                            cards: commanders,
+                            state: ShahrazadCardStateTransform::reset(),
+                            destination: command_id,
+                            index: 0,
+                        },
+                        game,
+                    );
+
+                    ShahrazadGame::apply_action(
+                        ShahrazadAction::Shuffle {
+                            zone: library_id.clone(),
+                            seed,
+                        },
+                        game,
+                    );
+                }
+
+                ShahrazadGame::apply_action(
+                    ShahrazadAction::DrawTop {
+                        amount: 7,
+                        source: library_id.clone(),
+                        destination: hand_id,
+                        state: ShahrazadCardStateTransform {
+                            revealed: Some([player_id].into()),
+                            ..Default::default()
+                        },
+                    },
+                    game,
+                );
+                Some(game)
+            }
+            ShahrazadAction::ResetPlaymat { player_id, seed } => {
+                {
+                    let playmat = game.playmats.get_mut(&player_id)?;
+                    playmat.mulligans = 0;
+                    for k in &game.players {
+                        playmat.command_damage.insert(k.clone(), 0);
                     }
-                    for player_id in &game.players {
-                        let playmat = game.playmats.get_mut(player_id)?;
-                        playmat.life = game.settings.starting_life;
+                }
+                for player_id in &game.players {
+                    let playmat = game.playmats.get_mut(player_id)?;
+                    playmat.life = game.settings.starting_life;
+                    playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
+                }
+
+                let playmat = game.playmats.get(&player_id)?;
+                let library_id = playmat.library.clone();
+                let command_id = playmat.command.clone();
+                let sideboard_id = playmat.sideboard.clone();
+
+                let mut cards: Vec<ShahrazadCardId> = Vec::new();
+                let mut commanders: Vec<ShahrazadCardId> = Vec::new();
+                let mut sideboard: Vec<ShahrazadCardId> = Vec::new();
+
+                for (card_id, card) in &game.cards {
+                    if card.owner != player_id {
+                        continue;
                     }
+
+                    if card.location == sideboard_id {
+                        sideboard.push(card_id.clone());
+                        continue;
+                    };
+                    if card.commander {
+                        commanders.push(card_id.clone());
+                        continue;
+                    }
+                    cards.push(card_id.clone());
                 }
 
                 ShahrazadGame::apply_action(
@@ -624,7 +690,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
                         cards: cards.clone(),
-                        state: ShahrazadCardState {
+                        state: ShahrazadCardStateTransform {
                             ..Default::default()
                         },
                         destination: library_id.clone(),
@@ -636,7 +702,7 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::CardZone {
                         cards: commanders,
-                        state: ShahrazadCardState::reset(),
+                        state: ShahrazadCardStateTransform::reset(),
                         destination: command_id,
                         index: 0,
                     },
@@ -646,23 +712,11 @@ impl ShahrazadGame {
                 ShahrazadGame::apply_action(
                     ShahrazadAction::Shuffle {
                         zone: library_id.clone(),
-                        seed,
+                        seed: seed.clone(),
                     },
                     game,
                 );
 
-                ShahrazadGame::apply_action(
-                    ShahrazadAction::DrawTop {
-                        amount: 7,
-                        source: library_id.clone(),
-                        destination: hand_id,
-                        state: ShahrazadCardState {
-                            revealed: Some([player_id].into()),
-                            ..Default::default()
-                        },
-                    },
-                    game,
-                );
                 Some(game)
             }
             ShahrazadAction::SendMessage { .. } => Some(game),
@@ -778,51 +832,6 @@ impl From<proto::game::ShahrazadGameSettings> for ShahrazadGameSettings {
             free_mulligans: value.free_mulligans,
             scry_rule: value.scry_rule,
             starting_life: value.starting_life,
-        }
-    }
-}
-
-impl TryFrom<proto::playmat::ShahrazadPlaymat> for ShahrazadPlaymat {
-    type Error = &'static str;
-
-    fn try_from(value: proto::playmat::ShahrazadPlaymat) -> Result<Self, Self::Error> {
-        Ok(ShahrazadPlaymat {
-            library: value.library.into(),
-            hand: value.hand.into(),
-            graveyard: value.graveyard.into(),
-            battlefield: value.battlefield.into(),
-            exile: value.exile.into(),
-            command: value.command.into(),
-            sideboard: value.sideboard.into(),
-            life: value.life.into(),
-            mulligans: value.mulligans.try_into().unwrap(),
-            command_damage: value
-                .command_damage
-                .iter()
-                .map(|(k, v)| (k.clone().into(), v.clone()))
-                .collect(),
-            player: value.player.unwrap().into(),
-        })
-    }
-}
-impl From<ShahrazadPlaymat> for proto::playmat::ShahrazadPlaymat {
-    fn from(value: ShahrazadPlaymat) -> Self {
-        proto::playmat::ShahrazadPlaymat {
-            library: value.library.into(),
-            hand: value.hand.into(),
-            graveyard: value.graveyard.into(),
-            battlefield: value.battlefield.into(),
-            exile: value.exile.into(),
-            command: value.command.into(),
-            sideboard: value.sideboard.into(),
-            life: value.life,
-            mulligans: value.mulligans.into(),
-            command_damage: value
-                .command_damage
-                .iter()
-                .map(|(k, v)| (k.clone().into(), v.clone()))
-                .collect(),
-            player: Some(value.player.into()),
         }
     }
 }

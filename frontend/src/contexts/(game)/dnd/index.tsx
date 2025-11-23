@@ -90,7 +90,8 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                         state: {
                             x: 255,
                             y: 255,
-                            revealed: face_down ? [active_player] : [],
+                            revealed:
+                                face_down === false ? [] : [active_player],
                         },
                     });
                     return;
@@ -219,7 +220,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     state: {
                         x,
                         y,
-                        revealed: face_down === false ? [] : undefined,
+                        revealed: face_down === false ? [] : [active_player],
                     },
                 });
             } else {

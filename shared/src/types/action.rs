@@ -3,12 +3,13 @@ use type_reflect::*;
 
 use crate::proto::action::shahrazad_action::Action;
 use crate::proto::{self};
+use crate::types::playmat::DeckTopReveal;
 
 use super::{
-    card::{ShahrazadCardId, ShahrazadCardState},
-    game::ShahrazadPlaymatId,
+    card::{ShahrazadCardId, ShahrazadCardStateTransform},
     message::Message,
-    player::ShahrazadPlayer,
+    playmat::ShahrazadPlayer,
+    playmat::ShahrazadPlaymatId,
     // ws::ProtoSerialize,
     zone::ShahrazadZoneId,
 };
@@ -26,21 +27,21 @@ pub enum ShahrazadAction {
         amount: usize,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     DrawTop {
         amount: usize,
         source: ShahrazadZoneId,
         destination: ShahrazadZoneId,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     CardState {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     CardZone {
         cards: Vec<ShahrazadCardId>,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
         destination: ShahrazadZoneId,
         index: i32,
     },
@@ -53,7 +54,7 @@ pub enum ShahrazadAction {
         cards: Vec<CardImport>,
         token: bool,
         player_id: ShahrazadPlaymatId,
-        state: ShahrazadCardState,
+        state: ShahrazadCardStateTransform,
     },
     DeckImport {
         deck_uri: String,
@@ -76,6 +77,10 @@ pub enum ShahrazadAction {
         command_id: ShahrazadPlaymatId,
         damage: i32,
     },
+    SetPlaymat {
+        player_id: ShahrazadPlaymatId,
+        reveal_deck_top: DeckTopReveal,
+    },
     ClearBoard {
         player_id: ShahrazadPlaymatId,
     },
@@ -91,6 +96,10 @@ pub enum ShahrazadAction {
         player_id: ShahrazadPlaymatId,
         created_at: u32,
     },
+    ResetPlaymat {
+        player_id: ShahrazadPlaymatId,
+        seed: String,
+    },
     GameTerminated,
 }
 
@@ -105,7 +114,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                     .state
                     .unwrap()
                     .try_into()
-                    .unwrap_or(ShahrazadCardState::default());
+                    .unwrap_or(ShahrazadCardStateTransform::default());
 
                 ShahrazadAction::DrawBottom {
                     amount,
@@ -120,7 +129,7 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                     .state
                     .unwrap()
                     .try_into()
-                    .unwrap_or(ShahrazadCardState::default());
+                    .unwrap_or(ShahrazadCardStateTransform::default());
                 ShahrazadAction::DrawTop {
                     amount,
                     source: a.source.into(),
@@ -189,6 +198,10 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                 command_id: a.command_id.into(),
                 damage: a.damage,
             },
+            Action::SetPlaymat(a) => ShahrazadAction::SetPlaymat {
+                player_id: a.player_id.into(),
+                reveal_deck_top: a.reveal_deck_top.into(),
+            },
             Action::ClearBoard(a) => ShahrazadAction::ClearBoard {
                 player_id: a.player_id.into(),
             },
@@ -207,6 +220,10 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                     .collect(),
                 player_id: a.player_id.into(),
                 created_at: a.created_at,
+            },
+            Action::ResetPlaymat(a) => ShahrazadAction::ResetPlaymat {
+                player_id: a.player_id.into(),
+                seed: a.seed,
             },
             Action::GameTerminated(_) => ShahrazadAction::GameTerminated,
         })
@@ -315,6 +332,13 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                     command_id: command_id.into(),
                     damage,
                 })),
+                ShahrazadAction::SetPlaymat {
+                    player_id,
+                    reveal_deck_top,
+                } => Some(Action::SetPlaymat(proto::action::SetPlaymat {
+                    player_id: player_id.into(),
+                    reveal_deck_top: reveal_deck_top.into(),
+                })),
                 ShahrazadAction::ClearBoard { player_id } => {
                     Some(Action::ClearBoard(proto::action::ClearBoard {
                         player_id: player_id.into(),
@@ -340,6 +364,12 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                     player_id: player_id.into(),
                     created_at: created_at,
                 })),
+                ShahrazadAction::ResetPlaymat { player_id, seed } => {
+                    Some(Action::ResetPlaymat(proto::action::ResetPlaymat {
+                        player_id: player_id.into(),
+                        seed,
+                    }))
+                }
                 ShahrazadAction::GameTerminated => {
                     Some(Action::GameTerminated(proto::action::GameTerminated {}))
                 }

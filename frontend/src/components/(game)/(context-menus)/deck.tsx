@@ -22,6 +22,7 @@ import { DrawTo } from "./(menu-items)/draw-to";
 import { KeyShortcut } from "@/components/(ui)/key-shortcut";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { ShahrazadCardId } from "@/types/bindings/card";
+import { DeckTopReveal } from "@/types/bindings/playmat";
 
 function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
     const { player } = usePlayer();
@@ -100,6 +101,80 @@ function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
                         source={zoneId}
                         state={{ revealed: [player] }}
                     />
+                </ContextMenuSubContent>
+            </ContextMenuSub>
+            <ContextMenuSub>
+                <ContextMenuSubTrigger>Flip Top</ContextMenuSubTrigger>
+                <ContextMenuSubContent>
+                    <ContextMenuItem
+                        onClick={() => {
+                            applyAction({
+                                type: ShahrazadActionCase.CardState,
+                                cards: [deck.cards[deck.cards.length - 1]],
+                                state: {
+                                    face_down: true,
+                                    revealed: [player],
+                                },
+                            });
+                        }}
+                    >
+                        Once (Privately)
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                        onClick={() => {
+                            applyAction({
+                                type: ShahrazadActionCase.CardState,
+                                cards: [deck.cards[deck.cards.length - 1]],
+                                state: {
+                                    face_down: false,
+                                    revealed: [],
+                                },
+                            });
+                        }}
+                    >
+                        Once (Publicly)
+                    </ContextMenuItem>
+
+                    {playmat.reveal_deck_top !== DeckTopReveal.PRIVATE && (
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.SetPlaymat,
+                                    player_id: player,
+                                    reveal_deck_top: DeckTopReveal.PRIVATE,
+                                });
+                            }}
+                        >
+                            Privately
+                        </ContextMenuItem>
+                    )}
+
+                    {playmat.reveal_deck_top !== DeckTopReveal.PUBLIC && (
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.SetPlaymat,
+                                    player_id: player,
+                                    reveal_deck_top: DeckTopReveal.PUBLIC,
+                                });
+                            }}
+                        >
+                            Publicly
+                        </ContextMenuItem>
+                    )}
+                    {playmat.reveal_deck_top !== DeckTopReveal.NONE && (
+                        <ContextMenuItem
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.SetPlaymat,
+                                    player_id: player,
+                                    reveal_deck_top: DeckTopReveal.NONE,
+                                });
+                            }}
+                        >
+                            Hidden
+                        </ContextMenuItem>
+                    )}
                 </ContextMenuSubContent>
             </ContextMenuSub>
         </>
