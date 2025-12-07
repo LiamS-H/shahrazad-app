@@ -125,13 +125,16 @@ export default function SideboardingModal({
                 <DialogHeader>
                     <DialogTitle>Sideboarding</DialogTitle>
                     <DialogDescription>
-                        Click cards to move between.
+                        Click cards to move between deck ({deck.cards.length})
+                        and sideboard ({sideboard.cards.length})
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex-1 flex flex-row gap-4 overflow-hidden">
                     {/* Sideboard Column */}
                     <div className="w-[200px] border-l pl-4 flex flex-col gap-1">
-                        <div className="font-bold text-center">Sideboard</div>
+                        <div className="font-bold text-center">
+                            Sideboard ({sideboard.cards.length})
+                        </div>
                         <div className="flex flex-col items-center overflow-y-auto pb-4">
                             {sortedSideboard.map((item, index) => (
                                 <div

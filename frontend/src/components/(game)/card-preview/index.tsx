@@ -33,7 +33,7 @@ function DraggableWrapper({
 
     return (
         <div
-            className="fixed group text-highlight"
+            className="fixed group text-highlight z-50"
             ref={setNodeRef}
             style={{
                 transform: CSS.Translate.toString(transform),
