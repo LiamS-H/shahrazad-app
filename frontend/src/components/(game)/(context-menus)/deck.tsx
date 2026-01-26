@@ -24,6 +24,8 @@ import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { DeckTopReveal } from "@/types/bindings/playmat";
 
+import { ScryMenuItem } from "./(menu-items)/scry-menu";
+
 function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
     const { player } = usePlayer();
     const { applyAction, getPlaymat } = useShahrazadGameContext();
@@ -103,6 +105,7 @@ function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
                     />
                 </ContextMenuSubContent>
             </ContextMenuSub>
+            <ScryMenuItem zoneId={zoneId} />
             <ContextMenuSub>
                 <ContextMenuSubTrigger>Flip Top</ContextMenuSubTrigger>
                 <ContextMenuSubContent>
