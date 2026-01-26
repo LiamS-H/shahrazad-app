@@ -6,7 +6,7 @@ import { ArrowDownToLine, Layers } from "lucide-react";
 import { Button } from "@/components/(ui)/button";
 import ZoneWrapper from "../zone-wrapper";
 import { usePlayer } from "@/contexts/(game)/player";
-import SideboardingModal from "@/components/(game)/sideboarding-modal";
+import SideboardingModal from "@/components/(game)/playmat/Sideboard/modal";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { randomU64 } from "@/lib/utils/random";
 
@@ -42,7 +42,7 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
                 });
             }
         },
-        [applyAction, getZone, playmat.library, active_player]
+        [applyAction, getZone, playmat.library, active_player],
     );
 
     if (!active) {

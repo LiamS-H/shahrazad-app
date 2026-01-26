@@ -17,8 +17,11 @@ export function useScrycardsList(card_ids: ShahrazadCardId[]) {
     const { requestCard } = useScrycardsContext();
 
     useEffect(() => {
+        let isStale = false;
+
         async function fetchCards() {
             setLoading(true);
+
             const promises = card_ids.map((card_id) => {
                 const shah_card = getCard(card_id);
                 if (!shah_card) return;
@@ -36,17 +39,19 @@ export function useScrycardsList(card_ids: ShahrazadCardId[]) {
                                         return {
                                             status: "rejected",
                                             reason: new Error(
-                                                "requestCard timeout"
+                                                "requestCard timeout",
                                             ),
                                         };
                                     }
                                     return { status: "fulfilled", value: p };
-                                })
+                                }),
                             );
-                        }, 1000)
+                        }, 1000),
                 ),
             ]);
-            setLoading(false);
+
+            if (isStale) return;
+
             const fetched_cards: ScrycardsList = [];
             for (let i = 0; i < scrycards.length; i++) {
                 const scry_card = scrycards[i];
@@ -57,9 +62,16 @@ export function useScrycardsList(card_ids: ShahrazadCardId[]) {
                 }
                 fetched_cards.push({ id, card: scry_card.value });
             }
+
             setCards(fetched_cards);
+            setLoading(false);
         }
+
         fetchCards();
+
+        return () => {
+            isStale = true;
+        };
     }, [card_ids, getCard, requestCard]);
 
     return { cards, loading };

@@ -34,7 +34,7 @@ export default function SideboardingModal({
     const sideboard = useZone(sideboardId);
 
     const { cards: deckCards, loading: loadingDeck } = useScrycardsList(
-        deck.cards
+        deck.cards,
     );
     const { cards: sideboardCards, loading: loadingSideboard } =
         useScrycardsList(sideboard.cards);
@@ -84,7 +84,7 @@ export default function SideboardingModal({
         // Sort each column by name
         Object.values(columns).forEach((col) => {
             col.sort((a, b) =>
-                (a.card?.name || "").localeCompare(b.card?.name || "")
+                (a.card?.name || "").localeCompare(b.card?.name || ""),
             );
         });
 
@@ -116,7 +116,7 @@ export default function SideboardingModal({
                 state: {},
             });
         },
-        [applyAction]
+        [applyAction],
     );
 
     return (
@@ -178,7 +178,7 @@ export default function SideboardingModal({
                                                 onClick={() =>
                                                     moveCard(
                                                         item.id,
-                                                        sideboardId
+                                                        sideboardId,
                                                     )
                                                 }
                                             >
