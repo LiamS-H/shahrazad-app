@@ -16,6 +16,7 @@ pub enum ZoneName {
     EXILE = 5,
     COMMAND = 6,
     SIDEBOARD = 7,
+    STACK = 8,
 }
 
 impl From<i32> for ZoneName {
@@ -29,6 +30,7 @@ impl From<i32> for ZoneName {
             5 => ZoneName::EXILE,
             6 => ZoneName::COMMAND,
             7 => ZoneName::SIDEBOARD,
+            8 => ZoneName::STACK,
             _ => ZoneName::INVALID,
         }
     }
@@ -45,6 +47,7 @@ impl From<ZoneName> for i32 {
             ZoneName::EXILE => 5,
             ZoneName::COMMAND => 6,
             ZoneName::SIDEBOARD => 7,
+            ZoneName::STACK => 8,
         }
     }
 }
