@@ -180,7 +180,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
         if (start_zone_id != end_zone_id) {
             console.log("[dnd] dragging between zones");
             console.log(
-                `[dnd] dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`
+                `[dnd] dragging ${target_id} from ${start_zone_id} to ${end_zone_id}`,
             );
             const {
                 state: {
@@ -231,20 +231,12 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                     state: {
                         x,
                         y,
-                        face_down: face_down === true ? false : undefined,
-                        tapped: tapped === true ? false : undefined,
-                        flipped:
-                            x === 255 && flipped === true ? false : undefined,
-                        inverted:
-                            x === 255 && inverted === true ? false : undefined,
-                        revealed:
-                            face_down === false || revealed?.length !== 0
-                                ? []
-                                : undefined,
-                        counters:
-                            over_data?.sortable && counters?.length !== 0
-                                ? []
-                                : undefined,
+                        face_down: false,
+                        tapped: false,
+                        flipped: false,
+                        inverted: false,
+                        revealed: [],
+                        counters: [],
                     },
                     index: -1,
                 });
@@ -263,7 +255,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
     const sensors = useSensors(
         // useSensor(MouseSensor),
         // useSensor(LibMouseSensor),
-        useSensor(MouseSensor, { activationConstraint: { distance: 5 } })
+        useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
         // useSensor(KeyboardSensor, {
         //     coordinateGetter: sortableKeyboardCoordinates,
         // })

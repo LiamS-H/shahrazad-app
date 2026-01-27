@@ -649,13 +649,10 @@ impl ShahrazadGame {
                         playmat.command_damage.insert(k.clone(), 0);
                     }
                 }
-                for player_id in &game.players {
-                    let playmat = game.playmats.get_mut(player_id)?;
-                    playmat.life = game.settings.starting_life;
-                    playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
-                }
 
-                let playmat = game.playmats.get(&player_id)?;
+                let playmat = game.playmats.get_mut(&player_id)?;
+                playmat.life = game.settings.starting_life;
+                playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
                 let library_id = playmat.library.clone();
                 let command_id = playmat.command.clone();
                 let sideboard_id = playmat.sideboard.clone();

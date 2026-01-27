@@ -28,6 +28,7 @@ export function ImportContextProvider({ children }: { children: ReactNode }) {
             getZone(playmat.graveyard).cards.length === 0 &&
             getZone(playmat.exile).cards.length === 0 &&
             getZone(playmat.battlefield).cards.length === 0 &&
+            getZone(playmat.sideboard).cards.length === 0 &&
             getZone(playmat.hand).cards.length === 0;
         if (defaultOpen && canDefaulOpen) {
             setActive(active_player);

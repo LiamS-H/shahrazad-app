@@ -1,4 +1,5 @@
 "use client";
+import { ScryContextProvider } from "@/contexts/(game)/scry";
 import { ShahrazadGame } from "@/types/bindings/game";
 import Playmat from "../playmat";
 import { ShahrazadGameProvider } from "@/contexts/(game)/game";
@@ -62,78 +63,88 @@ export default function Game({
         >
             <SelectionProvider>
                 <ShahrazadDND>
-                    <SearchContextProvider>
-                        <MessagesContextProvider
-                            registerOnMessage={registerOnMessage}
-                        >
-                            <ImportContextProvider>
-                                <ArrowsContextProvider>
-                                    <Keybinds />
-                                    <MessagesDialog />
-                                    <PreviewCard />
-                                    <AnimatePresence>
-                                        <div
-                                            className="pl-4 w-full overflow-y-auto relative"
-                                            ref={scroll_ref}
-                                        >
-                                            <Arrows parentRef={scroll_ref} />
-                                            <div className="relative flex flex-col gap-4">
-                                                {players.map((player) => (
-                                                    <Playmat
-                                                        key={player}
-                                                        active={
-                                                            player ===
-                                                            activePlayer
-                                                        }
-                                                        player={player}
-                                                    />
-                                                ))}
-                                                {players.map((player, i) => (
-                                                    <div
-                                                        key={player}
-                                                        id={`player-${player}`}
-                                                        style={{
-                                                            position:
-                                                                "absolute",
-                                                            top: `${
-                                                                i * (657 + 16)
-                                                            }px`,
-                                                            width: "100%",
-                                                            pointerEvents:
-                                                                "none",
-                                                        }}
-                                                    />
-                                                ))}
+                    <ScryContextProvider>
+                        <SearchContextProvider>
+                            <MessagesContextProvider
+                                registerOnMessage={registerOnMessage}
+                            >
+                                <ImportContextProvider>
+                                    <ArrowsContextProvider>
+                                        <Keybinds />
+                                        <MessagesDialog />
+                                        <PreviewCard />
+                                        <AnimatePresence>
+                                            <div
+                                                className="pl-4 w-full overflow-y-auto relative"
+                                                ref={scroll_ref}
+                                            >
+                                                <Arrows
+                                                    parentRef={scroll_ref}
+                                                />
+                                                <div className="relative flex flex-col gap-4">
+                                                    {players.map((player) => (
+                                                        <Playmat
+                                                            key={player}
+                                                            active={
+                                                                player ===
+                                                                activePlayer
+                                                            }
+                                                            player={player}
+                                                        />
+                                                    ))}
+                                                    {players.map(
+                                                        (player, i) => (
+                                                            <div
+                                                                key={player}
+                                                                id={`player-${player}`}
+                                                                style={{
+                                                                    position:
+                                                                        "absolute",
+                                                                    top: `${
+                                                                        i *
+                                                                        (657 +
+                                                                            16)
+                                                                    }px`,
+                                                                    width: "100%",
+                                                                    pointerEvents:
+                                                                        "none",
+                                                                }}
+                                                            />
+                                                        ),
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </AnimatePresence>
-                                    <div className="absolute top-4 right-44 flex gap-4 items-center">
-                                        <MessagesButton />
-                                        <Separator
-                                            orientation="vertical"
-                                            className="h-5"
-                                        />
-                                        {players.slice(1).map((player_id) => (
-                                            <NonActivePlayerIcon
-                                                key={player_id}
-                                                player_id={player_id}
-                                            />
-                                        ))}
-                                        {players.length > 1 && (
+                                        </AnimatePresence>
+                                        <div className="absolute top-4 right-44 flex gap-4 items-center">
+                                            <MessagesButton />
                                             <Separator
                                                 orientation="vertical"
                                                 className="h-5"
                                             />
-                                        )}
-                                        <ActivePlayerIcon
-                                            player_id={activePlayer}
-                                            is_host={isHost}
-                                        />
-                                    </div>
-                                </ArrowsContextProvider>
-                            </ImportContextProvider>
-                        </MessagesContextProvider>
-                    </SearchContextProvider>
+                                            {players
+                                                .slice(1)
+                                                .map((player_id) => (
+                                                    <NonActivePlayerIcon
+                                                        key={player_id}
+                                                        player_id={player_id}
+                                                    />
+                                                ))}
+                                            {players.length > 1 && (
+                                                <Separator
+                                                    orientation="vertical"
+                                                    className="h-5"
+                                                />
+                                            )}
+                                            <ActivePlayerIcon
+                                                player_id={activePlayer}
+                                                is_host={isHost}
+                                            />
+                                        </div>
+                                    </ArrowsContextProvider>
+                                </ImportContextProvider>
+                            </MessagesContextProvider>
+                        </SearchContextProvider>
+                    </ScryContextProvider>
                 </ShahrazadDND>
             </SelectionProvider>
         </ShahrazadGameProvider>
