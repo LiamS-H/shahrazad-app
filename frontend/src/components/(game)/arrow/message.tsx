@@ -8,7 +8,7 @@ import { IArrowMessage } from "@/types/interfaces/message";
 export function getMessageCenter(
     type: MessageCaseArrow["arrow_type"],
     id: string,
-    offset: pos
+    offset: pos,
 ): pos | null {
     let div;
     switch (type) {
@@ -63,16 +63,16 @@ export function MessageArrow({
 
     useEffect(() => {
         cancelAnimationFrame(animationRef.current);
-        if (
-            active &&
-            (active.id === message.from || active.id === message.to)
-        ) {
-            const frame = () => {
-                update();
-                animationRef.current = requestAnimationFrame(frame);
-            };
+        // if (
+        //     active &&
+        //     (active.id === message.from || active.id === message.to)
+        // ) {
+        const frame = () => {
+            update();
             animationRef.current = requestAnimationFrame(frame);
-        }
+        };
+        animationRef.current = requestAnimationFrame(frame);
+        // }
         return () => {
             cancelAnimationFrame(animationRef.current);
         };

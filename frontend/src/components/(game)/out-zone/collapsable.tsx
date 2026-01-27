@@ -5,7 +5,7 @@ import { ShahrazadCardId } from "@/types/bindings/card";
 import { useDraggable } from "@dnd-kit/core";
 import Card from "@/components/(game)/card";
 
-export default function Collapsable(props: {
+export function Collapsable(props: {
     id: ShahrazadCardId;
     isHovered: boolean;
     isBottom: boolean;
@@ -17,7 +17,7 @@ export default function Collapsable(props: {
         () => ({
             zone: shah_card.location,
         }),
-        [shah_card]
+        [shah_card],
     );
 
     const { attributes, listeners, node, setNodeRef, isDragging } =

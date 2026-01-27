@@ -9,7 +9,7 @@ import { useSearchContext } from "@/contexts/(game)/search";
 import { Scrycard, Scrydeck } from "react-scrycards";
 import Card from "../../card";
 import ZoneWrapper from "../zone-wrapper";
-import PoppedOutZone from "../../out-zone";
+import { PoppedOutZone } from "@/components/(game)/out-zone";
 
 export default function Graveyard(props: { id: ShahrazadZoneId }) {
     const zone = useZone(props.id);
@@ -42,7 +42,7 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
                         id={props.id}
                         name="Graveyard"
                         onClose={onClose}
-                        pos={{ x: window.innerWidth - 800, y: 80 }}
+                        pos={{ x: window.innerWidth - 500, y: 120 }}
                     />
                     <button
                         onClick={onClose}

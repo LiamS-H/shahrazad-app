@@ -21,6 +21,7 @@ import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
 import { MessagesButton, MessagesDialog } from "../messages";
 import { PreviewCard } from "@/components/(game)/card-preview";
+import { PoppedOutZone } from "@/components/(game)/out-zone";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -74,6 +75,16 @@ export default function Game({
                                         <MessagesDialog />
                                         <PreviewCard />
                                         <AnimatePresence>
+                                            <PoppedOutZone
+                                                id={game.stack}
+                                                name="Stack"
+                                                pos={{
+                                                    x: window.innerWidth - 300,
+                                                    y: 80,
+                                                }}
+                                                key="test"
+                                            />
+
                                             <div
                                                 className="pl-4 w-full overflow-y-auto relative"
                                                 ref={scroll_ref}

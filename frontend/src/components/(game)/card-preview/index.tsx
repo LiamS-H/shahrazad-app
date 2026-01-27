@@ -86,7 +86,7 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
                                 setFlipped(
                                     flipped === null
                                         ? !shah_card.state.flipped
-                                        : !flipped
+                                        : !flipped,
                                 );
                             }}
                         >
@@ -113,7 +113,7 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
 
 export function PreviewCard() {
     const { getCard } = useShahrazadGameContext();
-    const [pos, setPos] = useState({ x: 1470, y: 80 });
+    const [pos, setPos] = useState({ x: 1170, y: 80 });
     const [size, setSize] = useState<number>(400);
     const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
     const { currentPreview: id } = useSelection();
@@ -137,7 +137,7 @@ export function PreviewCard() {
                 y: Math.max(minY, Math.min(p.y, maxY)),
             };
         },
-        [size, windowSize.width, windowSize.height]
+        [size, windowSize.width, windowSize.height],
     );
 
     useEffect(() => {
@@ -183,10 +183,10 @@ export function PreviewCard() {
                 clampPosition({
                     x: x + delta.x,
                     y: y + delta.y,
-                })
+                }),
             );
         },
-        [clampPosition]
+        [clampPosition],
     );
 
     const card = useMemo(() => {

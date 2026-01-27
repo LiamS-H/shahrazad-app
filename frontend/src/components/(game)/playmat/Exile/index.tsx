@@ -9,7 +9,7 @@ import ZoneWrapper from "../zone-wrapper";
 import { useSearchContext } from "@/contexts/(game)/search";
 import { Scrycard, Scrydeck } from "react-scrycards";
 import Card from "@/components/(game)/card";
-import PoppedOutZone from "../../out-zone";
+import { PoppedOutZone } from "@/components/(game)/out-zone";
 
 export default function Exile(props: { id: ShahrazadZoneId }) {
     const zone = useZone(props.id);

@@ -21,6 +21,7 @@ import { compareCards, compareZones } from "@/lib/utils/compare";
 export interface IShahrazadGameContext {
     active_player: ShahrazadPlaymatId;
     players: ShahrazadPlaymatId[];
+    stack: ShahrazadZoneId;
     settings: ShahrazadGameSettings;
     created_at: bigint;
     getCard: (arg0: ShahrazadCardId) => ShahrazadCard;
@@ -56,6 +57,7 @@ export function ShahrazadGameProvider(props: {
                 settings: props.game.settings,
                 active_player: props.player_name,
                 players: props.players,
+                stack: props.game.stack,
                 isHost: props.isHost,
                 created_at: props.game.created_at as unknown as bigint,
                 getCard,

@@ -3,15 +3,15 @@ import { useZone } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import CollapsableCard from "./collapsable";
+import { Collapsable } from "./collapsable";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { Button } from "@/components/(ui)/button";
 import { Grip, X } from "lucide-react";
 
-function PoppedOutZone(props: {
+export function PoppedOutZone(props: {
     id: ShahrazadZoneId;
     name: string;
-    onClose: () => void;
+    onClose?: () => void;
     pos: {
         x: number;
         y: number;
@@ -41,7 +41,7 @@ function PoppedOutZone(props: {
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
         },
-        [pos.x, pos.y]
+        [pos.x, pos.y],
     );
 
     return (
@@ -50,7 +50,7 @@ function PoppedOutZone(props: {
                 left: pos.x,
                 top: pos.y,
             }}
-            className="fixed group text-highlight bg-background border rounded-lg shadow-lg flex flex-col z-50"
+            className="fixed group text-highlight bg-background border rounded-lg shadow-lg flex flex-col z-40"
         >
             <div className="flex justify-between items-center p-1 border-b">
                 <div className="flex items-center gap-1">
@@ -66,9 +66,11 @@ function PoppedOutZone(props: {
                         {props.name} ({zone.cards.length})
                     </h3>
                 </div>
-                <Button size="icon" variant="ghost" onClick={props.onClose}>
-                    <X />
-                </Button>
+                {props.onClose && (
+                    <Button size="icon" variant="ghost" onClick={props.onClose}>
+                        <X />
+                    </Button>
+                )}
             </div>
             <div
                 style={{
@@ -78,7 +80,6 @@ function PoppedOutZone(props: {
                     resize: "vertical",
                 }}
                 className="p-2"
-                onMouseDown={(e) => e.stopPropagation()} // Prevent dragging from starting when resizing
                 onChange={(e) =>
                     setHeight(parseInt(e.currentTarget.style.height))
                 }
@@ -94,7 +95,7 @@ function PoppedOutZoneContent(props: {
     emptyMessage: string;
 }) {
     const [hoveredItem, setHoveredItem] = useState<ShahrazadCardId | null>(
-        null
+        null,
     );
     const hover_timeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -111,7 +112,7 @@ function PoppedOutZoneContent(props: {
                 setHoveredItem(id);
             }, 100);
         },
-        [setHoveredItem, hoveredItem]
+        [setHoveredItem, hoveredItem],
     );
 
     const zone = useZone(props.id);
@@ -131,20 +132,18 @@ function PoppedOutZoneContent(props: {
                         const isHovered = id === hoveredItem;
                         const isBottom = index === zone.cards.length - 1;
                         return (
-                            <CollapsableCard
+                            <Collapsable
                                 id={id}
                                 isBottom={isBottom}
                                 isHovered={isHovered}
                                 setHovered={setHover}
-                                key={id}
+                                key={`${props.emptyMessage}-${id}`}
                             />
                         );
                     })}
                 </div>
             </div>
         ),
-        [hoveredItem, setHover, setNodeRef, zone.cards]
+        [hoveredItem, setHover, setNodeRef, zone.cards],
     );
 }
-
-export default PoppedOutZone;
