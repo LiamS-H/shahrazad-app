@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useZone } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
@@ -20,6 +20,47 @@ export function PoppedOutZone(props: {
     const [pos, setPos] = useState(props.pos);
     const [height, setHeight] = useState(400);
     const zone = useZone(props.id);
+    const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    const clampPosition = useCallback(
+        (p: { x: number; y: number }) => {
+            if (windowSize.width === 0) {
+                return p;
+            }
+
+            const zoneWidth = 260;
+            const zoneHeight = height + 50;
+
+            const minX = 16;
+            const minY = 16;
+            const maxX = windowSize.width - zoneWidth;
+            const maxY = windowSize.height - zoneHeight;
+
+            return {
+                x: Math.max(minX, Math.min(p.x, maxX)),
+                y: Math.max(minY, Math.min(p.y, maxY)),
+            };
+        },
+        [height, windowSize],
+    );
+
+    useEffect(() => {
+        setPos(clampPosition);
+    }, [clampPosition]);
 
     const handleMouseDown = useCallback(
         (e: React.MouseEvent) => {
@@ -36,12 +77,13 @@ export function PoppedOutZone(props: {
             const handleMouseUp = () => {
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
+                setPos((p) => clampPosition(p));
             };
 
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
         },
-        [pos.x, pos.y],
+        [pos.x, pos.y, clampPosition],
     );
 
     return (
@@ -52,13 +94,15 @@ export function PoppedOutZone(props: {
             }}
             className="fixed group text-highlight bg-background border rounded-lg shadow-lg flex flex-col z-40"
         >
-            <div className="flex justify-between items-center p-1 border-b">
+            <div
+                className="flex justify-between items-center p-1 border-b"
+                onMouseDown={handleMouseDown}
+            >
                 <div className="flex items-center gap-1">
                     <Button
                         className="cursor-grab "
                         size="icon"
                         variant="ghost"
-                        onMouseDown={handleMouseDown}
                     >
                         <Grip />
                     </Button>
