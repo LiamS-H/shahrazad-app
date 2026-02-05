@@ -111,7 +111,11 @@ export function PoppedOutZone(props: {
                     </h3>
                 </div>
                 {props.onClose && (
-                    <Button size="icon" variant="ghost" onClick={props.onClose}>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        onMouseDown={props.onClose}
+                    >
                         <X />
                     </Button>
                 )}

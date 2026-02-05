@@ -21,7 +21,7 @@ import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
 import { MessagesButton, MessagesDialog } from "../messages";
 import { PreviewCard } from "@/components/(game)/card-preview";
-import { PoppedOutZone } from "@/components/(game)/out-zone";
+import { StackButton } from "../stack";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -74,16 +74,6 @@ export default function Game({
                                         <MessagesDialog />
                                         <PreviewCard />
                                         <AnimatePresence>
-                                            <PoppedOutZone
-                                                id={game.stack}
-                                                name="Stack"
-                                                pos={{
-                                                    x: window.innerWidth - 300,
-                                                    y: 80,
-                                                }}
-                                                key="test"
-                                            />
-
                                             <div
                                                 className="pl-4 w-full overflow-y-auto relative"
                                                 ref={scroll_ref}
@@ -127,6 +117,7 @@ export default function Game({
                                         </AnimatePresence>
                                         <div className="absolute top-4 right-44 flex gap-4 items-center">
                                             <MessagesButton />
+                                            <StackButton />
                                             <Separator
                                                 orientation="vertical"
                                                 className="h-5"
