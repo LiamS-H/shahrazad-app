@@ -32,19 +32,19 @@ export default function ScryDialog({
     amount,
     close,
 }: {
-    active: ShahrazadZoneId;
+    active: ShahrazadZoneId | null;
     amount: number;
     close: () => void;
 }) {
     const { applyAction, getZone } = useShahrazadGameContext();
 
-    const zone = getZone(active);
-
     const [bottomCards, setBottomCards] = useState<ShahrazadCardId[]>([]);
     const [topCards, setTopCards] = useState<ShahrazadCardId[]>([]);
     const [activeId, setActiveId] = useState<ShahrazadCardId | null>(null);
+    const zone = active ? getZone(active) : null;
 
     useEffect(() => {
+        if (!zone) return;
         const len = zone.cards.length;
         const start = Math.max(0, len - amount);
         const scried = zone.cards.slice(start);
@@ -53,6 +53,10 @@ export default function ScryDialog({
     }, [zone, amount]);
 
     function handleClose() {
+        if (!active) {
+            close();
+            return;
+        }
         if (bottomCards.length > 0) {
             applyAction({
                 type: ShahrazadActionCase.CardZone,

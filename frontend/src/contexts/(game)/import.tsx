@@ -45,7 +45,7 @@ export function ImportContextProvider({ children }: { children: ReactNode }) {
     return (
         <ImportContext.Provider value={{ importFor }}>
             {children}
-            {active && <ImportDialog player={active} />}
+            <ImportDialog player={active} />
         </ImportContext.Provider>
     );
 }

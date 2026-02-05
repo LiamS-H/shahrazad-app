@@ -50,13 +50,11 @@ export function ScryContextProvider({ children }: { children: ReactNode }) {
     return (
         <ScryContext.Provider value={{ scry, active: scryZone, amount }}>
             {children}
-            {scryZone && (
-                <ScryDialog
-                    active={scryZone}
-                    amount={amount}
-                    close={() => scry(null, 0)}
-                />
-            )}
+            <ScryDialog
+                active={scryZone}
+                amount={amount}
+                close={() => scry(null, 0)}
+            />
         </ScryContext.Provider>
     );
 }

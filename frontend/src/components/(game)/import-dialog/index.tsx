@@ -19,15 +19,24 @@ import { Button } from "@/components/(ui)/button";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { useImportContext } from "@/contexts/(game)/import";
 
-export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
+export function ImportDialog({
+    player,
+}: {
+    player: ShahrazadPlaymatId | null;
+}) {
     const { importFor } = useImportContext();
     const { applyAction, getPlaymat, active_player, settings } =
         useShahrazadGameContext();
-    const playmat = getPlaymat(player);
     const [deckstr, setDeckstr] = useState<string>("");
     const [url, setUrl] = useState("");
     const [loading, _setLoading] = useState(false);
     const loadingRef = useRef(false);
+
+    const open = player !== null;
+
+    function close() {
+        importFor(null);
+    }
 
     function setLoading(l: boolean) {
         _setLoading(l);
@@ -35,9 +44,11 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
     }
 
     async function importDeck() {
+        if (!player) return false;
         if (loadingRef.current) {
             return false;
         }
+        const playmat = getPlaymat(player);
         loadingRef.current = true;
         let actions: ShahrazadAction[] | null | undefined;
         const sideboardId = settings.commander
@@ -75,21 +86,13 @@ export function ImportDialog({ player }: { player: ShahrazadPlaymatId }) {
             return;
         }
         actions.forEach((a) => applyAction(a));
-        setOpen(false);
+        close();
         setLoading(false);
         toast("Deck imported.");
     }
 
-    const [open, setOpen] = useState(true);
-
-    useEffect(() => {
-        if (!open) {
-            importFor(null);
-        }
-    }, [open, importFor]);
-
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={close}>
             <DialogTrigger asChild></DialogTrigger>
             <DialogContent className="flex flex-col gap-4">
                 <DialogHeader>
