@@ -36,6 +36,7 @@ export function ScryMenuItem({ zoneId }: { zoneId: ShahrazadZoneId }) {
             onClick={() => {
                 scry(zoneId, clamp(amount, 0, source_length));
             }}
+            disabled={source_length == 0}
         >
             Scry
             <div
