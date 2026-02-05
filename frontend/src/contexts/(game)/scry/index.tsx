@@ -3,7 +3,6 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import ScryDialog from "@/components/(game)/scry-dialog";
 import { useShahrazadGameContext } from "../game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { usePlayer } from "../player";
 
 export interface IScryContext {
     scry: (zone: ShahrazadZoneId | null, amount: number) => void;

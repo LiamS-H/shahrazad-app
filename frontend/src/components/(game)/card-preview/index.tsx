@@ -14,7 +14,6 @@ import {
 import { isFlippable, ScryNameCard, useScrycard } from "react-scrycards";
 import { CSS } from "@dnd-kit/utilities";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
-import { compareCards } from "@/lib/utils/compare";
 
 function DraggableWrapper({
     children,
@@ -57,15 +56,17 @@ function DraggableWrapper({
 }
 
 function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
-    const [flipped, setFlipped] = useState<boolean | null>(null);
+    const [flipped, setFlipped] = useState<boolean>(shah_card.state.flipped);
     useEffect(() => {
-        setFlipped(null);
+        setFlipped(shah_card.state.flipped);
     }, [shah_card]);
+    console.log("flipped", flipped);
 
     const scrycard = useScrycard(shah_card.card_name);
 
     return useMemo(() => {
         if (size === 0) return null;
+        console.log("rendering", flipped);
         return (
             <div className="relative">
                 <ScryNameCard
@@ -83,11 +84,7 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
                             variant="ghost"
                             size="icon"
                             onClick={() => {
-                                setFlipped(
-                                    flipped === null
-                                        ? !shah_card.state.flipped
-                                        : !flipped,
-                                );
+                                setFlipped((f) => !f);
                             }}
                         >
                             <FlipHorizontal
@@ -158,22 +155,11 @@ export function PreviewCard() {
         setPos(clampPosition);
     }, [clampPosition]);
 
-    const [shah_card, setCard] = useState<ShahrazadCard | null>(null);
     const { currentPreview, setPreview } = useSelection();
 
-    useEffect(() => {
-        if (!id) {
-            setCard(null);
-            return;
-        }
-        const card = getCard(id);
-
-        setCard((old) => {
-            if (!card) return null;
-            if (!old) return card;
-            if (compareCards(old, card)) return old;
-            return card;
-        });
+    const shah_card = useMemo(() => {
+        if (!id) return null;
+        return getCard(id);
     }, [getCard, id]);
 
     const onDragEnd = useCallback(

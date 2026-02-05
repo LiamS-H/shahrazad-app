@@ -33,6 +33,8 @@ export default function GamePage(props: { game_id: string }) {
 
     const signalError = useCallback((error: IErrorMessage) => {
         setError(error);
+        gameClientRef.current?.cleanup();
+        gameClientRef.current = null;
         toast(error.message);
     }, []);
 
@@ -113,7 +115,7 @@ export default function GamePage(props: { game_id: string }) {
                 onMessage: (message) => {
                     onMessageRef.current?.(message);
                 },
-            }
+            },
         );
 
         gameClientRef.current = gameClient;
@@ -141,8 +143,6 @@ export default function GamePage(props: { game_id: string }) {
     }, []);
 
     if (error !== null) {
-        gameClientRef.current?.cleanup();
-        gameClientRef.current = null;
         return <GameError message={error} />;
     }
 

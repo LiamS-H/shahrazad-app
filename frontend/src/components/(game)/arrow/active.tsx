@@ -1,5 +1,5 @@
 import { ShahrazadCardId } from "@/types/bindings/card";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BezierArrow, pos } from "./bezier-arrow";
 import { getMessageCenter } from "./message";
 import { ArrowType } from "@/types/bindings/message";
@@ -12,16 +12,14 @@ export function ActiveArrow({
     offset: pos;
 }) {
     const [to, setTo] = useState<pos | null>();
-    const [from, setFrom] = useState<pos | null>();
+    // const [from, setFrom] = useState<pos | null>();
 
     const animationFrameRef = useRef<number>(0);
 
-    useEffect(() => {
-        const pos = getMessageCenter(ArrowType.CARD, source_id, offset);
-        if (pos) {
-            setFrom(pos);
-        }
-    }, [source_id, offset]);
+    const from = useMemo(
+        () => getMessageCenter(ArrowType.CARD, source_id, offset),
+        [source_id, offset],
+    );
 
     useEffect(() => {
         const controller = new AbortController();

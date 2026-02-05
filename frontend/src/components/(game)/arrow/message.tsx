@@ -1,7 +1,7 @@
 import { ArrowType, MessageCaseArrow } from "@/types/bindings/message";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BezierArrow, pos } from "./bezier-arrow";
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+// import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { useDndContext } from "@dnd-kit/core";
 import { IArrowMessage } from "@/types/interfaces/message";
 
@@ -41,7 +41,7 @@ export function MessageArrow({
     offset: pos;
 }) {
     const [chord, setChord] = useState<{ from: pos; to: pos } | null>(null);
-    const { getCard } = useShahrazadGameContext();
+    // const { getCard } = useShahrazadGameContext();
     const { active } = useDndContext();
     // const dragging = active !== null;
 
@@ -56,10 +56,6 @@ export function MessageArrow({
 
         setChord({ from, to });
     }, [message, offset]);
-
-    useEffect(() => {
-        update();
-    }, [update, getCard]);
 
     useEffect(() => {
         cancelAnimationFrame(animationRef.current);

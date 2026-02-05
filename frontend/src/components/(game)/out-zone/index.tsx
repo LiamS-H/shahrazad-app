@@ -188,6 +188,6 @@ function PoppedOutZoneContent(props: {
                 </div>
             </div>
         ),
-        [hoveredItem, setHover, setNodeRef, zone.cards],
+        [hoveredItem, setHover, setNodeRef, zone.cards, props.emptyMessage],
     );
 }

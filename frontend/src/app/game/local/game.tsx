@@ -73,6 +73,7 @@ export default function LocalGame() {
     }, [preloadCards, router]);
 
     useEffect(() => {
+        //eslint-disable react-hooks/set-state-in-effect
         initGame();
 
         return () => {

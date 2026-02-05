@@ -34,7 +34,7 @@ export default function CreateGameForm() {
 
         const safeGetItem = (
             key: string,
-            defaultValue: string | number | boolean
+            defaultValue: string | number | boolean,
         ) => {
             try {
                 const item = localStorage.getItem(key);
@@ -55,23 +55,23 @@ export default function CreateGameForm() {
             try {
                 localStorage.setItem(
                     "default-game-startingLife",
-                    JSON.stringify(startingLife)
+                    JSON.stringify(startingLife),
                 );
                 localStorage.setItem(
                     "default-game-customLife",
-                    JSON.stringify(customStartingLife)
+                    JSON.stringify(customStartingLife),
                 );
                 localStorage.setItem(
                     "default-game-freeMulligans",
-                    JSON.stringify(freeMulligans)
+                    JSON.stringify(freeMulligans),
                 );
                 localStorage.setItem(
                     "default-game-scryRule",
-                    JSON.stringify(scryRule)
+                    JSON.stringify(scryRule),
                 );
                 localStorage.setItem(
                     "default-game-command",
-                    JSON.stringify(commanderGame)
+                    JSON.stringify(commanderGame),
                 );
             } catch (error) {
                 console.error("Failed to update localStorage", error);
