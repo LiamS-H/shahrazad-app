@@ -60,20 +60,16 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
     useEffect(() => {
         setFlipped(shah_card.state.flipped);
     }, [shah_card]);
-    console.log("flipped", flipped);
 
     const scrycard = useScrycard(shah_card.card_name);
 
     return useMemo(() => {
         if (size === 0) return null;
-        console.log("rendering", flipped);
         return (
             <div className="relative">
                 <ScryNameCard
                     card_name={shah_card.card_name}
-                    flipped={
-                        flipped === null ? shah_card.state.flipped : flipped
-                    }
+                    flipped={flipped}
                     size="xl"
                     width={`${size}px`}
                     animated
@@ -105,7 +101,7 @@ function Card({ shah_card, size }: { shah_card: ShahrazadCard; size: number }) {
                 </div> */}
             </div>
         );
-    }, [shah_card.card_name, shah_card.state.flipped, flipped, size, scrycard]);
+    }, [shah_card.card_name, flipped, size, scrycard]);
 }
 
 export function PreviewCard() {
@@ -179,8 +175,8 @@ export function PreviewCard() {
         if (shah_card) return <Card size={size} shah_card={shah_card} />;
         return (
             <div
-                style={{ width: `${size}px` }}
-                className="scrycard group-hover:outline-dashed outline-4 outline-secondary bg-transparent"
+                style={{ width: `${size}px`, background: "transparent" }}
+                className="scrycard group-hover:outline-dashed group-hover:outline-4 outline-secondary"
             />
         );
     }, [shah_card, size]);

@@ -73,8 +73,8 @@ export default function LocalGame() {
     }, [preloadCards, router]);
 
     useEffect(() => {
-        //eslint-disable react-hooks/set-state-in-effect
-        initGame();
+        // This is async and updating external state.
+        initGame(); //eslint-disable-line react-hooks/set-state-in-effect
 
         return () => {
             gameClientRef.current?.cleanup();

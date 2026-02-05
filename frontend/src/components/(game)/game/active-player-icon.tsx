@@ -30,7 +30,7 @@ export function ActivePlayerIcon({
     const { push: pushRoute } = useRouter();
 
     function updatePlayer(
-        new_player: Omit<ShahrazadPlayer, "reveal_deck_top"> | null
+        new_player: Omit<ShahrazadPlayer, "reveal_deck_top"> | null,
     ) {
         if (player?.display_name === new_player?.display_name) return;
         if (new_player === null) return;
@@ -42,7 +42,7 @@ export function ActivePlayerIcon({
             player_id,
             player: player_updated,
         });
-        setPlayer(player);
+        setPlayer(new_player);
     }
 
     useEffect(() => {
@@ -113,11 +113,11 @@ export function ActivePlayerIcon({
                 <Button
                     onClick={() => {
                         const player = document.getElementById(
-                            `player-${player_id}`
+                            `player-${player_id}`,
                         );
                         if (!player) {
                             console.error(
-                                "[player-icon] unable to locate player to scroll to."
+                                "[player-icon] unable to locate player to scroll to.",
                             );
                             return;
                         }

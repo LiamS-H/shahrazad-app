@@ -36,12 +36,10 @@ export function Arrows({
             () => {
                 updateOffset();
             },
-            { signal: controller.signal }
+            { signal: controller.signal },
         );
         return () => controller.abort();
     }, [parentRef, updateOffset]);
-
-    if (!parentRef.current) return null;
 
     return (
         <>

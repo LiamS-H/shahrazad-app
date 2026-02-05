@@ -49,8 +49,7 @@ export default function Game({
             players.push(player);
         }
         return players;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activePlayer, p]);
+    }, [activePlayer, p, game.players]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const scroll_ref = useRef<HTMLDivElement>(null);
 

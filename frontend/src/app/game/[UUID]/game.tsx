@@ -127,7 +127,8 @@ export default function GamePage(props: { game_id: string }) {
     }, [props.game_id, preloadCards, signalError]);
 
     useEffect(() => {
-        initGame();
+        // This is async and updating external state.
+        initGame(); //eslint-disable-line react-hooks/set-state-in-effect
 
         return () => {
             gameClientRef.current?.cleanup();
