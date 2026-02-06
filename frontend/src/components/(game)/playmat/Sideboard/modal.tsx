@@ -12,10 +12,7 @@ import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { ScryfallCard } from "@scryfall/api-types";
 import { useCallback, useMemo } from "react";
 import { LoaderCircle } from "lucide-react";
-import {
-    PreviewCard,
-    PreviewCardButton,
-} from "@/components/(game)/card-preview";
+import { PreviewCardButton } from "@/components/(game)/card-preview";
 import Card from "@/components/(game)/card";
 import { ShahrazadCardId } from "@/types/bindings/card";
 

@@ -49,7 +49,7 @@ export function PreviewCard({
                 return p;
             }
 
-            let { width, height } = rect;
+            const { width, height } = rect;
 
             const zoneWidth = size ? size : width;
             const zoneHeight = size ? size * 1.4 : height;
