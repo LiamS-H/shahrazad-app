@@ -4,13 +4,20 @@ import { ShahrazadAction } from "@/types/bindings/action";
 import { importMoxfieldUrl } from "./moxfield";
 import { IImportOptions, toActionList } from "./toActionlist";
 import { toast } from "sonner";
+import { importArchidektUrl } from "./archidekt";
 
 export async function importFromUrl(
     url: string,
-    locations: IImportOptions
+    locations: IImportOptions,
 ): Promise<ShahrazadAction[] | null | undefined> {
     if (url.match(/^https:\/\/moxfield\.com\/decks\/[a-zA-Z0-9\_\-]{22}$/)) {
         const cards = await importMoxfieldUrl(url);
+        if (!cards) return undefined;
+
+        return toActionList(cards, locations);
+    }
+    if (url.match(/^https:\/\/archidekt\.com\/decks\/\d+\/.*$/)) {
+        const cards = await importArchidektUrl(url);
         if (!cards) return undefined;
 
         return toActionList(cards, locations);

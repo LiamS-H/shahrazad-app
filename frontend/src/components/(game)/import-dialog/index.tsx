@@ -101,8 +101,20 @@ export function ImportDialog({
                             ? "Import Your Deck"
                             : `Import ${player}'s Deck`}
                     </DialogTitle>
-                    <DialogDescription>
-                        Moxfield deck link or deck string supported.
+                    <DialogDescription className="flex flex-col">
+                        <span>
+                            Deck string or{" "}
+                            <a
+                                className="font-bold text-highlight"
+                                href="https://archidekt.com"
+                            >
+                                Archidekt
+                            </a>{" "}
+                            deck link supported.
+                        </span>
+                        <span className="italic text-destructive">
+                            Moxfield deck link blocked by their firewall.
+                        </span>
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -114,7 +126,7 @@ export function ImportDialog({
                     <Label htmlFor="deck-url">Link</Label>
                     <Input
                         id="deck-url"
-                        placeholder="https://moxfield.com/decks/XXXX"
+                        placeholder="https://archidekt.com/decks/XXXX/XXX"
                         onChange={(e) => setUrl(e.target.value)}
                         value={url}
                     />
