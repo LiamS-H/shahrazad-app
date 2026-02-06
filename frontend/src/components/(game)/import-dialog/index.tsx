@@ -2,7 +2,7 @@ import { Input } from "@/components/(ui)/input";
 import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { importFromStr } from "@/lib/client/import-deck/importFromStr";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { importFromUrl } from "@/lib/client/import-deck/importFromUrl";
 import { toast } from "sonner";
 import { Label } from "@/components/(ui)/label";

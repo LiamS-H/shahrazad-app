@@ -12,7 +12,10 @@ import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { ScryfallCard } from "@scryfall/api-types";
 import { useCallback, useMemo } from "react";
 import { LoaderCircle } from "lucide-react";
-import { PreviewCard } from "@/components/(game)/card-preview";
+import {
+    PreviewCard,
+    PreviewCardButton,
+} from "@/components/(game)/card-preview";
 import Card from "@/components/(game)/card";
 import { ShahrazadCardId } from "@/types/bindings/card";
 
@@ -121,17 +124,23 @@ export default function SideboardingModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col">
+            <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col z-60">
                 <DialogHeader>
-                    <DialogTitle>Sideboarding</DialogTitle>
-                    <DialogDescription>
-                        Click cards to move between deck ({deck.cards.length})
-                        and sideboard ({sideboard.cards.length})
-                    </DialogDescription>
+                    <div className="flex gap-4">
+                        <div>
+                            <DialogTitle>Sideboarding</DialogTitle>
+                            <DialogDescription>
+                                Click cards to move between deck (
+                                {deck.cards.length}) and sideboard (
+                                {sideboard.cards.length})
+                            </DialogDescription>
+                        </div>
+                        <PreviewCardButton />
+                    </div>
                 </DialogHeader>
                 <div className="flex-1 flex flex-row gap-4 overflow-hidden">
                     {/* Sideboard Column */}
-                    <div className="w-[200px] border-l pl-4 flex flex-col gap-1">
+                    <div className="w-[200px] border-r pl-4 flex flex-col gap-1">
                         <div className="font-bold text-center">
                             Sideboard ({sideboard.cards.length})
                         </div>
@@ -164,7 +173,7 @@ export default function SideboardingModal({
                                             .replace("cmc", "")
                                             .replace("plus", "+")}
                                     </div>
-                                    <div className="flex flex-col items-center gap-[-100px] overflow-y-auto pb-4">
+                                    <div className="flex flex-col items-center gap-[-100px] overflow-y-auto overflow-x-clip pb-4">
                                         {cards.map((item, index) => (
                                             <div
                                                 key={item.id}
@@ -199,7 +208,6 @@ export default function SideboardingModal({
                         <LoaderCircle className="animate-spin w-10 h-10" />
                     </div>
                 )}
-                <PreviewCard />
             </DialogContent>
         </Dialog>
     );

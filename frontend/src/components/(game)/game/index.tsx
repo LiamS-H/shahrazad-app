@@ -20,7 +20,7 @@ import { MessagesContextProvider } from "@/contexts/(game)/messages";
 import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
 import { MessagesButton, MessagesDialog } from "../messages";
-import { PreviewCard } from "@/components/(game)/card-preview";
+import { PreviewCardButton } from "@/components/(game)/card-preview";
 import { StackButton } from "../stack";
 
 export type ShahrazadProps = {
@@ -72,7 +72,6 @@ export default function Game({
                                     <ArrowsContextProvider>
                                         <Keybinds />
                                         <MessagesDialog />
-                                        <PreviewCard />
                                         <AnimatePresence>
                                             <div
                                                 className="pl-4 w-full overflow-y-auto relative"
@@ -118,6 +117,7 @@ export default function Game({
                                         <div className="absolute top-4 right-44 flex gap-4 items-center">
                                             <MessagesButton />
                                             <StackButton />
+                                            <PreviewCardButton />
                                             <Separator
                                                 orientation="vertical"
                                                 className="h-5"
