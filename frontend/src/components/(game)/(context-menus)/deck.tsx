@@ -28,10 +28,12 @@ import { ScryMenuItem } from "./(menu-items)/scry-menu";
 
 function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
     const { player } = usePlayer();
-    const { applyAction, getPlaymat } = useShahrazadGameContext();
+    const { applyAction, getPlaymat, getCard } = useShahrazadGameContext();
     const { search } = useSearchContext();
     const playmat = getPlaymat(player);
     const deck = useZone(zoneId);
+    const top_card_id = deck.cards[deck.cards.length - 1];
+    const top_shah_card = top_card_id ? getCard(top_card_id) : null;
     return (
         <>
             <ContextMenuLabel>Deck ({deck.cards.length})</ContextMenuLabel>
@@ -107,13 +109,19 @@ function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
             </ContextMenuSub>
             <ScryMenuItem zoneId={zoneId} />
             <ContextMenuSub>
-                <ContextMenuSubTrigger>Flip Top</ContextMenuSubTrigger>
+                <ContextMenuSubTrigger disabled={deck.cards.length == 0}>
+                    Flip Top
+                </ContextMenuSubTrigger>
                 <ContextMenuSubContent>
                     <ContextMenuItem
+                        disabled={
+                            top_shah_card?.state.revealed.includes(player) &&
+                            top_shah_card.state.face_down === true
+                        }
                         onClick={() => {
                             applyAction({
                                 type: ShahrazadActionCase.CardState,
-                                cards: [deck.cards[deck.cards.length - 1]],
+                                cards: [top_card_id],
                                 state: {
                                     face_down: true,
                                     revealed: [player],
@@ -124,10 +132,11 @@ function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
                         Once (Privately)
                     </ContextMenuItem>
                     <ContextMenuItem
+                        disabled={top_shah_card?.state.face_down === false}
                         onClick={() => {
                             applyAction({
                                 type: ShahrazadActionCase.CardState,
-                                cards: [deck.cards[deck.cards.length - 1]],
+                                cards: [top_card_id],
                                 state: {
                                     face_down: false,
                                     revealed: [],

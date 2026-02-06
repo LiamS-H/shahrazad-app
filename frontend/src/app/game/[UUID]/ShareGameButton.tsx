@@ -6,15 +6,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/(ui)/dropdown-menu";
 import { Copy, DiamondPlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function ShareGameButton({ code }: { code: number | null }) {
     const [open, setOpen] = useState(false);
-    const [link, setLink] = useState<string | null>(null);
-    useEffect(() => {
-        setLink(window.location.toString());
-    }, []);
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -45,8 +41,8 @@ export default function ShareGameButton({ code }: { code: number | null }) {
                 </Button>
                 <Button
                     variant="outline"
-                    disabled={!link}
                     onClick={() => {
+                        const link = window.location.toString();
                         if (!link) {
                             toast("Something went wrong");
                             return;

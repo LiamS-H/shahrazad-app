@@ -43,7 +43,7 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
             _setActive(id);
             source_card.current = id;
         },
-        [_setActive]
+        [_setActive],
     );
 
     const addArrow = useCallback(
@@ -63,7 +63,7 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
             });
             setActive(null);
         },
-        [sendMessage, active_player, setActive]
+        [sendMessage, active_player, setActive],
     );
 
     useEffect(() => {
@@ -91,7 +91,7 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
                     cur = cur.parentElement;
                 }
             },
-            options
+            options,
         );
         window.addEventListener(
             "contextmenu",
@@ -137,7 +137,7 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
                 event.stopPropagation();
                 setActive(null);
             },
-            options
+            options,
         );
         return () => controller.abort();
     }, [addArrow, setActive]);

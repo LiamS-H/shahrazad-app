@@ -20,7 +20,8 @@ import { MessagesContextProvider } from "@/contexts/(game)/messages";
 import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
 import { MessagesButton, MessagesDialog } from "../messages";
-import { PreviewCard } from "@/components/(game)/card-preview";
+import { PreviewCardButton } from "@/components/(game)/card-preview";
+import { StackButton } from "../stack";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
@@ -48,8 +49,7 @@ export default function Game({
             players.push(player);
         }
         return players;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activePlayer, p]);
+    }, [activePlayer, p, game.players]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const scroll_ref = useRef<HTMLDivElement>(null);
 
@@ -72,7 +72,6 @@ export default function Game({
                                     <ArrowsContextProvider>
                                         <Keybinds />
                                         <MessagesDialog />
-                                        <PreviewCard />
                                         <AnimatePresence>
                                             <div
                                                 className="pl-4 w-full overflow-y-auto relative"
@@ -117,6 +116,8 @@ export default function Game({
                                         </AnimatePresence>
                                         <div className="absolute top-4 right-44 flex gap-4 items-center">
                                             <MessagesButton />
+                                            <StackButton />
+                                            <PreviewCardButton />
                                             <Separator
                                                 orientation="vertical"
                                                 className="h-5"

@@ -5,10 +5,11 @@ import { ShahrazadCardId } from "@/types/bindings/card";
 import { useDraggable } from "@dnd-kit/core";
 import Card from "@/components/(game)/card";
 
-export default function Collapsable(props: {
+export function Collapsable(props: {
     id: ShahrazadCardId;
     isHovered: boolean;
     isBottom: boolean;
+    width?: string;
     setHovered: (arg0: ShahrazadCardId | null) => void;
 }) {
     const shah_card = useCard(props.id);
@@ -17,7 +18,7 @@ export default function Collapsable(props: {
         () => ({
             zone: shah_card.location,
         }),
-        [shah_card]
+        [shah_card],
     );
 
     const { attributes, listeners, node, setNodeRef, isDragging } =
@@ -29,7 +30,7 @@ export default function Collapsable(props: {
         width: "fit-content",
         cursor: "grab",
         filter: isDragging ? "grayscale(100%)" : undefined,
-        marginBottom: isActive && !isFirst ? "0px" : "-121px",
+        marginBottom: isActive && !isFirst ? "0px" : `-121%`,
         transition: "margin 0.3s ease-in-out",
     };
 
@@ -44,7 +45,7 @@ export default function Collapsable(props: {
             onFocus={() => props.setHovered(props.id)}
             onBlur={() => props.setHovered(null)}
         >
-            <Card id={props.id} animationTime={0} />
+            <Card id={props.id} animationTime={0} width={props.width} />
         </div>
     );
 }

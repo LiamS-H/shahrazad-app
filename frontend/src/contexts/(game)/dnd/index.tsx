@@ -185,11 +185,11 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             const {
                 state: {
                     face_down,
-                    tapped,
-                    flipped,
-                    inverted,
-                    revealed,
-                    counters,
+                    // tapped,
+                    // flipped,
+                    // inverted,
+                    // revealed,
+                    // counters,
                 },
             } = shah_card;
 

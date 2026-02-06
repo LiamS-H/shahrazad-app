@@ -103,7 +103,7 @@ export default function Selection({
 
             return () => controller.abort();
         },
-        [cards, node, selectCards, setPreview]
+        [cards, node, selectCards, setPreview],
     );
 
     useEffect(() => {

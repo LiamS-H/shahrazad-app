@@ -33,6 +33,8 @@ export default function GamePage(props: { game_id: string }) {
 
     const signalError = useCallback((error: IErrorMessage) => {
         setError(error);
+        gameClientRef.current?.cleanup();
+        gameClientRef.current = null;
         toast(error.message);
     }, []);
 
@@ -113,7 +115,7 @@ export default function GamePage(props: { game_id: string }) {
                 onMessage: (message) => {
                     onMessageRef.current?.(message);
                 },
-            }
+            },
         );
 
         gameClientRef.current = gameClient;
@@ -125,7 +127,8 @@ export default function GamePage(props: { game_id: string }) {
     }, [props.game_id, preloadCards, signalError]);
 
     useEffect(() => {
-        initGame();
+        // This is async and updating external state.
+        initGame(); //eslint-disable-line react-hooks/set-state-in-effect
 
         return () => {
             gameClientRef.current?.cleanup();
@@ -141,8 +144,6 @@ export default function GamePage(props: { game_id: string }) {
     }, []);
 
     if (error !== null) {
-        gameClientRef.current?.cleanup();
-        gameClientRef.current = null;
         return <GameError message={error} />;
     }
 

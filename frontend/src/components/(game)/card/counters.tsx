@@ -109,12 +109,15 @@ export default function Counters({ id }: { id: ShahrazadCardId }) {
         if (!shah_card.state.counters) return;
         if (shah_card.state.counters[index].amount === amount) return;
 
-        shah_card.state.counters[index].amount = amount;
+        const counters = shah_card.state.counters.map((c, i) =>
+            i === index ? { ...c, amount } : c,
+        );
+
         applyAction({
             type: ShahrazadActionCase.CardState,
             cards: [id],
             state: {
-                counters: shah_card.state.counters,
+                counters,
             },
         });
     }

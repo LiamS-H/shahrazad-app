@@ -18,10 +18,23 @@ export default function JoinGameForm() {
     const [gameCode, setGameCode] = useState("");
     const [clipboard, setClipboard] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const invalids_ref = useRef(new Set<string>());
+    const [invalids, setInvalids] = useState<Set<string>>(new Set());
     const [reconnect, setReconnect] = useState("");
 
     const init_ref = useRef(false);
+
+    const readClipboard = useCallback(() => {
+        navigator.clipboard
+            .readText()
+            .then((c) => {
+                const value = parseCode(c);
+                setClipboard(value);
+                if (!value) return;
+                if (invalids.has(value)) return;
+                setGameCode(value);
+            })
+            .catch(() => {});
+    }, [invalids]);
 
     useEffect(() => {
         if (init_ref.current) return;
@@ -31,35 +44,22 @@ export default function JoinGameForm() {
             readClipboard();
             return;
         }
-        if (invalids_ref.current.has(code)) return;
+        if (invalids.has(code)) return;
         fetchGame(code).then((r) => {
             if (r === undefined) return;
             if (r === null) {
-                invalids_ref.current.add(code);
+                setInvalids((prev) => new Set(prev).add(code));
                 localStorage.setItem("saved-game", "");
                 return;
             }
             setReconnect(code);
         });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const readClipboard = useCallback(() => {
-        navigator.clipboard
-            .readText()
-            .then((c) => {
-                const value = parseCode(c);
-                setClipboard(value);
-                if (!value) return;
-                if (invalids_ref.current.has(value)) return;
-                setGameCode(value);
-            })
-            .catch(() => {});
-    }, []);
+    }, [invalids, readClipboard]);
 
     const pasteButtonDisabled =
         clipboard === null ||
         clipboard === gameCode ||
-        invalids_ref.current.has(clipboard);
+        invalids.has(clipboard);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -86,7 +86,7 @@ export default function JoinGameForm() {
         if (joinResult === null) {
             setLoading(false);
             toast("Couldn't find game");
-            invalids_ref.current.add(gameCode);
+            setInvalids((prev) => new Set(prev).add(gameCode));
             return;
         }
         if (joinResult === undefined) {
@@ -122,7 +122,7 @@ export default function JoinGameForm() {
                         <CodeInput
                             code={gameCode}
                             setCode={setGameCode}
-                            invalid={invalids_ref.current.has(gameCode)}
+                            invalid={invalids.has(gameCode)}
                             onSubmit={() => handleJoinGame(gameCode)}
                         />
                         <Button
@@ -139,12 +139,12 @@ export default function JoinGameForm() {
                         </Button>
                     </div>
 
-                    {reconnect && !invalids_ref.current.has(reconnect) && (
+                    {reconnect && !invalids.has(reconnect) && (
                         <Button
                             className="w-full"
                             variant="highlight"
                             disabled={
-                                loading || invalids_ref.current.has(reconnect)
+                                loading || invalids.has(reconnect)
                             }
                             onClick={() => handleJoinGame(reconnect)}
                         >

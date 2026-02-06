@@ -10,4 +10,5 @@ export enum ZoneName {
     EXILE = 'EXILE',
     COMMAND = 'COMMAND',
     SIDEBOARD = 'SIDEBOARD',
+    STACK = 'STACK',
 }

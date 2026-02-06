@@ -6,7 +6,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/(ui)/popover";
-import { useShahrazadGameContext, useZone } from "@/contexts/(game)/game";
+import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { clamp } from "@/lib/utils/clamp";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useState } from "react";
@@ -36,6 +36,7 @@ export function ScryMenuItem({ zoneId }: { zoneId: ShahrazadZoneId }) {
             onClick={() => {
                 scry(zoneId, clamp(amount, 0, source_length));
             }}
+            disabled={source_length == 0}
         >
             Scry
             <div

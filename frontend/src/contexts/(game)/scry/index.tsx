@@ -3,7 +3,6 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import ScryDialog from "@/components/(game)/scry-dialog";
 import { useShahrazadGameContext } from "../game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { usePlayer } from "../player";
 
 export interface IScryContext {
     scry: (zone: ShahrazadZoneId | null, amount: number) => void;
@@ -51,13 +50,11 @@ export function ScryContextProvider({ children }: { children: ReactNode }) {
     return (
         <ScryContext.Provider value={{ scry, active: scryZone, amount }}>
             {children}
-            {scryZone && (
-                <ScryDialog
-                    active={scryZone}
-                    amount={amount}
-                    close={() => scry(null, 0)}
-                />
-            )}
+            <ScryDialog
+                active={scryZone}
+                amount={amount}
+                close={() => scry(null, 0)}
+            />
         </ScryContext.Provider>
     );
 }

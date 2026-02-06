@@ -32,6 +32,8 @@ export function Keybinds() {
 
     const isDeckEmpty = useZone(playmat.library).cards.length === 0;
 
+    const [open, setOpen] = useState(false);
+
     const deckDraw = useCallback(() => {
         if (isDeckEmpty) {
             toast("Can't draw from empty deck.");
@@ -92,7 +94,6 @@ export function Keybinds() {
         importFor(active_player);
     }, [importFor, active_player]);
 
-    const [open, setOpen] = useState(false);
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (!e.metaKey && device === "OSX") {

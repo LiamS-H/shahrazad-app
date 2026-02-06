@@ -1,25 +1,67 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useZone } from "@/contexts/(game)/game";
 import { ShahrazadZoneId } from "@/types/bindings/zone";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import CollapsableCard from "./collapsable";
+import { Collapsable } from "./collapsable";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { Button } from "@/components/(ui)/button";
 import { Grip, X } from "lucide-react";
+import { useNullablePlayer } from "@/contexts/(game)/player";
 
-function PoppedOutZone(props: {
+export function PoppedOutZone(props: {
+    hidden: boolean;
     id: ShahrazadZoneId;
     name: string;
-    onClose: () => void;
+    onClose?: () => void;
     pos: {
         x: number;
         y: number;
     };
 }) {
     const [pos, setPos] = useState(props.pos);
-    const [height, setHeight] = useState(400);
+    const player = useNullablePlayer();
     const zone = useZone(props.id);
+    const eleRef = useRef<HTMLDivElement | null>(null);
+
+    const clampPosition = useCallback(
+        (p: { x: number; y: number }) => {
+            if (window.innerWidth === 0) {
+                return p;
+            }
+            const rect = eleRef.current?.getBoundingClientRect();
+            if (!rect) {
+                return p;
+            }
+
+            const { width, height } = rect;
+
+            const zoneWidth = width;
+            const zoneHeight = height;
+
+            const minX = 0;
+            const minY = 0;
+            const maxX = window.innerWidth - zoneWidth;
+            const maxY = window.innerHeight - zoneHeight;
+
+            return {
+                x: Math.max(minX, Math.min(p.x, maxX)),
+                y: Math.max(minY, Math.min(p.y, maxY)),
+            };
+        },
+        [eleRef],
+    );
+
+    useEffect(() => {
+        const handleResize = () => {
+            setPos(clampPosition);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, [clampPosition]);
 
     const handleMouseDown = useCallback(
         (e: React.MouseEvent) => {
@@ -30,19 +72,27 @@ function PoppedOutZone(props: {
             const handleMouseMove = (e: MouseEvent) => {
                 const dx = e.clientX - startPos.x;
                 const dy = e.clientY - startPos.y;
-                setPos({ x: startZonePos.x + dx, y: startZonePos.y + dy });
+                setPos(
+                    clampPosition({
+                        x: startZonePos.x + dx,
+                        y: startZonePos.y + dy,
+                    }),
+                );
             };
 
             const handleMouseUp = () => {
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
+                setPos((p) => clampPosition(p));
             };
 
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
         },
-        [pos.x, pos.y]
+        [pos.x, pos.y, clampPosition],
     );
+
+    if (props.hidden) return null;
 
     return (
         <div
@@ -50,39 +100,36 @@ function PoppedOutZone(props: {
                 left: pos.x,
                 top: pos.y,
             }}
-            className="fixed group text-highlight bg-background border rounded-lg shadow-lg flex flex-col z-50"
+            className={`fixed group bg-background border rounded-lg shadow-lg flex shrink flex-col z-50 ${player?.active ? "text-highlight" : ""}`}
+            ref={eleRef}
         >
-            <div className="flex justify-between items-center p-1 border-b">
+            <div
+                className="flex justify-between items-center p-1 border-b"
+                onMouseDown={handleMouseDown}
+            >
                 <div className="flex items-center gap-1">
                     <Button
                         className="cursor-grab "
                         size="icon"
                         variant="ghost"
-                        onMouseDown={handleMouseDown}
                     >
                         <Grip />
                     </Button>
                     <h3 className="font-bold select-none">
                         {props.name} ({zone.cards.length})
                     </h3>
+                    {props.onClose && (
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onMouseDown={props.onClose}
+                        >
+                            <X />
+                        </Button>
+                    )}
                 </div>
-                <Button size="icon" variant="ghost" onClick={props.onClose}>
-                    <X />
-                </Button>
             </div>
-            <div
-                style={{
-                    width: `250px`,
-                    height: `${height}px`,
-                    overflowY: "auto",
-                    resize: "vertical",
-                }}
-                className="p-2"
-                onMouseDown={(e) => e.stopPropagation()} // Prevent dragging from starting when resizing
-                onChange={(e) =>
-                    setHeight(parseInt(e.currentTarget.style.height))
-                }
-            >
+            <div className="p-2 min-w-full w-36 min-h-40 h-100 overflow-auto resize scrollbar-stable-both">
                 <PoppedOutZoneContent id={props.id} emptyMessage={props.name} />
             </div>
         </div>
@@ -94,7 +141,7 @@ function PoppedOutZoneContent(props: {
     emptyMessage: string;
 }) {
     const [hoveredItem, setHoveredItem] = useState<ShahrazadCardId | null>(
-        null
+        null,
     );
     const hover_timeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -111,7 +158,7 @@ function PoppedOutZoneContent(props: {
                 setHoveredItem(id);
             }, 100);
         },
-        [setHoveredItem, hoveredItem]
+        [setHoveredItem, hoveredItem],
     );
 
     const zone = useZone(props.id);
@@ -131,20 +178,19 @@ function PoppedOutZoneContent(props: {
                         const isHovered = id === hoveredItem;
                         const isBottom = index === zone.cards.length - 1;
                         return (
-                            <CollapsableCard
+                            <Collapsable
                                 id={id}
                                 isBottom={isBottom}
                                 isHovered={isHovered}
                                 setHovered={setHover}
-                                key={id}
+                                width={"full"}
+                                key={`${props.emptyMessage}-${id}`}
                             />
                         );
                     })}
                 </div>
             </div>
         ),
-        [hoveredItem, setHover, setNodeRef, zone.cards]
+        [hoveredItem, setHover, setNodeRef, zone.cards, props.emptyMessage],
     );
 }
-
-export default PoppedOutZone;

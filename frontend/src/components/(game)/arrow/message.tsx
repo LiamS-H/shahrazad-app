@@ -1,14 +1,14 @@
 import { ArrowType, MessageCaseArrow } from "@/types/bindings/message";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BezierArrow, pos } from "./bezier-arrow";
-import { useShahrazadGameContext } from "@/contexts/(game)/game";
+// import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { useDndContext } from "@dnd-kit/core";
 import { IArrowMessage } from "@/types/interfaces/message";
 
 export function getMessageCenter(
     type: MessageCaseArrow["arrow_type"],
     id: string,
-    offset: pos
+    offset: pos,
 ): pos | null {
     let div;
     switch (type) {
@@ -41,7 +41,7 @@ export function MessageArrow({
     offset: pos;
 }) {
     const [chord, setChord] = useState<{ from: pos; to: pos } | null>(null);
-    const { getCard } = useShahrazadGameContext();
+    // const { getCard } = useShahrazadGameContext();
     const { active } = useDndContext();
     // const dragging = active !== null;
 
@@ -58,21 +58,17 @@ export function MessageArrow({
     }, [message, offset]);
 
     useEffect(() => {
-        update();
-    }, [update, getCard]);
-
-    useEffect(() => {
         cancelAnimationFrame(animationRef.current);
-        if (
-            active &&
-            (active.id === message.from || active.id === message.to)
-        ) {
-            const frame = () => {
-                update();
-                animationRef.current = requestAnimationFrame(frame);
-            };
+        // if (
+        //     active &&
+        //     (active.id === message.from || active.id === message.to)
+        // ) {
+        const frame = () => {
+            update();
             animationRef.current = requestAnimationFrame(frame);
-        }
+        };
+        animationRef.current = requestAnimationFrame(frame);
+        // }
         return () => {
             cancelAnimationFrame(animationRef.current);
         };

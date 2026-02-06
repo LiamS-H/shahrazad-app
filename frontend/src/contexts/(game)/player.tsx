@@ -8,6 +8,10 @@ interface IPlayerContext {
 
 const PlayerContext = createContext<IPlayerContext | null>(null);
 
+export function useNullablePlayer() {
+    return useContext(PlayerContext);
+}
+
 export function usePlayer() {
     const context = useContext(PlayerContext);
     if (!context) {

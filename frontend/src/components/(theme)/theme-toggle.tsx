@@ -18,7 +18,7 @@ export function ThemeToggle() {
 
     useEffect(() => {
         if (open) setCurrentTheme(theme);
-    }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [open, setCurrentTheme, theme]);
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>

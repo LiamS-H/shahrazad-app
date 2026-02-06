@@ -36,6 +36,7 @@ pub struct ShahrazadGame {
     players: Vec<ShahrazadPlaymatId>,
     settings: ShahrazadGameSettings,
     created_at: u64,
+    stack: ShahrazadZoneId,
 }
 
 use super::zone::ShahrazadZoneId;
@@ -79,30 +80,33 @@ impl ShahrazadGame {
         state.finish()
     }
     pub fn new(settings: ShahrazadGameSettings) -> Self {
-        Self {
-            zone_count: 0,
-            card_count: 0,
-            cards: HashMap::new(),
-            zones: HashMap::new(),
-            playmats: HashMap::new(),
-            players: Vec::new(),
+        return ShahrazadGame::new_time(
             settings,
-            created_at: SystemTime::now()
+            SystemTime::now()
                 .duration_since(UNIX_EPOCH)
                 .unwrap_or(Duration::new(0, 0))
                 .as_secs(),
-        }
+        );
     }
     pub fn new_time(settings: ShahrazadGameSettings, created_at: u64) -> Self {
+        let mut zones = HashMap::new();
+        zones.insert(
+            "Z0".into(),
+            ShahrazadZone {
+                cards: Vec::new(),
+                name: ZoneName::STACK,
+            },
+        );
         Self {
             zone_count: 0,
             card_count: 0,
             cards: HashMap::new(),
-            zones: HashMap::new(),
+            zones,
             playmats: HashMap::new(),
             players: Vec::new(),
             settings,
             created_at,
+            stack: "Z0".into(),
         }
     }
 
@@ -780,6 +784,7 @@ impl TryFrom<proto::game::ShahrazadGame> for ShahrazadGame {
             players: value.players.iter().map(|p| p.clone().into()).collect(),
             settings: value.settings.unwrap().into(),
             created_at: value.created_at,
+            stack: value.stack.into(),
         })
     }
 }
@@ -807,6 +812,7 @@ impl From<ShahrazadGame> for proto::game::ShahrazadGame {
             players: value.players.iter().map(|p| p.clone().into()).collect(),
             settings: Some(value.settings.into()),
             created_at: value.created_at,
+            stack: value.stack.into(),
         }
     }
 }
