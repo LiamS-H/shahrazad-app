@@ -7,6 +7,7 @@ import { Collapsable } from "./collapsable";
 import { ShahrazadCardId } from "@/types/bindings/card";
 import { Button } from "@/components/(ui)/button";
 import { Grip, X } from "lucide-react";
+import { useNullablePlayer } from "@/contexts/(game)/player";
 
 export function PoppedOutZone(props: {
     id: ShahrazadZoneId;
@@ -18,48 +19,47 @@ export function PoppedOutZone(props: {
     };
 }) {
     const [pos, setPos] = useState(props.pos);
-    const [height, setHeight] = useState(400);
+    const player = useNullablePlayer();
     const zone = useZone(props.id);
-    const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight,
-            });
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
+    const eleRef = useRef<HTMLDivElement | null>(null);
 
     const clampPosition = useCallback(
         (p: { x: number; y: number }) => {
-            if (windowSize.width === 0) {
+            if (window.innerWidth === 0) {
+                return p;
+            }
+            const rect = eleRef.current?.getBoundingClientRect();
+            if (!rect) {
                 return p;
             }
 
-            const zoneWidth = 260;
-            const zoneHeight = height + 50;
+            const { width, height } = rect;
 
-            const minX = 16;
-            const minY = 16;
-            const maxX = windowSize.width - zoneWidth;
-            const maxY = windowSize.height - zoneHeight;
+            const zoneWidth = width;
+            const zoneHeight = height;
+
+            const minX = 0;
+            const minY = 0;
+            const maxX = window.innerWidth - zoneWidth;
+            const maxY = window.innerHeight - zoneHeight;
 
             return {
                 x: Math.max(minX, Math.min(p.x, maxX)),
                 y: Math.max(minY, Math.min(p.y, maxY)),
             };
         },
-        [height, windowSize],
+        [eleRef],
     );
 
     useEffect(() => {
-        setPos(clampPosition);
+        const handleResize = () => {
+            setPos(clampPosition);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
     }, [clampPosition]);
 
     const handleMouseDown = useCallback(
@@ -71,7 +71,12 @@ export function PoppedOutZone(props: {
             const handleMouseMove = (e: MouseEvent) => {
                 const dx = e.clientX - startPos.x;
                 const dy = e.clientY - startPos.y;
-                setPos({ x: startZonePos.x + dx, y: startZonePos.y + dy });
+                setPos(
+                    clampPosition({
+                        x: startZonePos.x + dx,
+                        y: startZonePos.y + dy,
+                    }),
+                );
             };
 
             const handleMouseUp = () => {
@@ -92,7 +97,8 @@ export function PoppedOutZone(props: {
                 left: pos.x,
                 top: pos.y,
             }}
-            className="fixed group text-highlight bg-background border rounded-lg shadow-lg flex flex-col z-40"
+            className={`fixed group bg-background border rounded-lg shadow-lg flex shrink flex-col z-50 ${player?.active ? "text-highlight" : ""}`}
+            ref={eleRef}
         >
             <div
                 className="flex justify-between items-center p-1 border-b"
@@ -120,18 +126,7 @@ export function PoppedOutZone(props: {
                     </Button>
                 )}
             </div>
-            <div
-                style={{
-                    width: `250px`,
-                    height: `${height}px`,
-                    overflowY: "auto",
-                    resize: "vertical",
-                }}
-                className="p-2"
-                onChange={(e) =>
-                    setHeight(parseInt(e.currentTarget.style.height))
-                }
-            >
+            <div className="p-2 min-w-full w-36 min-h-40 h-100 overflow-auto resize scrollbar-stable-both">
                 <PoppedOutZoneContent id={props.id} emptyMessage={props.name} />
             </div>
         </div>
@@ -185,6 +180,7 @@ function PoppedOutZoneContent(props: {
                                 isBottom={isBottom}
                                 isHovered={isHovered}
                                 setHovered={setHover}
+                                width={"full"}
                                 key={`${props.emptyMessage}-${id}`}
                             />
                         );

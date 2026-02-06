@@ -9,6 +9,7 @@ export function Collapsable(props: {
     id: ShahrazadCardId;
     isHovered: boolean;
     isBottom: boolean;
+    width?: string;
     setHovered: (arg0: ShahrazadCardId | null) => void;
 }) {
     const shah_card = useCard(props.id);
@@ -29,7 +30,7 @@ export function Collapsable(props: {
         width: "fit-content",
         cursor: "grab",
         filter: isDragging ? "grayscale(100%)" : undefined,
-        marginBottom: isActive && !isFirst ? "0px" : "-121px",
+        marginBottom: isActive && !isFirst ? "0px" : `-121%`,
         transition: "margin 0.3s ease-in-out",
     };
 
@@ -44,7 +45,7 @@ export function Collapsable(props: {
             onFocus={() => props.setHovered(props.id)}
             onBlur={() => props.setHovered(null)}
         >
-            <Card id={props.id} animationTime={0} />
+            <Card id={props.id} animationTime={0} width={props.width} />
         </div>
     );
 }

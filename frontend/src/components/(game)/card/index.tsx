@@ -13,12 +13,14 @@ export default function Card({
     faceUp,
     animationTime,
     previewDelay = 0,
+    width,
     children,
 }: {
     id: ShahrazadCardId;
     faceUp?: boolean;
     animationTime?: number | null;
     previewDelay?: number;
+    width?: string;
     children?: ReactNode;
 }) {
     const { active_player: player_name } = useShahrazadGameContext();
@@ -70,10 +72,10 @@ export default function Card({
                     setPreview(null);
                     controller.abort();
                 },
-                { signal: controller.signal }
+                { signal: controller.signal },
             );
         },
-        [setPreview]
+        [setPreview],
     );
 
     const faceDown =
@@ -86,6 +88,7 @@ export default function Card({
         () => (
             <>
                 <Scrycard
+                    width={width}
                     card={scry_card}
                     symbol_text_renderer={ScryNameCardText}
                     flipped={shah_card.state.flipped}
@@ -97,7 +100,7 @@ export default function Card({
                 {children}
             </>
         ),
-        [scry_card, shah_card, faceDown, children, id]
+        [scry_card, shah_card, faceDown, children, id, width],
     );
 
     return useMemo(() => {
@@ -179,6 +182,6 @@ function MotionCard({
             handleMouseLeave,
             children,
             isAnimating,
-        ]
+        ],
     );
 }
