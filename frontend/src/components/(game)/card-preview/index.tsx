@@ -17,8 +17,8 @@ export function PreviewCard({
     onHide?: () => void;
 }) {
     const { getCard } = useShahrazadGameContext();
-    const [pos, setPos] = useState({ x: 1170, y: 80 });
-    const [size, setSize] = useState<number>(400);
+    const [pos, setPos] = useState({ x: window.innerWidth - 300, y: 80 });
+    const [size, setSize] = useState<number>(300);
     const { currentPreview: id } = useSelection();
     const { currentPreview, setPreview } = useSelection();
 

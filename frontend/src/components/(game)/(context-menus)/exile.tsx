@@ -24,9 +24,11 @@ import { ShahrazadCardId } from "@/types/bindings/card";
 export function Content({
     zoneId,
     onPopOut,
+    poppedOut,
 }: {
     zoneId: ShahrazadZoneId;
-    onPopOut?: () => void;
+    onPopOut: () => void;
+    poppedOut: boolean;
 }) {
     const { player } = usePlayer();
     const { applyAction, getPlaymat } = useShahrazadGameContext();
@@ -37,9 +39,9 @@ export function Content({
         <>
             <ContextMenuLabel>Exile ({exile.cards.length})</ContextMenuLabel>
             <ContextMenuSeparator />
-            {onPopOut && (
-                <ContextMenuItem onClick={onPopOut}>Pop out</ContextMenuItem>
-            )}
+            <ContextMenuItem onClick={onPopOut}>
+                {poppedOut ? "Pop In" : "Pop Out"}
+            </ContextMenuItem>
             <ContextMenuItem
                 disabled={exile.cards.length === 0}
                 onClick={() => {
@@ -95,11 +97,13 @@ export default function ExileContextMenu({
     cardId,
     children,
     onPopOut,
+    poppedOut,
 }: {
     zoneId: ShahrazadZoneId;
     cardId: ShahrazadCardId;
     children: ReactNode;
-    onPopOut?: () => void;
+    onPopOut: () => void;
+    poppedOut: boolean;
 }) {
     return (
         <ContextMenu>
@@ -107,7 +111,11 @@ export default function ExileContextMenu({
                 {children}
             </ContextMenuTrigger>
             <ContextMenuContent>
-                <Content zoneId={zoneId} onPopOut={onPopOut} />
+                <Content
+                    zoneId={zoneId}
+                    onPopOut={onPopOut}
+                    poppedOut={poppedOut}
+                />
             </ContextMenuContent>
         </ContextMenu>
     );

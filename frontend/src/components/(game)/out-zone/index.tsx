@@ -10,6 +10,7 @@ import { Grip, X } from "lucide-react";
 import { useNullablePlayer } from "@/contexts/(game)/player";
 
 export function PoppedOutZone(props: {
+    hidden: boolean;
     id: ShahrazadZoneId;
     name: string;
     onClose?: () => void;
@@ -91,6 +92,8 @@ export function PoppedOutZone(props: {
         [pos.x, pos.y, clampPosition],
     );
 
+    if (props.hidden) return null;
+
     return (
         <div
             style={{
@@ -115,16 +118,16 @@ export function PoppedOutZone(props: {
                     <h3 className="font-bold select-none">
                         {props.name} ({zone.cards.length})
                     </h3>
+                    {props.onClose && (
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onMouseDown={props.onClose}
+                        >
+                            <X />
+                        </Button>
+                    )}
                 </div>
-                {props.onClose && (
-                    <Button
-                        size="icon"
-                        variant="ghost"
-                        onMouseDown={props.onClose}
-                    >
-                        <X />
-                    </Button>
-                )}
             </div>
             <div className="p-2 min-w-full w-36 min-h-40 h-100 overflow-auto resize scrollbar-stable-both">
                 <PoppedOutZoneContent id={props.id} emptyMessage={props.name} />

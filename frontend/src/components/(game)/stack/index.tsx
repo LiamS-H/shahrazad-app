@@ -25,18 +25,17 @@ export function StackButton() {
                     </div>
                 )}
             </Button>
-            {open && (
-                <PoppedOutZone
-                    id={stack}
-                    name="Stack"
-                    pos={{
-                        x: window.innerWidth - 300,
-                        y: 80,
-                    }}
-                    key="test"
-                    onClose={() => setOpen(false)}
-                />
-            )}
+            <PoppedOutZone
+                hidden={!open}
+                id={stack}
+                name="Stack"
+                pos={{
+                    x: window.innerWidth - 500,
+                    y: 80,
+                }}
+                key="test"
+                onClose={() => setOpen(false)}
+            />
         </>
     );
 }
