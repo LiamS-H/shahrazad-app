@@ -29,6 +29,7 @@ jobs:
               with:
                   workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
                   service_account: ${{ secrets.SERVICE_ACCOUNT }}
+                  audience: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
 
             - name: Set up gcloud SDK
               uses: google-github-actions/setup-gcloud@v2
