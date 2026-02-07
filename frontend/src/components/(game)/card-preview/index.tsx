@@ -29,8 +29,6 @@ export function PreviewCard({
         return getCard(id);
     }, [getCard, id]);
 
-    const scry_card = useScrycard(shah_card?.card_name ?? "");
-
     const onDragEnd = useCallback((event: DragEndEvent) => {
         const { delta } = event;
         setPos(({ x, y }) => ({
@@ -127,23 +125,33 @@ export function PreviewCard({
                         <EyeOff />
                     </Button>
                 )}
-                {scry_card?.id && (
-                    <Button
-                        className="absolute top-32 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
-                        size="icon"
-                        variant="ghost"
-                        asChild
-                    >
-                        <a
-                            target="_blank"
-                            href={`https://cconfluence.vercel.app/?card=${scry_card.id}`}
-                        >
-                            <ExternalLink />
-                        </a>
-                    </Button>
+                {shah_card?.card_name && (
+                    <CConfluenceLink id={shah_card?.card_name} />
                 )}
             </DraggableWrapper>
         </DndContext>
+    );
+}
+
+function CConfluenceLink({ id }: { id: string }) {
+    const scry_card = useScrycard(id);
+    if (!scry_card) {
+        return null;
+    }
+    return (
+        <Button
+            className="absolute top-32 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+            size="icon"
+            variant="ghost"
+            asChild
+        >
+            <a
+                target="_blank"
+                href={`https://cconfluence.vercel.app/?card=${scry_card.id}`}
+            >
+                <ExternalLink />
+            </a>
+        </Button>
     );
 }
 

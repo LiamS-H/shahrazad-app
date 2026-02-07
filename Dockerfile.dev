@@ -1,0 +1,29 @@
+FROM rust:1.83-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    protobuf-compiler \
+    build-essential \
+    curl \
+    git \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust nightly and wasm target
+RUN rustup toolchain install nightly-2025-01-01 \
+    && rustup default nightly-2025-01-01 \
+    && rustup target add wasm32-unknown-unknown
+
+# Install wasm-pack
+RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+# Install Bun
+ENV BUN_INSTALL="/root/.bun"
+ENV PATH="$BUN_INSTALL/bin:$PATH"
+RUN curl -fsSL https://bun.sh/install | bash
+
+WORKDIR /app
+
+EXPOSE 3000 5000
+
+CMD ["bash"]
