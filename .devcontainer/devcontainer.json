@@ -1,0 +1,22 @@
+{
+  "name": "Shahrazad Dev",
+  "dockerComposeFile": [
+    "../compose.dev.yaml"
+  ],
+  "service": "dev",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb",
+        "serayuzgur.crates",
+        "tamasfe.even-better-toml",
+        "oven.bun-vscode",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "remoteUser": "root"
+}
