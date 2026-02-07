@@ -1,0 +1,64 @@
+name: Build and Push Server
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - "backend/**"
+            - "shared/**"
+            - "Dockerfile"
+            - ".github/workflows/build-server.yml"
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: "read"
+            id-token: "write"
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Authenticate to Google Cloud
+              id: auth
+              uses: google-github-actions/auth@v2
+              with:
+                  workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+                  service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+            - name: Set up gcloud SDK
+              uses: google-github-actions/setup-gcloud@v2
+
+            - name: Configure Docker for Artifact Registry
+              run: |
+                  gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Build and push
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  push: true
+                  tags: |
+                      ${{ secrets.ARTIFACT_URL }}:latest
+                      ${{ secrets.ARTIFACT_URL }}:${{ github.sha }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            - name: Deploy to Cloud Run
+
+              uses: google-github-actions/deploy-cloudrun@v2
+
+              with:
+                  service: ${{ secrets.CLOUD_RUN_ID }}
+                  region: us-west1
+                  image: ${{ secrets.ARTIFACT_URL }}:${{ github.sha }}
+                  flags: "--port=5000 --memory=128Mi --cpu=1 --timeout=300 --concurrency=1000 --execution-environment=gen1 --min-instances=0 --max-instances=1"
+
+            - name: Move all traffic to the new revision
+              run: |
+                  gcloud run services update-traffic ${{ secrets.CLOUD_RUN_ID }} --region us-west1 --to-latest
