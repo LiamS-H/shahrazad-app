@@ -34,12 +34,10 @@ async fn main() {
     let cors = match env::var("CORS_ALLOWED_ORIGINS") {
         Ok(val) => {
             if val == "*" {
-                CorsLayer::new().allow_headers(Any).allow_methods([
-                    Method::POST,
-                    Method::GET,
-                    Method::OPTIONS,
-                    Method::CONNECT,
-                ])
+                CorsLayer::new()
+                    .allow_headers(Any)
+                    .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::CONNECT])
+                    .allow_origin(Any)
             } else {
                 let origins = val
                     .split(",")
