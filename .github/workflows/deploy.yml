@@ -37,9 +37,13 @@ jobs:
               run: |
                   gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
                   gcloud container images add-tag \
-                      ${{ secrets.ARTIFACT_URL }}:${{ github.sha }} \
-                      ${{ secrets.ARTIFACT_URL }}:production \
-                      --quiet
+                    ${{ secrets.ARTIFACT_URL }}:${{ github.sha }} \
+                    ${{ secrets.ARTIFACT_URL }}:production \
+                    --quiet || \
+                  gcloud container images add-tag \
+                    ${{ secrets.ARTIFACT_URL }}:preview \
+                    ${{ secrets.ARTIFACT_URL }}:production \
+                    --quiet
 
             - name: Deploy to Production Cloud Run
               uses: google-github-actions/deploy-cloudrun@v2
