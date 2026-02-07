@@ -56,7 +56,7 @@ jobs:
               uses: google-github-actions/deploy-cloudrun@v2
 
               with:
-                  service: ${{ vards.CLOUD_RUN_ID }}
+                  service: ${{ vars.CLOUD_RUN_ID }}
                   region: us-west1
                   image: ${{ secrets.ARTIFACT_URL }}:${{ github.sha }}
                   flags: "--port=5000 --memory=128Mi --cpu=1 --timeout=300 --concurrency=1000 --execution-environment=gen1 --min-instances=0 --max-instances=1"
