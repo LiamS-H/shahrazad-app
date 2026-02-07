@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM us-west1-docker.pkg.dev/shahrazad-app/rust-base-builds/base AS planner
+FROM us-west1-docker.pkg.dev/shahrazad-app/rust-backend-images/rust-base AS planner
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY backend/ ./backend/
@@ -8,7 +8,7 @@ COPY shared/ ./shared/
 COPY wasm/ ./wasm/
 RUN cargo chef prepare --recipe-path recipe.json
 
-FROM us-west1-docker.pkg.dev/shahrazad-app/rust-base-builds/base AS build
+FROM us-west1-docker.pkg.dev/shahrazad-app/rust-backend-images/rust-base AS build
 WORKDIR /app
 
 COPY --from=planner /app/recipe.json recipe.json
