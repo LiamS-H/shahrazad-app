@@ -56,11 +56,11 @@ jobs:
               uses: google-github-actions/deploy-cloudrun@v2
 
               with:
-                  service: ${{ env.CLOUD_RUN_ID }}
+                  service: ${{ vards.CLOUD_RUN_ID }}
                   region: us-west1
                   image: ${{ secrets.ARTIFACT_URL }}:${{ github.sha }}
                   flags: "--port=5000 --memory=128Mi --cpu=1 --timeout=300 --concurrency=1000 --execution-environment=gen1 --min-instances=0 --max-instances=1"
 
-            - name: Move all traffic to the new revision
+            - name: Move all preview traffic to the new revision
               run: |
-                  gcloud run services update-traffic ${{ env.CLOUD_RUN_ID }} --region us-west1 --to-latest
+                  gcloud run services update-traffic ${{ vars.CLOUD_RUN_ID }} --region us-west1 --to-latest
