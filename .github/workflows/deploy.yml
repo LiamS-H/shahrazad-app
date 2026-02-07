@@ -1,7 +1,7 @@
 name: Build and Push Server
 
 on:
-    pull_request:
+    push:
         branches:
             - main
         paths:
@@ -11,13 +11,13 @@ on:
             - ".github/workflows/build-server.yml"
 
 jobs:
-    build-push-preview:
+    deploy-prod:
         runs-on: ubuntu-latest
         permissions:
             contents: "read"
             id-token: "write"
         environment:
-            name: Preview
+            name: Production
 
         steps:
             - name: Checkout code
