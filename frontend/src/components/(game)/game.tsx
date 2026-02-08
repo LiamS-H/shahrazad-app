@@ -1,14 +1,14 @@
 "use client";
 import { ScryContextProvider } from "@/contexts/(game)/scry";
 import { ShahrazadGame } from "@/types/bindings/game";
-import Playmat from "../playmat";
+import Playmat from "./playmat";
 import { ShahrazadGameProvider } from "@/contexts/(game)/game";
 import ShahrazadDND from "@/contexts/(game)/dnd";
 import { ShahrazadAction } from "@/types/bindings/action";
 import { SelectionProvider } from "@/contexts/(game)/selection";
 import { SearchContextProvider } from "@/contexts/(game)/search";
 import { AnimatePresence } from "framer-motion";
-import { Keybinds } from "../keybinds";
+import { Keybinds } from "./keybinds";
 import { ArrowsContextProvider } from "@/contexts/(game)/arrows";
 import { ImportContextProvider } from "@/contexts/(game)/import";
 import { ActivePlayerIcon } from "./active-player-icon";
@@ -19,9 +19,9 @@ import { useMemo, useRef } from "react";
 import { MessagesContextProvider } from "@/contexts/(game)/messages";
 import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
-import { MessagesButton, MessagesDialog } from "../messages";
+import { MessagesButton, MessagesDialog } from "./messages";
 import { PreviewCardButton } from "@/components/(game)/card-preview";
-import { StackButton } from "../stack";
+import { StackButton } from "./stack";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;

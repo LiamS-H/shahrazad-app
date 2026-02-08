@@ -8,12 +8,18 @@ export class LocalGameClient {
 
     constructor(private callbacks: GameClientCallbacks) {}
 
-    beginGame(settings?: ShahrazadGameSettings): ShahrazadGame {
+    beginGame(
+        settings?: ShahrazadGameSettings,
+        game_state?: string,
+    ): ShahrazadGame {
         // this.gameState = new GameState(null);
+
         this.gameState = GameState.new_local(
             settings,
-            Math.floor(Date.now() / 1000)
+            // game_state,
+            Math.floor(Date.now() / 1000),
         );
+
         const game = this.gameState.get_state();
         console.log("[local]", game);
         this.callbacks.onGameUpdate(game);
@@ -50,7 +56,7 @@ export class LocalGameClient {
         if (action.type == ShahrazadActionCase.SetPlayer) {
             if (action.player) {
                 this.callbacks.onToast(
-                    `${action.player_id} has new name: ${action.player.display_name}`
+                    `${action.player_id} has new name: ${action.player.display_name}`,
                 );
             } else {
                 this.callbacks.onToast(`${action.player_id} has left.`);
@@ -78,10 +84,15 @@ export class LocalGameClient {
         if (!success) {
             console.log(
                 "[local] attempted to apply move that didn't update state.",
-                action.type
+                action.type,
             );
             return;
         }
+    }
+
+    public encode() {
+        // this.gameState.encode()
+        return "abcdef-0000-0000";
     }
 
     public cleanup() {

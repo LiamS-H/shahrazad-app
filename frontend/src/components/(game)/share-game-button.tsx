@@ -9,7 +9,7 @@ import { Copy, DiamondPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function ShareGameButton({ code }: { code: number | null }) {
+export function ShareGameButton({ code }: { code: number | null }) {
     const [open, setOpen] = useState(false);
 
     return (

@@ -1,7 +1,10 @@
 import { ShahrazadPlayer } from "@/types/bindings/playmat";
 
 export function loadPlayer():
-    | { player?: ShahrazadPlayer; player_id?: string }
+    | {
+          player?: ShahrazadPlayer;
+          player_id?: string;
+      }
     | undefined {
     try {
         localStorage.getItem("");
@@ -9,8 +12,7 @@ export function loadPlayer():
         return undefined;
     }
     const stored_player = localStorage.getItem("saved-player");
-    const player_id = localStorage.getItem("saved-player-id");
-    if (player_id === null) return undefined;
+    const player_id = localStorage.getItem("saved-player-id") ?? undefined;
     if (stored_player === null) return { player_id };
     try {
         const player: ShahrazadPlayer = JSON.parse(stored_player);

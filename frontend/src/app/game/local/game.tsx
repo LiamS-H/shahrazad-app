@@ -15,6 +15,8 @@ import { UserProfile } from "@/components/(ui)/user-profile";
 import { useRouter } from "next/navigation";
 import { loadPlayer } from "@/lib/client/localPlayer";
 import Loading from "../[UUID]/loading";
+import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
+import { SaveStatesButton } from "./save-states-button";
 
 const activePlayer = "P0";
 
@@ -22,6 +24,7 @@ export default function LocalGame() {
     const router = useRouter();
     const gameClientRef = useRef<LocalGameClient | null>(null);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
+    const [code, setCode] = useState<string | null>(null);
 
     const onMessageRef = useRef<null | GameClientOnMessage>(null);
     const registerOnMessage = useCallback((onMessage: GameClientOnMessage) => {
@@ -44,7 +47,13 @@ export default function LocalGame() {
         setLoading(false);
 
         const gameClient = new LocalGameClient({
-            onGameUpdate: setGame,
+            onGameUpdate: (game) => {
+                if (gameClientRef.current) {
+                    console.log("test");
+                    setCode(gameClientRef.current.encode());
+                }
+                setGame(game);
+            },
             onPreloadCards: preloadCards,
             onToast: (message) => {
                 toast(message);
@@ -122,6 +131,8 @@ export default function LocalGame() {
                         }
                     />
                 )}
+                <SaveStatesButton code={code} loadCode={() => false} />
+                <FullscreenToggle />
             </div>
         </>
     );
