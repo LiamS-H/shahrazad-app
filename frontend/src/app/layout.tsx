@@ -30,7 +30,9 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    init_wasm();
+    if (typeof window !== "undefined") {
+        init_wasm();
+    }
     return (
         <html lang="en" suppressHydrationWarning className="h-full w-full">
             <body

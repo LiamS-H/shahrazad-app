@@ -29,6 +29,7 @@ export default function GamePage(props: { game_id: string }) {
     }, []);
 
     const [loading, setLoading] = useState(true);
+    const [serverLoading, setServerLoading] = useState(true);
     const init_ref = useRef(false);
 
     const signalError = useCallback((error: IErrorMessage) => {
@@ -49,11 +50,11 @@ export default function GamePage(props: { game_id: string }) {
         if (init_ref.current) return;
         init_ref.current = true;
         const stored_player = loadPlayer();
-
-        const [joinResult] = await Promise.all([
-            joinGame(props.game_id, stored_player),
-            init_wasm(),
-        ]);
+        setServerLoading(true);
+        setLoading(true);
+        const join_promise = joinGame(props.game_id, stored_player);
+        join_promise.then(() => setServerLoading(false));
+        const [joinResult] = await Promise.all([join_promise, init_wasm()]);
 
         setLoading(false);
 
@@ -152,7 +153,7 @@ export default function GamePage(props: { game_id: string }) {
     return (
         <>
             {isLoading ? (
-                <Loading />
+                <Loading server_loading={serverLoading} />
             ) : (
                 <Game
                     registerOnMessage={registerOnMessage}
