@@ -30,34 +30,77 @@ export function BoardCard({
     const left = (card.state.x ?? 0) * GRID_SIZE;
     const top = (card.state.y ?? 0) * GRID_SIZE;
 
-    const divStyle: CSSProperties = {
-        position: "absolute",
-        left,
-        top,
+    const divStyle = useMemo(() => {
+        const divStyle: CSSProperties = {};
+        if (card.state.tapped) {
+            divStyle.borderRadius = "4.75%/3.5%";
+        } else {
+            divStyle.borderRadius = "3.5%/4.75%";
+        }
+        if (!selected && card.token) {
+            divStyle.outline = "4px solid hsl(var(--token-outline))";
+        }
+        if (selected) {
+            divStyle.outline = `2px solid ${
+                card.token ? "DodgerBlue" : "DarkBlue"
+            }`;
+            divStyle.filter = BLUE_TINT;
+        }
+        return divStyle;
+    }, [card.token, card.state.tapped, selected]);
 
-        borderRadius: "4.75% / 3.5%",
-    };
-    if (!selected && card.token) {
-        divStyle.outline = "4px solid hsl(var(--token-outline))";
-    }
+    const card_comp = useMemo(() => {
+        if (!card.state.tapped) {
+            return (
+                <BoardCardContextMenu cardId={cardId}>
+                    <Card id={cardId} previewDelay={100} />
+                </BoardCardContextMenu>
+            );
+        }
+        return (
+            <div
+                className="relative h-[100px] w-[140px] -translate-x-5 translate-y-5 cursor-grab"
+                style={divStyle}
+            >
+                <BoardCardContextMenu cardId={cardId}>
+                    <div className="left-5 -top-5 absolute rotate-90">
+                        <Card
+                            id={cardId}
+                            width={"100px"}
+                            untapped
+                            previewDelay={100}
+                        />
+                    </div>
+                </BoardCardContextMenu>
+            </div>
+        );
+    }, [card.state.tapped, divStyle, cardId]);
+
+    const draggableStyle: CSSProperties = card.state.tapped
+        ? {
+              position: "absolute",
+              left,
+              top,
+              cursor: "default",
+          }
+        : {
+              position: "absolute",
+              left,
+              top,
+              ...divStyle,
+          };
+
     if (selected) {
-        divStyle.outline = `2px solid ${
-            card.token ? "DodgerBlue" : "DarkBlue"
-        }`;
-        divStyle.filter = BLUE_TINT;
-        divStyle.borderRadius = "4.75% / 3.5%";
+        draggableStyle.filter = BLUE_TINT;
     }
-
-    const card_comp = useMemo(
-        () => <Card id={cardId} previewDelay={100} />,
-        [cardId]
-    );
 
     return (
-        <DraggableCardWrapper divStyle={divStyle} noDragTranslate id={cardId}>
-            <BoardCardContextMenu cardId={cardId}>
-                {card_comp}
-            </BoardCardContextMenu>
+        <DraggableCardWrapper
+            divStyle={draggableStyle}
+            noDragTranslate
+            id={cardId}
+        >
+            {card_comp}
         </DraggableCardWrapper>
     );
 }

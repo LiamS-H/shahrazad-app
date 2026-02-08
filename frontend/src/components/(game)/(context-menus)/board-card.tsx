@@ -62,6 +62,8 @@ function Content({
         [cards, getCard],
     );
 
+    if (!shah_card) return null;
+
     const containsTapped = shah_cards.some((c) => c.state.tapped);
     const containsUnTapped = shah_cards.some((c) => !c.state.tapped);
     const containsFaceDown = shah_cards.some((c) => c.state.face_down);

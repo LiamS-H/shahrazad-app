@@ -25,32 +25,46 @@ function SingleCard({
     selected?: number;
     rotation: Rotation;
 }) {
+    const countComp = selected ? (
+        <div className="absolute -top-2 -right-2 w-6 h-6  rounded-full bg-destructive text-destructive-foreground flex justify-center items-center">
+            {selected}
+        </div>
+    ) : null;
+
+    const cardComp = (
+        <div
+            style={
+                card.token
+                    ? {
+                          outline: "4px solid hsl(var(--token-outline))",
+                          borderRadius: "4.75% / 3.5%",
+                      }
+                    : undefined
+            }
+            data-shahcard={id}
+        >
+            <ScryNameCard
+                card_name={card.card_name}
+                flipped={card.state.flipped}
+                faceDown={card.state.face_down && !faceup}
+            />
+        </div>
+    );
+
+    if (!card.state.tapped)
+        return (
+            <RotationWrapper rotation={rotation}>
+                {cardComp}
+                {countComp}
+            </RotationWrapper>
+        );
     return (
         <RotationWrapper rotation={rotation}>
-            <div
-                style={
-                    card.token
-                        ? {
-                              outline: "4px solid hsl(var(--token-outline))",
-                              borderRadius: "4.75% / 3.5%",
-                          }
-                        : undefined
-                }
-                data-shahcard={id}
-            >
-                <ScryNameCard
-                    card_name={card.card_name}
-                    flipped={card.state.flipped}
-                    faceDown={card.state.face_down && !faceup}
-                    tapped={card.state.tapped}
-                />
-                {selected && (
-                    <div className="relative">
-                        <div className="absolute bottom-[120px] w-6 h-6 right-0 rounded-full bg-destructive text-destructive-foreground flex justify-center items-center">
-                            {selected}
-                        </div>
-                    </div>
-                )}
+            <div className="relative h-[100px] w-[140px] -translate-x-5 translate-y-5">
+                <div className="left-5 -top-5 absolute rotate-90">
+                    {cardComp}
+                </div>
+                {countComp}
             </div>
         </RotationWrapper>
     );
@@ -88,7 +102,7 @@ function useRotation() {
                 });
             });
         },
-        []
+        [],
     );
     return { handleMouseMove, rotation };
 }
@@ -118,7 +132,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
     }
 
     const main_card_comp = (
-        <div onMouseMove={handleMouseMove} className="absolute">
+        <div onMouseMove={handleMouseMove} className="absolute cursor-grabbing">
             <SingleCard
                 id={id}
                 rotation={rotation}
@@ -181,7 +195,7 @@ export function DraggableOverlay({ id }: { id: ShahrazadCardId }) {
                                     rotation={rotation}
                                     card={c.card}
                                     faceup={c.card.state.revealed?.includes(
-                                        player_name
+                                        player_name,
                                     )}
                                 />
                             </div>
