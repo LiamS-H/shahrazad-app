@@ -227,7 +227,7 @@ export default function ScryDialog({
                 if (!open) handleClose();
             }}
         >
-            <DialogContent className="max-w-[800px] w-full min-h-[400px]">
+            <DialogContent className="max-w-[800px] w-full min-h-[400px] z-60">
                 <DialogHeader>
                     <DialogTitle>Scrying ({amount})</DialogTitle>
                     <DialogDescription>Drag</DialogDescription>
@@ -265,21 +265,18 @@ export default function ScryDialog({
                                 />
                             </div>
                         </div>
-                        {typeof document !== "undefined" &&
-                            createPortal(
-                                <DragOverlay>
-                                    {activeId ? (
-                                        <div className="cursor-grabbing">
-                                            <Card
-                                                id={activeId}
-                                                faceUp={true}
-                                                animationTime={null}
-                                            />
-                                        </div>
-                                    ) : null}
-                                </DragOverlay>,
-                                document.body,
-                            )}
+                        {createPortal(
+                            <DragOverlay className="cursor-grabbing">
+                                {activeId ? (
+                                    <Card
+                                        id={activeId}
+                                        faceUp={true}
+                                        animationTime={null}
+                                    />
+                                ) : null}
+                            </DragOverlay>,
+                            document.body,
+                        )}
                     </DndContext>
                 )}
             </DialogContent>
