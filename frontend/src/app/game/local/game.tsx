@@ -7,7 +7,6 @@ import {
 import type { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
-import init from "shahrazad-wasm";
 import { type GameClientOnMessage } from "@/lib/client";
 import { LocalGameClient } from "@/lib/client/local";
 import { toast } from "sonner";
@@ -17,6 +16,7 @@ import { loadPlayer } from "@/lib/client/localPlayer";
 import Loading from "../[UUID]/loading";
 import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
 import { SaveStatesButton } from "./save-states-button";
+import { init_wasm } from "@/lib/client/wasm-init";
 
 const activePlayer = "P0";
 
@@ -39,7 +39,7 @@ export default function LocalGame() {
     const initGame = useCallback(async () => {
         if (init_ref.current) return;
         init_ref.current = true;
-        await init();
+        await init_wasm();
 
         const stored_player =
             loadPlayer()?.player?.display_name ?? activePlayer;
@@ -49,7 +49,6 @@ export default function LocalGame() {
         const gameClient = new LocalGameClient({
             onGameUpdate: (game) => {
                 if (gameClientRef.current) {
-                    console.log("test");
                     setCode(gameClientRef.current.encode());
                 }
                 setGame(game);

@@ -8,7 +8,6 @@ import {
 import type { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
-import init from "shahrazad-wasm";
 import { GameClient, type GameClientOnMessage } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
 import { toast } from "sonner";
@@ -17,6 +16,7 @@ import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
 import Loading from "./loading";
 import { UserProfile } from "@/components/(ui)/user-profile";
+import { init_wasm } from "@/lib/client/wasm-init";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -52,7 +52,7 @@ export default function GamePage(props: { game_id: string }) {
 
         const [joinResult] = await Promise.all([
             joinGame(props.game_id, stored_player),
-            init(),
+            init_wasm(),
         ]);
 
         setLoading(false);

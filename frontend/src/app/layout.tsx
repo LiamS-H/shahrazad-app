@@ -8,6 +8,7 @@ import { Toaster } from "@/components/(ui)/sonner";
 import { TooltipProvider } from "@/components/(ui)/tooltip";
 import { FullscreenContextProvider } from "@/contexts/fullscreen";
 import { DeviceContextProvider } from "@/contexts/device";
+import { init_wasm } from "@/lib/client/wasm-init";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    init_wasm();
     return (
         <html lang="en" suppressHydrationWarning className="h-full w-full">
             <body
