@@ -53,7 +53,7 @@ export function BoardCard({
         if (!card.state.tapped) {
             return (
                 <BoardCardContextMenu cardId={cardId}>
-                    <Card id={cardId} previewDelay={100} />
+                    <Card animateStrict id={cardId} previewDelay={100} />
                 </BoardCardContextMenu>
             );
         }
@@ -65,6 +65,7 @@ export function BoardCard({
                 <BoardCardContextMenu cardId={cardId}>
                     <div className="left-5 -top-5 absolute rotate-90">
                         <Card
+                            animateStrict
                             id={cardId}
                             width={"100px"}
                             untapped
