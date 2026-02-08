@@ -24,7 +24,12 @@ export default function NavBar() {
                 </li>
                 <li>
                     <Link href={"/game/create"}>
-                        <Button variant="link"> Game</Button>
+                        <Button variant="link">Game</Button>
+                    </Link>
+                </li>
+                <li>
+                    <Link href={"/game/local"}>
+                        <Button variant="link">Local Playtest</Button>
                     </Link>
                 </li>
                 <li>
