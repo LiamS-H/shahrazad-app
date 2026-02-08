@@ -44,7 +44,11 @@ function Content({
     const { selectedCards } = useSelection();
     const { player } = usePlayer();
     const playmat = getPlaymat(player);
-    const cards = selectedCards.includes(cardId) ? selectedCards : [cardId];
+    const cards = useMemo(
+        () => (selectedCards.includes(cardId) ? selectedCards : [cardId]),
+        [selectedCards, cardId],
+    );
+
     let title = "";
     if (cards.length !== 1) {
         title = `(${cards.length}) cards`;
@@ -53,17 +57,27 @@ function Content({
     } else {
         title = scry_card?.name || shah_card.card_name;
     }
+    const shah_cards = useMemo(
+        () => cards.map((id) => getCard(id)),
+        [cards, getCard],
+    );
+
+    const containsTapped = shah_cards.some((c) => c.state.tapped);
+    const containsUnTapped = shah_cards.some((c) => !c.state.tapped);
+    const containsFaceDown = shah_cards.some((c) => c.state.face_down);
+    const containsFaceUp = shah_cards.some((c) => !c.state.face_down);
+    const containsToken = shah_cards.some((s) => s?.token);
     const related_cards =
         scry_card?.all_parts
             ?.slice(0, 5)
             .filter(
-                (c) => c.name.toLowerCase() !== scry_card.name.toLowerCase()
+                (c) => c.name.toLowerCase() !== scry_card.name.toLowerCase(),
             ) || [];
     return (
         <>
             <ContextMenuLabel>{title}</ContextMenuLabel>
             <ContextMenuSeparator />
-            {(!shah_card.state.tapped || cards.length > 1) && (
+            {containsUnTapped && (
                 <ContextMenuItem
                     onClick={() => {
                         applyAction({
@@ -78,7 +92,7 @@ function Content({
                     Tap
                 </ContextMenuItem>
             )}
-            {(shah_card.state.tapped || cards.length > 1) && (
+            {containsTapped && (
                 <ContextMenuItem
                     onClick={() => {
                         applyAction({
@@ -108,7 +122,7 @@ function Content({
                     Flip
                 </ContextMenuItem>
             )}
-            {(!shah_card.state.face_down || cards.length > 1) && (
+            {containsFaceUp && (
                 <ContextMenuItem
                     onClick={() => {
                         applyAction({
@@ -124,7 +138,7 @@ function Content({
                     Turn facedown
                 </ContextMenuItem>
             )}
-            {(shah_card.state.face_down || cards.length > 1) && (
+            {containsFaceDown && (
                 <ContextMenuItem
                     onClick={() => {
                         applyAction({
@@ -240,7 +254,7 @@ function Content({
             >
                 Clone
             </ContextMenuItem>
-            {cards.map((i) => getCard(i)).some((s) => s?.token) && (
+            {containsToken && (
                 <ContextMenuItem
                     onClick={() => {
                         applyAction({
