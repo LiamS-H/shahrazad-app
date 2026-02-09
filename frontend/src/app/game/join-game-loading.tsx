@@ -6,7 +6,7 @@ export default function JoinGameLoading() {
         <TabsContent value="join">
             <div className="space-y-4 pt-4">
                 {/*Game Code Label*/}
-                <Skeleton className="h-4 w-24 mt-1 -mb-1" /> {/* Label */}
+                <Skeleton className="h-4 w-18 mt-1 -mb-1" /> {/* Label */}
                 {/*Game Code input */}
                 <div className="flex justify-between items-center pt-2">
                     <Skeleton className="h-9 w-9" />

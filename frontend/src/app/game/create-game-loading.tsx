@@ -7,7 +7,7 @@ export default function CreateGameLoading() {
             <div className="space-y-4 pt-4">
                 {/* Starting Life Section */}
                 <div>
-                    <Skeleton className="h-4 w-24 mb-2" /> {/* Label */}
+                    <Skeleton className="h-4 w-20 mt-1 mb-1" /> {/* Label */}
                     <Skeleton className="h-10 w-full rounded-md" />{" "}
                     {/* Select */}
                 </div>
