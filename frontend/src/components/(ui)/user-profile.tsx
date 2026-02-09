@@ -35,7 +35,7 @@ export function UserProfile({
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setPlayer(loadPlayer()?.player ?? null);
+        setPlayer(loadPlayer()?.player ?? { display_name: "" });
     }, []);
 
     useEffect(() => {
