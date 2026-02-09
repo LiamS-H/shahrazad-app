@@ -1,7 +1,7 @@
 import { Button } from "@/components/(ui)/button";
 import { useSelection } from "@/contexts/(game)/selection";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { Expand, ExternalLink, EyeOff, ScanEye, Shrink } from "lucide-react";
+import { Expand, ExternalLink, EyeOff, ScanEye, Shrink, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { DraggableWrapper } from "./draggable-wrapper";
@@ -115,18 +115,18 @@ export function PreviewCard({
                 >
                     {size === 500 ? <Shrink /> : <Expand />}
                 </Button>
+                {shah_card?.card_name && (
+                    <CConfluenceLink id={shah_card?.card_name} />
+                )}
                 {onHide && (
                     <Button
-                        className="absolute top-20 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+                        className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 text-foreground"
                         size="icon"
                         variant="ghost"
                         onClick={onHide}
                     >
-                        <EyeOff />
+                        <X />
                     </Button>
-                )}
-                {shah_card?.card_name && (
-                    <CConfluenceLink id={shah_card?.card_name} />
                 )}
             </DraggableWrapper>
         </DndContext>
@@ -140,7 +140,7 @@ function CConfluenceLink({ id }: { id: string }) {
     }
     return (
         <Button
-            className="absolute top-32 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+            className="absolute top-20 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
             size="icon"
             variant="ghost"
             asChild
