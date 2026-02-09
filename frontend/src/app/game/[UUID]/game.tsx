@@ -17,6 +17,7 @@ import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
 import Loading from "./loading";
 import { UserProfile } from "@/components/(ui)/user-profile";
 import { init_wasm } from "@/lib/client/wasm-init";
+import { preloadCardImages } from "@/lib/client/preload-cards";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -44,7 +45,7 @@ export default function GamePage(props: { game_id: string }) {
     const [gameCode, setGameCode] = useState<number | null>(null);
     const [isHost, setIsHost] = useState(false);
 
-    const { preloadCards } = useScrycardsContext();
+    const { preloadCards, requestCard } = useScrycardsContext();
 
     const initGame = useCallback(async () => {
         if (init_ref.current) return;
@@ -97,7 +98,13 @@ export default function GamePage(props: { game_id: string }) {
             player_name,
             {
                 onGameUpdate: setGame,
-                onPreloadCards: preloadCards,
+                onPreloadCards: (cards, images) => {
+                    preloadCards(cards);
+
+                    if (images) {
+                        preloadCardImages(cards, requestCard);
+                    }
+                },
                 onToast: (message) => {
                     toast(message);
                 },
@@ -125,7 +132,7 @@ export default function GamePage(props: { game_id: string }) {
         setGame(game);
 
         preloadCards(Object.values(game.cards).map((c) => c.card_name));
-    }, [props.game_id, preloadCards, signalError]);
+    }, [props.game_id, preloadCards, requestCard, signalError]);
 
     useEffect(() => {
         // This is async and updating external state.

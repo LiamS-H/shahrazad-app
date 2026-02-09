@@ -17,6 +17,7 @@ import Loading from "../[UUID]/loading";
 import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
 import { SaveStatesButton } from "./save-states-button";
 import { init_wasm } from "@/lib/client/wasm-init";
+import { preloadCardImages } from "@/lib/client/preload-cards";
 
 const activePlayer = "P0";
 
@@ -34,7 +35,29 @@ export default function LocalGame() {
     const [loading, setLoading] = useState(true);
     const init_ref = useRef(false);
 
-    const { preloadCards } = useScrycardsContext();
+    const { preloadCards, requestCard } = useScrycardsContext();
+
+    const loadCode = useCallback((code?: string) => {
+        if (!gameClientRef.current) {
+            toast("Couldn't load code; gamestate not initialized");
+            return false;
+        }
+        if (code === undefined) {
+            setGame(gameClientRef.current.beginGame());
+            return true;
+        }
+        if (code === "") {
+            toast("Couldn't load empty code");
+            return false;
+        }
+        const game = gameClientRef.current.beginGame(undefined, code);
+        if (!game) {
+            toast("Couldn't load code; gamestate not initialized");
+            return false;
+        }
+        setGame(game);
+        return true;
+    }, []);
 
     const initGame = useCallback(async () => {
         if (init_ref.current) return;
@@ -53,7 +76,12 @@ export default function LocalGame() {
                 }
                 setGame(game);
             },
-            onPreloadCards: preloadCards,
+            onPreloadCards: (cards, images) => {
+                preloadCards(cards);
+                if (images) {
+                    preloadCardImages(cards, requestCard);
+                }
+            },
             onToast: (message) => {
                 toast(message);
             },
@@ -70,7 +98,9 @@ export default function LocalGame() {
         });
 
         gameClientRef.current = gameClient;
-        gameClient.beginGame();
+        if (!loadCode()) {
+            gameClientRef.current.beginGame();
+        }
         gameClient.queueAction({
             type: ShahrazadActionCase.AddPlayer,
             player: {
@@ -78,7 +108,7 @@ export default function LocalGame() {
             },
             player_id: activePlayer,
         });
-    }, [preloadCards, router]);
+    }, [loadCode, preloadCards, requestCard, router]);
 
     useEffect(() => {
         // This is async and updating external state.
@@ -130,7 +160,7 @@ export default function LocalGame() {
                         }
                     />
                 )}
-                <SaveStatesButton code={code} loadCode={() => false} />
+                <SaveStatesButton code={code} loadCode={loadCode} />
                 <FullscreenToggle />
             </div>
         </>

@@ -20,14 +20,11 @@ export function SaveStatesButton({
     const [open, setOpen] = useState(false);
     const [codeInput, setCodeInput] = useState("");
 
-    function handleSubmitCode(code: string): boolean {
+    function handleSubmitCode(code: string) {
         if (code === "") return false;
-        const success = loadCode(code);
-        if (success) {
-            toast("Restored game state");
+        if (loadCode(code)) {
             setOpen(false);
         }
-        return success;
     }
 
     if (!code) {
