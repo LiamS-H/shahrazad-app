@@ -32,18 +32,22 @@ export default function GameConfigPage() {
 
     const readClipboard = useCallback(
         async (shouldValidate = false) => {
-            const text = await navigator.clipboard.readText();
-            const parsed = parseCode(text);
-            setClipboard(parsed);
+            try {
+                const text = await navigator.clipboard.readText();
+                const parsed = parseCode(text);
+                setClipboard(parsed);
 
-            if (shouldValidate && parsed) {
-                const valid = await checkGame(parsed);
-                if (valid) {
-                    router.replace("/game?tab=join");
-                    return true;
+                if (shouldValidate && parsed) {
+                    const valid = await checkGame(parsed);
+                    if (valid) {
+                        router.replace("/game?tab=join");
+                        return true;
+                    }
                 }
+                return false;
+            } catch {
+                //document wasn't focused
             }
-            return false;
         },
         [checkGame, router],
     );
