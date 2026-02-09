@@ -42,7 +42,7 @@ export default function SideboardingModal({
     const deckColumns = useMemo(() => {
         const columns: Record<
             string,
-            { id: string; card?: ScryfallCard.Any }[]
+            { id: string; card: ScryfallCard.Any | null | undefined }[]
         > = {
             lands: [],
             cmc0: [],

@@ -5,11 +5,10 @@ import { useEffect, useState } from "react";
 import { useScrycardsContext } from "react-scrycards";
 
 export type ScrycardsList = {
-    id: string;
-    card: ScryfallCard.Any | undefined;
+    id: ShahrazadCardId;
+    card: ScryfallCard.Any | undefined | null;
 }[];
 
-// todo: make the cards update as the cards come in
 export function useScrycardsList(card_ids: ShahrazadCardId[]) {
     const [cards, setCards] = useState<ScrycardsList>([]);
     const [loading, setLoading] = useState(false);
@@ -22,49 +21,50 @@ export function useScrycardsList(card_ids: ShahrazadCardId[]) {
         async function fetchCards() {
             setLoading(true);
 
-            const promises = card_ids.map((card_id) => {
-                const shah_card = getCard(card_id);
-                if (!shah_card) return;
-                return requestCard(shah_card.card_name);
-            });
+            const cached: ScrycardsList = [];
+            const fetched: {
+                id: ShahrazadCardId;
+                card: Promise<ScrycardsList[number]["card"]>;
+            }[] = [];
+            const promises: (typeof fetched)[number]["card"][] = [];
 
-            const scrycards = await Promise.race([
+            for (const id of card_ids) {
+                const shah_card = getCard(id);
+                if (!shah_card) return;
+                const card = requestCard(shah_card.card_name);
+                if (card instanceof Promise) {
+                    fetched.push({ card, id });
+                    promises.push(card);
+                } else {
+                    cached.push({ card, id });
+                }
+            }
+
+            const new_cards = cached;
+            setCards([
+                ...new_cards,
+                ...fetched.map(({ id }) => ({ id, card: null })),
+            ]);
+
+            await Promise.race([
                 Promise.allSettled(promises),
-                new Promise<PromiseSettledResult<ScryfallCard.Any>[]>(
-                    (resolve) =>
-                        setTimeout(() => {
-                            resolve(
-                                promises.map((p) => {
-                                    if (!p || p instanceof Promise) {
-                                        return {
-                                            status: "rejected",
-                                            reason: new Error(
-                                                "requestCard timeout",
-                                            ),
-                                        };
-                                    }
-                                    return { status: "fulfilled", value: p };
-                                }),
-                            );
-                        }, 1000),
-                ),
+                new Promise((resolve) => setTimeout(resolve, 1000)),
             ]);
 
             if (isStale) return;
 
-            const fetched_cards: ScrycardsList = [];
-            for (let i = 0; i < scrycards.length; i++) {
-                const scry_card = scrycards[i];
-                const id = card_ids[i];
-                if (scry_card.status === "rejected") {
-                    fetched_cards.push({ id, card: undefined });
+            for (const { card, id } of fetched) {
+                if (card instanceof Promise) {
+                    new_cards.push({ id, card: undefined });
                     continue;
                 }
-                fetched_cards.push({ id, card: scry_card.value });
+                new_cards.push({ card, id });
             }
 
-            setCards(fetched_cards);
             setLoading(false);
+            if (new_cards.length !== cached.length) {
+                setCards(new_cards);
+            }
         }
 
         fetchCards();
@@ -76,3 +76,4 @@ export function useScrycardsList(card_ids: ShahrazadCardId[]) {
 
     return { cards, loading };
 }
+
