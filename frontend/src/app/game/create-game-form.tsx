@@ -16,7 +16,7 @@ import { createGame } from "@/lib/client/createGame";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import CreateGameLoading from "./loading";
+import CreateGameLoading from "./create-game-loading";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
 
 export default function CreateGameForm() {

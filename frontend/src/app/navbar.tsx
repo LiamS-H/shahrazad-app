@@ -4,15 +4,17 @@ import { ThemeToggle } from "@/components/(theme)/theme-toggle";
 import { Button } from "@/components/(ui)/button";
 import { useFullscreen } from "@/contexts/fullscreen";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export default function NavBar() {
     const { isFullscreen } = useFullscreen();
     const path = usePathname();
+    const searchParams = useSearchParams();
+    const currentTab = searchParams.get("tab");
     const inGame =
         path.startsWith("/game/") &&
-        !path.startsWith("/game/create") &&
-        !path.startsWith("/game/join");
+        !path.startsWith("/game?tab=create") &&
+        !path.startsWith("/game?tab=join");
 
     return (
         <nav className={`${isFullscreen ? "hidden" : ""}`}>
@@ -23,7 +25,7 @@ export default function NavBar() {
                     </Link>
                 </li>
                 <li>
-                    <Link href={"/game/create"}>
+                    <Link href={currentTab ? `/game?tab=create` : "/game"}>
                         <Button variant="link">Game</Button>
                     </Link>
                 </li>

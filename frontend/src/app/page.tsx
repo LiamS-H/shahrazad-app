@@ -7,7 +7,7 @@ export default function Home() {
             <h1 className="select-none text-7xl sm:text-8xl md:text-9xl">
                 Shahrazad
             </h1>
-            <Link href={"/game/create"}>
+            <Link href={"/game"}>
                 <Button
                     variant="highlight"
                     className="group transition hover:scale-110 overflow-hidden relative"
