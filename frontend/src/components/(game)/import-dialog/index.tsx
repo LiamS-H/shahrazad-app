@@ -105,14 +105,15 @@ export function ImportDialog({
                         <span>
                             Deck string or{" "}
                             <a
-                                className="font-bold text-highlight"
+                                className="font-bold"
                                 href="https://archidekt.com"
+                                target="_blank"
                             >
                                 Archidekt
                             </a>{" "}
                             deck link supported.
                         </span>
-                        <span className="italic text-destructive">
+                        <span className="italic text-muted">
                             Moxfield deck link blocked by their firewall.
                         </span>
                     </DialogDescription>
@@ -128,6 +129,7 @@ export function ImportDialog({
                         id="deck-url"
                         placeholder="https://archidekt.com/decks/XXXX/XXX"
                         onChange={(e) => setUrl(e.target.value)}
+                        onFocus={(e) => e.target.select()}
                         value={url}
                     />
                 </form>
