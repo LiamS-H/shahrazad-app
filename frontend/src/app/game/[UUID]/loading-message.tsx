@@ -84,7 +84,7 @@ export function LoadingMessage({
     };
 
     return (
-        <div className="flex flex-col items-start gap-1 h-64">
+        <div className="flex flex-col items-start gap-1 h-64 w-40">
             <StatusMessage text="Page loaded" variant="success" />
 
             {wasmReady ? (
