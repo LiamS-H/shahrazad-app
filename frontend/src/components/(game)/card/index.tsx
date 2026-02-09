@@ -173,19 +173,25 @@ function MotionCard({
         y: null,
     });
 
+    /** This break animation on render change, since the default state is no animation
+     * TODO: Pick one of two options
+     * 1) rewrite / path motion.div to display animation when height / width changes and or only listen to manual xy chages
+     * 2) Write a better hack to fix this, most likely by disabling on tap instead of enabling on move. default = enabled
+     */
+
     const positionChanged =
         !animateStrict ||
         shah_card.state.x === undefined ||
         prevPosition.current.x !== shah_card.state.x || // eslint-disable-line react-hooks/refs
         prevPosition.current.y !== shah_card.state.y; // eslint-disable-line react-hooks/refs
 
-    console.log(
-        [shah_card.state.x, shah_card.state.y],
-        prevPosition.current, // eslint-disable-line react-hooks/refs
-        positionChanged,
-    );
+    // console.log(
+    //     [shah_card.state.x, shah_card.state.y],
+    //     prevPosition.current, // eslint-disable-line react-hooks/refs
+    //     positionChanged,
+    // );
     useEffect(() => {
-        console.log(shah_card.state.x, shah_card.state.y);
+        // console.log(shah_card.state.x, shah_card.state.y);
         prevPosition.current = {
             x: shah_card.state.x ?? null,
             y: shah_card.state.y ?? null,
