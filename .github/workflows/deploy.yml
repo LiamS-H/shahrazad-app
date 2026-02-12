@@ -33,19 +33,44 @@ jobs:
             - name: Set up gcloud SDK
               uses: google-github-actions/setup-gcloud@v2
 
-            - name: Tag image as production
+            - name: Tag Image For Promotion
+              id: promote
               run: |
                   gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
-                  gcloud container images add-tag \
-                    ${{ secrets.ARTIFACT_URL }}:${{ github.sha }} \
-                    ${{ secrets.ARTIFACT_URL }}:production \
-                    --quiet || \
-                  gcloud container images add-tag \
-                    ${{ secrets.ARTIFACT_URL }}:preview \
-                    ${{ secrets.ARTIFACT_URL }}:production \
-                    --quiet
+
+                  IMAGE_URL="${{ secrets.ARTIFACT_URL }}"
+                  PROD_TAG="$IMAGE_URL:production"
+
+                  # 1. Determine which image exists (From the PR that was merged first, then preview if pr failed)
+                  TARGET_IMAGE=""
+                  if gcloud artifacts docker images describe "$IMAGE_URL:${{ github.sha }}" &>/dev/null; then
+                      TARGET_IMAGE="$IMAGE_URL:${{ github.sha }}"
+                  elif gcloud artifacts docker images describe "$IMAGE_URL:preview" &>/dev/null; then
+                      TARGET_IMAGE="$IMAGE_URL:preview"
+                  fi
+
+                  # 2. Exit early if no source image found
+                  if [ -z "$TARGET_IMAGE" ]; then
+                      echo "No image found to promote."
+                      echo "found=false" >> $GITHUB_OUTPUT
+                      exit 0
+                  fi
+
+                  # 3. Get digests to check if they are already identical
+                  TARGET_DIGEST=$(gcloud artifacts docker images describe "$TARGET_IMAGE" --format='value(image_summary.digest)')
+                  PROD_DIGEST=$(gcloud artifacts docker images describe "$PROD_TAG" --format='value(image_summary.digest)' 2>/dev/null || echo "none")
+
+                  if [ "$TARGET_DIGEST" == "$PROD_DIGEST" ]; then
+                      echo "Production is already identical to $TARGET_IMAGE. Skipping deploy."
+                      echo "found=false" >> $GITHUB_OUTPUT
+                  else
+                      echo "Promoting $TARGET_IMAGE to production..."
+                      gcloud artifacts docker tags add "$TARGET_IMAGE" "$PROD_TAG" --quiet
+                      echo "found=true" >> $GITHUB_OUTPUT
+                  fi
 
             - name: Deploy to Production Cloud Run
+              if: steps.promote.outputs.found == 'true'
               uses: google-github-actions/deploy-cloudrun@v2
               with:
                   service: ${{ vars.CLOUD_RUN_ID }}
@@ -54,5 +79,6 @@ jobs:
                   flags: "--port=5000 --memory=128Mi --cpu=1 --timeout=300 --concurrency=1000 --execution-environment=gen1 --min-instances=0 --max-instances=1"
 
             - name: Move all traffic to the new revision
+              if: steps.promote.outputs.found == 'true'
               run: |
                   gcloud run services update-traffic ${{ vars.CLOUD_RUN_ID }} --region us-west1 --to-latest
