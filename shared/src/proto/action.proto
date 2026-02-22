@@ -1,6 +1,7 @@
 syntax = "proto3";
 package action;
 
+import "src/proto/game.proto";
 import "src/proto/playmat.proto";
 import "src/proto/card.proto";
 import "src/proto/message.proto";
@@ -25,6 +26,7 @@ message ShahrazadAction {
         GameTerminated game_terminated = 16;
         SendMessage send_message = 17;
         ResetPlaymat reset_playmat = 18;
+        SetSettings set_settings = 19;
     }
 }
 
@@ -126,6 +128,10 @@ message SendMessage {
     repeated message.Message messages = 1;
     string player_id = 2;
     uint32 created_at = 3;
+}
+
+message SetSettings {
+    game.ShahrazadGameSettings settings = 1;
 }
 
 // message JoinGameResponse {

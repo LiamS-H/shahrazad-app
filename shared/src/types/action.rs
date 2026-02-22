@@ -3,6 +3,7 @@ use type_reflect::*;
 
 use crate::proto::action::shahrazad_action::Action;
 use crate::proto::{self};
+use crate::types::game::ShahrazadGameSettings;
 use crate::types::playmat::DeckTopReveal;
 
 use super::{
@@ -101,6 +102,9 @@ pub enum ShahrazadAction {
         seed: String,
     },
     GameTerminated,
+    SetSettings {
+        settings: ShahrazadGameSettings,
+    },
 }
 
 impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
@@ -226,6 +230,9 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                 seed: a.seed,
             },
             Action::GameTerminated(_) => ShahrazadAction::GameTerminated,
+            Action::SetSettings(set_settings) => ShahrazadAction::SetSettings {
+                settings: set_settings.settings.unwrap().into(),
+            },
         })
     }
 }
@@ -372,6 +379,11 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                 }
                 ShahrazadAction::GameTerminated => {
                     Some(Action::GameTerminated(proto::action::GameTerminated {}))
+                }
+                ShahrazadAction::SetSettings { settings } => {
+                    Some(Action::SetSettings(proto::action::SetSettings {
+                        settings: Some(settings.into()),
+                    }))
                 }
             },
         }

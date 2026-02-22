@@ -102,6 +102,7 @@ export function UserProfile({
                     }}
                 >
                     <Input
+                        placeholder="Display Name"
                         value={nameInput}
                         onChange={(e) => setNameInput(e.target.value)}
                     />

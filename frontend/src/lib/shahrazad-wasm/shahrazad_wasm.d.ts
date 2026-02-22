@@ -4,11 +4,11 @@ export function encode_client_action(action: any): Uint8Array;
 export function decode_server_update(code: any): any;
 export class GameState {
   free(): void;
-  apply_action(action: any): any;
   constructor(game: any);
+  static new_local(settings: any, time: any): GameState;
   get_hash(): any;
   get_state(): any;
-  static new_local(settings: any, time: any): GameState;
+  apply_action(action: any): any;
   set_state(game: any): any;
 }
 
@@ -17,14 +17,14 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_gamestate_free: (a: number, b: number) => void;
-  readonly decode_server_update: (a: any) => [number, number, number];
-  readonly encode_client_action: (a: any) => [number, number, number];
-  readonly gamestate_apply_action: (a: number, b: any) => [number, number, number];
-  readonly gamestate_get_hash: (a: number) => [number, number, number];
-  readonly gamestate_get_state: (a: number) => [number, number, number];
   readonly gamestate_new: (a: any) => number;
   readonly gamestate_new_local: (a: any, b: any) => number;
+  readonly gamestate_get_hash: (a: number) => [number, number, number];
+  readonly gamestate_get_state: (a: number) => [number, number, number];
+  readonly gamestate_apply_action: (a: number, b: any) => [number, number, number];
   readonly gamestate_set_state: (a: number, b: any) => [number, number, number];
+  readonly encode_client_action: (a: any) => [number, number, number];
+  readonly decode_server_update: (a: any) => [number, number, number];
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __externref_table_alloc: () => number;
   readonly __wbindgen_export_2: WebAssembly.Table;

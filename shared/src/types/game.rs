@@ -44,7 +44,7 @@ use super::zone::ShahrazadZoneId;
 #[derive(Reflect, Deserialize, Serialize, Clone, Debug, PartialEq, Hash)]
 pub struct ShahrazadGameSettings {
     pub starting_life: i32,
-    pub free_mulligans: String,
+    pub free_mulligans: i32,
     pub commander: bool,
     pub scry_rule: bool,
 }
@@ -539,7 +539,7 @@ impl ShahrazadGame {
                 {
                     let playmat = game.playmats.get_mut(&player_id)?;
 
-                    let free_mulligans = game.settings.free_mulligans.parse::<i8>().unwrap_or(0);
+                    let free_mulligans = game.settings.free_mulligans as i8;
 
                     if free_mulligans == 5 {
                         playmat.mulligans = -1;
@@ -753,6 +753,10 @@ impl ShahrazadGame {
                 if !mutated {
                     return None;
                 }
+                return Some(game);
+            }
+            ShahrazadAction::SetSettings { settings } => {
+                game.settings = settings;
                 return Some(game);
             }
         }

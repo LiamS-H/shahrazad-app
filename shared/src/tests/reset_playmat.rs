@@ -7,8 +7,7 @@ use crate::types::{action::ShahrazadAction, game::ShahrazadGame, playmat::Shahra
 fn reset_playmat_resets_state() {
     let mut game = ShahrazadGame::new(ShahrazadGameSettings {
         commander: true,
-        free_mulligans: "1".into(),
-        scry_rule: true,
+        free_mulligans: 1,        scry_rule: true,
         starting_life: 1,
     });
 

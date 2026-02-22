@@ -1,14 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    /* config options here */
-    redirects: async () => [
-        {
-            source: "/game/",
-            destination: "/game/create",
-            permanent: false,
-        },
-    ],
+    // turbopack: {
+    //     rules: {
+    //         "*.wasm": {
+    //             loaders: ["webassembly-loader"],
+    //             as: "*.wasm",
+    //         },
+    //     },
+    // },
+    // webpack: (config) => {
+    //     config.experiments = { ...config.experiments, asyncWebAssembly: true };
+    //     return config;
+    // },
 };
 
 export default nextConfig;

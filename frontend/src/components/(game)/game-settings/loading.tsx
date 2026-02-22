@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/(ui)/skeleton";
 import { TabsContent } from "@/components/(ui)/tabs";
 
-export default function CreateGameLoading() {
+export default function GameSettingLoading() {
     return (
         <TabsContent value="create">
             <div className="space-y-4 pt-4">

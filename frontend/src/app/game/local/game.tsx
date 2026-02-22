@@ -4,14 +4,17 @@ import {
     ShahrazadActionCase,
     type ShahrazadAction,
 } from "@/types/bindings/action";
-import type { ShahrazadGame } from "@/types/bindings/game";
+import type {
+    ShahrazadGame,
+    ShahrazadGameSettings,
+} from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
 import { type GameClientOnMessage } from "@/lib/client";
 import { LocalGameClient } from "@/lib/client/local";
 import { toast } from "sonner";
 import { UserProfile } from "@/components/(ui)/user-profile";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loadPlayer } from "@/lib/client/localPlayer";
 import Loading from "../[UUID]/loading";
 import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
@@ -22,6 +25,7 @@ import { preloadCardImages } from "@/lib/client/preload-cards";
 const activePlayer = "P0";
 
 export default function LocalGame() {
+    const searchParams = useSearchParams();
     const router = useRouter();
     const gameClientRef = useRef<LocalGameClient | null>(null);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
@@ -37,27 +41,36 @@ export default function LocalGame() {
 
     const { preloadCards, requestCard } = useScrycardsContext();
 
-    const loadCode = useCallback((code?: string) => {
-        if (!gameClientRef.current) {
-            toast("Couldn't load code; gamestate not initialized");
-            return false;
-        }
-        if (code === undefined) {
-            setGame(gameClientRef.current.beginGame());
+    const loadCode = useCallback(
+        (code?: string) => {
+            const settings_string = searchParams.get("settings") ?? "";
+            let settings: ShahrazadGameSettings | undefined = undefined;
+            try {
+                settings = JSON.parse(settings_string) || undefined;
+            } catch {}
+
+            if (!gameClientRef.current) {
+                toast("Couldn't load code; gamestate not initialized");
+                return false;
+            }
+            if (code === undefined) {
+                setGame(gameClientRef.current.beginGame());
+                return true;
+            }
+            if (code === "") {
+                toast("Couldn't load empty code");
+                return false;
+            }
+            const game = gameClientRef.current.beginGame(settings, code);
+            if (!game) {
+                toast("Couldn't load code; gamestate not initialized");
+                return false;
+            }
+            setGame(game);
             return true;
-        }
-        if (code === "") {
-            toast("Couldn't load empty code");
-            return false;
-        }
-        const game = gameClientRef.current.beginGame(undefined, code);
-        if (!game) {
-            toast("Couldn't load code; gamestate not initialized");
-            return false;
-        }
-        setGame(game);
-        return true;
-    }, []);
+        },
+        [searchParams],
+    );
 
     const initGame = useCallback(async () => {
         if (init_ref.current) return;

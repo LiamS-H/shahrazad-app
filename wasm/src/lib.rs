@@ -46,7 +46,7 @@ impl GameState {
             Ok(settings) => settings,
             Err(_) => ShahrazadGameSettings {
                 starting_life: 20,
-                free_mulligans: "0".into(),
+                free_mulligans: 0,
                 commander: false,
                 scry_rule: false,
             },

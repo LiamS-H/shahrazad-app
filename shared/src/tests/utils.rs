@@ -31,7 +31,7 @@ pub fn create_sample_game() -> ShahrazadGame {
 
 pub const DEFAULT_GAME_SETTINGS: ShahrazadGameSettings = ShahrazadGameSettings {
     starting_life: 20,
-    free_mulligans: String::new(),
+    free_mulligans: 0,
     commander: true,
     scry_rule: true,
 };
