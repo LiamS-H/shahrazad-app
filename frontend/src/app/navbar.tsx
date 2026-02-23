@@ -5,12 +5,11 @@ import { Button } from "@/components/(ui)/button";
 import { useFullscreen } from "@/contexts/fullscreen";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export default function NavBar() {
     const { isFullscreen } = useFullscreen();
     const path = usePathname();
-    const searchParams = useSearchParams();
-    const currentTab = searchParams.get("tab");
     const inGame =
         path.startsWith("/game/") &&
         !path.startsWith("/game?tab=create") &&
@@ -25,9 +24,15 @@ export default function NavBar() {
                     </Link>
                 </li>
                 <li>
-                    <Link href={currentTab ? `/game?tab=create` : "/game"}>
-                        <Button variant="link">Game</Button>
-                    </Link>
+                    <Suspense
+                        fallback={
+                            <Link href={"/game"}>
+                                <Button variant="link">Game</Button>
+                            </Link>
+                        }
+                    >
+                        <GameLink />
+                    </Suspense>
                 </li>
                 <li>
                     <Link href={"/game/local"}>
@@ -44,5 +49,15 @@ export default function NavBar() {
                 )}
             </ul>
         </nav>
+    );
+}
+
+function GameLink() {
+    const searchParams = useSearchParams();
+    const currentTab = searchParams.get("tab");
+    return (
+        <Link href={currentTab ? `/game?tab=create` : "/game"}>
+            <Button variant="link">Game</Button>
+        </Link>
     );
 }

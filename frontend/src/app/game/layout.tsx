@@ -1,5 +1,6 @@
 "use client";
 import { Card, CardContent } from "@/components/(ui)/card";
+import { Skeleton } from "@/components/(ui)/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/(ui)/tabs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
@@ -38,9 +39,7 @@ export default function GameConfigLayout({
             <Card className="container min-w-96 max-w-md">
                 <CardContent className="pt-6">
                     <Suspense
-                        fallback={
-                            <div className="h-64 animate-pulse bg-muted rounded-md" />
-                        }
+                        fallback={<Skeleton className="h-64 rounded-md" />}
                     >
                         <GameConfigTabs>{children}</GameConfigTabs>
                     </Suspense>
