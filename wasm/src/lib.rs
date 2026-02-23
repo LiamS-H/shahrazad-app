@@ -7,7 +7,7 @@ use shared::types::{
     ws::{ClientAction, ProtoSerialize, ServerUpdate},
 };
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::js_sys;
+use wasm_bindgen_futures::js_sys::{self, JsString};
 
 // Configure serialization options
 fn to_js_value<T>(value: &T) -> Result<JsValue, JsValue>
@@ -41,7 +41,19 @@ impl GameState {
         }
     }
 
-    pub fn new_local(settings: JsValue, time: JsValue) -> Self {
+    pub fn new_local(settings: JsValue, time: JsValue, code: JsValue) -> Result<Self,JsValue> {
+        let time = match serde_wasm_bindgen::from_value::<u64>(time) {
+            Ok(time) => time,
+            Err(_) => 0,
+        };
+        if code.is_string() {
+            if let Some(game) = serde_wasm_bindgen::from_value::<String>(code).ok().and_then(|string|BASE64_STANDARD.decode(string).ok())
+            .and_then(|b| ShahrazadGame::decode(b).ok()) {
+                return Ok(Self {inner: Box::new(game)})
+            };
+            return Err(JsValue::null())
+        };
+
         let settings = match serde_wasm_bindgen::from_value::<ShahrazadGameSettings>(settings) {
             Ok(settings) => settings,
             Err(_) => ShahrazadGameSettings {
@@ -51,20 +63,22 @@ impl GameState {
                 scry_rule: false,
             },
         };
-        let time = match serde_wasm_bindgen::from_value::<u64>(time) {
-            Ok(time) => time,
-            Err(_) => 0,
-        };
         let game = ShahrazadGame::new_time(settings, time);
 
-        Self {
+        Ok(Self {
             inner: Box::new(game),
-        }
+        })
     }
 
     #[wasm_bindgen]
     pub fn get_hash(&self) -> Result<JsValue, JsValue> {
         to_js_value(&self.inner.hash())
+    }
+    #[wasm_bindgen]
+    pub fn get_bytes_str(&self) -> Result<JsString, JsValue> {
+        let code = self.inner.encode();
+        let string = BASE64_STANDARD.encode(code);
+        Ok(JsString::from(string))
     }
     #[wasm_bindgen]
     pub fn get_state(&self) -> Result<JsValue, JsValue> {
@@ -89,6 +103,7 @@ impl GameState {
 
         to_js_value(&self.inner)
     }
+    
 }
 
 #[wasm_bindgen]

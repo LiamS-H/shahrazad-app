@@ -5,8 +5,9 @@ export function decode_server_update(code: any): any;
 export class GameState {
   free(): void;
   constructor(game: any);
-  static new_local(settings: any, time: any): GameState;
+  static new_local(settings: any, time: any, code: any): GameState;
   get_hash(): any;
+  get_bytes_str(): string;
   get_state(): any;
   apply_action(action: any): any;
   set_state(game: any): any;
@@ -18,8 +19,9 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_gamestate_free: (a: number, b: number) => void;
   readonly gamestate_new: (a: any) => number;
-  readonly gamestate_new_local: (a: any, b: any) => number;
+  readonly gamestate_new_local: (a: any, b: any, c: any) => [number, number, number];
   readonly gamestate_get_hash: (a: number) => [number, number, number];
+  readonly gamestate_get_bytes_str: (a: number) => [number, number, number];
   readonly gamestate_get_state: (a: number) => [number, number, number];
   readonly gamestate_apply_action: (a: number, b: any) => [number, number, number];
   readonly gamestate_set_state: (a: number, b: any) => [number, number, number];

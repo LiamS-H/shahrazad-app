@@ -12,23 +12,28 @@ export class LocalGameClient {
         settings?: ShahrazadGameSettings,
         game_state?: string,
     ): ShahrazadGame | null {
-        // this.gameState = new GameState(null);
-
         const state = GameState.new_local(
             settings,
-            // game_state,
             Math.floor(Date.now() / 1000),
+            game_state,
         );
 
         if (!state) {
+            console.error("[local] parse base64 of game");
+            return null;
+        }
+        const game: ShahrazadGame = state.get_state();
+        if (game.players.length === 0 && game_state) {
+            console.log(game);
+            console.error("[local] failed to load empty game");
             return null;
         }
         this.gameState = state;
-        const game: ShahrazadGame = this.gameState.get_state();
         this.callbacks.onPreloadCards(
             Object.keys(game.cards).map((id) => game.cards[id].card_name),
             false,
         );
+        this.callbacks.onGameUpdate(game);
         return game;
     }
 
@@ -106,8 +111,7 @@ export class LocalGameClient {
     }
 
     public encode() {
-        // this.gameState.encode()
-        return "abcdef-0000-0000";
+        return this.gameState?.get_bytes_str() ?? null;
     }
 
     public cleanup() {

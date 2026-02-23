@@ -1419,6 +1419,7 @@ dependencies = [
 name = "shared"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "pretty_assertions",
  "prost",
  "prost-build",

@@ -23,6 +23,7 @@ export function SaveStatesButton({
     function handleSubmitCode(code: string) {
         if (code === "") return false;
         if (loadCode(code)) {
+            setCodeInput("");
             setOpen(false);
         }
     }
@@ -60,12 +61,14 @@ export function SaveStatesButton({
                 <Button
                     variant="outline"
                     onClick={() => {
-                        const link = window.location.toString();
+                        const link = new URL(window.location.toString());
+                        link.searchParams.delete("settings");
+                        link.searchParams.set("code", code);
                         if (!link) {
                             toast("Something went wrong");
                             return;
                         }
-                        navigator.clipboard.writeText(link);
+                        navigator.clipboard.writeText(link.toString());
                         toast(`Copied sharing link to clipboard.`);
                         setOpen(false);
                     }}
@@ -80,7 +83,9 @@ export function SaveStatesButton({
                     onClick={() => {
                         if (!code) return;
                         navigator.clipboard.writeText(code.toString());
-                        toast(`Copied "${code}" to clipboard.`);
+                        toast(
+                            `Copied "${code.substring(0, 10)}..." to clipboard.`,
+                        );
                         setOpen(false);
                     }}
                 >
@@ -89,6 +94,7 @@ export function SaveStatesButton({
                 </Button>
 
                 <Input
+                    autoFocus
                     onFocus={(e) => {
                         e.target.select();
                     }}
@@ -97,8 +103,8 @@ export function SaveStatesButton({
                     value={codeInput}
                     onChange={(e) => {
                         const new_code = e.target.value;
-                        handleSubmitCode(new_code);
                         setCodeInput(new_code);
+                        handleSubmitCode(new_code);
                     }}
                 />
             </DropdownMenuContent>

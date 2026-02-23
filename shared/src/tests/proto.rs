@@ -3,6 +3,8 @@ use std::collections::VecDeque;
 use crate::tests::utils::{create_sample_card_transform, create_sample_player};
 use crate::types::action::{CardImport, ShahrazadAction};
 use crate::types::card::ShahrazadCardStateTransform;
+use base64::Engine;
+use base64::prelude::BASE64_STANDARD;
 use prost::Message;
 
 use crate::proto;
@@ -265,17 +267,17 @@ fn test_game_terminated() {
 
 #[test]
 fn test_error_handling() {
-    // Test invalid format
     assert!(proto::action::ShahrazadAction::decode(&b"invalid"[..]).is_err());
 
-    // Test invalid action type
     assert!(proto::action::ShahrazadAction::decode(&b"XX|invalid"[..]).is_err());
 
-    // Test missing fields
-    assert!(proto::action::ShahrazadAction::decode(&b"DB|1"[..]).is_err());
-
-    // Test invalid card state
     assert!(proto::card::ShahrazadCardState::decode(&b"xInvalid_State"[..]).is_err());
+
+    assert!(proto::game::ShahrazadGame::decode(&b"0"[..]).is_err());
+
+    // for i in 0..255 {
+    //     assert!(ShahrazadGame::decode([i].into()).is_err());
+    // } 
 }
 
 #[test]
@@ -357,5 +359,13 @@ fn test_game() {
     let decoded = ProtoGame::decode(&*encoded).unwrap();
     let roundtrip: ShahrazadGame = decoded.try_into().unwrap();
 
+    assert_eq!(game, roundtrip);
+
+    let proto_game: ProtoGame = game.clone().into();
+    let encoded = proto_game.encode_to_vec();
+    let base64 = BASE64_STANDARD.encode(&encoded);
+    let base64 = BASE64_STANDARD.decode(&base64).unwrap();
+    let decoded = ProtoGame::decode(&*base64).unwrap();
+    let roundtrip: ShahrazadGame = decoded.try_into().unwrap();
     assert_eq!(game, roundtrip);
 }

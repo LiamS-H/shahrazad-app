@@ -854,7 +854,16 @@ impl ProtoSerialize for ShahrazadGame {
         Self: Sized,
     {
         let buf: VecDeque<u8> = s.into();
-        let compact = proto::game::ShahrazadGame::decode(buf).unwrap();
-        return compact.try_into();
+        let compact = match proto::game::ShahrazadGame::decode(buf) {
+            Ok(c) => c,
+            Err(_) => return Err("protobuf decode error"),
+        }
+        ;
+        let game: ShahrazadGame = match compact.try_into() {
+            Ok(game) => game,
+            Err(err) => return Err(err),
+        };
+
+        return Ok(game);
     }
 }

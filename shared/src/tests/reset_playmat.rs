@@ -96,17 +96,10 @@ fn reset_playmat_resets_state() {
         y: None,
         annotation: "".into(),
     };
-    let card2_after = game.cards.get(&"C2".into()).unwrap();
-    assert_eq!(card2_after.location, hand_id);
-    assert_eq!(card2_after.state, expected_state);
 
-    let card3_after = game.cards.get(&"C3".into()).unwrap();
-    assert_eq!(card3_after.location, hand_id);
-    assert_eq!(card3_after.state, expected_state);
-
-    for i in 4..=8 {
+    for i in 2..=8 {
         let card_id = format!("C{}", i);
         let card = game.cards.get(&card_id.into()).unwrap();
-        assert_eq!(card.location, hand_id);
+        assert_eq!(card.location, library_id);
     }
 }

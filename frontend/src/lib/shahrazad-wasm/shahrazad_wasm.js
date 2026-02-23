@@ -250,17 +250,31 @@ export class GameState {
     /**
      * @param {any} settings
      * @param {any} time
+     * @param {any} code
      * @returns {GameState}
      */
-    static new_local(settings, time) {
-        const ret = wasm.gamestate_new_local(settings, time);
-        return GameState.__wrap(ret);
+    static new_local(settings, time, code) {
+        const ret = wasm.gamestate_new_local(settings, time, code);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return GameState.__wrap(ret[0]);
     }
     /**
      * @returns {any}
      */
     get_hash() {
         const ret = wasm.gamestate_get_hash(this.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @returns {string}
+     */
+    get_bytes_str() {
+        const ret = wasm.gamestate_get_bytes_str(this.__wbg_ptr);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }

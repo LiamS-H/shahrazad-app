@@ -50,7 +50,12 @@ fn init_game() {
             "zone_count": 7,
             "card_count": 0,
             "cards": {},
+            "stack": "Z0",
             "zones": {
+                "Z0": {
+                    "cards":[],
+                    "name": "STACK"
+                },
                 "Z1": {
                     "cards":[],
                     "name": "LIBRARY"
@@ -100,7 +105,7 @@ fn init_game() {
             },
             "players": ["1"],
             "settings": {
-                "free_mulligans": "",
+                "free_mulligans": 0,
                 "scry_rule": true,
                 "starting_life": 20,
                 "commander": true
@@ -154,7 +159,12 @@ fn init_game() {
                     "location":"Z1"
                 }
             },
+            "stack": "Z0",
             "zones": {
+                "Z0": {
+                    "cards":[],
+                    "name": "STACK"
+                },
                 "Z1": {
                     "cards":["C1"],
                     "name": "LIBRARY"
@@ -204,7 +214,7 @@ fn init_game() {
             },
             "players": ["1"],
             "settings": {
-                "free_mulligans": "",
+                "free_mulligans": 0,
                 "scry_rule": true,
                 "starting_life": 20,
                 "commander": true

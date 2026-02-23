@@ -41,35 +41,43 @@ export default function LocalGame() {
 
     const { preloadCards, requestCard } = useScrycardsContext();
 
-    const loadCode = useCallback(
-        (code?: string) => {
-            const settings_string = searchParams.get("settings") ?? "";
-            let settings: ShahrazadGameSettings | undefined = undefined;
-            try {
-                settings = JSON.parse(settings_string) || undefined;
-            } catch {}
+    const loadCode = useCallback((code: string | null) => {
+        if (!gameClientRef.current) {
+            toast("Couldn't load code; gamestate not initialized");
+            return false;
+        }
+        if (code === null) {
+            return false;
+        }
+        if (code === "") {
+            toast("Couldn't load empty code");
+            return false;
+        }
+        const game = gameClientRef.current.beginGame(undefined, code);
+        if (!game) {
+            toast("Couldn't load code; gamestate failed initialization");
+            return false;
+        }
+        toast("Game restored from code");
+        return true;
+    }, []);
 
+    const loadSettings = useCallback(
+        (settings: ShahrazadGameSettings | null) => {
             if (!gameClientRef.current) {
-                toast("Couldn't load code; gamestate not initialized");
                 return false;
             }
-            if (code === undefined) {
-                setGame(gameClientRef.current.beginGame());
-                return true;
-            }
-            if (code === "") {
-                toast("Couldn't load empty code");
+            if (!settings) {
                 return false;
             }
-            const game = gameClientRef.current.beginGame(settings, code);
+
+            const game = gameClientRef.current.beginGame(settings);
             if (!game) {
-                toast("Couldn't load code; gamestate not initialized");
+                toast("Couldn't load settings");
                 return false;
             }
-            setGame(game);
-            return true;
         },
-        [searchParams],
+        [],
     );
 
     const initGame = useCallback(async () => {
@@ -111,7 +119,17 @@ export default function LocalGame() {
         });
 
         gameClientRef.current = gameClient;
-        if (!loadCode()) {
+        if (loadCode(searchParams.get("code"))) {
+            return;
+        }
+        const settings_string = searchParams.get("settings") ?? "";
+        let settings: ShahrazadGameSettings | null;
+        try {
+            settings = JSON.parse(settings_string);
+        } catch {
+            return false;
+        }
+        if (!loadSettings(settings)) {
             gameClientRef.current.beginGame();
         }
         gameClient.queueAction({
@@ -121,7 +139,14 @@ export default function LocalGame() {
             },
             player_id: activePlayer,
         });
-    }, [loadCode, preloadCards, requestCard, router]);
+    }, [
+        loadCode,
+        loadSettings,
+        preloadCards,
+        requestCard,
+        router,
+        searchParams,
+    ]);
 
     useEffect(() => {
         // This is async and updating external state.
