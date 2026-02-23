@@ -76,6 +76,8 @@ export default function LocalGame() {
                 toast("Couldn't load settings");
                 return false;
             }
+            toast("Game created from settings");
+            return true;
         },
         [],
     );
@@ -92,9 +94,7 @@ export default function LocalGame() {
 
         const gameClient = new LocalGameClient({
             onGameUpdate: (game) => {
-                if (gameClientRef.current) {
-                    setCode(gameClientRef.current.encode());
-                }
+                setCode(gameClientRef.current?.encode?.() ?? null);
                 setGame(game);
             },
             onPreloadCards: (cards, images) => {
@@ -123,12 +123,10 @@ export default function LocalGame() {
             return;
         }
         const settings_string = searchParams.get("settings") ?? "";
-        let settings: ShahrazadGameSettings | null;
+        let settings: ShahrazadGameSettings | null = null;
         try {
             settings = JSON.parse(settings_string);
-        } catch {
-            return false;
-        }
+        } catch {}
         if (!loadSettings(settings)) {
             gameClientRef.current.beginGame();
         }
