@@ -7,7 +7,7 @@ export default function Loading({
     server_loading?: boolean;
 }) {
     return (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-background overflow-hidden">
+        <div className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden">
             <div className="relative flex flex-col items-center">
                 <Loader2 className="h-48 w-48 animate-spin text-secondary" />
 
