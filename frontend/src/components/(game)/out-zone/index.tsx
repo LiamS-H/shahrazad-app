@@ -100,7 +100,7 @@ export function PoppedOutZone(props: {
                 left: pos.x,
                 top: pos.y,
             }}
-            className={`fixed group bg-background border rounded-lg shadow-lg flex shrink flex-col z-50 ${player?.active ? "text-highlight" : ""}`}
+            className={`fixed group bg-background border rounded-lg shadow-lg flex shrink flex-col z-30 ${player?.active ? "text-highlight" : ""}`}
             ref={eleRef}
         >
             <div

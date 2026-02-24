@@ -227,7 +227,7 @@ export default function ScryDialog({
                 if (!open) handleClose();
             }}
         >
-            <DialogContent className="max-w-[800px] w-full min-h-[400px] z-60">
+            <DialogContent className="max-w-[800px] w-full min-h-[400px]">
                 <DialogHeader>
                     <DialogTitle>Scrying ({amount})</DialogTitle>
                     <DialogDescription>Drag</DialogDescription>

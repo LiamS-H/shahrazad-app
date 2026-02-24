@@ -133,7 +133,7 @@ export default function LocalGame() {
         gameClient.queueAction({
             type: ShahrazadActionCase.AddPlayer,
             player: {
-                display_name: stored_player,
+                display_name: stored_player || activePlayer,
             },
             player_id: activePlayer,
         });

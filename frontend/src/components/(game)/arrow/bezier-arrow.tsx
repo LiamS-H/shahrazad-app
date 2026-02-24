@@ -30,8 +30,7 @@ export function BezierArrow({ from, to }: { from: pos; to: pos }) {
     const pathD = `M ${from.x} ${from.y} Q ${controlX} ${controlY} ${to.x} ${to.y}`;
 
     return (
-        // <svg className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-visible z-[1001]">
-        <svg className="absolute pointer-events-none overflow-visible z-[1001]">
+        <svg className="absolute pointer-events-none overflow-visible z-20">
             <defs>
                 <filter
                     id={filterId}

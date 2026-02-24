@@ -99,7 +99,7 @@ export function PreviewCard({
                     setPreview(null);
                 }}
                 ref={eleRef}
-                className={shah_card ? "z-60" : "z-40"}
+                className={shah_card ? "z-40" : "z-20"}
             >
                 {card}
                 <Button

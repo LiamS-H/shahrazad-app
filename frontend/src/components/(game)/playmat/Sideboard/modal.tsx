@@ -121,7 +121,7 @@ export default function SideboardingModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col z-60">
+            <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col">
                 <DialogHeader>
                     <div className="flex gap-4">
                         <div>
