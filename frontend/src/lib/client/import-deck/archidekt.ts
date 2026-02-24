@@ -1,6 +1,7 @@
 "use server";
 
 import { CardImport } from "@/types/bindings/action";
+import { IParsedDeck } from "./toActionlist";
 
 interface IArchidektCard {
     categories: string[];
@@ -26,10 +27,9 @@ function getArchidektDeckId(url: string) {
     return match ? { slug: match[1], name: match[2] } : null;
 }
 
-export async function importArchidektUrl(url: string): Promise<{
-    deck: CardImport[];
-    sideboard: CardImport[];
-} | null> {
+export async function importArchidektUrl(
+    url: string,
+): Promise<IParsedDeck | null> {
     try {
         const deckId = getArchidektDeckId(url);
         if (!deckId) return null;
@@ -39,6 +39,7 @@ export async function importArchidektUrl(url: string): Promise<{
         const resp = await fetch(req_url);
         const data: IArchidektResponse = await resp.json();
         const sideboard: CardImport[] = [];
+        const commander: CardImport[] = [];
         const deck: CardImport[] = [];
 
         const deck_categories = new Set(
@@ -84,6 +85,7 @@ export async function importArchidektUrl(url: string): Promise<{
 
         return {
             deck,
+            commander,
             sideboard,
         };
     } catch (e) {

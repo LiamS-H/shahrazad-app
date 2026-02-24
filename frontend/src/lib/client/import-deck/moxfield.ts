@@ -1,6 +1,7 @@
 "use server";
 
 import { CardImport } from "@/types/bindings/action";
+import { IParsedDeck } from "./toActionlist";
 
 interface IMoxfieldCard {
     card: {
@@ -26,22 +27,22 @@ function getMoxfieldDeckSlug(url: string) {
     return match ? match[1] : null;
 }
 
-export async function importMoxfieldUrl(url: string): Promise<{
-    deck: CardImport[];
-    sideboard: CardImport[];
-} | null> {
+export async function importMoxfieldUrl(
+    url: string,
+): Promise<IParsedDeck | null> {
     try {
         const slug = getMoxfieldDeckSlug(url);
         if (!slug) return null;
         const resp = await fetch(
-            `https://api.moxfield.com/v2/decks/all/${slug}`
+            `https://api.moxfield.com/v2/decks/all/${slug}`,
         );
         const data: IMoxfieldResponse = await resp.json();
         const sideboard: CardImport[] = [];
         const deck: CardImport[] = [];
+        const commander: CardImport[] = [];
         if (data.format == "commander") {
             for (const card of Object.values(data.commanders)) {
-                sideboard.push({
+                commander.push({
                     str: card.card.scryfall_id,
                 });
             }
@@ -61,6 +62,7 @@ export async function importMoxfieldUrl(url: string): Promise<{
         }
         return {
             deck,
+            commander,
             sideboard,
         };
     } catch (e) {

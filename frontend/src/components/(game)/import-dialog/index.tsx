@@ -55,25 +55,21 @@ export function ImportDialog({
             ? playmat.command
             : playmat.sideboard;
         setLoading(true);
+        const locations = {
+            deckId: playmat.library,
+            sideboardId,
+            commandId: playmat.command,
+            playerId: player,
+        };
         if (url) {
-            actions = await importFromUrl(url, {
-                deckId: playmat.library,
-                sideboardId,
-                playerId: player,
-                settings,
-            });
+            actions = await importFromUrl(url, locations);
             if (actions === undefined) {
                 toast("Coudln't fetch deck.");
                 setLoading(false);
                 return;
             }
         } else if (deckstr) {
-            actions = importFromStr(deckstr, {
-                deckId: playmat.library,
-                sideboardId,
-                playerId: player,
-                settings,
-            });
+            actions = importFromStr(deckstr, locations);
             if (actions === undefined) {
                 toast("Couldn't parse deck.");
                 setLoading(false);

@@ -26,5 +26,3 @@ export async function importFromUrl(
 
     return undefined;
 }
-//https://moxfield.com/decks/R6a3e2uNbkijLU8-LNV5Uw
-//https://moxfield.com/decks/WbOxBONUYEehbHg9E83kgA
