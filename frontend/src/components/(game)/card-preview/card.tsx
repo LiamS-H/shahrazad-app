@@ -31,7 +31,7 @@ export function Card({
                     animated
                 />
                 {isFlippable(scrycard) && (
-                    <div className="absolute -top-4 left-8">
+                    <div className="absolute -bottom-4 -left-4">
                         <Button
                             variant="ghost"
                             size="icon"

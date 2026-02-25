@@ -103,7 +103,7 @@ export function PreviewCard({
             >
                 {card}
                 <Button
-                    className="absolute top-8 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+                    className="absolute -top-4 right-8 opacity-0 group-hover:opacity-100 text-foreground"
                     size="icon"
                     variant="ghost"
                     onClick={() => {
@@ -120,7 +120,7 @@ export function PreviewCard({
                 )}
                 {onHide && (
                     <Button
-                        className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 text-foreground"
+                        className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 text-foreground hover:bg-destructive"
                         size="icon"
                         variant="ghost"
                         onClick={onHide}
@@ -140,7 +140,7 @@ function CConfluenceLink({ id }: { id: string }) {
     }
     return (
         <Button
-            className="absolute top-20 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+            className="absolute -top-4 left-8 opacity-0 group-hover:opacity-100 text-foreground"
             size="icon"
             variant="ghost"
             asChild
