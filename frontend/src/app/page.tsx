@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Home() {
     return (
         <div className="flex flex-col flex-grow justify-center items-center w-full">
-            <h1 className="select-none text-7xl sm:text-8xl md:text-9xl">
+            <h1 className="select-none text-7xl sm:text-8xl md:text-9xl font-[family-name:var(--font-title)]">
                 Shahrazad
             </h1>
             <Link href={"/game"}>
