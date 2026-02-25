@@ -214,7 +214,7 @@ export class GameClient {
             this.callbacks.onGameTermination("You were kicked from the lobby.");
         }
 
-        const newState: ShahrazadGame = this.gameState.apply_action(action);
+        const newState = this.gameState.apply_action(action);
         if (!newState) {
             return false;
         }

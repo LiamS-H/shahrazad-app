@@ -48,7 +48,7 @@ export class LocalGameClient {
             );
         }
 
-        const newState: ShahrazadGame = this.gameState.apply_action(action);
+        const newState = this.gameState.apply_action(action);
         if (!newState) {
             return false;
         }
