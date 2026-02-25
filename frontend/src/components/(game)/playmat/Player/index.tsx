@@ -2,17 +2,11 @@ import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { Minus, Plus } from "lucide-react";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/(ui)/popover";
-import { Input } from "@/components/(ui)/input";
-import { FormEvent, useState } from "react";
 import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
 import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
 import { usePlayer } from "@/contexts/(game)/player";
 import CommandDamageButton from "./command-damage";
+import { EditableText } from "@/components/(ui)/editable-text";
 
 export default function Player() {
     const { player, active } = usePlayer();
@@ -20,8 +14,6 @@ export default function Player() {
         useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const { life } = playmat;
-    const [lifeInput, setLifeInput] = useState<string>(life.toString());
-    const [inputOpen, setInputOpen] = useState(false);
 
     function addLife() {
         applyAction({
@@ -46,16 +38,6 @@ export default function Player() {
             player_id: player,
         });
     }
-    function parseInput(str: string): number | undefined {
-        const num = Number(str);
-        if (Number.isNaN(num)) return undefined;
-        return num;
-    }
-    function onSubmit(e: FormEvent) {
-        e.preventDefault();
-        setLife(parseInput(lifeInput));
-        setInputOpen(false);
-    }
 
     return (
         <div
@@ -70,33 +52,15 @@ export default function Player() {
                 <Button onClick={addLife} variant="outline" size="icon">
                     <Plus className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
-                <Popover
-                    open={inputOpen}
-                    onOpenChange={(open) => {
-                        if (open) {
-                            setLifeInput(life.toString());
-                        } else {
-                            setLife(parseInput(lifeInput));
-                        }
-                        setInputOpen(open);
+                <EditableText
+                    value={life.toString()}
+                    onSave={(val) => {
+                        const num = Number(val);
+                        if (!isNaN(num)) setLife(num);
                     }}
                 >
-                    <PopoverTrigger>
-                        <h1 className="text-5xl">{life}</h1>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-24">
-                        <form onSubmit={onSubmit}>
-                            <Input
-                                value={lifeInput}
-                                onChange={(e) => {
-                                    const str = e.target.value;
-                                    const num = parseInput(str);
-                                    setLifeInput(num ? num.toString() : str);
-                                }}
-                            />
-                        </form>
-                    </PopoverContent>
-                </Popover>
+                    <h1 className="text-5xl cursor-pointer">{life}</h1>
+                </EditableText>
                 <Button onClick={subtractLife} variant="outline" size="icon">
                     <Minus className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
