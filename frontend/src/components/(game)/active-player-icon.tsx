@@ -2,7 +2,7 @@ import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import type { ShahrazadPlaymatId } from "@/types/bindings/playmat";
-import { DoorOpen, Home, Settings, Trash2 } from "lucide-react";
+import { DoorOpen, Home, Settings, Trash2, UserCog } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { UserProfile } from "@/components/(ui)/user-profile";
 import {
@@ -35,6 +35,7 @@ export function ActivePlayerIcon({
                     player,
                 })
             }
+            hoverIcon={<UserCog />}
         >
             <Button
                 onClick={() => {

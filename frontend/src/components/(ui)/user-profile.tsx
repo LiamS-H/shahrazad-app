@@ -13,9 +13,11 @@ import { type ReactNode, useEffect, useMemo, useState } from "react";
 export function UserProfile({
     onChange,
     children,
+    hoverIcon,
 }: {
     onChange?: (player: ShahrazadPlayer) => void;
     children?: ReactNode;
+    hoverIcon: ReactNode;
 }) {
     const [player, setPlayer] = useState<ShahrazadPlayer | null>(null);
     const [open, setOpen] = useState(false);
@@ -67,16 +69,18 @@ export function UserProfile({
                             open ? "hidden" : "group-hover:hidden"
                         }`}
                     />
-                    <UserPen
+                    <div
                         className={`absolute ${
                             open ? "" : "hidden group-hover:block"
                         }`}
-                    />
+                    >
+                        {hoverIcon ? hoverIcon : <UserPen />}
+                    </div>
                 </div>
                 {player.display_name}
             </Button>
         );
-    }, [open, player]);
+    }, [open, player, hoverIcon]);
 
     return (
         <Popover
@@ -93,7 +97,7 @@ export function UserProfile({
             <PopoverTrigger className="text-highlight" asChild>
                 {triggerButton}
             </PopoverTrigger>
-            <PopoverContent className="flex flex-col gap-2">
+            <PopoverContent className="flex flex-col gap-2 w-40">
                 <form
                     onSubmit={(e) => {
                         updatePlayer({ ...player, display_name: nameInput });
