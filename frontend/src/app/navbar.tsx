@@ -14,29 +14,55 @@ export default function NavBar() {
         path.startsWith("/game/") &&
         !path.startsWith("/game?tab=create") &&
         !path.startsWith("/game?tab=join");
+    const inLocal = path.startsWith("/game/local");
 
     return (
         <nav className={`${isFullscreen ? "hidden" : ""}`}>
             <ul className="p-4 flex flex-row items-center gap-4">
                 <li>
                     <Link href={"/"}>
-                        <Button variant="link">Home</Button>
+                        <Button
+                            className={path == "/" ? "text-highlight" : ""}
+                            variant="link"
+                        >
+                            Home
+                        </Button>
                     </Link>
                 </li>
                 <li>
                     <Suspense
                         fallback={
                             <Link href={"/game"}>
-                                <Button variant="link">Game</Button>
+                                <Button
+                                    variant="link"
+                                    className={
+                                        path.startsWith("/game")
+                                            ? "text-highlight"
+                                            : undefined
+                                    }
+                                >
+                                    Game
+                                </Button>
                             </Link>
                         }
                     >
-                        <GameLink />
+                        <GameLink
+                            active={path.startsWith("/game") && !inLocal}
+                        />
                     </Suspense>
                 </li>
                 <li>
                     <Link href={"/game/local"}>
-                        <Button variant="link">Local Playtest</Button>
+                        <Button
+                            className={
+                                path.startsWith("/game/local")
+                                    ? "text-highlight"
+                                    : undefined
+                            }
+                            variant="link"
+                        >
+                            Local Playtest
+                        </Button>
                     </Link>
                 </li>
                 <li>
@@ -52,12 +78,17 @@ export default function NavBar() {
     );
 }
 
-function GameLink() {
+function GameLink({ active }: { active: boolean }) {
     const searchParams = useSearchParams();
     const currentTab = searchParams.get("tab");
     return (
         <Link href={currentTab ? `/game?tab=create` : "/game"}>
-            <Button variant="link">Game</Button>
+            <Button
+                className={active ? "text-highlight" : undefined}
+                variant="link"
+            >
+                Game
+            </Button>
         </Link>
     );
 }
