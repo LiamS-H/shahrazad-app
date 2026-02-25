@@ -1,11 +1,12 @@
 "use client";
 import { Button } from "@/components/(ui)/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/(ui)/dropdown-menu";
+
 import { Input } from "@/components/(ui)/input";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/(ui)/popover";
 import { Copy, Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -37,7 +38,7 @@ export function SaveStatesButton({
         );
     }
     return (
-        <DropdownMenu
+        <Popover
             open={open}
             onOpenChange={(o) => {
                 if (!o) {
@@ -46,7 +47,7 @@ export function SaveStatesButton({
                 setOpen(o);
             }}
         >
-            <DropdownMenuTrigger asChild>
+            <PopoverTrigger asChild>
                 <Button
                     variant="highlight"
                     className={
@@ -56,8 +57,8 @@ export function SaveStatesButton({
                     Saves
                     <Save />
                 </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="flex flex-col gap-2 w-full ">
+            </PopoverTrigger>
+            <PopoverContent className="flex flex-col gap-2 w-full ">
                 <Button
                     variant="outline"
                     onClick={() => {
@@ -107,7 +108,7 @@ export function SaveStatesButton({
                         handleSubmitCode(new_code);
                     }}
                 />
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </PopoverContent>
+        </Popover>
     );
 }

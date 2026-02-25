@@ -120,36 +120,42 @@ function GameSettingsContent({
             {/* Starting Life */}
             <div>
                 <Label>Starting Life</Label>
-                <Select
-                    value={settings.starting_life}
-                    onValueChange={(val) => updateField("starting_life", val)}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select starting life" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="20">20</SelectItem>
-                        <SelectItem value="25">25</SelectItem>
-                        <SelectItem value="40">40</SelectItem>
-                        <SelectItem value="custom">
-                            Custom{" "}
-                            {settings.custom_starting_life
-                                ? `- ${settings.custom_starting_life}`
-                                : ""}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
-                {settings.starting_life === "custom" && (
-                    <Input
-                        type="number"
-                        placeholder="Enter custom life total"
-                        className="mt-2"
-                        value={settings.custom_starting_life}
-                        onChange={(e) =>
-                            updateField("custom_starting_life", e.target.value)
+                <div className="flex gap-2 items-start">
+                    <Select
+                        value={settings.starting_life}
+                        onValueChange={(val) =>
+                            updateField("starting_life", val)
                         }
-                    />
-                )}
+                    >
+                        <SelectTrigger className="min-w-36 w-36">
+                            <SelectValue placeholder="Select starting life" />
+                        </SelectTrigger>
+                        <SelectContent className="w-36">
+                            <SelectItem value="20">20</SelectItem>
+                            <SelectItem value="25">25</SelectItem>
+                            <SelectItem value="40">40</SelectItem>
+                            <SelectItem value="custom">
+                                Custom{" "}
+                                {settings.custom_starting_life
+                                    ? `- ${settings.custom_starting_life}`
+                                    : ""}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    {settings.starting_life === "custom" && (
+                        <Input
+                            type="number"
+                            placeholder="Enter custom life total"
+                            value={settings.custom_starting_life}
+                            onChange={(e) =>
+                                updateField(
+                                    "custom_starting_life",
+                                    e.target.value,
+                                )
+                            }
+                        />
+                    )}
+                </div>
             </div>
 
             {/* Mulligans */}
