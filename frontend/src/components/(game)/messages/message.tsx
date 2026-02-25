@@ -10,7 +10,7 @@ export function Message({
     message: IMessage;
     lastRoll: number | null;
 }) {
-    const { getPlaymat } = useShahrazadGameContext();
+    const { getPlaymat, active_player } = useShahrazadGameContext();
     const sender = getPlaymat(message.sender)?.player.display_name || "System";
 
     switch (message.message.type) {
@@ -18,7 +18,7 @@ export function Message({
             const { sides, result } = message.message;
             return (
                 <div
-                    className={`flex items-end gap-2 ${
+                    className={`flex items-center ${message.sender === active_player ? "justify-end" : "justify-start"} gap-2 ${
                         lastRoll === sides ? "text-highlight" : ""
                     }`}
                 >

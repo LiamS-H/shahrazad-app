@@ -9,7 +9,6 @@ import {
     Badge,
     Hexagon,
 } from "lucide-react";
-import React from "react";
 
 export function DiceIcon({
     sides,
@@ -50,11 +49,11 @@ export function DiceIcon({
     return (
         <div
             className={cn(
-                "relative flex justify-center items-center",
-                className
+                "relative flex justify-center items-center w-full h-full",
+                className,
             )}
         >
-            <Shape className="w-full h-full" strokeWidth={2} />
+            <Shape style={{ height: "100%", width: "100%" }} strokeWidth={2} />
             <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
                 <span className="flex text-xs font-bold">{sides}</span>
             </div>

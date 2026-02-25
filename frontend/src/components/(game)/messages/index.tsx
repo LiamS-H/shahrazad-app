@@ -14,6 +14,7 @@ import { Dices } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MessageCase } from "@/types/bindings/message";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
+import { VisuallyHidden } from "@/components/(ui)/visually-hidden";
 
 export function MessagesDialog() {
     const { isOpen, setIsOpen, messages } = useMessagesContext();
@@ -28,7 +29,7 @@ export function MessagesDialog() {
         (behavior: ScrollBehavior = "smooth") => {
             messagesEndRef.current?.scrollIntoView({ behavior });
         },
-        [messagesEndRef]
+        [messagesEndRef],
     );
 
     useEffect(() => {
@@ -65,7 +66,7 @@ export function MessagesDialog() {
             });
             setLastRoll(sides);
         },
-        [active_player, sendMessage]
+        [active_player, sendMessage],
     );
 
     return (
@@ -78,9 +79,11 @@ export function MessagesDialog() {
             <DialogContent className="flex flex-col gap-4">
                 <DialogHeader>
                     <DialogTitle>Roll Dice</DialogTitle>
-                    <DialogDescription>
-                        Roll dice and see game messages.
-                    </DialogDescription>
+                    <VisuallyHidden>
+                        <DialogDescription>
+                            Roll dice and see game messages.
+                        </DialogDescription>
+                    </VisuallyHidden>
                 </DialogHeader>
                 <div
                     ref={chatContainerRef}
