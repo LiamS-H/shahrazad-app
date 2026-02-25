@@ -25,7 +25,7 @@ export function DraggableWrapper({
 
     return (
         <div
-            className={cx("fixed group p-4", className)}
+            className={cx("fixed group p-5", className)}
             ref={(r) => {
                 if (typeof ref === "function") {
                     ref(r);
@@ -45,7 +45,7 @@ export function DraggableWrapper({
             <div className="relative">
                 {children}
                 <Button
-                    className="absolute -top-4 -left-4 cursor-grab "
+                    className="absolute -top-5 -left-5 cursor-grab"
                     size="icon"
                     variant="secondary"
                     {...listeners}
