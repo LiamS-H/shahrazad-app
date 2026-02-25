@@ -23,9 +23,15 @@ export function DraggableWrapper({
             id: "preview",
         });
 
+    const fullClass = cx(
+        "fixed group p-5",
+        isDragging ? "is-dragging" : "",
+        className,
+    );
+
     return (
         <div
-            className={cx("fixed group p-5", className)}
+            className={fullClass}
             ref={(r) => {
                 if (typeof ref === "function") {
                     ref(r);

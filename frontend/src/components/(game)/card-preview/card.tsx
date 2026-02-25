@@ -32,7 +32,7 @@ export function Card({
                 />
                 {isFlippable(scrycard) && (
                     <Button
-                        className="absolute -bottom-5 -left-5 opacity-0 group-hover:opacity-100"
+                        className="absolute -bottom-5 -left-5 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100"
                         variant="ghost"
                         size="icon"
                         onClick={() => {

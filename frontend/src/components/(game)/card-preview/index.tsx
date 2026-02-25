@@ -81,7 +81,7 @@ export function PreviewCard({
         return (
             <div
                 style={{ width: `${size}px`, background: "transparent" }}
-                className="scrycard group-hover:outline-dashed group-hover:outline-4 outline-secondary"
+                className="scrycard group-hover:outline-dashed group-hover:outline-4 group-[.is-dragging]:outline-dashed group-[.is-dragging]:outline-4 outline-secondary"
             />
         );
     }, [shah_card, size]);
@@ -103,7 +103,7 @@ export function PreviewCard({
             >
                 {card}
                 <Button
-                    className="absolute -top-5 right-8 opacity-0 group-hover:opacity-100 text-foreground"
+                    className="absolute -top-5 right-8 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100 text-foreground"
                     size="icon"
                     variant="ghost"
                     onClick={() => {
@@ -120,7 +120,7 @@ export function PreviewCard({
                 )}
                 {onHide && (
                     <Button
-                        className="absolute -top-5 -right-5 opacity-0 group-hover:opacity-100 text-foreground hover:bg-destructive"
+                        className="absolute -top-5 -right-5 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100 text-foreground hover:bg-destructive"
                         size="icon"
                         variant="ghost"
                         onClick={onHide}
@@ -140,7 +140,7 @@ function CConfluenceLink({ id }: { id: string }) {
     }
     return (
         <Button
-            className="absolute -top-5 left-8 opacity-0 group-hover:opacity-100 text-foreground"
+            className="absolute -top-5 left-8 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100 text-foreground"
             size="icon"
             variant="ghost"
             asChild
