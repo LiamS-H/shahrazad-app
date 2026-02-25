@@ -173,9 +173,9 @@ function MotionCard({
         y: null,
     });
 
-    /** This break animation on render change, since the default state is no animation
+    /** This break animation on render change (rendering under new parent), since the default state is no animation
      * TODO: Pick one of two options
-     * 1) rewrite / path motion.div to display animation when height / width changes and or only listen to manual xy chages
+     * 1) rewrite / patch motion.div to display animation when height / width changes and or only listen to manual xy chages
      * 2) Write a better hack to fix this, most likely by disabling on tap instead of enabling on move. default = enabled
      */
 
