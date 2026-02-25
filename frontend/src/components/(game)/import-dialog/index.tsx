@@ -109,7 +109,7 @@ export function ImportDialog({
                             </a>{" "}
                             deck link supported.
                         </span>
-                        <span className="italic text-muted">
+                        <span className="italic text-muted-foreground/50">
                             Moxfield deck link blocked by their firewall.
                         </span>
                     </DialogDescription>
