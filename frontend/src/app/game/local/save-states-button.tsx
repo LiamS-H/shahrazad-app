@@ -12,10 +12,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export function SaveStatesButton({
-    code,
+    getCode,
     loadCode,
 }: {
-    code: string | null;
+    getCode: null | (() => string);
     loadCode: (code: string) => boolean;
 }) {
     const [open, setOpen] = useState(false);
@@ -29,7 +29,7 @@ export function SaveStatesButton({
         }
     }
 
-    if (!code) {
+    if (!getCode) {
         return (
             <Button variant="highlight" disabled>
                 Saves
@@ -61,7 +61,10 @@ export function SaveStatesButton({
             <PopoverContent className="flex flex-col gap-2 w-full ">
                 <Button
                     variant="outline"
+                    disabled={!getCode}
                     onClick={() => {
+                        const code = getCode();
+                        if (!code) return;
                         const link = new URL(window.location.toString());
                         link.searchParams.delete("settings");
                         link.searchParams.set("code", code);
@@ -79,9 +82,10 @@ export function SaveStatesButton({
                 </Button>
                 <Button
                     className="group"
-                    disabled={!code}
+                    disabled={!getCode}
                     variant="outline"
                     onClick={() => {
+                        const code = getCode();
                         if (!code) return;
                         navigator.clipboard.writeText(code.toString());
                         toast(

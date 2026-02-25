@@ -29,7 +29,6 @@ export default function LocalGame() {
     const router = useRouter();
     const gameClientRef = useRef<LocalGameClient | null>(null);
     const [game, setGame] = useState<ShahrazadGame | null>(null);
-    const [code, setCode] = useState<string | null>(null);
 
     const onMessageRef = useRef<null | GameClientOnMessage>(null);
     const registerOnMessage = useCallback((onMessage: GameClientOnMessage) => {
@@ -94,7 +93,6 @@ export default function LocalGame() {
 
         const gameClient = new LocalGameClient({
             onGameUpdate: (game) => {
-                setCode(gameClientRef.current?.encode?.() ?? null);
                 setGame(game);
             },
             onPreloadCards: (cards, images) => {
@@ -196,7 +194,14 @@ export default function LocalGame() {
                         }
                     />
                 )}
-                <SaveStatesButton code={code} loadCode={loadCode} />
+                <SaveStatesButton
+                    getCode={
+                        isLoading
+                            ? null
+                            : () => gameClientRef.current?.encode() ?? ""
+                    }
+                    loadCode={loadCode}
+                />
                 <FullscreenToggle />
             </div>
         </>
