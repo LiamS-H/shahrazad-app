@@ -17,7 +17,7 @@ export function UserProfile({
 }: {
     onChange?: (player: ShahrazadPlayer) => void;
     children?: ReactNode;
-    hoverIcon: ReactNode;
+    hoverIcon?: ReactNode;
 }) {
     const [player, setPlayer] = useState<ShahrazadPlayer | null>(null);
     const [open, setOpen] = useState(false);
