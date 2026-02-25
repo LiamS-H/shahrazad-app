@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Rajdhani } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/(theme)/theme-provider";
 import NavBar from "./navbar";
@@ -10,13 +10,9 @@ import { FullscreenContextProvider } from "@/contexts/fullscreen";
 import { DeviceContextProvider } from "@/contexts/device";
 import { init_wasm } from "@/lib/client/wasm-init";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
+const rajdhani = Rajdhani({
+    variable: "--font-rajdhani",
+    weight: ["400", "600"],
     subsets: ["latin"],
 });
 
@@ -34,7 +30,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning className="h-full w-full">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased h-full w-full flex flex-col`}
+                className={`${rajdhani.variable} font-[family-name:var(--font-rajdhani)] antialiased h-full w-full flex flex-col`}
             >
                 <ThemeProvider
                     attribute="class"
