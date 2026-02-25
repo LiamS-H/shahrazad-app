@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { importFromUrl } from "@/lib/client/import-deck/importFromUrl";
 import { toast } from "sonner";
 import { Label } from "@/components/(ui)/label";
-import { ShahrazadAction } from "@/types/bindings/action";
+import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
 import {
     Dialog,
     DialogContent,
@@ -25,7 +25,7 @@ export function ImportDialog({
     player: ShahrazadPlaymatId | null;
 }) {
     const { importFor } = useImportContext();
-    const { applyAction, getPlaymat, active_player, settings } =
+    const { applyAction, getPlaymat, getZone, active_player, settings } =
         useShahrazadGameContext();
     const [deckstr, setDeckstr] = useState<string>("");
     const [url, setUrl] = useState("");
@@ -33,6 +33,7 @@ export function ImportDialog({
     const loadingRef = useRef(false);
 
     const open = player !== null;
+    const playmat = player ? getPlaymat(player) : null;
 
     function close() {
         importFor(null);
@@ -45,10 +46,11 @@ export function ImportDialog({
 
     async function importDeck() {
         if (!player) return false;
+        const playmat = getPlaymat(player);
+        if (!playmat) return false;
         if (loadingRef.current) {
             return false;
         }
-        const playmat = getPlaymat(player);
         loadingRef.current = true;
         let actions: ShahrazadAction[] | null | undefined;
         const sideboardId = settings.commander
@@ -86,6 +88,8 @@ export function ImportDialog({
         setLoading(false);
         toast("Deck imported.");
     }
+
+    const isEmpty = playmat && getZone(playmat.library).cards.length === 0;
 
     return (
         <Dialog open={open} onOpenChange={close}>
@@ -139,12 +143,36 @@ export function ImportDialog({
                         onChange={(e) => setDeckstr(e.target.value)}
                     />
                 </div>
-                <Button
-                    disabled={(!url && !deckstr) || loading}
-                    onClick={importDeck}
-                >
-                    {loading ? "Loading..." : "Import"}
-                </Button>
+                <div className="flex gap-4">
+                    <Button
+                        className="grow"
+                        disabled={(!url && !deckstr) || loading}
+                        onClick={importDeck}
+                    >
+                        {loading
+                            ? "Loading..."
+                            : isEmpty
+                              ? "Import"
+                              : "Import Without Replacing"}
+                    </Button>
+                    {!isEmpty && (
+                        <Button
+                            className="grow"
+                            variant="destructive"
+                            disabled={(!url && !deckstr) || loading}
+                            onClick={() => {
+                                if (!player) return;
+                                applyAction({
+                                    type: ShahrazadActionCase.ClearBoard,
+                                    player_id: player,
+                                });
+                                importDeck();
+                            }}
+                        >
+                            {loading ? "Loading..." : "Clear + Import"}
+                        </Button>
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     );
