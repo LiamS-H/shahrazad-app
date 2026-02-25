@@ -71,7 +71,7 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
                                 <VerticalZone
                                     id={props.id}
                                     hidden={zone.cards.length == 0 || !opened}
-                                    emptyMessage="exile"
+                                    emptyMessage="Exile"
                                 />
                             </div>
                             {opened && zone.cards.length > 1 && (
