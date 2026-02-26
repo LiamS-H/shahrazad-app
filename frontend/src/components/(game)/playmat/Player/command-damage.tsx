@@ -63,12 +63,12 @@ export default function CommandDamageButton({
             >
                 <PopoverTrigger asChild>
                     <Button
-                        className={`px-0 py-0 h-4 ${
+                        className={`px-1 py-2 h-4 ${
                             player_id !== command_id
                                 ? "text-accent-foreground"
                                 : undefined
                         }`}
-                        variant="outline"
+                        variant="ghost"
                         key={command_id}
                         onClick={() => {
                             if (open) {

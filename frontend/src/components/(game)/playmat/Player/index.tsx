@@ -80,17 +80,20 @@ export default function Player() {
                 </Button>
             </div>
             {settings.commander && (
-                <div className="flex flex-wrap justify-around">
-                    {players.map((command_id) => {
-                        return (
-                            <CommandDamageButton
-                                key={command_id}
-                                command_id={command_id}
-                                player_id={player}
-                            />
-                        );
-                    })}
-                </div>
+                <>
+                    <span className="text-[10px]">Command Dammage:</span>
+                    <div className="flex flex-wrap justify-around">
+                        {players.map((command_id) => {
+                            return (
+                                <CommandDamageButton
+                                    key={command_id}
+                                    command_id={command_id}
+                                    player_id={player}
+                                />
+                            );
+                        })}
+                    </div>
+                </>
             )}
         </div>
     );
