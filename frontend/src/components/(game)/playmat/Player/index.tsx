@@ -3,7 +3,6 @@ import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { Minus, Plus } from "lucide-react";
 import { ImportDeckButton } from "../(buttons)/ImportDeckButton";
-import { ClearBoardButton } from "../(buttons)/ClearBoardButton";
 import { usePlayer } from "@/contexts/(game)/player";
 import CommandDamageButton from "./command-damage";
 import { EditableText } from "@/components/(ui)/editable-text";
@@ -42,15 +41,21 @@ export default function Player() {
     return (
         <div
             data-shahplayer={player}
-            className={`flex h-[140px] ${active && "text-highlight"}`}
+            className={`relative flex flex-col h-[140px] w-[120px] -mx-3 p-1 border border-highlight ${active && "text-highlight"}`}
         >
-            <div className="flex flex-col justify-around">
-                <ImportDeckButton />
-                <ClearBoardButton />
+            <div className="absolute -top-2 -right-2">
+                <ImportDeckButton variant="ghost" />
             </div>
-            <div className="flex flex-col justify-center items-center">
-                <Button onClick={addLife} variant="outline" size="icon">
-                    <Plus className="h-[1.2rem] w-[1.2rem]" />
+            <div className="text-2xl">{playmat.player.display_name}</div>
+
+            <div className="flex justify-center z-10 items-center">
+                <Button
+                    className="absolute -left-1 hover:bg-secondary"
+                    onClick={subtractLife}
+                    variant="ghost"
+                    size="icon"
+                >
+                    <Minus className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
                 <EditableText
                     value={life.toString()}
@@ -59,21 +64,32 @@ export default function Player() {
                         if (!isNaN(num)) setLife(num);
                     }}
                 >
-                    <h1 className="text-5xl cursor-pointer">{life}</h1>
+                    <div className="p-2 -m-2 rounded-full bg-transparent group hover:bg-secondary">
+                        <h1 className="text-5xl group-hover:text-white">
+                            {life}
+                        </h1>
+                    </div>
                 </EditableText>
-                <Button onClick={subtractLife} variant="outline" size="icon">
-                    <Minus className="h-[1.2rem] w-[1.2rem]" />
+                <Button
+                    className="absolute -right-1 hover:bg-secondary"
+                    onClick={addLife}
+                    variant="ghost"
+                    size="icon"
+                >
+                    <Plus className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
             </div>
             {settings.commander && (
-                <div className="flex flex-col justify-around">
-                    {players.map((command_id) => (
-                        <CommandDamageButton
-                            key={command_id}
-                            command_id={command_id}
-                            player_id={player}
-                        />
-                    ))}
+                <div className="flex flex-wrap justify-around">
+                    {players.map((command_id) => {
+                        return (
+                            <CommandDamageButton
+                                key={command_id}
+                                command_id={command_id}
+                                player_id={player}
+                            />
+                        );
+                    })}
                 </div>
             )}
         </div>

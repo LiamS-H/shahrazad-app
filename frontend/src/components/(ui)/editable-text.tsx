@@ -9,111 +9,66 @@ import {
 import { Input } from "@/components/(ui)/input";
 import { cn } from "@/lib/utils/tw-merge";
 
-export interface EditableTextProps extends Omit<
-    React.ComponentPropsWithoutRef<typeof PopoverTrigger>,
-    "type"
+export interface EditableTextProps extends React.ComponentPropsWithoutRef<
+    typeof PopoverTrigger
 > {
     value: string;
     onSave: (value: string) => void;
-    type?: React.HTMLInputTypeAttribute;
-    placeholder?: string;
-    inputClassName?: string;
-    contentClassName?: string;
-    formClassName?: string;
-    beforeInput?: React.ReactNode;
-    afterInput?: React.ReactNode;
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
 }
 
 const EditableText = React.forwardRef<
     React.ComponentRef<typeof PopoverTrigger>,
     EditableTextProps
->(
-    (
-        {
-            value,
-            onSave,
-            children,
-            className,
-            inputClassName,
-            contentClassName,
-            formClassName,
-            type = "text",
-            placeholder,
-            beforeInput,
-            afterInput,
-            open: controlledOpen,
-            onOpenChange: controlledOnOpenChange,
-            ...props
-        },
-        ref,
-    ) => {
-        const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
-        const open =
-            controlledOpen !== undefined ? controlledOpen : uncontrolledOpen;
-        const setOpen =
-            controlledOnOpenChange !== undefined
-                ? controlledOnOpenChange
-                : setUncontrolledOpen;
+>(({ value, onSave, children, className, ...props }, ref) => {
+    const [open, setOpen] = React.useState(false);
+    const [inputValue, setInputValue] = React.useState(value);
 
-        const [inputValue, setInputValue] = React.useState(value);
+    React.useEffect(() => {
+        if (open) {
+            setInputValue(value);
+        }
+    }, [value, open]);
 
-        React.useEffect(() => {
-            if (open) {
-                setInputValue(value);
-            }
-        }, [value, open]);
+    const handleSave = () => {
+        onSave(inputValue);
+        setOpen(false);
+    };
 
-        const handleSave = React.useCallback(() => {
-            onSave(inputValue);
-            setOpen(false);
-        }, [inputValue, onSave, setOpen]);
-
-        return (
-            <Popover
-                open={open}
-                onOpenChange={(o) => {
-                    if (!o && open) {
-                        handleSave();
-                    }
-                    setOpen(o);
-                }}
+    return (
+        <Popover
+            open={open}
+            onOpenChange={(o) => {
+                if (!o && open) {
+                    handleSave();
+                }
+                setOpen(o);
+            }}
+        >
+            <PopoverTrigger ref={ref} className={cn(className)} {...props}>
+                {children}
+            </PopoverTrigger>
+            <PopoverContent
+                className="w-fit p-2 flex items-center"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
             >
-                <PopoverTrigger ref={ref} className={cn(className)} {...props}>
-                    {children}
-                </PopoverTrigger>
-                <PopoverContent
-                    className={cn(
-                        "w-fit p-2 flex items-center gap-1",
-                        contentClassName,
-                    )}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onClick={(e) => e.stopPropagation()}
+                <form
+                    className="flex-1"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSave();
+                    }}
                 >
-                    {beforeInput}
-                    <form
-                        className={cn("flex-1", formClassName)}
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleSave();
-                        }}
-                    >
-                        <Input
-                            type={type}
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            className={cn("w-24", inputClassName)}
-                            placeholder={placeholder}
-                            autoFocus
-                        />
-                    </form>
-                    {afterInput}
-                </PopoverContent>
-            </Popover>
-        );
-    },
-);
+                    <Input
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        className="w-24"
+                    />
+                </form>
+            </PopoverContent>
+        </Popover>
+    );
+});
 EditableText.displayName = "EditableText";
 
 export { EditableText };
