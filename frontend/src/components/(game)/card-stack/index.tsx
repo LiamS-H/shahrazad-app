@@ -56,7 +56,7 @@ export default function CardStack(props: {
             ) : (
                 <h1
                     key={"empty_text"}
-                    className="rounded-sm w-full h-full flex items-center justify-center text-sm text-secondary-foreground bg-secondary"
+                    className="w-full h-full flex items-center justify-center text-sm text-secondary-foreground bg-background border border-border"
                 >
                     {props.emptyMessage}
                 </h1>

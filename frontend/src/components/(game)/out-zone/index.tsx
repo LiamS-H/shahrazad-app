@@ -100,7 +100,7 @@ export function PoppedOutZone(props: {
                 left: pos.x,
                 top: pos.y,
             }}
-            className={`fixed group bg-background border rounded-lg shadow-lg flex shrink flex-col z-30 ${player?.active ? "text-highlight" : ""}`}
+            className={`fixed group bg-background border shadow-lg flex shrink flex-col z-30 ${player?.active ? "text-highlight" : ""}`}
             ref={eleRef}
         >
             <div
@@ -108,11 +108,7 @@ export function PoppedOutZone(props: {
                 onMouseDown={handleMouseDown}
             >
                 <div className="flex items-center gap-1">
-                    <Button
-                        className="cursor-grab "
-                        size="icon"
-                        variant="ghost"
-                    >
+                    <Button className="cursor-grab" size="icon" variant="ghost">
                         <Grip />
                     </Button>
                     <h3 className="font-bold select-none">
@@ -122,6 +118,7 @@ export function PoppedOutZone(props: {
                         <Button
                             size="icon"
                             variant="ghost"
+                            className="hover:bg-destructive"
                             onMouseDown={props.onClose}
                         >
                             <X />
