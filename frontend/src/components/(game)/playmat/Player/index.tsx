@@ -41,7 +41,7 @@ export default function Player() {
     return (
         <div
             data-shahplayer={player}
-            className={`relative flex flex-col h-[140px] w-[120px] -mx-3 p-1 border border-highlight ${active && "text-highlight"}`}
+            className={`relative group flex flex-col h-[140px] w-[120px] -mx-3 p-1 border border-highlight ${active && "text-highlight"}`}
         >
             <div className="absolute -top-2 -right-2">
                 <ImportDeckButton variant="ghost" />
@@ -64,8 +64,8 @@ export default function Player() {
                         if (!isNaN(num)) setLife(num);
                     }}
                 >
-                    <div className="p-2 -m-2 rounded-full bg-transparent group hover:bg-secondary">
-                        <h1 className="text-5xl group-hover:text-white">
+                    <div className="p-2 group/life -m-2 rounded-full bg-transparent hover:bg-secondary">
+                        <h1 className="text-5xl group-hover/life:text-white">
                             {life}
                         </h1>
                     </div>
@@ -81,7 +81,11 @@ export default function Player() {
             </div>
             {settings.commander && (
                 <>
-                    <span className="text-[10px]">Command Dammage:</span>
+                    <span
+                        className={`text-[10px] w-full text-center ${Object.keys(playmat.command_damage).some((p) => playmat.command_damage[p] !== 0) ? "" : "opacity-0 group-hover:opacity-100"}`}
+                    >
+                        Command Damage:
+                    </span>
                     <div className="flex flex-wrap justify-around">
                         {players.map((command_id) => {
                             return (

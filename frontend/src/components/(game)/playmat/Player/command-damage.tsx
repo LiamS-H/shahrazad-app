@@ -63,7 +63,7 @@ export default function CommandDamageButton({
             >
                 <PopoverTrigger asChild>
                     <Button
-                        className={`px-1 py-2 h-4 ${
+                        className={`px-1 py-2 h-4 ${damage === 0 && !open ? "hidden group-hover:flex" : ""} ${
                             player_id !== command_id
                                 ? "text-accent-foreground"
                                 : undefined
