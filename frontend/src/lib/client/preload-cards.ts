@@ -1,10 +1,11 @@
-import { preload } from "react-dom";
+import { preconnect, preload } from "react-dom";
 import type { useScrycardsContext } from "react-scrycards";
 
 export async function preloadCardImages(
     cards: string[],
     requestCard: ReturnType<typeof useScrycardsContext>["requestCard"],
 ) {
+    console.log("preloading", cards);
     if (cards.length === 0) return;
     const last = cards.at(-1) as string;
     await requestCard(last);
@@ -23,6 +24,7 @@ export async function preloadCardImages(
 
     for (const image of images) {
         if (!image) continue;
-        preload(image, { as: "image" });
+        preload(image, { fetchPriority: "low", as: "image" });
+        // preconnect(image)
     }
 }
