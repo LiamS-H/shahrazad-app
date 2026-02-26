@@ -48,7 +48,7 @@ const EditableText = React.forwardRef<
                 {children}
             </PopoverTrigger>
             <PopoverContent
-                className="w-fit p-2 flex items-center"
+                className="w-fit p-0 flex items-center"
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
             >
