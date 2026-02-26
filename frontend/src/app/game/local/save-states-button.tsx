@@ -64,15 +64,18 @@ export function SaveStatesButton({
                     variant="outline"
                     disabled={!getCode}
                     onClick={() => {
+                        if (!getCode) {
+                            toast.error("Game state not initialized, refresh.");
+                            return;
+                        }
                         const code = getCode();
-                        if (!code) return;
-                        const link = new URL(window.location.toString());
-                        link.searchParams.delete("settings");
-                        link.searchParams.set("code", code);
-                        if (!link) {
+                        if (!code) {
                             toast.error("Couldn't generate link.");
                             return;
                         }
+                        const link = new URL(window.location.toString());
+                        link.searchParams.delete("settings");
+                        link.searchParams.set("code", code);
                         copy_with_toast({
                             value: link.toString(),
                             name: "Sharing Link",
@@ -87,9 +90,15 @@ export function SaveStatesButton({
                     disabled={!getCode}
                     variant="outline"
                     onClick={() => {
+                        if (!getCode) {
+                            toast.error("Game state not initialized, refresh.");
+                            return;
+                        }
                         const code = getCode();
-                        if (!code) return;
-
+                        if (!code) {
+                            toast.error("Couldn't generate link.");
+                            return;
+                        }
                         copy_with_toast({
                             value: code.toString(),
                             loading_name: "Save Code",
