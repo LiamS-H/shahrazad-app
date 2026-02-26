@@ -66,27 +66,27 @@ export function ImportDialog({
         if (url) {
             actions = await importFromUrl(url, locations);
             if (actions === undefined) {
-                toast("Coudln't fetch deck.");
+                toast.error("Coudln't fetch deck.");
                 setLoading(false);
                 return;
             }
         } else if (deckstr) {
             actions = importFromStr(deckstr, locations);
             if (actions === undefined) {
-                toast("Couldn't parse deck.");
+                toast.error("Couldn't parse deck.");
                 setLoading(false);
                 return;
             }
         }
         if (!actions) {
-            toast("No cards to load.");
+            toast.error("No cards to load.");
             setLoading(false);
             return;
         }
         actions.forEach((a) => applyAction(a));
         close();
         setLoading(false);
-        toast("Deck imported.");
+        toast.success("Deck imported.");
     }
 
     const isEmpty = playmat && getZone(playmat.library).cards.length === 0;

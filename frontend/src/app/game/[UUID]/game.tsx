@@ -1,6 +1,7 @@
 "use client";
 import Game from "@/components/(game)/game";
 import { joinGame } from "@/lib/client/joinGame";
+import { consumeJoinCache } from "@/lib/session";
 import {
     ShahrazadActionCase,
     type ShahrazadAction,
@@ -18,6 +19,7 @@ import Loading from "./loading";
 import { UserProfile } from "@/components/(ui)/user-profile";
 import { init_wasm } from "@/lib/client/wasm-init";
 import { preloadCardImages } from "@/lib/client/preload-cards";
+import { JoinGameResponse } from "@/types/bindings/api";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -50,14 +52,47 @@ export default function GamePage(props: { game_id: string }) {
     const initGame = useCallback(async () => {
         if (init_ref.current) return;
         init_ref.current = true;
-        const stored_player = loadPlayer();
+
         setServerLoading(true);
         setLoading(true);
-        const join_promise = joinGame(props.game_id, stored_player);
-        join_promise.then(() => setServerLoading(false));
-        const [joinResult] = await Promise.all([join_promise, init_wasm()]);
 
-        setLoading(false);
+        const cached = consumeJoinCache();
+        let joinResult: JoinGameResponse | null | undefined;
+
+        if (cached && cached.game_id === props.game_id) {
+            joinResult = cached;
+            setServerLoading(false);
+            await init_wasm();
+            setLoading(false);
+        } else {
+            const stored_player = loadPlayer();
+            const join_promise = joinGame(props.game_id, stored_player);
+            join_promise.then(() => setServerLoading(false));
+
+            toast.promise(
+                join_promise.then((data) => {
+                    if (data === null) throw { message: "Game doesn't exist." };
+                    if (!data || !("game" in data) || !("game_id" in data))
+                        throw { message: "Something went wrong." };
+                    return data as JoinGameResponse;
+                }),
+                {
+                    loading: "Joining Game...",
+                    success: ({ code }: JoinGameResponse) => (
+                        <>
+                            Joined Game
+                            <span className="ml-1.5 py-0.5 px-2 bg-accent text-accent-foreground">
+                                {code}
+                            </span>
+                        </>
+                    ),
+                    error: (e) => `${e.message}`,
+                },
+            );
+
+            [joinResult] = await Promise.all([join_promise, init_wasm()]);
+            setLoading(false);
+        }
 
         if (joinResult === undefined) {
             signalError({
@@ -83,7 +118,6 @@ export default function GamePage(props: { game_id: string }) {
             code,
             is_host,
         } = joinResult;
-        toast(`Joined game ${code}`);
 
         setIsHost(is_host);
         setPlayerUUID(player_id);
@@ -100,7 +134,6 @@ export default function GamePage(props: { game_id: string }) {
                 onGameUpdate: setGame,
                 onPreloadCards: (cards, images) => {
                     preloadCards(cards);
-
                     if (images) {
                         preloadCardImages(cards, requestCard);
                     }
@@ -117,8 +150,8 @@ export default function GamePage(props: { game_id: string }) {
                             "Games Close after 5 minutes of inactivity. This game no longer exists.",
                     });
                 },
-                onPlayerJoin: () => {
-                    toast("A new player joined.");
+                onPlayerJoin: (player) => {
+                    toast(`A new player "${player}" joined.`);
                 },
                 onMessage: (message) => {
                     onMessageRef.current?.(message);
@@ -135,8 +168,7 @@ export default function GamePage(props: { game_id: string }) {
     }, [props.game_id, preloadCards, requestCard, signalError]);
 
     useEffect(() => {
-        // This is async and updating external state.
-        initGame(); //eslint-disable-line react-hooks/set-state-in-effect
+        initGame(); //eslint-disable-line react-hooks/set-state-in-effect -- async and updating internal state
 
         return () => {
             gameClientRef.current?.cleanup();
@@ -172,8 +204,6 @@ export default function GamePage(props: { game_id: string }) {
             )}
             <div className="absolute top-4 right-4 flex gap-4">
                 {isLoading && (
-                    // don't love rendering the profile here and within the game component,
-                    // but I want the player icon to appear before the game loads, and it has a dynamic width
                     <UserProfile
                         onChange={
                             activePlayer

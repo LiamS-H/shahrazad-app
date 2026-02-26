@@ -61,13 +61,17 @@ export function FullscreenContextProvider({
                 await Promise.all(promises);
             } catch {
                 if (future_fs) {
-                    toast("Couldn't enter fullscreen, refresh and try button.");
+                    toast.error(
+                        "Couldn't enter fullscreen, refresh and try button.",
+                    );
                 } else {
-                    toast("Couldn't exit fullscreen, refresh and try button.");
+                    toast.error(
+                        "Couldn't exit fullscreen, refresh and try button.",
+                    );
                 }
             }
         },
-        [device]
+        [device],
     );
 
     useEffect(() => {
@@ -78,7 +82,7 @@ export function FullscreenContextProvider({
             () => {
                 setIsFullscreen(getCurrentFullscreen());
             },
-            { signal: controller.signal }
+            { signal: controller.signal },
         );
         window.addEventListener(
             "keydown",
@@ -98,7 +102,7 @@ export function FullscreenContextProvider({
                     return;
                 }
             },
-            { signal: controller.signal }
+            { signal: controller.signal },
         );
 
         return () => controller.abort();

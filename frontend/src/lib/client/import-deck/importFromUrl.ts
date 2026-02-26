@@ -22,7 +22,7 @@ export async function importFromUrl(
 
         return toActionList(cards, locations);
     }
-    toast("Deck website not supported.");
+    toast.error("Deck website not supported.");
 
     return undefined;
 }

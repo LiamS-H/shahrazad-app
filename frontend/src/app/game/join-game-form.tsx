@@ -15,8 +15,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { joinGame } from "@/lib/client/joinGame";
 import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import { cacheJoinResult } from "@/lib/session";
 
 import JoinGameLoading from "./join-game-loading";
+import { JoinGameResponse } from "@/types/bindings/api";
 
 export default function JoinGameForm({
     invalids,
@@ -46,39 +48,59 @@ export default function JoinGameForm({
     const handleJoinGame = useCallback(
         async (gameCode: string) => {
             if (gameCode.length < 6) {
-                toast("Code too short.");
+                toast.warning("Code too short.");
+                return;
             }
 
             setLoading(true);
 
-            toast("Joining Game...");
             const stored_player = loadPlayer();
-            const joinResult = await joinGame(gameCode, stored_player);
+            const joinPromise = joinGame(gameCode, stored_player);
+
+            async function toastPromise() {
+                const data = await joinPromise;
+                if (data === null) {
+                    throw { message: "Game doesn't exist." };
+                }
+                if (!data || !("game" in data) || !("game_id" in data)) {
+                    throw { message: "Something went wrong." };
+                }
+                return data as JoinGameResponse;
+            }
+
+            toast.promise(toastPromise(), {
+                loading: "Joining Game...",
+                success: ({ code }: JoinGameResponse) => (
+                    <>
+                        Joined Game
+                        <span className="pt-0.5 px-1 bg-accent text-accent-foreground">
+                            {code}
+                        </span>
+                    </>
+                ),
+                error: (e) => `${e.message}`,
+            });
+
+            const joinResult = await joinPromise;
+
             if (joinResult === null) {
                 setLoading(false);
-                toast("Couldn't find game");
                 setInvalids((prev) => new Set(prev).add(gameCode));
                 return;
             }
             if (joinResult === undefined) {
                 setLoading(false);
-                toast("Something went wrong.");
                 return;
             }
+
             const { player_id, code } = joinResult;
             savePlayer(player_id);
+            cacheJoinResult(joinResult);
 
             pushRoute(`/game/${code}`);
         },
         [pushRoute, setInvalids],
     );
-
-    // useEffect(() => {
-    //     const value = parseCode(gameCode);
-    //     if (!value) return;
-    //     // eslint-disable-next-line react-hooks/set-state-in-effect
-    //     handleJoinGame(value);
-    // }, [gameCode, handleJoinGame]);
 
     useEffect(() => {
         setIsClient(true); // eslint-disable-line react-hooks/set-state-in-effect
@@ -115,7 +137,6 @@ export default function JoinGameForm({
                             code={gameCode}
                             setCode={setGameCode}
                             invalid={invalids.has(gameCode)}
-                            // onSubmit={() => handleJoinGame(gameCode)}
                             onSubmit={() => {}}
                         />
                         <Button

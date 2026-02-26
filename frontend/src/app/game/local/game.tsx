@@ -42,22 +42,22 @@ export default function LocalGame() {
 
     const loadCode = useCallback((code: string | null) => {
         if (!gameClientRef.current) {
-            toast("Couldn't load code; gamestate not initialized");
+            toast.error("Couldn't load code; gamestate not initialized");
             return false;
         }
         if (code === null) {
             return false;
         }
         if (code === "") {
-            toast("Couldn't load empty code");
+            toast.info("Couldn't load empty code");
             return false;
         }
         const game = gameClientRef.current.beginGame(undefined, code);
         if (!game) {
-            toast("Couldn't load code; gamestate failed initialization");
+            toast.error("Couldn't load code; gamestate failed initialization");
             return false;
         }
-        toast("Game restored from code");
+        toast.success("Game restored from code");
         return true;
     }, []);
 
@@ -72,10 +72,10 @@ export default function LocalGame() {
 
             const game = gameClientRef.current.beginGame(settings);
             if (!game) {
-                toast("Couldn't load settings");
+                toast.error("Couldn't load settings");
                 return false;
             }
-            toast("Game created from settings");
+            toast.success("Game created from settings");
             return true;
         },
         [],

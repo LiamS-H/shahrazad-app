@@ -47,14 +47,24 @@ export default function CreateGameForm() {
 
     const handleCreateGame = async (settings: ShahrazadGameSettings) => {
         setLoading(true);
-        toast("Creating Game...");
-        const gameResult = await createGame({
+        const gamePromise = createGame({
             settings,
             player: loadPlayer()?.player,
         });
+        async function toastPromise() {
+            const data = await gamePromise;
+            if (!data || !("player_id" in data) || !("game_id" in data)) {
+                throw { message: "Something went wrong" };
+            }
+        }
+        toast.promise(toastPromise(), {
+            loading: "Creating Game...",
+            success: "Game Created.",
+            error: (e) => `${e.message}`,
+        });
+        const gameResult = await gamePromise;
         if (gameResult === null) {
             setLoading(false);
-            toast("Something went wrong.");
             return;
         }
         const { player_id, code } = gameResult;

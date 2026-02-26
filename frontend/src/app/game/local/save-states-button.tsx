@@ -7,6 +7,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/(ui)/popover";
+import { copy_with_toast } from "@/lib/utils/copy-with-toast";
 import { Copy, Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -69,12 +70,13 @@ export function SaveStatesButton({
                         link.searchParams.delete("settings");
                         link.searchParams.set("code", code);
                         if (!link) {
-                            toast("Something went wrong");
+                            toast.error("Couldn't generate link.");
                             return;
                         }
-                        navigator.clipboard.writeText(link.toString());
-                        toast(`Copied sharing link to clipboard.`);
-                        setOpen(false);
+                        copy_with_toast({
+                            value: link.toString(),
+                            name: "Sharing Link",
+                        });
                     }}
                 >
                     Sharing Link
@@ -87,10 +89,13 @@ export function SaveStatesButton({
                     onClick={() => {
                         const code = getCode();
                         if (!code) return;
-                        navigator.clipboard.writeText(code.toString());
-                        toast(
-                            `Copied "${code.substring(0, 10)}..." to clipboard.`,
-                        );
+
+                        copy_with_toast({
+                            value: code.toString(),
+                            loading_name: "Save Code",
+                            name: `"${code.substring(0, 10)}..."`,
+                            error_name: "Save Code",
+                        });
                         setOpen(false);
                     }}
                 >
