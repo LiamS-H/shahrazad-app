@@ -47,12 +47,9 @@ export async function importArchidektUrl(
                 .filter((c) => c.includedInDeck)
                 .map((c) => c.name.toLowerCase()),
         );
-        const isCommander = deck_categories.has("commander");
 
         deck_categories.delete("commander");
         deck_categories.delete("sideboard");
-
-        const sideboard_cat = isCommander ? "commander" : "sideboard";
 
         for (const card of data.cards) {
             if (card.categories.length == 0) {
@@ -62,10 +59,15 @@ export async function importArchidektUrl(
                 });
                 continue;
             }
-            if (
-                card.categories.some((c) => c.toLowerCase() === sideboard_cat)
-            ) {
+            if (card.categories.some((c) => c.toLowerCase() === "sideboard")) {
                 sideboard.push({
+                    str: card.card.uid,
+                    amount: card.quantity,
+                });
+                continue;
+            }
+            if (card.categories.some((c) => c.toLowerCase() === "commander")) {
+                commander.push({
                     str: card.card.uid,
                     amount: card.quantity,
                 });

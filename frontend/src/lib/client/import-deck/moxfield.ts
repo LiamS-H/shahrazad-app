@@ -40,19 +40,17 @@ export async function importMoxfieldUrl(
         const sideboard: CardImport[] = [];
         const deck: CardImport[] = [];
         const commander: CardImport[] = [];
-        if (data.format == "commander") {
-            for (const card of Object.values(data.commanders)) {
-                commander.push({
-                    str: card.card.scryfall_id,
-                });
-            }
-        } else {
-            for (const card of Object.values(data.sideboard)) {
-                sideboard.push({
-                    str: card.card.scryfall_id,
-                    amount: card.quantity,
-                });
-            }
+
+        for (const card of Object.values(data.commanders)) {
+            commander.push({
+                str: card.card.scryfall_id,
+            });
+        }
+        for (const card of Object.values(data.sideboard)) {
+            sideboard.push({
+                str: card.card.scryfall_id,
+                amount: card.quantity,
+            });
         }
         for (const card of Object.values(data.mainboard)) {
             deck.push({
