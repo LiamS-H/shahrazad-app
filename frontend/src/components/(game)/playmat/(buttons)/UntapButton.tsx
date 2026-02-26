@@ -13,6 +13,7 @@ export function UntapButton({ board_id }: { board_id: ShahrazadZoneId }) {
             <Button
                 variant="outline"
                 size="icon"
+                disabled={board.cards.length === 0}
                 onClick={() => {
                     applyAction({
                         type: ShahrazadActionCase.CardState,
@@ -24,6 +25,6 @@ export function UntapButton({ board_id }: { board_id: ShahrazadZoneId }) {
                 <CornerRightUp />
             </Button>
         ),
-        [board, applyAction]
+        [board, applyAction],
     );
 }

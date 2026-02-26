@@ -25,6 +25,7 @@ export function MulliganButton() {
         battlefield,
         graveyard,
         exile,
+        library,
         player: { display_name },
     } = getPlaymat(player_id);
 
@@ -37,6 +38,10 @@ export function MulliganButton() {
     const {
         cards: { length: ex_length },
     } = useZone(exile);
+
+    const {
+        cards: { length: lib_length },
+    } = useZone(library);
 
     const resetPlaymat = useCallback(() => {
         applyAction({
@@ -59,7 +64,12 @@ export function MulliganButton() {
     return useMemo(() => {
         if (isEmpty) {
             return (
-                <Button variant="outline" size="icon" onClick={mulligan}>
+                <Button
+                    disabled={lib_length === 0}
+                    variant="outline"
+                    size="icon"
+                    onClick={mulligan}
+                >
                     <ListRestart />
                 </Button>
             );
@@ -96,10 +106,11 @@ export function MulliganButton() {
         );
     }, [
         isEmpty,
-        mulligan,
-        resetPlaymat,
+        player_id,
         active_player,
         display_name,
-        player_id,
+        resetPlaymat,
+        lib_length,
+        mulligan,
     ]);
 }
