@@ -131,8 +131,12 @@
 
 @layer base {
     * {
-        @apply border-border;
+        ::selection {
+            background-color: var(--color-highlight);
+            color: var(--color-highlight-foreground);
+        }
     }
+
     body {
         @apply bg-background text-foreground;
     }

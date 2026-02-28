@@ -17,7 +17,7 @@ export default function NavBar() {
     const inLocal = path.startsWith("/game/local");
 
     return (
-        <nav className={`${isFullscreen ? "hidden" : ""}`}>
+        <nav className={` ${isFullscreen ? "hidden" : ""}`}>
             <ul className="p-4 flex flex-row items-center gap-4">
                 <li>
                     <Link href={"/"}>
