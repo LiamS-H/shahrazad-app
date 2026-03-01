@@ -82,7 +82,7 @@ export default function Player() {
             {settings.commander && (
                 <>
                     <span
-                        className={`text-[10px] w-full text-center ${Object.keys(playmat.command_damage).some((p) => playmat.command_damage[p] !== 0) ? "" : "opacity-0 group-hover:opacity-100"}`}
+                        className={`text-[10px] w-full text-center ${playmat.command_damage.some(({ damage }) => damage !== 0) ? "" : "opacity-0 group-hover:opacity-100"}`}
                     >
                         Command Damage:
                     </span>

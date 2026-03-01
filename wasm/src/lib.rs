@@ -82,6 +82,8 @@ impl GameState {
     }
     #[wasm_bindgen]
     pub fn get_state(&self) -> Result<JsValue, JsValue> {
+        // let debug_json = serde_json::to_string(&self.inner).expect("Failed to become json");
+        // to_js_value(&debug_json)
         to_js_value(&self.inner)
     }
 

@@ -13,12 +13,13 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 import { useShahrazadGameContext } from "../game";
 // import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { DraggableOverlay } from "../../../components/(game)/card-overlay/overlay";
+import { DraggableOverlay } from "@/components/(game)/card-overlay/overlay";
 import { MouseSensor } from "./sensors";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import { useSelection } from "../selection";
 import { DraggingContextProvider } from "./dragging";
 import { ZoneName } from "@/types/bindings/zone";
+import { ShahrazadCardId } from "@/types/bindings/card";
 
 export default function ShahrazadDND(props: { children: ReactNode }) {
     const ShahContext = useShahrazadGameContext();
@@ -31,10 +32,10 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
     const selection_ref = useRef(SelectionContext);
     selection_ref.current = SelectionContext;
 
-    const [activeId, setActiveId] = useState<string | null>(null);
+    const [activeId, setActiveId] = useState<ShahrazadCardId | null>(null);
 
     const handleDragStart = useCallback((event: DragStartEvent) => {
-        setActiveId(event.active.id.toString());
+        setActiveId(event.active.id as number);
     }, []);
 
     const handleDragEnd = useCallback((event: DragEndEvent) => {
@@ -63,7 +64,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
             | undefined;
 
         const active_data = event.active.data.current as IDraggableData;
-        const target_id = event.active.id.toString();
+        const target_id = event.active.id as number;
         const cards = selectedCards.includes(target_id)
             ? [target_id, ...selectedCards.filter((id) => id !== target_id)]
             : [target_id];
@@ -131,7 +132,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
 
         const start_zone_id = active_data.zone;
         const { name: start_zone_name } = getZone(start_zone_id);
-        const end_zone_id = event.over.id.toString();
+        const end_zone_id = event.over.id as number;
         const end_zone_gridsize: undefined | number = over_data
             ? over_data.grid
             : undefined;

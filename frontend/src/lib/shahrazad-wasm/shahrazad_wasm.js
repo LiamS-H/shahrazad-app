@@ -438,10 +438,6 @@ function __wbg_get_imports() {
         const ret = new Object();
         return ret;
     };
-    imports.wbg.__wbg_new_3c48ee6a683248da = function() {
-        const ret = new Map();
-        return ret;
-    };
     imports.wbg.__wbg_new_d6b08dae7359cebb = function(arg0) {
         const ret = new Uint8Array(arg0);
         return ret;
@@ -470,10 +466,6 @@ function __wbg_get_imports() {
     };
     imports.wbg.__wbg_set_3f1d0b984ed272ed = function(arg0, arg1, arg2) {
         arg0[arg1] = arg2;
-    };
-    imports.wbg.__wbg_set_a15b7b524330d4f1 = function(arg0, arg1, arg2) {
-        const ret = arg0.set(arg1, arg2);
-        return ret;
     };
     imports.wbg.__wbg_value_4ae21701b6f5c482 = function(arg0) {
         const ret = arg0.value;

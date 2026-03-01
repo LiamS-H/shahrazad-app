@@ -48,7 +48,7 @@ pub enum ShahrazadAction {
     },
     Shuffle {
         zone: ShahrazadZoneId,
-        seed: String,
+        seed: u64,
     },
     ZoneImport {
         zone: ShahrazadZoneId,
@@ -90,16 +90,16 @@ pub enum ShahrazadAction {
     },
     Mulligan {
         player_id: ShahrazadPlaymatId,
-        seed: String,
+        seed: u64,
     },
     SendMessage {
         messages: Vec<Message>,
         player_id: ShahrazadPlaymatId,
-        created_at: u32,
+        created_at: u64,
     },
     ResetPlaymat {
         player_id: ShahrazadPlaymatId,
-        seed: String,
+        seed: u64,
     },
     GameTerminated,
     SetSettings {

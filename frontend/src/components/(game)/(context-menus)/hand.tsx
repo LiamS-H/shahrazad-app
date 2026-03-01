@@ -100,7 +100,7 @@ export default function HandContextMenu({
     zoneId,
     children,
 }: {
-    zoneId: string;
+    zoneId: ShahrazadZoneId;
     children: ReactNode;
 }) {
     return (

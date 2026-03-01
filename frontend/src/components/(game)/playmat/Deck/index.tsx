@@ -78,7 +78,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                 ref={(ref) => setNodeRef(ref)}
             >
                 <DeckContextMenu
-                    cardId={zone.cards.at(-1) ?? ""}
+                    cardId={zone.cards.at(-1) ?? -1}
                     zoneId={props.id}
                 >
                     <div

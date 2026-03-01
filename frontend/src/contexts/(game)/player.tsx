@@ -26,7 +26,7 @@ export function PlayerProvider({
     active,
 }: {
     children: ReactNode;
-    player: string;
+    player: ShahrazadPlaymatId;
     active: boolean;
 }) {
     return (

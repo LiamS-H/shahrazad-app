@@ -1,13 +1,14 @@
 import { Button } from "@/components/(ui)/button";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { DoorOpen, UserMinus } from "lucide-react";
 
 export function LeaveGame({
     player,
     active,
 }: {
-    player: string;
+    player: ShahrazadPlaymatId;
     active: boolean;
 }) {
     const { applyAction } = useShahrazadGameContext();

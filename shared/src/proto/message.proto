@@ -7,8 +7,8 @@ message DiceRoll {
 }
 
 message Arrow {
-    string from = 1;
-    string to = 2;
+    uint32 from = 1;
+    uint32 to = 2;
     int32 arrow_type = 3;
 }
 

@@ -84,8 +84,9 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
                         cur = cur.parentElement;
                         continue;
                     }
-                    if (cur.dataset.shahcard) {
-                        setActive(cur.dataset.shahcard);
+                    const card = parseInt(cur.dataset.shahcard ?? "");
+                    if (card && !Number.isNaN(card)) {
+                        setActive(card);
                         return;
                     }
                     cur = cur.parentElement;
@@ -107,27 +108,30 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
                         continue;
                     }
                     if (cur.dataset.shahcard) {
-                        if (cur.dataset.shahcard === source_card.current) {
+                        if (
+                            parseInt(cur.dataset.shahcard) ===
+                            source_card.current
+                        ) {
                             setActive(null);
                             return;
                         }
                         addArrow({
                             arrow_type: ArrowType.CARD,
-                            to: cur.dataset.shahcard,
+                            to: parseInt(cur.dataset.shahcard),
                         });
                         break;
                     }
                     if (cur.dataset.shahzone) {
                         addArrow({
                             arrow_type: ArrowType.ZONE,
-                            to: cur.dataset.shahzone,
+                            to: parseInt(cur.dataset.shahzone),
                         });
                         break;
                     }
                     if (cur.dataset.shahplayer) {
                         addArrow({
                             arrow_type: ArrowType.PLAYER,
-                            to: cur.dataset.shahplayer,
+                            to: parseInt(cur.dataset.shahplayer),
                         });
                         break;
                     }

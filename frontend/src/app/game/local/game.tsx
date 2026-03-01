@@ -22,7 +22,7 @@ import { SaveStatesButton } from "./save-states-button";
 import { init_wasm } from "@/lib/client/wasm-init";
 import { preloadCardImages } from "@/lib/client/preload-cards";
 
-const activePlayer = "P0";
+const activePlaymat = 0;
 
 export default function LocalGame() {
     const searchParams = useSearchParams();
@@ -87,7 +87,7 @@ export default function LocalGame() {
         await init_wasm();
 
         const stored_player =
-            loadPlayer()?.player?.display_name ?? activePlayer;
+            loadPlayer()?.player?.display_name ?? activePlaymat;
 
         setLoading(false);
 
@@ -131,9 +131,9 @@ export default function LocalGame() {
         gameClient.queueAction({
             type: ShahrazadActionCase.AddPlayer,
             player: {
-                display_name: stored_player || activePlayer,
+                display_name: stored_player || `P${activePlaymat}`,
             },
-            player_id: activePlayer,
+            player_id: activePlaymat,
         });
     }, [
         loadCode,
@@ -171,7 +171,7 @@ export default function LocalGame() {
                 <Game
                     registerOnMessage={registerOnMessage}
                     game={game}
-                    activePlayer={activePlayer}
+                    activePlayer={activePlaymat}
                     applyAction={handleAction}
                     isHost
                 />
@@ -182,12 +182,12 @@ export default function LocalGame() {
                     // but I want the player icon to appear before the game loads, and it has a dynamic width
                     <UserProfile
                         onChange={
-                            activePlayer
+                            activePlaymat
                                 ? (p) => {
                                       handleAction({
                                           type: ShahrazadActionCase.SetPlayer,
                                           player: p,
-                                          player_id: activePlayer,
+                                          player_id: activePlaymat,
                                       });
                                   }
                                 : undefined

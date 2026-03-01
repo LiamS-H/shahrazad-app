@@ -1,9 +1,10 @@
 import { ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
+type usize = number;
 export type ShahrazadCard = { state: ShahrazadCardState;
     card_name: ShahrazadCardName; location: ShahrazadZoneId;
     owner: ShahrazadPlaymatId; token: boolean; commander: boolean };
-export type ShahrazadCardId = string;
+export type ShahrazadCardId = usize;
 export type ShahrazadCardName = string;
 export type ShahrazadCardState = { inverted: boolean; flipped: boolean;
     tapped: boolean; face_down: boolean; revealed: Array<ShahrazadPlaymatId>;

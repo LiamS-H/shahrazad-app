@@ -43,7 +43,7 @@ export default function Graveyard(props: { id: ShahrazadZoneId }) {
                     pos={{ x: window.innerWidth - 700, y: 80 }}
                 />
                 <GraveyardContextMenu
-                    cardId={zone.cards.at(-1) ?? ""}
+                    cardId={zone.cards.at(-1) ?? -1}
                     zoneId={props.id}
                     onPopOut={() => setPoppedOut((o) => !o)}
                     poppedOut={poppedOut}

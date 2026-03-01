@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
+use crate::types::playmat::ShahrazadPlaymatId;
+
 use super::{game::ShahrazadGameSettings, playmat::ShahrazadPlayer};
 
 #[derive(Reflect, Deserialize, Serialize)]
@@ -27,7 +29,7 @@ pub struct JoinGameResponse {
     pub game: String,
     pub game_id: String,
     pub player_id: String,
-    pub player_name: String,
+    pub playmat_id: ShahrazadPlaymatId,
     pub code: u32,
     pub reconnected: bool,
     pub is_host: bool,

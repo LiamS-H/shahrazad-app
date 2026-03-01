@@ -221,7 +221,9 @@ export default function Home() {
                                         className="aspect-[5/7] bg-highlight/[0.04] border border-highlight/10"
                                         style={{
                                             opacity:
-                                                Math.random() > 0.3 ? 1 : 0.3,
+                                                i % 3 == 0 && i % 5 == 0
+                                                    ? 1
+                                                    : 0.3,
                                         }}
                                     />
                                 ))}

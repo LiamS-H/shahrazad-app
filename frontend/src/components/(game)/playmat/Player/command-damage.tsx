@@ -24,7 +24,7 @@ export default function CommandDamageButton({
     const {
         player: { display_name: command_name },
     } = getPlaymat(command_id);
-    const damage = playmat.command_damage[command_id];
+    const damage = playmat.command_damage[command_id].damage;
 
     const [open, setOpen] = useState(false);
     const [damageInput, setDamageInput] = useState(damage.toString());

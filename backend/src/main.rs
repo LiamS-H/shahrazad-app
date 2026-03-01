@@ -106,7 +106,7 @@ async fn join_game(
         if let Ok(player_id) = Uuid::parse_str(&player_id_str) {
             if let Ok(game_info) = (*state).reconnect_player(game_id, player_id).await {
                 return serde_json::json!(JoinGameResponse {
-                    player_name: game_info.name,
+                    playmat_id: game_info.playmat_id,
                     game_id: game_info.game_id.into(),
                     player_id: player_id.into(),
                     game: BASE64_STANDARD.encode(game_info.game.encode()),
@@ -123,7 +123,7 @@ async fn join_game(
     let player_id = Uuid::new_v4();
     match (*state).add_player(game_id, player_id, player).await {
         Ok(game_info) => serde_json::json!(JoinGameResponse {
-            player_name: game_info.name,
+            playmat_id: game_info.playmat_id,
             game_id: game_info.game_id.into(),
             player_id: player_id.into(),
             game: BASE64_STANDARD.encode(game_info.game.encode()),

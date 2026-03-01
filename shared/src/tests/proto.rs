@@ -13,8 +13,8 @@ use crate::proto;
 fn test_draw_bottom() {
     let action = ShahrazadAction::DrawBottom {
         amount: 3,
-        source: "deck1".into(),
-        destination: "hand1".into(),
+        source: 1.into(),
+        destination: 1.into(),
         state: create_sample_card_transform(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -30,8 +30,8 @@ fn test_draw_bottom() {
 fn test_draw_top() {
     let action = ShahrazadAction::DrawTop {
         amount: 1,
-        source: "deck1".into(),
-        destination: "hand1".into(),
+        source: 1.into(),
+        destination: 1.into(),
         state: create_sample_card_transform(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -46,7 +46,7 @@ fn test_draw_top() {
 #[test]
 fn test_card_state() {
     let action = ShahrazadAction::CardState {
-        cards: vec!["card1".into(), "card2".into()],
+        cards: vec![1.into(), 2.into()],
         state: create_sample_card_transform(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -61,9 +61,9 @@ fn test_card_state() {
 #[test]
 fn test_card_zone() {
     let action = ShahrazadAction::CardZone {
-        cards: vec!["card1".into(), "card2".into()],
+        cards: vec![1.into(), 2.into()],
         state: create_sample_card_transform(),
-        destination: "zone1".into(),
+        destination: 1.into(),
         index: 0,
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -78,8 +78,8 @@ fn test_card_zone() {
 #[test]
 fn test_shuffle() {
     let action = ShahrazadAction::Shuffle {
-        zone: "deck1".into(),
-        seed: "random_seed".to_string(),
+        zone: 1.into(),
+        seed: 1007 as u64,
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -93,7 +93,7 @@ fn test_shuffle() {
 #[test]
 fn test_zone_import() {
     let action = ShahrazadAction::ZoneImport {
-        zone: "deck1".into(),
+        zone: 1.into(),
         cards: vec![
             CardImport {
                 str: "card1".into(),
@@ -105,7 +105,7 @@ fn test_zone_import() {
             },
         ],
         token: false,
-        player_id: "player1".into(),
+        player_id: 0.into(),
         state: ShahrazadCardStateTransform {
             ..Default::default()
         },
@@ -123,7 +123,7 @@ fn test_zone_import() {
 fn test_deck_import() {
     let action = ShahrazadAction::DeckImport {
         deck_uri: "https://example.com/deck".to_string(),
-        player_id: "player1".into(),
+        player_id: 0.into(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -137,7 +137,7 @@ fn test_deck_import() {
 #[test]
 fn test_set_player() {
     let action = ShahrazadAction::SetPlayer {
-        player_id: "player1".into(),
+        player_id: 0.into(),
         player: Some(create_sample_player()),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -152,7 +152,7 @@ fn test_set_player() {
 #[test]
 fn test_add_player() {
     let action = ShahrazadAction::AddPlayer {
-        player_id: "player1".into(),
+        player_id: 0.into(),
         player: create_sample_player(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -167,7 +167,7 @@ fn test_add_player() {
 #[test]
 fn test_set_life() {
     let action = ShahrazadAction::SetLife {
-        player_id: "player1".into(),
+        player_id: 0.into(),
         life: 20,
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -182,8 +182,8 @@ fn test_set_life() {
 #[test]
 fn test_set_command() {
     let action = ShahrazadAction::SetCommand {
-        player_id: "player1".into(),
-        command_id: "command1".into(),
+        player_id: 0.into(),
+        command_id: 1.into(),
         damage: 3,
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -198,7 +198,7 @@ fn test_set_command() {
 #[test]
 fn test_set_playmat() {
     let action = ShahrazadAction::SetPlaymat {
-        player_id: "player1".into(),
+        player_id: 0.into(),
         reveal_deck_top: crate::types::playmat::DeckTopReveal::NONE,
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
@@ -213,7 +213,7 @@ fn test_set_playmat() {
 #[test]
 fn test_clear_board() {
     let action = ShahrazadAction::ClearBoard {
-        player_id: "player1".into(),
+        player_id: 0.into(),
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -227,7 +227,7 @@ fn test_clear_board() {
 #[test]
 fn test_delete_token() {
     let action = ShahrazadAction::DeleteToken {
-        cards: vec!["token1".into(), "token2".into()],
+        cards: vec![1.into(), 2.into()],
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -241,8 +241,8 @@ fn test_delete_token() {
 #[test]
 fn test_mulligan() {
     let action = ShahrazadAction::Mulligan {
-        player_id: "player1".into(),
-        seed: "random_seed".to_string(),
+        player_id: 0.into(),
+        seed: 1007 as u64,
     };
     let buf: VecDeque<u8> = proto::action::ShahrazadAction::from(action)
         .encode_to_vec()
@@ -289,21 +289,21 @@ fn test_game() {
     let mut game = crate::tests::utils::create_sample_game();
     let actions = vec![
         ShahrazadAction::AddPlayer {
-            player_id: "1".into(),
+            player_id: 0.into(),
             player: crate::types::playmat::ShahrazadPlayer {
                 display_name: "Alice".into(),
                 ..Default::default()
             },
         },
         ShahrazadAction::AddPlayer {
-            player_id: "2".into(),
+            player_id: 1.into(),
             player: crate::types::playmat::ShahrazadPlayer {
                 display_name: "Bob".into(),
                 ..Default::default()
             },
         },
         ShahrazadAction::ZoneImport {
-            zone: "Z1".into(),
+            zone: 1.into(),
             cards: vec![
                 CardImport {
                     str: "Opt".into(),
@@ -314,34 +314,34 @@ fn test_game() {
                     amount: Some(2),
                 },
             ],
-            player_id: "1".into(),
+            player_id: 0.into(),
             token: false,
             state: ShahrazadCardStateTransform {
                 ..Default::default()
             },
         },
         ShahrazadAction::ZoneImport {
-            zone: "Z2".into(),
+            zone: 2.into(),
             cards: vec![CardImport {
                 str: "Mountain".into(),
                 amount: Some(3),
             }],
-            player_id: "2".into(),
+            player_id: 1.into(),
             token: false,
             state: ShahrazadCardStateTransform {
                 ..Default::default()
             },
         },
         ShahrazadAction::SetLife {
-            player_id: "1".into(),
+            player_id: 0.into(),
             life: 18,
         },
         ShahrazadAction::SetLife {
-            player_id: "2".into(),
+            player_id: 1.into(),
             life: 22,
         },
         ShahrazadAction::CardState {
-            cards: vec!["C1".into()],
+            cards: vec![1.into()],
             state: ShahrazadCardStateTransform {
                 tapped: Some(true),
                 annotation: Some("test annotation!".into()),

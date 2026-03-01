@@ -13,13 +13,13 @@ message ShahrazadGameSettings {
 }
 
 message ShahrazadGame {
-    uint64 zone_count = 1;
-    uint64 card_count = 2;
-    map<string, card.ShahrazadCard> cards = 3;
-    map<string, zone.ShahrazadZone> zones = 4;
-    map<string, playmat.ShahrazadPlaymat> playmats = 5;
-    repeated string players = 6;
+    uint32 zone_count = 1;
+    uint32 card_count = 2;
+    repeated card.ShahrazadCard cards = 3;
+    repeated zone.ShahrazadZone zones = 4;
+    repeated playmat.ShahrazadPlaymat playmats = 5;
+    repeated uint32 players = 6;
     ShahrazadGameSettings settings = 7;
     uint64 created_at = 8;
-    string stack = 9;
+    uint32 stack = 9;
 }

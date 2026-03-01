@@ -22,11 +22,12 @@ import { Arrows } from "@/components/(game)/arrow";
 import { MessagesButton, MessagesDialog } from "./messages";
 import { PreviewCardButton } from "@/components/(game)/card-preview";
 import { StackButton } from "./stack";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
     applyAction: (action: ShahrazadAction) => void;
-    activePlayer: string;
+    activePlayer: ShahrazadPlaymatId;
     isHost: boolean;
     registerOnMessage: (onMessage: GameClientOnMessage) => void;
 };
@@ -40,7 +41,7 @@ export default function Game({
 }: ShahrazadProps) {
     const p = game.players.join();
     const players = useMemo(() => {
-        const players: string[] = [];
+        const players: ShahrazadPlaymatId[] = [];
 
         const offset = game.players.indexOf(activePlayer);
         const numPlayers = game.players.length;

@@ -39,7 +39,7 @@ export class GameClient {
     constructor(
         private gameId: string,
         private playerUUID: string,
-        private player_id: string,
+        private player_id: number,
         private callbacks: GameClientCallbacks,
     ) {}
 
@@ -189,7 +189,7 @@ export class GameClient {
         this.gameState = new GameState(initialState);
         const state: ShahrazadGame = this.gameState.get_state();
         this.callbacks.onPreloadCards(
-            Object.keys(state.cards).map((id) => state.cards[id].card_name),
+            state.cards.map((card) => card.card_name),
             false,
         );
         return state;

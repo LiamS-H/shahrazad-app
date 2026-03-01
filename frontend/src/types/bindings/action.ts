@@ -60,7 +60,7 @@ export type ShahrazadActionCaseCardZone = {
 export type ShahrazadActionCaseShuffle = {
     type: ShahrazadActionCase.Shuffle;
     zone: ShahrazadZoneId;
-    seed: string;
+    seed: number;
 };
 
 export type ShahrazadActionCaseZoneImport = {
@@ -122,7 +122,7 @@ export type ShahrazadActionCaseDeleteToken = {
 export type ShahrazadActionCaseMulligan = {
     type: ShahrazadActionCase.Mulligan;
     player_id: ShahrazadPlaymatId;
-    seed: string;
+    seed: number;
 };
 
 export type ShahrazadActionCaseSendMessage = {
@@ -135,7 +135,7 @@ export type ShahrazadActionCaseSendMessage = {
 export type ShahrazadActionCaseResetPlaymat = {
     type: ShahrazadActionCase.ResetPlaymat;
     player_id: ShahrazadPlaymatId;
-    seed: string;
+    seed: number;
 };
 
 export type ShahrazadActionCaseGameTerminated = {

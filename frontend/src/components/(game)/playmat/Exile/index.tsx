@@ -43,7 +43,7 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
                     pos={{ x: window.innerWidth - 859, y: 80 }}
                 />
                 <ExileContextMenu
-                    cardId={zone.cards.at(-1) ?? ""}
+                    cardId={zone.cards.at(-1) ?? -1}
                     zoneId={props.id}
                     onPopOut={() => setPoppedOut((o) => !o)}
                     poppedOut={poppedOut}

@@ -94,7 +94,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                 let matches_type = false;
                 if (sort.type === "other") {
                     matches_type = !card_types.some(
-                        (t) => t !== "other" && type_line.includes(t)
+                        (t) => t !== "other" && type_line.includes(t),
                     );
                 } else {
                     matches_type = type_line.includes(sort.type);
@@ -151,7 +151,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                 }
 
                 return cost1 - cost2;
-            }
+            },
         );
 
         const searched_cards = sorted_cards.filter(({ card }) => {
@@ -197,7 +197,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                                 sort.colors &&
                                 (color == c
                                     ? sort.colors[c] === true
-                                    : sort.colors[c] !== true)
+                                    : sort.colors[c] !== true),
                         )
                     ) {
                         return { ...sort, colors: null };
@@ -217,7 +217,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                                 sort.colors &&
                                 (color == c
                                     ? sort.colors[c] === true
-                                    : sort.colors[c] !== true)
+                                    : sort.colors[c] !== true),
                         )
                     ) {
                         return { ...sort, colors: null };
@@ -248,7 +248,7 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                     <ScryNameCardText>{`{${color}}`}</ScryNameCardText>
                 </Button>
             )),
-        [availableColors, sort.colors, toggleColor]
+        [availableColors, sort.colors, toggleColor],
     );
 
     const setType = useCallback((type: CardType) => {
@@ -270,10 +270,11 @@ export default function SearchZone(props: { id: ShahrazadZoneId }) {
                     {card_type}
                 </Button>
             )),
-        [setType, sort.type]
+        [setType, sort.type],
     );
 
     const { setNodeRef, node } = useDroppable({ id: props.id, data });
+    // eslint-disable-next-line react-hooks/incompatible-library
     const colVirtualizer = useVirtualizer({
         horizontal: true,
         count: cards.length,

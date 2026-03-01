@@ -200,7 +200,7 @@ function MotionCard({
 
     return (
         <motion.div
-            layoutId={id}
+            layoutId={`card-${id}`}
             transition={{
                 duration: !dragging && positionChanged ? duration : 0,
                 ease: "easeInOut",

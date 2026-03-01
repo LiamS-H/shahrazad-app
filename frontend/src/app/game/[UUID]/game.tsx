@@ -20,6 +20,7 @@ import { UserProfile } from "@/components/(ui)/user-profile";
 import { init_wasm } from "@/lib/client/wasm-init";
 import { preloadCardImages } from "@/lib/client/preload-cards";
 import { JoinGameResponse } from "@/types/bindings/api";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -43,7 +44,8 @@ export default function GamePage(props: { game_id: string }) {
     }, []);
 
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
-    const [activePlayer, setActivePlayer] = useState<string | null>(null);
+    const [activePlaymat, setActivePlaymat] =
+        useState<ShahrazadPlaymatId | null>(null);
     const [gameCode, setGameCode] = useState<number | null>(null);
     const [isHost, setIsHost] = useState(false);
 
@@ -113,7 +115,7 @@ export default function GamePage(props: { game_id: string }) {
 
         const {
             player_id,
-            player_name,
+            playmat_id,
             game: initialState,
             code,
             is_host,
@@ -121,7 +123,7 @@ export default function GamePage(props: { game_id: string }) {
 
         setIsHost(is_host);
         setPlayerUUID(player_id);
-        setActivePlayer(player_name);
+        setActivePlaymat(playmat_id);
         setGameCode(code);
         savePlayer(player_id);
         localStorage.setItem("saved-game", code.toString());
@@ -129,7 +131,7 @@ export default function GamePage(props: { game_id: string }) {
         const gameClient = new GameClient(
             props.game_id,
             player_id,
-            player_name,
+            playmat_id,
             {
                 onGameUpdate: setGame,
                 onPreloadCards: (cards, images) => {
@@ -187,7 +189,7 @@ export default function GamePage(props: { game_id: string }) {
         return <GameError message={error} />;
     }
 
-    const isLoading = loading || !game || !playerUUID || !activePlayer;
+    const isLoading = loading || !game || !playerUUID || activePlaymat == null;
 
     return (
         <>
@@ -197,7 +199,7 @@ export default function GamePage(props: { game_id: string }) {
                 <Game
                     registerOnMessage={registerOnMessage}
                     game={game}
-                    activePlayer={activePlayer}
+                    activePlayer={activePlaymat}
                     applyAction={handleAction}
                     isHost={isHost}
                 />
@@ -206,12 +208,12 @@ export default function GamePage(props: { game_id: string }) {
                 {isLoading && (
                     <UserProfile
                         onChange={
-                            activePlayer
+                            activePlaymat
                                 ? (p) => {
                                       handleAction({
                                           type: ShahrazadActionCase.SetPlayer,
                                           player: p,
-                                          player_id: activePlayer,
+                                          player_id: activePlaymat,
                                       });
                                   }
                                 : undefined

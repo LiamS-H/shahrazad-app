@@ -1,11 +1,11 @@
-import { ShahrazadCard, ShahrazadCardId } from './card';
+import { ShahrazadCard } from './card';
 import { ShahrazadPlaymat, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZone, ShahrazadZoneId } from './zone';
-export type ShahrazadGame = { zone_count: number; card_count: number;
-    cards: { [key: ShahrazadCardId]: ShahrazadCard };
-    zones: { [key: ShahrazadZoneId]: ShahrazadZone };
-    playmats: { [key: ShahrazadPlaymatId]: ShahrazadPlaymat };
-    players: Array<ShahrazadPlaymatId>; settings: ShahrazadGameSettings;
-    created_at: number; stack: ShahrazadZoneId };
+type usize = number;
+export type ShahrazadGame = { zone_count: usize; card_count: usize;
+    cards: Array<ShahrazadCard>; zones: Array<ShahrazadZone>;
+    playmats: Array<ShahrazadPlaymat>; players: Array<ShahrazadPlaymatId>;
+    settings: ShahrazadGameSettings; created_at: number;
+    stack: ShahrazadZoneId };
 export type ShahrazadGameSettings = { starting_life: number;
     free_mulligans: number; commander: boolean; scry_rule: boolean };

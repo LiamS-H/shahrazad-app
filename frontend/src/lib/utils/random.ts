@@ -1,6 +1,5 @@
-export function randomU64() {
+export function randomU64(): number {
     const array = new BigUint64Array(1);
     crypto.getRandomValues(array);
-    const num = array[0].toString();
-    return num;
+    return array[0] as unknown as number;
 }

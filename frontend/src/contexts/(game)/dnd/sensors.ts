@@ -34,8 +34,10 @@ export class MouseSensor extends LibMouseSensor {
 
         while (cur && cur instanceof Element) {
             if (cur instanceof HTMLElement && cur.dataset.shahcard) {
-                id = cur.dataset.shahcard;
-                shah_card = MouseSensor.ShahContext.getCard(id);
+                id = parseInt(cur.dataset.shahcard);
+                if (!Number.isNaN(id)) {
+                    shah_card = MouseSensor.ShahContext.getCard(id);
+                }
             }
             cur = cur.parentElement;
         }
@@ -62,7 +64,7 @@ export class MouseSensor extends LibMouseSensor {
         if (
             !shah_card.state.face_down ||
             shah_card.state.revealed?.includes(
-                MouseSensor.ShahContext.active_player
+                MouseSensor.ShahContext.active_player,
             )
         ) {
             MouseSensor.SelectedContext.setPreview(id);

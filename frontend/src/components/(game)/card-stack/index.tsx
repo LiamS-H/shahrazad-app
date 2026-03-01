@@ -70,7 +70,7 @@ export default function CardStack(props: {
                 {props.cards.slice(0, -1).map((id) => (
                     <motion.div
                         layout="position"
-                        layoutId={id}
+                        layoutId={`card-${id}`}
                         key={id}
                         className="w-full h-full absolute"
                     />

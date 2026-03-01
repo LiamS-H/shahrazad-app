@@ -30,7 +30,7 @@ export class LocalGameClient {
         }
         this.gameState = state;
         this.callbacks.onPreloadCards(
-            Object.keys(game.cards).map((id) => game.cards[id].card_name),
+            game.cards.map((card) => card.card_name),
             false,
         );
         this.callbacks.onGameUpdate(game);
