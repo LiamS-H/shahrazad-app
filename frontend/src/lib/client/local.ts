@@ -76,10 +76,10 @@ export class LocalGameClient {
         if (action.type == ShahrazadActionCase.SetPlayer) {
             if (action.player) {
                 this.callbacks.toast.info(
-                    `${action.player_id} has new name: ${action.player.display_name}`,
+                    `P${action.player_id} has new name: ${action.player.display_name}`,
                 );
             } else {
-                this.callbacks.toast.info(`${action.player_id} has left.`);
+                this.callbacks.toast.info(`P${action.player_id} has left.`);
             }
         }
         if (action.type === ShahrazadActionCase.SendMessage) {
