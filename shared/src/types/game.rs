@@ -1,6 +1,6 @@
 // use crate::types::ws::ProtoSerialize;
 use std::cmp::{max, min};
-use std::collections::{ HashSet, VecDeque};
+use std::collections::{ HashMap, HashSet, VecDeque};
 use std::hash::{Hash, Hasher};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
@@ -400,19 +400,19 @@ impl ShahrazadGame {
                     game,
                 );
 
-                let Some(playmat) = game.playmats.get(player_id.0 as usize) else {
-                    return None;
-                };
+                // TODO: Reshuffle Zones, or Add better reconnecting
+                // let Some(playmat) = game.playmats.get(player_id.0 as usize) else {
+                //     return None;
+                // };
 
-                game.zones.remove(playmat.battlefield.0 as usize);
-                game.zones.remove(playmat.command.0 as usize);
-                game.zones.remove(playmat.exile.0 as usize);
-                game.zones.remove(playmat.graveyard.0 as usize);
-                game.zones.remove(playmat.hand.0 as usize);
-                game.zones.remove(playmat.library.0 as usize);
+                // game.zones.remove(playmat.battlefield.0 as usize);
+                // game.zones.remove(playmat.command.0 as usize);
+                // game.zones.remove(playmat.exile.0 as usize);
+                // game.zones.remove(playmat.graveyard.0 as usize);
+                // game.zones.remove(playmat.hand.0 as usize);
+                // game.zones.remove(playmat.library.0 as usize);
 
-                game.cards.retain(| card| card.owner != player_id);
-                game.playmats.remove(player_id.0 as usize);
+                // game.playmats.remove(player_id.0 as usize);
                 game.players.retain(|p| *p != player_id);
 
                 for player in game.players.iter() {
@@ -524,11 +524,29 @@ impl ShahrazadGame {
                         remove.push(card_id.clone());
                     }
                 }
-                // for card_id in &remove {
-                //     game.cards.remove(*card_id);
-                // }
-                for (_zone_id, zone) in game.zones.iter_mut().enumerate() {
-                    zone.cards.retain(|card| !remove.contains(&(card.0 as usize)))
+                
+                let mut old_ids:Vec<_> = (0..game.cards.len()).collect();
+                for card_id in remove.iter().rev() {
+                    game.cards.remove(*card_id);
+                    old_ids.remove(*card_id);
+                }
+                let old_to_new: HashMap<usize,&usize> = old_ids.iter().enumerate().collect();
+                
+                let mut remove: Vec<usize> = Vec::new();
+                for zone in game.zones.iter_mut() {
+                    for (idx,card) in zone.cards.clone().iter().enumerate() {
+                        let Some(new) = old_to_new.get(&(card.0 as usize)) else {
+                            remove.push(card.0 as usize);
+                            continue;
+                        };
+                        zone.cards[idx] = (*new).clone().into();
+                    }
+                }
+
+                game.card_count = game.cards.len();
+
+                for zone in game.zones.iter_mut() {
+                    zone.cards.retain(|card| !remove.contains(&(card.0 as usize)));
                 }
                 Some(game)
             }
