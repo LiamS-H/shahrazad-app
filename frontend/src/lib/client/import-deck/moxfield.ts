@@ -70,7 +70,7 @@ export async function importMoxfieldUrl(
                 commander,
                 sideboard,
             },
-            meta: {
+            deck_data: {
                 website: "moxfield",
                 format: data.format,
                 name: data.name,

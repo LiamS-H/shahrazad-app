@@ -102,7 +102,7 @@ export async function importArchidektUrl(
                 commander,
                 sideboard,
             },
-            meta: {
+            deck_data: {
                 format: formats[data.deckFormat] ?? "unknown",
                 name: data.name,
                 description: data.description,

@@ -5,6 +5,7 @@ import { importMoxfieldUrl } from "./moxfield";
 import { IImportOptions, IParsedDeck, toActionList } from "./toActionlist";
 import { toast } from "sonner";
 import { importArchidektUrl } from "./archidekt";
+import { saveDeck } from "./deck-storage";
 
 export interface ISavedDeck {
     meta: IDeckData;
@@ -24,7 +25,7 @@ export interface IDeckData {
 
 export interface IUrlImport {
     cards: IParsedDeck;
-    meta: IDeckData;
+    deck_data: IDeckData;
 }
 
 export async function importFromUrl(
@@ -41,7 +42,8 @@ export async function importFromUrl(
         return undefined;
     }
     if (!urlImport) return undefined;
-    const { cards } = urlImport;
+    const { cards, deck_data } = urlImport;
+    saveDeck(url, deck_data);
 
     return toActionList(cards, locations);
 }
