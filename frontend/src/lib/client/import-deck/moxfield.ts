@@ -1,7 +1,7 @@
 "use server";
 
 import { CardImport } from "@/types/bindings/action";
-import { IParsedDeck } from "./toActionlist";
+import { IUrlImport } from "./importFromUrl";
 
 interface IMoxfieldCard {
     card: {
@@ -15,8 +15,14 @@ interface IMoxfieldCardZone {
 }
 
 interface IMoxfieldResponse {
-    commanders: IMoxfieldCardZone;
+    name: string;
+    description: string;
     format: string;
+    createdByUser: {
+        userName: string;
+        displayName: string;
+    };
+    commanders: IMoxfieldCardZone;
     mainboard: IMoxfieldCardZone;
     sideboard: IMoxfieldCardZone;
 }
@@ -29,7 +35,7 @@ function getMoxfieldDeckSlug(url: string) {
 
 export async function importMoxfieldUrl(
     url: string,
-): Promise<IParsedDeck | null> {
+): Promise<IUrlImport | null> {
     try {
         const slug = getMoxfieldDeckSlug(url);
         if (!slug) return null;
@@ -59,9 +65,21 @@ export async function importMoxfieldUrl(
             });
         }
         return {
-            deck,
-            commander,
-            sideboard,
+            cards: {
+                deck,
+                commander,
+                sideboard,
+            },
+            meta: {
+                website: "moxfield",
+                format: data.format,
+                name: data.name,
+                description: data.description,
+                creator: {
+                    display: data.createdByUser.displayName,
+                    username: data.createdByUser.userName,
+                },
+            },
         };
     } catch (e) {
         console.error(e);

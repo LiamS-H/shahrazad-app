@@ -1,7 +1,7 @@
 "use server";
 
 import { CardImport } from "@/types/bindings/action";
-import { IParsedDeck } from "./toActionlist";
+import { IUrlImport } from "./importFromUrl";
 
 interface IArchidektCard {
     categories: string[];
@@ -17,9 +17,19 @@ interface IArchidektCategory {
 }
 
 interface IArchidektResponse {
+    name: string;
+    description: string;
+    deckFormat: number;
+    owner: {
+        username: string;
+    };
     cards: IArchidektCard[];
     categories: IArchidektCategory[];
 }
+
+const formats: Record<number, string> = {
+    3: "commander",
+};
 
 function getArchidektDeckId(url: string) {
     const regex = /^https:\/\/archidekt\.com\/decks\/(\d+)\/(.*)$/;
@@ -29,7 +39,7 @@ function getArchidektDeckId(url: string) {
 
 export async function importArchidektUrl(
     url: string,
-): Promise<IParsedDeck | null> {
+): Promise<IUrlImport | null> {
     try {
         const deckId = getArchidektDeckId(url);
         if (!deckId) return null;
@@ -38,6 +48,7 @@ export async function importArchidektUrl(
         const req_url = `https://www.archidekt.com/api/decks/${slug}/?`;
         const resp = await fetch(req_url);
         const data: IArchidektResponse = await resp.json();
+        console.log(data);
         const sideboard: CardImport[] = [];
         const commander: CardImport[] = [];
         const deck: CardImport[] = [];
@@ -86,9 +97,21 @@ export async function importArchidektUrl(
         }
 
         return {
-            deck,
-            commander,
-            sideboard,
+            cards: {
+                deck,
+                commander,
+                sideboard,
+            },
+            meta: {
+                format: formats[data.deckFormat] ?? "unknown",
+                name: data.name,
+                description: data.description,
+                website: "archidekt",
+                creator: {
+                    display: data.owner.username,
+                    username: data.owner.username,
+                },
+            },
         };
     } catch (e) {
         console.error(e);
