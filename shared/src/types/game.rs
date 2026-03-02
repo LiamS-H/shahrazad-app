@@ -213,7 +213,7 @@ impl ShahrazadGame {
                         continue;
                     };
                     mutated = true;
-                    game.cards.insert(card_id.0 as usize, new_card);
+                    game.cards[card_id.0 as usize] = new_card;
                 }
                 if !mutated {
                     return None;
@@ -237,8 +237,8 @@ impl ShahrazadGame {
                 let mut migrating_cards = HashSet::new();
                 {
                     let mut migrating_zones = Vec::new();
-                    for id in &cards {
-                        let Some(card) = game.cards.get_mut(id.0 as usize) else {
+                    for card_id in &cards {
+                        let Some(card) = game.cards.get_mut(card_id.0 as usize) else {
                             continue;
                         };
                         if game.zones.get(card.location.0 as usize).is_none() {
@@ -246,11 +246,11 @@ impl ShahrazadGame {
                         };
                         migrating_zones.push(card.location.clone());
                         card.migrate(dest_id.clone());
-                        migrating_cards.insert(id.clone());
+                        migrating_cards.insert(card_id.clone());
 
                         if dest_zone.name != ZoneName::BATTLEFIELD {
                             if card.token {
-                                tokens.push(id.clone());
+                                tokens.push(card_id.clone());
                             }
                             if !card.commander {
                                 card.state.counters = [].into();
@@ -259,8 +259,8 @@ impl ShahrazadGame {
                         }
                     }
 
-                    for id in &migrating_zones {
-                        let Some(zone) = game.zones.get_mut(id.0 as usize) else {
+                    for zone_id in &migrating_zones {
+                        let Some(zone) = game.zones.get_mut(zone_id.0 as usize) else {
                             continue;
                         };
                         let len = zone.cards.len();
@@ -524,9 +524,9 @@ impl ShahrazadGame {
                         remove.push(card_id.clone());
                     }
                 }
-                for card_id in &remove {
-                    game.cards.remove(*card_id);
-                }
+                // for card_id in &remove {
+                //     game.cards.remove(*card_id);
+                // }
                 for (_zone_id, zone) in game.zones.iter_mut().enumerate() {
                     zone.cards.retain(|card| !remove.contains(&(card.0 as usize)))
                 }
@@ -643,17 +643,14 @@ impl ShahrazadGame {
                 Some(game)
             }
             ShahrazadAction::ResetPlaymat { player_id, seed } => {
-                {
-                    let playmat = game.playmats.get_mut(player_id.0 as usize)?;
-                    playmat.mulligans = 0;
-                    for command in &mut playmat.command_damage {
-                        command.damage = 0;
-                    }
-                }
-
                 let playmat = game.playmats.get_mut(player_id.0 as usize)?;
+                playmat.mulligans = 0;
                 playmat.life = game.settings.starting_life;
                 playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
+                for command in &mut playmat.command_damage {
+                    command.damage = 0;
+                }
+
                 let library_id = playmat.library.clone();
                 let command_id = playmat.command.clone();
                 let sideboard_id = playmat.sideboard.clone();
@@ -709,7 +706,7 @@ impl ShahrazadGame {
 
                 ShahrazadGame::apply_action(
                     ShahrazadAction::Shuffle {
-                        zone: library_id.clone(),
+                        zone: library_id,
                         seed: seed.clone(),
                     },
                     game,
