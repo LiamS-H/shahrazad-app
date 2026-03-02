@@ -87,11 +87,11 @@ export default function Player() {
                         Command Damage:
                     </span>
                     <div className="flex flex-wrap justify-around">
-                        {players.map((command_id) => {
+                        {playmat.command_damage.map((damage) => {
                             return (
                                 <CommandDamageButton
-                                    key={command_id}
-                                    command_id={command_id}
+                                    key={damage.playmat}
+                                    command_damage={damage}
                                     player_id={player}
                                 />
                             );

@@ -8,23 +8,22 @@ import {
 
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
+import { CommandDammage, ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { Minus, Plus } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 export default function CommandDamageButton({
-    command_id,
+    command_damage,
     player_id,
 }: {
-    command_id: ShahrazadPlaymatId;
+    command_damage: CommandDammage;
     player_id: ShahrazadPlaymatId;
 }) {
     const { applyAction, getPlaymat } = useShahrazadGameContext();
-    const playmat = getPlaymat(player_id);
+    const { playmat: command_id, damage } = command_damage;
     const {
         player: { display_name: command_name },
     } = getPlaymat(command_id);
-    const damage = playmat.command_damage[command_id].damage;
 
     const [open, setOpen] = useState(false);
     const [damageInput, setDamageInput] = useState(damage.toString());
