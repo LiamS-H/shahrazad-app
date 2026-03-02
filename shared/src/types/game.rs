@@ -52,8 +52,8 @@ pub struct ShahrazadGameSettings {
 impl ShahrazadGame {
     pub fn hash(&self) -> u64 {
         let mut state = SeaHasher::with_seeds(0, 0, 0, 0);
-        self.zone_count.hash(&mut state);
-        self.card_count.hash(&mut state);
+        (self.zone_count as u32).hash(&mut state);
+        (self.card_count as u32).hash(&mut state);
         for card in &self.cards {
             card.hash(&mut state);
             card.hash(&mut state);
@@ -64,7 +64,7 @@ impl ShahrazadGame {
             zone.hash(&mut state);
         }
         for player in &self.players {
-            let Some(playmat) = self.playmats.get(player.0) else {
+            let Some(playmat) = self.playmats.get(player.0 as usize) else {
                 continue;
             };
             player.hash(&mut state);
@@ -123,7 +123,7 @@ impl ShahrazadGame {
                 if amount == 0 {
                     return None;
                 }
-                let src_len = game.zones.get(source.0)?.cards.len();
+                let src_len = game.zones.get(source.0 as usize)?.cards.len();
                 if src_len == 0 {
                     return None;
                 }
@@ -134,13 +134,13 @@ impl ShahrazadGame {
                 };
                 let mut drawn_cards: Vec<ShahrazadCardId> = game
                     .zones
-                    .get_mut(source.0)?
+                    .get_mut(source.0 as usize)?
                     .cards
                     .drain(src_range)
                     .collect();
 
                 for card in &drawn_cards {
-                    let Some(card) = game.cards.get_mut(card.0) else {
+                    let Some(card) = game.cards.get_mut(card.0 as usize) else {
                         continue;
                     };
                     card.migrate(destination.clone());
@@ -148,7 +148,7 @@ impl ShahrazadGame {
                 }
 
                 game.zones
-                    .get_mut(destination.0)?
+                    .get_mut(destination.0 as usize)?
                     .cards
                     .append(&mut drawn_cards);
                 return Some(game);
@@ -177,7 +177,7 @@ impl ShahrazadGame {
                         break 'transform_block None;
                     }
 
-                    let Some(first_card) = game.cards.get(cards[0].0) else {
+                    let Some(first_card) = game.cards.get(cards[0].0 as usize) else {
                         break 'transform_block None;
                     };
 
@@ -192,7 +192,7 @@ impl ShahrazadGame {
                 };
 
                 for card_id in &cards {
-                    let old_card = game.cards.get(card_id.0)?;
+                    let old_card = game.cards.get(card_id.0 as usize)?;
                     let mut new_card = ShahrazadCard { ..old_card.clone() };
 
                     new_card.state = old_card.state.clone();
@@ -213,7 +213,7 @@ impl ShahrazadGame {
                         continue;
                     };
                     mutated = true;
-                    game.cards.insert(card_id.0, new_card);
+                    game.cards.insert(card_id.0 as usize, new_card);
                 }
                 if !mutated {
                     return None;
@@ -231,17 +231,17 @@ impl ShahrazadGame {
                 }
                 let mut mutated = false;
 
-                let dest_zone = game.zones.get(dest_id.0)?;
+                let dest_zone = game.zones.get(dest_id.0 as usize)?;
 
                 let mut tokens = Vec::new();
                 let mut migrating_cards = HashSet::new();
                 {
                     let mut migrating_zones = Vec::new();
                     for id in &cards {
-                        let Some(card) = game.cards.get_mut(id.0) else {
+                        let Some(card) = game.cards.get_mut(id.0 as usize) else {
                             continue;
                         };
-                        if game.zones.get(card.location.0).is_none() {
+                        if game.zones.get(card.location.0 as usize).is_none() {
                             continue;
                         };
                         migrating_zones.push(card.location.clone());
@@ -260,7 +260,7 @@ impl ShahrazadGame {
                     }
 
                     for id in &migrating_zones {
-                        let Some(zone) = game.zones.get_mut(id.0) else {
+                        let Some(zone) = game.zones.get_mut(id.0 as usize) else {
                             continue;
                         };
                         let len = zone.cards.len();
@@ -283,7 +283,7 @@ impl ShahrazadGame {
                     mutated = true;
                 };
 
-                let dest_zone = game.zones.get_mut(dest_id.0)?;
+                let dest_zone = game.zones.get_mut(dest_id.0 as usize)?;
                 let idx = if index == -1 {
                     dest_zone.cards.len()
                 } else {
@@ -316,7 +316,7 @@ impl ShahrazadGame {
                 }
             }
             ShahrazadAction::Shuffle { zone, seed } => {
-                let zone_ref = game.zones.get_mut(zone.0)?;
+                let zone_ref = game.zones.get_mut(zone.0 as usize)?;
                 if zone_ref.cards.len() == 0 {
                     return None;
                 }
@@ -325,7 +325,7 @@ impl ShahrazadGame {
                 cards.sort_by_key(|card| card.to_string());
                 cards.shuffle(&mut rng);
                 for card_id in &cards {
-                    let card = game.cards.get_mut(card_id.0)?;
+                    let card = game.cards.get_mut(card_id.0 as usize)?;
                     card.state.apply(&&ShahrazadCardStateTransform::reset());
                     card.state.apply(&&ShahrazadCardStateTransform {
                         face_down: Some(true),
@@ -349,12 +349,12 @@ impl ShahrazadGame {
                 }
                 let mut card_ids = Vec::new();
                 let token = token;
-                let zone_name = game.zones.get(zone.0)?.name.clone();
+                let zone_name = game.zones.get(zone.0 as usize)?.name.clone();
                 for CardImport { str, amount } in cards {
                     for _ in 0..(amount.unwrap_or(1)) {
                         let card_name = ShahrazadCardName::new(str.clone());
                         let card_id: ShahrazadCardId =
-                            ShahrazadCardId::new(game.card_count.into());
+                            ShahrazadCardId::new(game.card_count as u32);
                         card_ids.push(card_id.clone());
                         let commander = if zone_name == ZoneName::COMMAND {
                             true
@@ -370,11 +370,11 @@ impl ShahrazadGame {
                             owner: player_id.clone(),
                         };
                         card.state.apply(&state);
-                        game.cards.insert(card_id.0, card);
+                        game.cards.insert(card_id.0 as usize, card);
                         game.card_count += 1;
                     }
                 }
-                game.zones.get_mut(zone.0)?.cards.append(&mut card_ids);
+                game.zones.get_mut(zone.0 as usize)?.cards.append(&mut card_ids);
                 return Some(game);
             }
             ShahrazadAction::DeckImport {
@@ -383,7 +383,7 @@ impl ShahrazadGame {
             } => todo!("{}{}", deck_uri, player_id),
             ShahrazadAction::SetPlayer { player_id, player } => {
                 if let Some(player) = player {
-                    let Some(playmat) = game.playmats.get_mut(player_id.0) else {
+                    let Some(playmat) = game.playmats.get_mut(player_id.0 as usize) else {
                         return None;
                     };
                     if playmat.player == player {
@@ -400,23 +400,23 @@ impl ShahrazadGame {
                     game,
                 );
 
-                let Some(playmat) = game.playmats.get(player_id.0) else {
+                let Some(playmat) = game.playmats.get(player_id.0 as usize) else {
                     return None;
                 };
 
-                game.zones.remove(playmat.battlefield.0);
-                game.zones.remove(playmat.command.0);
-                game.zones.remove(playmat.exile.0);
-                game.zones.remove(playmat.graveyard.0);
-                game.zones.remove(playmat.hand.0);
-                game.zones.remove(playmat.library.0);
+                game.zones.remove(playmat.battlefield.0 as usize);
+                game.zones.remove(playmat.command.0 as usize);
+                game.zones.remove(playmat.exile.0 as usize);
+                game.zones.remove(playmat.graveyard.0 as usize);
+                game.zones.remove(playmat.hand.0 as usize);
+                game.zones.remove(playmat.library.0 as usize);
 
                 game.cards.retain(| card| card.owner != player_id);
-                game.playmats.remove(player_id.0);
+                game.playmats.remove(player_id.0 as usize);
                 game.players.retain(|p| *p != player_id);
 
                 for player in game.players.iter() {
-                    let Some(playmat) = game.playmats.get_mut(player.0) else {
+                    let Some(playmat) = game.playmats.get_mut(player.0 as usize) else {
                         continue;
                     };
                     playmat.command_damage.retain(|CommandDammage{playmat,damage:_}|*playmat!=player_id);
@@ -438,9 +438,9 @@ impl ShahrazadGame {
 
                 for (index, name) in zone_types.iter().enumerate() {
                     let zone_id =
-                        ShahrazadZoneId::new( game.zone_count + index + 1);
+                        ShahrazadZoneId::new( (game.zone_count + index + 1) as u32);
                     game.zones.insert(
-                        zone_id.0,
+                        zone_id.0 as usize,
                         ShahrazadZone {
                             cards: Vec::<ShahrazadCardId>::new(),
                             name: name.to_owned(),
@@ -456,7 +456,7 @@ impl ShahrazadGame {
                 for player in &game.players {
                     command_damage.push(CommandDammage { playmat: player.clone(), damage: 0 });
 
-                    let Some(playmat) = game.playmats.get_mut(player.0) else {
+                    let Some(playmat) = game.playmats.get_mut(player.0 as usize) else {
                         continue;
                     };
                     playmat.command_damage.push(CommandDammage { playmat: player_id.clone(), damage: 0 });
@@ -479,12 +479,12 @@ impl ShahrazadGame {
 
                 game.zone_count += zone_types.len();
 
-                game.playmats.insert(player_id.0, new_playmat);
+                game.playmats.insert(player_id.0 as usize, new_playmat);
 
                 return Some(game);
             }
             ShahrazadAction::SetLife { player_id, life } => {
-                let playmat = game.playmats.get_mut(player_id.0)?;
+                let playmat = game.playmats.get_mut(player_id.0 as usize)?;
                 if playmat.life == life {
                     return None;
                 }
@@ -496,7 +496,7 @@ impl ShahrazadGame {
                 command_id,
                 damage,
             } => {
-                let playmat = game.playmats.get_mut(player_id.0)?;
+                let playmat = game.playmats.get_mut(player_id.0 as usize)?;
                 for command in & mut playmat.command_damage {
                     if command.playmat == command_id {
                         command.damage = damage;
@@ -509,7 +509,7 @@ impl ShahrazadGame {
                 player_id,
                 reveal_deck_top,
             } => {
-                let playmat = game.playmats.get_mut(player_id.0)?;
+                let playmat = game.playmats.get_mut(player_id.0 as usize)?;
                 let reveal_deck_top = reveal_deck_top.into();
                 if playmat.reveal_deck_top == reveal_deck_top {
                     return None;
@@ -528,13 +528,13 @@ impl ShahrazadGame {
                     game.cards.remove(*card_id);
                 }
                 for (_zone_id, zone) in game.zones.iter_mut().enumerate() {
-                    zone.cards.retain(|card| !remove.contains(card))
+                    zone.cards.retain(|card| !remove.contains(&(card.0 as usize)))
                 }
                 Some(game)
             }
             ShahrazadAction::Mulligan { player_id, seed } => {
                 {
-                    let playmat = game.playmats.get_mut(player_id.0)?;
+                    let playmat = game.playmats.get_mut(player_id.0 as usize)?;
 
                     let free_mulligans = game.settings.free_mulligans as i8;
 
@@ -548,7 +548,7 @@ impl ShahrazadGame {
                         playmat.mulligans = min(playmat.mulligans + 1, 7);
                     };
                 }
-                let playmat = game.playmats.get(player_id.0)?;
+                let playmat = game.playmats.get(player_id.0 as usize)?;
                 let library_id = playmat.library.clone();
                 let hand_id = playmat.hand.clone();
                 let command_id = playmat.command.clone();
@@ -557,7 +557,7 @@ impl ShahrazadGame {
                 let mut cards: Vec<ShahrazadCardId> = Vec::new();
                 let mut commanders: Vec<ShahrazadCardId> = Vec::new();
                 let mut sideboard: Vec<ShahrazadCardId> = Vec::new();
-                let mut is_reset: bool = game.zones.get(hand_id.0)?.cards.len() == 0;
+                let mut is_reset: bool = game.zones.get(hand_id.0 as usize)?.cards.len() == 0;
                 for (card_id, card) in game.cards.iter().enumerate() {
                     if card.owner != player_id {
                         continue;
@@ -644,14 +644,14 @@ impl ShahrazadGame {
             }
             ShahrazadAction::ResetPlaymat { player_id, seed } => {
                 {
-                    let playmat = game.playmats.get_mut(player_id.0)?;
+                    let playmat = game.playmats.get_mut(player_id.0 as usize)?;
                     playmat.mulligans = 0;
                     for command in &mut playmat.command_damage {
                         command.damage = 0;
                     }
                 }
 
-                let playmat = game.playmats.get_mut(player_id.0)?;
+                let playmat = game.playmats.get_mut(player_id.0 as usize)?;
                 playmat.life = game.settings.starting_life;
                 playmat.reveal_deck_top = crate::types::playmat::DeckTopReveal::NONE;
                 let library_id = playmat.library.clone();
@@ -726,7 +726,7 @@ impl ShahrazadGame {
                 let mut zones = Vec::new();
 
                 for id in &cards {
-                    let Some(card) = game.cards.get(id.0) else {
+                    let Some(card) = game.cards.get(id.0 as usize) else {
                         continue;
                     };
                     if !card.token {
@@ -737,11 +737,11 @@ impl ShahrazadGame {
                     mutated = true;
                 }
                 for id in &tokens {
-                    game.cards.remove(id.0);
+                    game.cards.remove(id.0 as usize);
                 }
 
                 for id in &zones {
-                    let Some(zone) = game.zones.get_mut(id.0) else {
+                    let Some(zone) = game.zones.get_mut(id.0 as usize) else {
                         continue;
                     };
                     zone.cards.retain(|id| !tokens.contains(id));

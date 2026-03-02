@@ -24,8 +24,8 @@ export class LocalGameClient {
         }
         const game: ShahrazadGame = state.get_state();
         if (game.players.length === 0 && game_state) {
-            console.log(game);
             console.error("[local] failed to load empty game");
+            console.log("[local] empty game:", game);
             return null;
         }
         this.gameState = state;

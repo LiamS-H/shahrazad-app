@@ -42,7 +42,7 @@ export default function GameError({
                 <p className="text-xl mb-6">{error.message}</p>
                 <p className="text-gray-400 mb-6">{error.description}</p>
                 <Link href="/">
-                    <Button variant="ghost">Go Home</Button>
+                    <Button variant="highlight">Go Home</Button>
                 </Link>
             </div>
         </div>

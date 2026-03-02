@@ -41,7 +41,7 @@ export default function Player() {
     return (
         <div
             data-shahplayer={player}
-            className={`relative group flex flex-col h-[140px] w-[120px] -mx-3 p-1 border border-highlight ${active && "text-highlight"}`}
+            className={`relative group flex flex-col h-[140px] w-[120px] -mx-3 p-1 border ${active && "text-highlight border-highlight"}`}
         >
             <div className="absolute -top-2 -right-2">
                 <ImportDeckButton variant="ghost" />

@@ -5,7 +5,6 @@ export async function preloadCardImages(
     cards: string[],
     requestCard: ReturnType<typeof useScrycardsContext>["requestCard"],
 ) {
-    console.log("preloading", cards);
     if (cards.length === 0) return;
     const last = cards.at(-1) as string;
     await requestCard(last);

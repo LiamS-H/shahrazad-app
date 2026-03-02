@@ -33,7 +33,7 @@ export function ImportDialog({
     const loadingRef = useRef(false);
 
     const open = player !== null;
-    const playmat = player ? getPlaymat(player) : null;
+    const playmat = player !== null ? getPlaymat(player) : null;
 
     function close() {
         importFor(null);
@@ -45,7 +45,7 @@ export function ImportDialog({
     }
 
     async function importDeck() {
-        if (!player) return false;
+        if (player === null) return false;
         const playmat = getPlaymat(player);
         if (!playmat) return false;
         if (loadingRef.current) {
@@ -89,7 +89,8 @@ export function ImportDialog({
         toast.success("Deck imported.");
     }
 
-    const isEmpty = playmat && getZone(playmat.library).cards.length === 0;
+    const isEmpty =
+        playmat !== null && getZone(playmat.library).cards.length === 0;
 
     return (
         <Dialog open={open} onOpenChange={close}>
@@ -161,7 +162,7 @@ export function ImportDialog({
                             variant="destructive"
                             disabled={(!url && !deckstr) || loading}
                             onClick={() => {
-                                if (!player) return;
+                                if (player === null) return;
                                 applyAction({
                                     type: ShahrazadActionCase.ClearBoard,
                                     player_id: player,

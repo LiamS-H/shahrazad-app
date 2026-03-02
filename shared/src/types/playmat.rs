@@ -5,11 +5,11 @@ use type_reflect::*;
 
 use crate::proto;
 
-use crate::branded_usize;
+use crate::branded_u32;
 
 use super::zone::ShahrazadZoneId;
 
-branded_usize!(ShahrazadPlaymatId);
+branded_u32!(ShahrazadPlaymatId);
 
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]

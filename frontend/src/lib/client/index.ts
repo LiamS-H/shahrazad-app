@@ -134,6 +134,8 @@ export class GameClient {
             if (update.hash && update.hash !== this.hash) {
                 console.error(
                     "[client] move validation failed, requesting new state.",
+                    update.hash,
+                    this.hash,
                 );
                 this.broadcastAction({});
             }

@@ -143,9 +143,9 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
 
         let x: undefined | number;
         let y: undefined | number;
-        if (end_zone_gridsize) {
-            x = event.active.rect.current.translated?.left || 0;
-            y = event.active.rect.current.translated?.top || 0;
+        if (end_zone_gridsize !== undefined) {
+            x = event.active.rect.current.translated?.left ?? 0;
+            y = event.active.rect.current.translated?.top ?? 0;
 
             if (y > event.over.rect.bottom - card_height) {
                 y = event.over.rect.bottom - card_height;
@@ -264,11 +264,12 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
 
     const { selectedCards } = SelectionContext;
 
-    const dragging = activeId
-        ? selectedCards.includes(activeId)
-            ? [activeId, ...selectedCards.filter((id) => id !== activeId)]
-            : [activeId]
-        : null;
+    const dragging =
+        activeId !== null
+            ? selectedCards.includes(activeId)
+                ? [activeId, ...selectedCards.filter((id) => id !== activeId)]
+                : [activeId]
+            : null;
 
     return (
         <DndContext
@@ -283,7 +284,7 @@ export default function ShahrazadDND(props: { children: ReactNode }) {
                 {props.children}
             </DraggingContextProvider>
             <DragOverlay>
-                {activeId ? <DraggableOverlay id={activeId} /> : null}
+                {activeId !== null ? <DraggableOverlay id={activeId} /> : null}
             </DragOverlay>
         </DndContext>
     );

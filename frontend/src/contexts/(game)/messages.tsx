@@ -81,9 +81,7 @@ export function MessagesContextProvider({
     }, [registerOnMessage]);
 
     const curSecs = useCallback(() => {
-        return Number(
-            BigInt(Math.floor(Date.now() / 1000)) - (created_at as bigint)
-        );
+        return Number(BigInt(Math.floor(Date.now() / 1000)) - created_at);
     }, [created_at]);
 
     useEffect(() => {
@@ -94,7 +92,7 @@ export function MessagesContextProvider({
             setArrows((oldArrows) => {
                 if (oldArrows.length === 0) return oldArrows;
                 return oldArrows.filter(
-                    (arrow) => arrow.created_at + 5 > currentSeconds
+                    (arrow) => arrow.created_at + 5 > currentSeconds,
                 );
             });
         };
@@ -122,7 +120,7 @@ export function MessagesContextProvider({
                 created_at: curSecs(),
             });
         },
-        [applyAction, curSecs]
+        [applyAction, curSecs],
     );
 
     return (

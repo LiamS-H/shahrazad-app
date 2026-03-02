@@ -86,7 +86,7 @@ export default function Game({
                                                         <Playmat
                                                             key={player}
                                                             active={
-                                                                player ===
+                                                                player ==
                                                                 activePlayer
                                                             }
                                                             player={player}

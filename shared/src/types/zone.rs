@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
-use crate::{branded_usize, proto, types::card::ShahrazadCardId};
+use crate::{branded_u32, proto, types::card::ShahrazadCardId};
 
 // zone.rs
-branded_usize!(ShahrazadZoneId);
+branded_u32!(ShahrazadZoneId);
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum ZoneName {

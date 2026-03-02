@@ -15,8 +15,9 @@ where
     T: Serialize,
 {
     let serializer = Serializer::new()
-        .serialize_maps_as_objects(true)
-        .serialize_large_number_types_as_bigints(true);
+        // .serialize_maps_as_objects(true)
+        .serialize_large_number_types_as_bigints(true)
+        ;
     value.serialize(&serializer).map_err(|e| e.into())
 }
 

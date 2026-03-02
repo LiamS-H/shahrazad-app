@@ -25,6 +25,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "eslint.config.mjs",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",

@@ -11,6 +11,21 @@ const eslintConfig = [
     ...nextTypescript,
     {
         ignores: ["src/lib/shahrazad-wasm/"],
+        languageOptions: {
+            parserOptions: {
+                projectService: true, // Recommended for performance in v8+
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+        rules: {
+            // "@typescript-eslint/strict-boolean-expressions": [
+            //     "error",
+            //     {
+            //         allowNumber: false,
+            //         allowNullableNumber: false,
+            //     },
+            // ],
+        },
     },
 ];
 
