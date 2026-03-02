@@ -3,8 +3,8 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import CreateGameForm from "./create-game-form";
 import JoinGameForm from "./join-game-form";
 
-import { parseCode } from "@/lib/client/parseCode";
-import { fetchGame } from "@/lib/client/fecthGame";
+import { parseCode } from "@/lib/utils/parseGameCode";
+import { fetchGame } from "@/lib/api/fecthGame";
 import { useRouter } from "next/navigation";
 
 export default function GameConfigPage() {

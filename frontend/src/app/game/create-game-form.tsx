@@ -1,9 +1,9 @@
 import { TabsContent } from "@/components/(ui)/tabs";
-import { createGame } from "@/lib/client/createGame";
+import { createGame } from "@/lib/api/createGame";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import { loadPlayer, savePlayer } from "@/lib/storage/localPlayer";
 import { GameSettings } from "@/components/(game)/game-settings";
 import { ShahrazadGameSettings } from "@/types/bindings/game";
 

@@ -5,7 +5,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/(ui)/popover";
-import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import { loadPlayer, savePlayer } from "@/lib/storage/localPlayer";
 import { ShahrazadPlayer } from "@/types/bindings/playmat";
 import { LoaderCircle, User, UserPen } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";

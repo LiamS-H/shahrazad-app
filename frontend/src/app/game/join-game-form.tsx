@@ -13,8 +13,8 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { joinGame } from "@/lib/client/joinGame";
-import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import { joinGame } from "@/lib/api/joinGame";
+import { loadPlayer, savePlayer } from "@/lib/storage/localPlayer";
 import { cacheJoinResult } from "@/lib/session";
 
 import JoinGameLoading from "./join-game-loading";

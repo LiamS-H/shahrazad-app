@@ -15,7 +15,7 @@ import { LocalGameClient } from "@/lib/client/local";
 import { toast } from "sonner";
 import { UserProfile } from "@/components/(ui)/user-profile";
 import { useRouter, useSearchParams } from "next/navigation";
-import { loadPlayer } from "@/lib/client/localPlayer";
+import { loadPlayer } from "@/lib/storage/localPlayer";
 import Loading from "../[UUID]/loading";
 import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
 import { SaveStatesButton } from "./save-states-button";

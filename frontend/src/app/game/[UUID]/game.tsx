@@ -1,6 +1,6 @@
 "use client";
 import Game from "@/components/(game)/game";
-import { joinGame } from "@/lib/client/joinGame";
+import { joinGame } from "@/lib/api/joinGame";
 import { consumeJoinCache } from "@/lib/session";
 import {
     ShahrazadActionCase,
@@ -14,7 +14,7 @@ import GameError, { IErrorMessage } from "./error";
 import { toast } from "sonner";
 import { ShareGameButton } from "@/components/(game)/share-game-button";
 import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
-import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import { loadPlayer, savePlayer } from "@/lib/storage/localPlayer";
 import Loading from "./loading";
 import { UserProfile } from "@/components/(ui)/user-profile";
 import { init_wasm } from "@/lib/client/wasm-init";
