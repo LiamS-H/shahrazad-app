@@ -52,7 +52,7 @@ export function LoadingMessage({
 
     if (!isClient) {
         return (
-            <div className="flex flex-col items-start gap-1 h-64">
+            <div className="flex flex-col items-start gap-1 h-64 w-44">
                 <StatusMessage text="loading page data" variant="loading" />
             </div>
         );
@@ -84,7 +84,7 @@ export function LoadingMessage({
     };
 
     return (
-        <div className="flex flex-col items-start gap-1 h-64 w-40">
+        <div className="flex flex-col items-start gap-1 h-64 w-44">
             <StatusMessage text="Page loaded" variant="success" />
 
             {wasmReady ? (
