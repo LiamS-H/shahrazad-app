@@ -101,9 +101,7 @@ export default function LocalGame() {
                     preloadCardImages(cards, requestCard);
                 }
             },
-            onToast: (message) => {
-                toast(message);
-            },
+            toast,
             onGameTermination: (reason) => {
                 toast.error(reason ?? "Game Terminated");
                 router.push("/");

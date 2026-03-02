@@ -140,9 +140,7 @@ export default function GamePage(props: { game_id: string }) {
                         preloadCardImages(cards, requestCard);
                     }
                 },
-                onToast: (message) => {
-                    toast(message);
-                },
+                toast,
                 onGameTermination: (reason) => {
                     signalError({
                         status: 404,

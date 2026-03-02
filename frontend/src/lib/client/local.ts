@@ -70,16 +70,16 @@ export class LocalGameClient {
                     mulligans < 0 ? "for free" : `to ${7 - mulligans}`
                 }.`;
             }
-            this.callbacks.onToast(message);
+            this.callbacks.toast.info(message);
         }
 
         if (action.type == ShahrazadActionCase.SetPlayer) {
             if (action.player) {
-                this.callbacks.onToast(
+                this.callbacks.toast.info(
                     `${action.player_id} has new name: ${action.player.display_name}`,
                 );
             } else {
-                this.callbacks.onToast(`${action.player_id} has left.`);
+                this.callbacks.toast.info(`${action.player_id} has left.`);
             }
         }
         if (action.type === ShahrazadActionCase.SendMessage) {

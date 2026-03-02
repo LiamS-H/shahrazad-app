@@ -10,6 +10,7 @@ import {
     encode_client_action,
     GameState,
 } from "shahrazad-wasm";
+import { toast } from "sonner";
 
 export type GameClientOnMessage = (
     messages: ShahrazadActionCaseSendMessage,
@@ -18,7 +19,7 @@ export type GameClientOnMessage = (
 export interface GameClientCallbacks {
     onGameUpdate: (game: ShahrazadGame) => void;
     onPreloadCards: (cards: string[], getImages: boolean) => void;
-    onToast: (message: string) => void;
+    toast: typeof toast;
     onGameTermination: (message?: string) => void;
     onPlayerJoin: (player: string) => void;
     onMessage: GameClientOnMessage;
@@ -141,17 +142,17 @@ export class GameClient {
             }
         } catch (error) {
             console.error("[ws] message error:", error);
-            this.callbacks.onToast("Error processing action.");
+            this.callbacks.toast.error("Error processing action.");
         }
     };
 
     private handleError = (error: Event) => {
         console.log("[ws] error:", error, this.socket);
         if (this.reconnectAttempts === 1) {
-            this.callbacks.onToast("Game Disconnected.");
+            this.callbacks.toast.error("Game Disconnected.");
         }
         if (this.reconnectAttempts > 1) {
-            this.callbacks.onToast("Reconnect failed.");
+            this.callbacks.toast.error("Reconnect failed.");
         }
         if (this.socket?.OPEN) {
             this.socket?.close();
@@ -177,7 +178,7 @@ export class GameClient {
         this.reconnectTimeout = setTimeout(() => {
             if (this.isCleanedUp) return;
             if (this.reconnectAttempts > 1) {
-                this.callbacks.onToast("Reconnecting...");
+                this.callbacks.toast("Reconnecting...");
             }
             if (this.reconnectTimeout) {
                 clearTimeout(this.reconnectTimeout);
@@ -245,16 +246,16 @@ export class GameClient {
                     mulligans < 0 ? "for free" : `to ${7 - mulligans}`
                 }.`;
             }
-            this.callbacks.onToast(message);
+            this.callbacks.toast.info(message);
         }
 
         if (action.type == ShahrazadActionCase.SetPlayer) {
             if (action.player) {
-                this.callbacks.onToast(
+                this.callbacks.toast.info(
                     `${action.player_id} has new name: ${action.player.display_name}`,
                 );
             } else {
-                this.callbacks.onToast(`${action.player_id} has left.`);
+                this.callbacks.toast.info(`${action.player_id} has left.`);
             }
         }
         if (action.type === ShahrazadActionCase.SendMessage) {
