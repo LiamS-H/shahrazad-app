@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { importFromUrl } from "@/lib/client/import-deck/importFromUrl";
 import { toast } from "sonner";
 import { Label } from "@/components/(ui)/label";
-import { ShahrazadAction, ShahrazadActionCase } from "@/types/bindings/action";
+import { ShahrazadActionCase } from "@/types/bindings/action";
 import {
     Dialog,
     DialogContent,
@@ -20,6 +20,10 @@ import { Button } from "@/components/(ui)/button";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { useImportContext } from "@/contexts/(game)/import";
 import { SavedDecks } from "./saved-decks";
+import {
+    IParsedDeck,
+    toActionList,
+} from "@/lib/client/import-deck/toActionlist";
 
 export function ImportDialog({
     player,
@@ -55,7 +59,7 @@ export function ImportDialog({
             return false;
         }
         loadingRef.current = true;
-        let actions: ShahrazadAction[] | null | undefined;
+        let deck: IParsedDeck | null | undefined;
         const sideboardId = settings.commander
             ? playmat.command
             : playmat.sideboard;
@@ -67,24 +71,57 @@ export function ImportDialog({
             playerId: player,
         };
         if (url) {
-            actions = await importFromUrl(url, locations);
-            if (actions === undefined) {
-                toast.error("Coudln't fetch deck.");
-                setLoading(false);
-                return;
-            }
+            const deckPromise = importFromUrl(url).then((deck) => {
+                if (!deck) throw { message: "Couldn't fetch deck" };
+                return deck;
+            });
+            toast.promise(deckPromise, {
+                loading: "Fetching deck...",
+                success: ({ deck_data: { name } }) =>
+                    `Imported deck "${name.substring(0, 20)}${name.length > 20 ? "..." : ""}"`,
+            });
+            deck = (await deckPromise).cards;
         } else if (deckstr) {
-            actions = importFromStr(deckstr, locations);
-            if (actions === undefined) {
+            deck = importFromStr(deckstr);
+            if (deck === undefined) {
                 toast.error("Couldn't parse deck.");
-                setLoading(false);
                 return;
             }
         }
+        setLoading(false);
+        if (!deck) {
+            return;
+        }
+
+        const actions = toActionList(deck, locations);
         if (!actions) {
             toast.error("No cards to load.");
-            setLoading(false);
             return;
+        }
+        const hasCommander =
+            deck.commander.length !== 0 && deck.commander.length <= 2;
+        if (hasCommander && !settings.commander) {
+            const id = toast.warning("Detected commander.", {
+                description: "Change settings?",
+                action: (
+                    <Button
+                        className="h-9"
+                        onClick={() => {
+                            applyAction({
+                                type: ShahrazadActionCase.SetSettings,
+                                settings: { ...settings, commander: true },
+                            });
+                            toast.success("Switched to commander.", {
+                                id,
+                                description: null,
+                                action: null,
+                            });
+                        }}
+                    >
+                        Commander
+                    </Button>
+                ),
+            });
         }
 
         if (reset) {
@@ -96,7 +133,6 @@ export function ImportDialog({
         actions.forEach((a) => applyAction(a));
         close();
         setLoading(false);
-        toast.success("Deck imported.");
     }
 
     const isEmpty =

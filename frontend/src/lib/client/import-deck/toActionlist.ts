@@ -24,7 +24,7 @@ export function toActionList(
 ): ShahrazadAction[] | null {
     const importActions: ShahrazadAction[] = [];
 
-    if (sideboard.length === 0 && deck.length === 0) {
+    if (sideboard.length === 0 && deck.length === 0 && commander.length === 0) {
         return null;
     }
 

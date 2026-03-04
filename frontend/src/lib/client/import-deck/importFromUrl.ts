@@ -1,8 +1,7 @@
 "use client";
 
-import { ShahrazadAction } from "@/types/bindings/action";
 import { importMoxfieldUrl } from "./moxfield";
-import { IImportOptions, IParsedDeck, toActionList } from "./toActionlist";
+import { IParsedDeck } from "./toActionlist";
 import { toast } from "sonner";
 import { importArchidektUrl } from "./archidekt";
 import { saveDeck } from "../../storage/deck-storage";
@@ -33,8 +32,7 @@ export interface IUrlImport {
 
 export async function importFromUrl(
     url: string,
-    locations: IImportOptions,
-): Promise<ShahrazadAction[] | null | undefined> {
+): Promise<IUrlImport | null | undefined> {
     let urlImport: IUrlImport | null = null;
     if (url.match(/^https:\/\/moxfield\.com\/decks\/[a-zA-Z0-9\_\-]{22}$/)) {
         urlImport = await importMoxfieldUrl(url);
@@ -45,8 +43,8 @@ export async function importFromUrl(
         return undefined;
     }
     if (!urlImport) return undefined;
-    const { cards, deck_data } = urlImport;
+    const { deck_data } = urlImport;
     saveDeck(url, deck_data);
 
-    return toActionList(cards, locations);
+    return urlImport;
 }

@@ -33,14 +33,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
                     fontFamily: "var(--font-main)",
                 } as React.CSSProperties
             }
-            toastOptions={
-                {
-                    // unstyled: true,
-                    // classNames: {
-                    //     toast: "w-90 h-14 p-4 border border-border bg-background",
-                    // },
-                }
-            }
+            toastOptions={{
+                classNames: {
+                    toast: "[&>*:nth-child(3)]:ms-auto",
+                },
+            }}
             {...props}
         />
     );

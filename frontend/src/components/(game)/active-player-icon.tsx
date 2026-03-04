@@ -16,6 +16,7 @@ import {
 import { GameSettings } from "./game-settings";
 import { useState } from "react";
 import { safeGetItem } from "@/lib/storage/safe-get";
+import { toast } from "sonner";
 
 export function ActivePlayerIcon({
     player_id,
@@ -123,6 +124,7 @@ function SettingsDialog() {
                             type: ShahrazadActionCase.SetSettings,
                             settings: { ...settings },
                         });
+                        toast.success("Successfully updated settings.");
                         setOpen(false);
                     }}
                     submitButtonText="Save Settings"

@@ -1,5 +1,5 @@
-import { CardImport, ShahrazadAction } from "@/types/bindings/action";
-import { IImportOptions, IParsedDeck, toActionList } from "./toActionlist";
+import { CardImport } from "@/types/bindings/action";
+import { IParsedDeck } from "./toActionlist";
 
 function parseLine(str: string): {
     amount: number;
@@ -62,11 +62,8 @@ export function parseDeckstr(str: string): IParsedDeck | null {
     return { deck, sideboard, commander: sideboard };
 }
 
-export function importFromStr(
-    str: string,
-    locations: IImportOptions,
-): ShahrazadAction[] | null | undefined {
+export function importFromStr(str: string): IParsedDeck | null | undefined {
     const deck = parseDeckstr(str);
     if (!deck) return undefined;
-    return toActionList(deck, locations);
+    return deck;
 }
