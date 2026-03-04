@@ -1,7 +1,6 @@
 import { ShahrazadCard } from './card';
 import { ShahrazadPlaymat, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZone, ShahrazadZoneId } from './zone';
-type usize = number;
 export type ShahrazadGame = { zone_count: usize; card_count: usize;
     cards: Array<ShahrazadCard>; zones: Array<ShahrazadZone>;
     playmats: Array<ShahrazadPlaymat>; players: Array<ShahrazadPlaymatId>;

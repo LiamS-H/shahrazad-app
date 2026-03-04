@@ -3,7 +3,6 @@ import { ShahrazadGameSettings } from './game';
 import { Message } from './message';
 import { DeckTopReveal, ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
-type usize = number;
 
 export enum ShahrazadActionCase {
     DrawBottom = 'DrawBottom',

@@ -1,5 +1,3 @@
-type usize = number;
-
 export enum MessageCase {
     DiceRoll = 'DiceRoll',
     Arrow = 'Arrow',

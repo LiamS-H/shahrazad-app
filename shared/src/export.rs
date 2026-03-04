@@ -30,7 +30,6 @@ pub fn export_all() {
                 import {ShahrazadGameSettings} from './game';\
                 import { ShahrazadPlaymatId, ShahrazadPlayer, DeckTopReveal } from './playmat';\
                 import { Message } from './message';\
-                type usize = number;
                 ",
                 tab_size: 4,
             ),
@@ -53,7 +52,6 @@ pub fn export_all() {
                 prefix: "\
                 import {ShahrazadZoneId} from './zone';\
                 import {ShahrazadPlaymatId} from './playmat';\
-                type usize = number;
                 ",
                 tab_size: 4,
             ),
@@ -73,7 +71,6 @@ pub fn export_all() {
                 import {ShahrazadCard} from './card';\
                 import {ShahrazadZoneId,ShahrazadZone} from './zone';\
                 import {ShahrazadPlaymat,ShahrazadPlaymatId} from './playmat';\
-                type usize = number;
                 ",
                 tab_size: 4,
             ),
@@ -93,7 +90,6 @@ pub fn export_all() {
             TypeScript(
                 "./bindings/playmat.ts"
                 prefix: "import {ShahrazadZoneId} from './zone';\
-                type usize = number;
                 ",
                 tab_size: 4,
             ),
@@ -109,7 +105,7 @@ pub fn export_all() {
         destinations: [
             TypeScript(
                 "./bindings/message.ts"
-                prefix: "type usize = number;",
+                prefix: "",
                 tab_size: 4,
             ),
         ]
@@ -126,7 +122,6 @@ pub fn export_all() {
             TypeScript(
                 "./bindings/zone.ts"
                 prefix: "import {ShahrazadCardId} from './card';\
-                type usize = number;
                 ",
                 tab_size: 4,
             ),

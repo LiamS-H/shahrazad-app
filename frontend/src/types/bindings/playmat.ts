@@ -1,5 +1,4 @@
 import { ShahrazadZoneId } from './zone';
-type usize = number;
 export type ShahrazadPlaymat = { library: ShahrazadZoneId;
     hand: ShahrazadZoneId; graveyard: ShahrazadZoneId;
     battlefield: ShahrazadZoneId; exile: ShahrazadZoneId;

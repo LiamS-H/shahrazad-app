@@ -1,5 +1,4 @@
 import { ShahrazadCardId } from './card';
-type usize = number;
 export type ShahrazadZone = { cards: Array<ShahrazadCardId>; name: ZoneName };
 export type ShahrazadZoneId = number;
 export enum ZoneName {

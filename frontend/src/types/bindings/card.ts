@@ -1,6 +1,5 @@
 import { ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
-type usize = number;
 export type ShahrazadCard = { state: ShahrazadCardState;
     card_name: ShahrazadCardName; location: ShahrazadZoneId;
     owner: ShahrazadPlaymatId; token: boolean; commander: boolean };
