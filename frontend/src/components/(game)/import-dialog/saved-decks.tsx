@@ -53,9 +53,11 @@ export function SavedDecks({
                 !terms.some(
                     (term) =>
                         // deck.deck.description.toLowerCase().includes(term) ||
+                        deck.deck.format.toLowerCase().includes(term) ||
                         deck.deck.related_card_names.some((name) =>
                             name.includes(term),
-                        ) || deck.deck.name.toLowerCase().includes(term),
+                        ) ||
+                        deck.deck.name.toLowerCase().includes(term),
                 )
             ) {
                 continue;
