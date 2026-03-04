@@ -150,7 +150,7 @@ export function ImportDialog({
                     </DialogTitle>
                     <DialogDescription className="flex flex-col">
                         <span>
-                            Deck string or{" "}
+                            Deck string,{" "}
                             <a
                                 className="font-bold"
                                 href="https://archidekt.com"
@@ -158,10 +158,15 @@ export function ImportDialog({
                             >
                                 Archidekt
                             </a>{" "}
-                            deck link supported.
-                        </span>
-                        <span className="italic text-muted-foreground/50">
-                            Moxfield deck link blocked by their firewall.
+                            link, or{" "}
+                            <a
+                                className="font-bold"
+                                href="https://moxfield.com"
+                                target="_blank"
+                            >
+                                Moxfield
+                            </a>{" "}
+                            link supported.
                         </span>
                     </DialogDescription>
                 </DialogHeader>
@@ -174,7 +179,8 @@ export function ImportDialog({
                     <Label htmlFor="deck-url">Link</Label>
                     <Input
                         id="deck-url"
-                        placeholder="https://archidekt.com/decks/XXXX/XXX"
+                        // placeholder="https://archidekt.com/decks/XXXX/XXXX"
+                        placeholder="https://moxfield.com/decks/XXXX"
                         onChange={(e) => {
                             setUrl(e.target.value);
                             urlRef.current = e.target.value;
