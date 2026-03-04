@@ -3,7 +3,7 @@ import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 
 export interface IMessage {
     message: Exclude<Message, MessageCaseArrow>;
-    created_at: number;
+    created_at: bigint;
     sender: ShahrazadPlaymatId;
 }
 

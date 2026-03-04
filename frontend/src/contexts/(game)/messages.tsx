@@ -61,14 +61,14 @@ export function MessagesContextProvider({
                 switch (message.type) {
                     case MessageCase.DiceRoll:
                         new_messages.push({
-                            created_at: event.created_at,
+                            created_at: BigInt(event.created_at),
                             message,
                             sender: event.player_id,
                         });
                         continue;
                     case MessageCase.Arrow:
                         new_arrows.push({
-                            created_at: event.created_at,
+                            created_at: BigInt(event.created_at),
                             message,
                             sender: event.player_id,
                         });
@@ -92,7 +92,7 @@ export function MessagesContextProvider({
             setArrows((oldArrows) => {
                 if (oldArrows.length === 0) return oldArrows;
                 return oldArrows.filter(
-                    (arrow) => arrow.created_at + 5 > currentSeconds,
+                    (arrow) => arrow.created_at + BigInt(5) > currentSeconds,
                 );
             });
         };
