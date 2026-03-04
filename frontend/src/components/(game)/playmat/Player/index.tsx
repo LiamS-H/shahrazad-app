@@ -9,8 +9,7 @@ import { EditableText } from "@/components/(ui)/editable-text";
 
 export default function Player() {
     const { player, active } = usePlayer();
-    const { getPlaymat, applyAction, players, settings } =
-        useShahrazadGameContext();
+    const { getPlaymat, applyAction, settings } = useShahrazadGameContext();
     const playmat = getPlaymat(player);
     const { life } = playmat;
 
