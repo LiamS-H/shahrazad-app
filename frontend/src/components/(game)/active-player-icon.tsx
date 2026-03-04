@@ -15,6 +15,7 @@ import {
 } from "@/components/(ui)/dialog";
 import { GameSettings } from "./game-settings";
 import { useState } from "react";
+import { safeGetItem } from "@/lib/storage/safe-get";
 
 export function ActivePlayerIcon({
     player_id,
@@ -112,9 +113,10 @@ function SettingsDialog() {
                     initialSettings={{
                         ...settings,
                         starting_life: settings.starting_life.toString(),
-                        custom_starting_life:
-                            localStorage.getItem("default-game-customLife") ??
-                            "25",
+                        custom_starting_life: safeGetItem(
+                            "default-game-customLife",
+                            "",
+                        ),
                     }}
                     onSubmit={(settings) => {
                         applyAction({

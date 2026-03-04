@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { loadPlayer, savePlayer } from "@/lib/storage/localPlayer";
 import { GameSettings } from "@/components/(game)/game-settings";
 import { ShahrazadGameSettings } from "@/types/bindings/game";
+import { safeGetItem } from "@/lib/storage/safe-get";
 
 export default function CreateGameForm() {
     const { push: pushRoute } = useRouter();
@@ -14,18 +15,6 @@ export default function CreateGameForm() {
         useState<GameSettings | null>(null);
 
     useEffect(() => {
-        const safeGetItem = (
-            key: string,
-            defaultValue: string | number | boolean,
-        ) => {
-            try {
-                const item = localStorage.getItem(key);
-                return item !== null ? JSON.parse(item) : defaultValue;
-            } catch {
-                return defaultValue;
-            }
-        };
-
         // eslint-disable-next-line react-hooks/set-state-in-effect -- Still think this is the best storage pattern
         setDefaultGameSettings({
             starting_life: safeGetItem(
