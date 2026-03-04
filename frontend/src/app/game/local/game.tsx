@@ -87,7 +87,7 @@ export default function LocalGame() {
         await init_wasm();
 
         const stored_player =
-            loadPlayer()?.player?.display_name ?? activePlaymat;
+            loadPlayer()?.player?.display_name ?? `P${activePlaymat}`;
 
         setLoading(false);
 
@@ -179,17 +179,13 @@ export default function LocalGame() {
                     // don't love rendering the profile here and within the game component,
                     // but I want the player icon to appear before the game loads, and it has a dynamic width
                     <UserProfile
-                        onChange={
-                            activePlaymat
-                                ? (p) => {
-                                      handleAction({
-                                          type: ShahrazadActionCase.SetPlayer,
-                                          player: p,
-                                          player_id: activePlaymat,
-                                      });
-                                  }
-                                : undefined
-                        }
+                        onChange={(p) => {
+                            handleAction({
+                                type: ShahrazadActionCase.SetPlayer,
+                                player: p,
+                                player_id: activePlaymat,
+                            });
+                        }}
                     />
                 )}
                 <SaveStatesButton

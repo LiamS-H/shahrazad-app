@@ -41,7 +41,7 @@ export default function ScryDialog({
     const [bottomCards, setBottomCards] = useState<ShahrazadCardId[]>([]);
     const [topCards, setTopCards] = useState<ShahrazadCardId[]>([]);
     const [activeId, setActiveId] = useState<ShahrazadCardId | null>(null);
-    const zone = active ? getZone(active) : null;
+    const zone = active !== null ? getZone(active) : null;
 
     useEffect(() => {
         if (!zone) return;
@@ -53,7 +53,7 @@ export default function ScryDialog({
     }, [zone, amount]);
 
     function handleClose() {
-        if (!active) {
+        if (active == null) {
             close();
             return;
         }
@@ -103,7 +103,7 @@ export default function ScryDialog({
         const { active, over } = event;
         const overId = over?.id;
 
-        if (!overId || active.id === overId) {
+        if (overId === undefined || active.id === overId) {
             return;
         }
 
@@ -232,7 +232,7 @@ export default function ScryDialog({
                     <DialogTitle>Scrying ({amount})</DialogTitle>
                     <DialogDescription>Drag</DialogDescription>
                 </DialogHeader>
-                {active && zone && (
+                {active !== null && zone && (
                     <DndContext
                         sensors={sensors}
                         collisionDetection={closestCenter}
@@ -267,7 +267,7 @@ export default function ScryDialog({
                         </div>
                         {createPortal(
                             <DragOverlay className="cursor-grabbing">
-                                {activeId ? (
+                                {activeId !== null ? (
                                     <Card
                                         id={activeId}
                                         faceUp={true}

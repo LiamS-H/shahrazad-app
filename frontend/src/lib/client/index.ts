@@ -97,7 +97,7 @@ export class GameClient {
         const array = await blob.arrayBuffer();
 
         try {
-            const update: ServerUpdate = decode_server_update(array);
+            const update = decode_server_update(array);
             if (!update) {
                 console.error("[client] couldn't parse update:", event.data);
                 return;

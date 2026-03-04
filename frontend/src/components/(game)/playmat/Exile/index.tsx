@@ -28,7 +28,11 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
             const top = zone.cards.at(-1);
             return (
                 <Scrydeck count={zone.cards.length}>
-                    {top ? <Card id={top} /> : <Scrycard card={undefined} />}
+                    {top !== undefined ? (
+                        <Card id={top} />
+                    ) : (
+                        <Scrycard card={undefined} />
+                    )}
                 </Scrydeck>
             );
         }

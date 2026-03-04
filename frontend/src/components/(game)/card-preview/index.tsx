@@ -25,7 +25,7 @@ export function PreviewCard({
     const eleRef = useRef<HTMLDivElement | null>(null);
 
     const shah_card = useMemo(() => {
-        if (!id) return null;
+        if (id === null) return null;
         return getCard(id);
     }, [getCard, id]);
 

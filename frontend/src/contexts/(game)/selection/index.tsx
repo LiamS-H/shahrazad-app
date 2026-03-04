@@ -35,7 +35,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
     const setPreview = useCallback(
         (card: ShahrazadCardId | null | undefined) => {
-            if (card) {
+            if (card !== null && card !== undefined) {
                 setCurrentPreview(card);
                 resetTimeout();
                 return;
@@ -52,7 +52,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
                 resetTimeout();
             }, 1000);
         },
-        [setCurrentPreview, resetTimeout]
+        [setCurrentPreview, resetTimeout],
     );
 
     useEffect(() => {

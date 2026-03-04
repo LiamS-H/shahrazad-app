@@ -20,10 +20,14 @@ const eslintConfig = [
         rules: {
             "@next/next/no-img-element": "off",
             // "@typescript-eslint/strict-boolean-expressions": [
-            //     "error",
+            //     "warn",
             //     {
             //         allowNumber: false,
             //         allowNullableNumber: false,
+            //         allowString: true,
+            //         allowNullableString: true,
+            //         allowNullableBoolean: true,
+            //         allowAny: true,
             //     },
             // ],
         },

@@ -59,13 +59,9 @@ function Counter({
 export default function Counters({ id }: { id: ShahrazadCardId }) {
     const { applyAction } = useShahrazadGameContext();
     const shah_card = useCard(id);
-    if (!shah_card.state.counters) {
-        return null;
-    }
 
     function setCounter(index: number, amount?: number) {
         if (amount === undefined) return;
-        if (!shah_card.state.counters) return;
         if (shah_card.state.counters[index].amount === amount) return;
 
         const counters = shah_card.state.counters.map((c, i) =>

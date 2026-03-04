@@ -62,9 +62,9 @@ export function SaveStatesButton({
             <PopoverContent className="flex flex-col gap-2 w-full ">
                 <Button
                     variant="outline"
-                    disabled={!getCode}
+                    disabled={getCode === null}
                     onClick={() => {
-                        if (!getCode) {
+                        if (getCode === null) {
                             toast.error("Game state not initialized, refresh.");
                             return;
                         }
@@ -87,10 +87,10 @@ export function SaveStatesButton({
                 </Button>
                 <Button
                     className="group"
-                    disabled={!getCode}
+                    disabled={getCode === null}
                     variant="outline"
                     onClick={() => {
-                        if (!getCode) {
+                        if (getCode === null) {
                             toast.error("Game state not initialized, refresh.");
                             return;
                         }

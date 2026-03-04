@@ -48,7 +48,7 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
 
     const addArrow = useCallback(
         (message: Omit<Omit<MessageCaseArrow, "type">, "from">) => {
-            if (!source_card.current) {
+            if (source_card.current === null) {
                 return;
             }
             sendMessage({
@@ -85,7 +85,7 @@ export function ArrowsContextProvider({ children }: { children: ReactNode }) {
                         continue;
                     }
                     const card = parseInt(cur.dataset.shahcard ?? "");
-                    if (card && !Number.isNaN(card)) {
+                    if (!Number.isNaN(card)) {
                         setActive(card);
                         return;
                     }

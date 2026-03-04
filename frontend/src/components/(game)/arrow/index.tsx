@@ -18,7 +18,6 @@ export function Arrows({
     const updateOffset = useCallback(() => {
         if (!parentRef.current) return;
         const rect = parentRef.current.getBoundingClientRect();
-        if (!rect) return;
         setOffset({
             x: parentRef.current.scrollLeft - rect.x,
             y: parentRef.current.scrollTop - rect.y,
@@ -43,7 +42,9 @@ export function Arrows({
 
     return (
         <>
-            {active && <ActiveArrow source_id={active} offset={offset} />}
+            {active !== null && (
+                <ActiveArrow source_id={active} offset={offset} />
+            )}
             <MessageArrows messages={arrows} offset={offset} />
         </>
     );

@@ -212,7 +212,7 @@ function Content({
                                 cards,
                                 state: {
                                     counters: [
-                                        ...(shah_card.state.counters || []),
+                                        ...shah_card.state.counters,
                                         { amount: 0 },
                                     ],
                                 },
@@ -221,23 +221,22 @@ function Content({
                     >
                         Add counter
                     </ContextMenuItem>
-                    {shah_card.state.counters &&
-                        shah_card.state.counters.length >= 1 && (
-                            <ContextMenuItem
-                                onClick={() => {
-                                    shah_card.state.counters?.pop();
-                                    applyAction({
-                                        type: ShahrazadActionCase.CardState,
-                                        cards,
-                                        state: {
-                                            counters: shah_card.state.counters,
-                                        },
-                                    });
-                                }}
-                            >
-                                Remove counter
-                            </ContextMenuItem>
-                        )}
+                    {shah_card.state.counters.length >= 1 && (
+                        <ContextMenuItem
+                            onClick={() => {
+                                shah_card.state.counters?.pop();
+                                applyAction({
+                                    type: ShahrazadActionCase.CardState,
+                                    cards,
+                                    state: {
+                                        counters: shah_card.state.counters,
+                                    },
+                                });
+                            }}
+                        >
+                            Remove counter
+                        </ContextMenuItem>
+                    )}
                 </>
             )}
             <ContextMenuItem

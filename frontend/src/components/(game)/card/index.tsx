@@ -43,10 +43,11 @@ export default function Card({
         )
             return;
         if (hover_timer.current) return;
-        if (!previewDelay) {
+        if (previewDelay === undefined) {
             setPreview(id);
             return;
         }
+
         hover_timer.current = setTimeout(() => {
             setPreview(id);
             clearTimeout(hover_timer.current);

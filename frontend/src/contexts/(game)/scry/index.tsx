@@ -26,7 +26,7 @@ export function ScryContextProvider({ children }: { children: ReactNode }) {
     const { applyAction, getZone, active_player } = useShahrazadGameContext();
 
     function scry(zone: ShahrazadZoneId | null, amount: number) {
-        if (zone) {
+        if (zone !== null) {
             const z = getZone(zone);
             const len = z.cards.length;
             const start = Math.max(0, len - amount);

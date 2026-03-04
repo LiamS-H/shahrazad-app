@@ -21,5 +21,7 @@ declare module "shahrazad-wasm" {
         module?: WebAssembly.Module | Buffer,
     ): Promise<undefined>;
     export function encode_client_action(action: ClientAction): Uint8Array;
-    export function decode_server_update(code: ArrayBuffer): ServerUpdate;
+    export function decode_server_update(
+        code: ArrayBuffer,
+    ): ServerUpdate | null;
 }

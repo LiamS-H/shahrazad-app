@@ -54,5 +54,5 @@ export function Card({
                 </div> */}
             </div>
         );
-    }, [shah_card.card_name, flipped, size, scrycard]);
+    }, [size, shah_card.card_name, flipped, scrycard]);
 }

@@ -33,7 +33,8 @@ function Content({ zoneId }: { zoneId: ShahrazadZoneId }) {
     const playmat = getPlaymat(player);
     const deck = useZone(zoneId);
     const top_card_id = deck.cards[deck.cards.length - 1];
-    const top_shah_card = top_card_id ? getCard(top_card_id) : null;
+    const top_shah_card =
+        top_card_id !== undefined ? getCard(top_card_id) : null;
     return (
         <>
             <ContextMenuLabel>Deck ({deck.cards.length})</ContextMenuLabel>

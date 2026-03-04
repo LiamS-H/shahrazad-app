@@ -106,9 +106,7 @@ export function MessagesContextProvider({
         }, delay);
 
         return () => {
-            if (timerId) {
-                clearInterval(timerId);
-            }
+            clearTimeout(timerId);
         };
     }, [curSecs]);
 

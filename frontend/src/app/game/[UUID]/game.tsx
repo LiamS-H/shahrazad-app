@@ -206,7 +206,7 @@ export default function GamePage(props: { game_id: string }) {
                 {isLoading && (
                     <UserProfile
                         onChange={
-                            activePlaymat
+                            activePlaymat !== null
                                 ? (p) => {
                                       handleAction({
                                           type: ShahrazadActionCase.SetPlayer,

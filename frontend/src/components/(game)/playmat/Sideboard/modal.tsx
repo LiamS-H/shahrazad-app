@@ -69,7 +69,7 @@ export default function SideboardingModal({
 
             let cmc = 0;
             if ("cmc" in item.card) {
-                cmc = item.card.cmc || 0;
+                cmc = item.card.cmc ?? 0;
             }
 
             if (cmc === 0) columns.cmc0.push(item);
@@ -95,11 +95,11 @@ export default function SideboardingModal({
         return [...sideboardCards].sort((a, b) => {
             let cmcA = 0;
             if (a.card && "cmc" in a.card) {
-                cmcA = a.card.cmc || 0;
+                cmcA = a.card.cmc ?? 0;
             }
             let cmcB = 0;
             if (b.card && "cmc" in b.card) {
-                cmcB = b.card.cmc || 0;
+                cmcB = b.card.cmc ?? 0;
             }
             if (cmcA !== cmcB) return cmcA - cmcB;
             return (a.card?.name || "").localeCompare(b.card?.name || "");

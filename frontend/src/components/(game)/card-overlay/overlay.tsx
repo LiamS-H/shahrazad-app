@@ -82,7 +82,7 @@ function useRotation() {
             const prevX = mousePosition.current?.x;
             const prevY = mousePosition.current?.y;
             mousePosition.current = { x: clientX, y: clientY };
-            if (!prevX || !prevY) return;
+            if (prevX === undefined || prevY === undefined) return;
 
             const dX = clamp(prevX - clientX, -1, 1);
             const dY = clamp(prevY - clientY, -1, 1);
