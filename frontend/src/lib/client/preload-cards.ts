@@ -1,4 +1,7 @@
-import { preconnect, preload } from "react-dom";
+import {
+    // preconnect,
+    preload,
+} from "react-dom";
 import type { useScrycardsContext } from "react-scrycards";
 
 export async function preloadCardImages(

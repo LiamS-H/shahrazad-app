@@ -18,6 +18,7 @@ const eslintConfig = [
             },
         },
         rules: {
+            "@next/next/no-img-element": "off",
             // "@typescript-eslint/strict-boolean-expressions": [
             //     "error",
             //     {

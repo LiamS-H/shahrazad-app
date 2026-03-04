@@ -2,12 +2,25 @@
 
 import { CardImport } from "@/types/bindings/action";
 import { IUrlImport } from "./importFromUrl";
+import { sortWUBRG } from "@/lib/utils/sort-wubrg";
+import { WUBRG } from "@/types/interfaces/color";
+
+type IArchiDektColors = ("White" | "Blue" | "Black" | "Red" | "Green")[]; // empty is colorless
+
+interface IArchidektOracleCard {
+    colorIdentity: IArchiDektColors;
+    manaProduction: Record<WUBRG, number | null>;
+    name: string;
+}
 
 interface IArchidektCard {
+    uid: string;
+    oracleCard: IArchidektOracleCard;
+}
+
+interface IArchidektDeckCard {
     categories: string[];
-    card: {
-        uid: string;
-    };
+    card: IArchidektCard;
     quantity: number;
 }
 
@@ -23,8 +36,10 @@ interface IArchidektResponse {
     owner: {
         username: string;
     };
-    cards: IArchidektCard[];
+    featured: string;
+    cards: IArchidektDeckCard[];
     categories: IArchidektCategory[];
+    deckTags: string[];
 }
 
 const formats: Record<number, string> = {
@@ -48,10 +63,13 @@ export async function importArchidektUrl(
         const req_url = `https://www.archidekt.com/api/decks/${slug}/?`;
         const resp = await fetch(req_url);
         const data: IArchidektResponse = await resp.json();
-        console.log(data);
         const sideboard: CardImport[] = [];
         const commander: CardImport[] = [];
         const deck: CardImport[] = [];
+
+        const colors = new Set<WUBRG>();
+        const tags = data.deckTags;
+        const related_card_names = [];
 
         const deck_categories = new Set(
             data.categories
@@ -61,6 +79,20 @@ export async function importArchidektUrl(
 
         deck_categories.delete("commander");
         deck_categories.delete("sideboard");
+        function addColor({
+            card: {
+                oracleCard: { colorIdentity },
+            },
+        }: IArchidektDeckCard) {
+            for (const color of colorIdentity) {
+                if (color === "Blue") {
+                    colors.add("U");
+                    continue;
+                }
+                const color_char = color[0] as WUBRG;
+                colors.add(color_char);
+            }
+        }
 
         for (const card of data.cards) {
             if (card.categories.length == 0) {
@@ -68,6 +100,7 @@ export async function importArchidektUrl(
                     str: card.card.uid,
                     amount: card.quantity,
                 });
+                addColor(card);
                 continue;
             }
             if (card.categories.some((c) => c.toLowerCase() === "sideboard")) {
@@ -75,6 +108,7 @@ export async function importArchidektUrl(
                     str: card.card.uid,
                     amount: card.quantity,
                 });
+                addColor(card);
                 continue;
             }
             if (card.categories.some((c) => c.toLowerCase() === "commander")) {
@@ -82,6 +116,10 @@ export async function importArchidektUrl(
                     str: card.card.uid,
                     amount: card.quantity,
                 });
+                addColor(card);
+                related_card_names.push(
+                    card.card.oracleCard.name.toLowerCase(),
+                );
                 continue;
             }
             if (
@@ -93,6 +131,7 @@ export async function importArchidektUrl(
                     str: card.card.uid,
                     amount: card.quantity,
                 });
+                addColor(card);
             }
         }
 
@@ -111,6 +150,12 @@ export async function importArchidektUrl(
                     display: data.owner.username,
                     username: data.owner.username,
                 },
+                face_card: {
+                    image: data.featured,
+                },
+                colors: sortWUBRG(Array.from(colors)),
+                tags,
+                related_card_names,
             },
         };
     } catch (e) {

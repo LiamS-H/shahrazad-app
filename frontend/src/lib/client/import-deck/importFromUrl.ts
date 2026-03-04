@@ -5,12 +5,8 @@ import { importMoxfieldUrl } from "./moxfield";
 import { IImportOptions, IParsedDeck, toActionList } from "./toActionlist";
 import { toast } from "sonner";
 import { importArchidektUrl } from "./archidekt";
-import { saveDeck } from "./deck-storage";
-
-export interface ISavedDeck {
-    meta: IDeckData;
-    url: string;
-}
+import { saveDeck } from "../../storage/deck-storage";
+import { WUBRG } from "@/types/interfaces/color";
 
 export interface IDeckData {
     website: "moxfield" | "archidekt";
@@ -21,6 +17,13 @@ export interface IDeckData {
         username: string;
         display: string;
     };
+    face_card: {
+        id?: string;
+        image?: string;
+    };
+    colors: WUBRG[];
+    tags: string[];
+    related_card_names: string[];
 }
 
 export interface IUrlImport {

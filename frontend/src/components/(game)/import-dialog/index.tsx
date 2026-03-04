@@ -1,3 +1,4 @@
+"use client";
 import { Input } from "@/components/(ui)/input";
 import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
@@ -18,6 +19,7 @@ import {
 import { Button } from "@/components/(ui)/button";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { useImportContext } from "@/contexts/(game)/import";
+import { SavedDecks } from "./saved-decks";
 
 export function ImportDialog({
     player,
@@ -29,6 +31,7 @@ export function ImportDialog({
         useShahrazadGameContext();
     const [deckstr, setDeckstr] = useState<string>("");
     const [url, setUrl] = useState("");
+    const urlRef = useRef("");
     const [loading, _setLoading] = useState(false);
     const loadingRef = useRef(false);
 
@@ -44,7 +47,7 @@ export function ImportDialog({
         loadingRef.current = l;
     }
 
-    async function importDeck() {
+    async function importDeck(url: string, reset = true) {
         if (player === null) return false;
         const playmat = getPlaymat(player);
         if (!playmat) return false;
@@ -82,6 +85,13 @@ export function ImportDialog({
             toast.error("No cards to load.");
             setLoading(false);
             return;
+        }
+
+        if (reset) {
+            applyAction({
+                type: ShahrazadActionCase.ClearBoard,
+                player_id: player,
+            });
         }
         actions.forEach((a) => applyAction(a));
         close();
@@ -122,18 +132,23 @@ export function ImportDialog({
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();
-                        importDeck();
+                        importDeck(urlRef.current);
                     }}
                 >
                     <Label htmlFor="deck-url">Link</Label>
                     <Input
                         id="deck-url"
                         placeholder="https://archidekt.com/decks/XXXX/XXX"
-                        onChange={(e) => setUrl(e.target.value)}
+                        onChange={(e) => {
+                            setUrl(e.target.value);
+                            urlRef.current = e.target.value;
+                        }}
                         onFocus={(e) => e.target.select()}
                         value={url}
                     />
                 </form>
+                <SavedDecks importDeck={importDeck} />
+
                 <div>
                     <Label htmlFor="deck-str">Deck String</Label>
                     <Textarea
@@ -148,7 +163,7 @@ export function ImportDialog({
                     <Button
                         className="grow"
                         disabled={(!url && !deckstr) || loading}
-                        onClick={importDeck}
+                        onClick={() => importDeck(urlRef.current, false)}
                     >
                         {loading
                             ? "Loading..."
@@ -163,11 +178,8 @@ export function ImportDialog({
                             disabled={(!url && !deckstr) || loading}
                             onClick={() => {
                                 if (player === null) return;
-                                applyAction({
-                                    type: ShahrazadActionCase.ClearBoard,
-                                    player_id: player,
-                                });
-                                importDeck();
+
+                                importDeck(urlRef.current);
                             }}
                         >
                             {loading ? "Loading..." : "Clear + Import"}
