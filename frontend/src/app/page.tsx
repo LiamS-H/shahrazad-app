@@ -61,7 +61,7 @@ export default function Home() {
                     {[
                         {
                             num: "0",
-                            title: "Account",
+                            title: "No Account",
                             desc: "none needed.",
                         },
                         { num: "1", title: "Create", desc: "start a game." },
@@ -124,23 +124,22 @@ export default function Home() {
                             {
                                 icon: <Import />,
                                 title: "Bring Your Deck",
-                                desc: "Import decks with one click from all the popular deckbuilding websites, or paste in a decklist directly.",
+                                desc: "Import a deck link, or paste in a decklist directly.",
                             },
                             {
                                 icon: <Zap />,
                                 title: "Instant Actions",
-                                // desc: "Tap a land, cast a spell, move to combat. Every action resolves instantly — no waiting for server round-trips.",
-                                desc: "Tap a land, cast a spell, target a creature. Every action resolves instantly — no waiting for server round-trips.",
+                                desc: "Every action resolves instantly — no waiting for servers.",
                             },
                             {
                                 icon: <UserRoundX />,
                                 title: "No Barriers",
-                                desc: "No accounts, no downloads, no browser extensions. Just share a game link and everyone is in.",
+                                desc: "No accounts, No downloads. Click a link and you're in.",
                             },
                             {
                                 icon: <GithubIcon />,
                                 title: "Open Forever",
-                                desc: "No paywalls. No ads. The entire project is open source and always will be.",
+                                desc: "No paywalls. No ads. Open source forever.",
                             },
                         ].map((f, i) => (
                             <motion.div
@@ -181,12 +180,10 @@ export default function Home() {
                             Practice made Easy
                         </h2>
                         <p className="text-muted-foreground/50 text-sm leading-relaxed mb-4">
-                            Don&apos;t need a full pod? Use local playtesting to
-                            goldfish your deck, test opening hands, and practice
-                            lines — all by yourself, right in your browser.
+                            Use local playtesting to goldfish your deck.
                         </p>
                         <p className="text-muted-foreground/50 text-sm leading-relaxed mb-6">
-                            Game states can be{" "}
+                            Game can be{" "}
                             <span className="text-muted-foreground">
                                 saved and shared as a link
                             </span>{" "}
@@ -221,7 +218,7 @@ export default function Home() {
                                         className="aspect-[5/7] bg-highlight/[0.04] border border-highlight/10"
                                         style={{
                                             opacity:
-                                                i % 3 == 0 && i % 5 == 0
+                                                i % 3 == 0 || i % 5 == 0
                                                     ? 1
                                                     : 0.3,
                                         }}
@@ -252,12 +249,8 @@ export default function Home() {
                             Under the Hood
                         </span>
                         <h2 className="font-[family-name:var(--font-title)] text-2xl md:text-3xl mb-4">
-                            Built for speed
+                            Built for Speed
                         </h2>
-                        <p className="text-muted-foreground/50 text-sm mb-16 max-w-lg">
-                            Shahrazad isn&apos;t just fast to use — it&apos;s
-                            engineered to be fast at every level of the stack.
-                        </p>
                     </motion.div>
 
                     {/* Performance stats */}
@@ -267,19 +260,19 @@ export default function Home() {
                                 value: "<80",
                                 unit: "bytes",
                                 label: "Action packet size",
-                                detail: "Each game action is serialized into a tiny binary packet — smaller than a tweet.",
+                                detail: "Game actions are serialized into tiny packets — smaller than this text.",
                             },
                             {
                                 value: "~2",
                                 unit: "MB",
                                 label: "Memory footprint",
-                                detail: "The full WASM game engine runs in roughly 2MB of memory. Lighter than a single card image.",
+                                detail: "The full WASM game engine runs in less memory than a single card image.",
                             },
                             {
                                 value: "<1",
                                 unit: "ms",
                                 label: "State compute",
-                                detail: "Game state transitions are computed locally in WebAssembly — near-native speed, zero round-trips.",
+                                detail: "Game state updates are calculated in WASM, with near native perfomance.",
                             },
                         ].map((stat, i) => (
                             <motion.div
@@ -416,12 +409,11 @@ export default function Home() {
                             Open Source
                         </span>
                         <h2 className="font-[family-name:var(--font-title)] text-2xl md:text-3xl mb-4">
-                            Built in the open
+                            Open Source
                         </h2>
                         <p className="text-muted-foreground/50 text-sm leading-relaxed mb-4">
-                            The entire codebase — the Rust game engine, the
-                            WebSocket backend, the React frontend, and the WASM
-                            compiler — is open source and available on GitHub.
+                            The entire codebase is open source and available on
+                            GitHub.
                         </p>
                         <p className="text-muted-foreground/50 text-sm leading-relaxed mb-6">
                             Inspect the code, report bugs, contribute features,
