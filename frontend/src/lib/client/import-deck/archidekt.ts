@@ -43,7 +43,30 @@ interface IArchidektResponse {
 }
 
 const formats: Record<number, string> = {
+    1: "standard",
+    2: "modern",
     3: "commander",
+    4: "legacy",
+    5: "vintage",
+    6: "pauper",
+    7: "custom",
+    8: "frontier",
+    9: "future standard",
+    10: "penny dreadful",
+    11: "1v1 commander",
+    12: "duel commander",
+    13: "standard brawl",
+    14: "oathbreaker",
+    15: "pioneer",
+    16: "historic",
+    17: "pauper edh",
+    18: "alchemy",
+    20: "brawl",
+    21: "gladiator",
+    22: "premodern",
+    23: "predh",
+    24: "timeless",
+    25: "canadian highlander",
 };
 
 function getArchidektDeckId(url: string) {
