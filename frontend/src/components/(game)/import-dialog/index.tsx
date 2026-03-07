@@ -81,7 +81,9 @@ export function ImportDialog({
                     `Imported deck "${name.substring(0, 20)}${name.length > 20 ? "..." : ""}"`,
                 error: "Couldn't fetch deck",
             });
-            deck = (await deckPromise).cards;
+            try {
+                deck = (await deckPromise).cards;
+            } catch {}
         } else if (deckstr) {
             deck = importFromStr(deckstr);
             if (deck === undefined) {
