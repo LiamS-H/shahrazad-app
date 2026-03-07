@@ -23,7 +23,7 @@ export default function CardStack(props: {
                 noDragTranslate
                 face_up={props.topRevealed}
                 animationTime={0}
-            />
+            />,
         );
     } else if (deckSize > 1) {
         dispCards.push(
@@ -34,7 +34,7 @@ export default function CardStack(props: {
                 dragNamespace={props.dragNamespace}
                 noDragTranslate
                 animationTime={0}
-            />
+            />,
         );
         dispCards.push(
             <DraggableCard
@@ -45,7 +45,7 @@ export default function CardStack(props: {
                 noDragTranslate
                 face_up={props.topRevealed}
                 animationTime={0}
-            />
+            />,
         );
     }
 
@@ -56,7 +56,7 @@ export default function CardStack(props: {
             ) : (
                 <h1
                     key={"empty_text"}
-                    className="rounded-sm w-full h-full flex items-center justify-center text-sm text-secondary-foreground bg-secondary"
+                    className="w-full h-full flex items-center justify-center text-sm text-secondary-foreground bg-background border border-border"
                 >
                     {props.emptyMessage}
                 </h1>
@@ -69,7 +69,8 @@ export default function CardStack(props: {
             <LayoutGroup>
                 {props.cards.slice(0, -1).map((id) => (
                     <motion.div
-                        layoutId={id}
+                        layout="position"
+                        layoutId={`card-${id}`}
                         key={id}
                         className="w-full h-full absolute"
                     />

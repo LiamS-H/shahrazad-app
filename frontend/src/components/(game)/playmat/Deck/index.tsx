@@ -51,12 +51,16 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
         if (searching) {
             return (
                 <Scrydeck count={zone.cards.length}>
-                    {top ? <Card id={top} /> : <Scrycard card={undefined} />}
+                    {top !== undefined ? (
+                        <Card id={top} />
+                    ) : (
+                        <Scrycard card={undefined} />
+                    )}
                 </Scrydeck>
             );
         }
 
-        const state = top ? getCard(top)?.state : undefined;
+        const state = top !== undefined ? getCard(top)?.state : undefined;
         const face_up =
             state?.face_down === false ||
             playmat.reveal_deck_top === DeckTopReveal.PUBLIC;
@@ -78,7 +82,7 @@ export default function Deck(props: { id: ShahrazadZoneId }) {
                 ref={(ref) => setNodeRef(ref)}
             >
                 <DeckContextMenu
-                    cardId={zone.cards.at(-1) ?? ""}
+                    cardId={zone.cards.at(-1) ?? -1}
                     zoneId={props.id}
                 >
                     <div

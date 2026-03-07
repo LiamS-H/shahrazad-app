@@ -19,11 +19,13 @@ import { type ReactNode, useMemo, useState } from "react";
 import { usePlayer } from "@/contexts/(game)/player";
 import { isFlippable, useScrycard } from "react-scrycards";
 import { RevealToPlayers } from "./(menu-items)/reveal";
+import { ShahrazadCardId } from "@/types/bindings/card";
+
 export default function HandCardContextMenu({
     cardId,
     children,
 }: {
-    cardId: string;
+    cardId: ShahrazadCardId;
     children: ReactNode;
 }) {
     const { player } = usePlayer();
@@ -108,7 +110,7 @@ export default function HandCardContextMenu({
                 </ContextMenuSub>
             </ContextMenuContent>
         ),
-        [title, shah_card, cardId, applyAction, playmat, player, scry_card]
+        [title, shah_card, cardId, applyAction, playmat, player, scry_card],
     );
 
     return (

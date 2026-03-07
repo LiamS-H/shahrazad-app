@@ -1,20 +1,21 @@
 "use client";
 import { Button } from "@/components/(ui)/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/(ui)/dropdown-menu";
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+} from "@/components/(ui)/popover";
+import { copy_with_toast } from "@/lib/utils/copy-with-toast";
 import { Copy, DiamondPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function ShareGameButton({ code }: { code: number | null }) {
+export function ShareGameButton({ code }: { code: number | null }) {
     const [open, setOpen] = useState(false);
 
     return (
-        <DropdownMenu open={open} onOpenChange={setOpen}>
-            <DropdownMenuTrigger asChild>
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
                 <Button
                     variant="highlight"
                     className={`group${
@@ -24,15 +25,17 @@ export default function ShareGameButton({ code }: { code: number | null }) {
                     Invite
                     <DiamondPlus className="transition duration-300 group-hover:rotate-[360deg]" />
                 </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="flex flex-col gap-4 w-full ">
+            </PopoverTrigger>
+            <PopoverContent className="flex flex-col gap-1.5 w-full">
                 <Button
                     disabled={!code}
                     variant="outline"
                     onClick={() => {
                         if (!code) return;
-                        navigator.clipboard.writeText(code.toString());
-                        toast(`Copied "${code}" to clipboard.`);
+                        copy_with_toast({
+                            value: code.toString(),
+                            name: `"${code}"`,
+                        });
                         setOpen(false);
                     }}
                 >
@@ -44,18 +47,17 @@ export default function ShareGameButton({ code }: { code: number | null }) {
                     onClick={() => {
                         const link = window.location.toString();
                         if (!link) {
-                            toast("Something went wrong");
+                            toast.error("Couldn't generate link.");
                             return;
                         }
-                        navigator.clipboard.writeText(link);
-                        toast(`Copied sharing link to clipboard.`);
+                        copy_with_toast({ value: link, name: "Sharing Link" });
                         setOpen(false);
                     }}
                 >
                     Link
                     <Copy />
                 </Button>
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </PopoverContent>
+        </Popover>
     );
 }

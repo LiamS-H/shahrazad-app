@@ -1,8 +1,6 @@
 {
   "name": "Shahrazad Dev",
-  "dockerComposeFile": [
-    "../compose.dev.yaml"
-  ],
+  "dockerComposeFile": ["../compose.dev.yaml"],
   "service": "dev",
   "workspaceFolder": "/app",
   "customizations": {
@@ -14,8 +12,15 @@
         "tamasfe.even-better-toml",
         "oven.bun-vscode",
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
-      ]
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "[rust]": {
+          "editor.defaultFormatter": "rust-lang.rust-analyzer",
+          "editor.formatOnSave": true
+        }
+      }
     }
   },
   "remoteUser": "root"

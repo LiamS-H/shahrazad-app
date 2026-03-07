@@ -10,7 +10,7 @@ pub fn create_sample_card_transform() -> ShahrazadCardStateTransform {
         flipped: Some(false),
         tapped: Some(true),
         face_down: Some(false),
-        revealed: Some(vec!["player1".into(), "player2".into()]),
+        revealed: Some(vec![0.into(), 1.into()]),
         x: Some(1),
         y: Some(2),
         counters: Some(vec![ShahrazadCounter { amount: 3 }]),
@@ -31,7 +31,7 @@ pub fn create_sample_game() -> ShahrazadGame {
 
 pub const DEFAULT_GAME_SETTINGS: ShahrazadGameSettings = ShahrazadGameSettings {
     starting_life: 20,
-    free_mulligans: String::new(),
+    free_mulligans: 0,
     commander: true,
     scry_rule: true,
 };

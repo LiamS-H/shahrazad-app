@@ -1,14 +1,14 @@
 "use client";
 import { ScryContextProvider } from "@/contexts/(game)/scry";
 import { ShahrazadGame } from "@/types/bindings/game";
-import Playmat from "../playmat";
+import Playmat from "./playmat";
 import { ShahrazadGameProvider } from "@/contexts/(game)/game";
 import ShahrazadDND from "@/contexts/(game)/dnd";
 import { ShahrazadAction } from "@/types/bindings/action";
 import { SelectionProvider } from "@/contexts/(game)/selection";
 import { SearchContextProvider } from "@/contexts/(game)/search";
 import { AnimatePresence } from "framer-motion";
-import { Keybinds } from "../keybinds";
+import { Keybinds } from "./keybinds";
 import { ArrowsContextProvider } from "@/contexts/(game)/arrows";
 import { ImportContextProvider } from "@/contexts/(game)/import";
 import { ActivePlayerIcon } from "./active-player-icon";
@@ -19,14 +19,15 @@ import { useMemo, useRef } from "react";
 import { MessagesContextProvider } from "@/contexts/(game)/messages";
 import { GameClientOnMessage } from "@/lib/client";
 import { Arrows } from "@/components/(game)/arrow";
-import { MessagesButton, MessagesDialog } from "../messages";
+import { MessagesButton, MessagesDialog } from "./messages";
 import { PreviewCardButton } from "@/components/(game)/card-preview";
-import { StackButton } from "../stack";
+import { StackButton } from "./stack";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 
 export type ShahrazadProps = {
     game: ShahrazadGame;
     applyAction: (action: ShahrazadAction) => void;
-    activePlayer: string;
+    activePlayer: ShahrazadPlaymatId;
     isHost: boolean;
     registerOnMessage: (onMessage: GameClientOnMessage) => void;
 };
@@ -40,7 +41,7 @@ export default function Game({
 }: ShahrazadProps) {
     const p = game.players.join();
     const players = useMemo(() => {
-        const players: string[] = [];
+        const players: ShahrazadPlaymatId[] = [];
 
         const offset = game.players.indexOf(activePlayer);
         const numPlayers = game.players.length;
@@ -85,7 +86,7 @@ export default function Game({
                                                         <Playmat
                                                             key={player}
                                                             active={
-                                                                player ===
+                                                                player ==
                                                                 activePlayer
                                                             }
                                                             player={player}

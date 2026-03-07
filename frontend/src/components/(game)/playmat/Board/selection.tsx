@@ -26,6 +26,7 @@ export default function Selection({
     const { selectCards, setPreview } = useSelection();
 
     const handleMouseDown = useCallback(
+        // eslint-disable-next-line react-hooks/preserve-manual-memoization
         (e: MouseEvent) => {
             if (e.target !== e.currentTarget) return;
             if (!node.current) return;

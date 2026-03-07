@@ -10,15 +10,16 @@ import {
     encode_client_action,
     GameState,
 } from "shahrazad-wasm";
+import { toast } from "sonner";
 
 export type GameClientOnMessage = (
-    messages: ShahrazadActionCaseSendMessage
+    messages: ShahrazadActionCaseSendMessage,
 ) => void;
 
 export interface GameClientCallbacks {
     onGameUpdate: (game: ShahrazadGame) => void;
-    onPreloadCards: (cards: string[]) => void;
-    onToast: (message: string) => void;
+    onPreloadCards: (cards: string[], getImages: boolean) => void;
+    toast: typeof toast;
     onGameTermination: (message?: string) => void;
     onPlayerJoin: (player: string) => void;
     onMessage: GameClientOnMessage;
@@ -39,8 +40,8 @@ export class GameClient {
     constructor(
         private gameId: string,
         private playerUUID: string,
-        private player_id: string,
-        private callbacks: GameClientCallbacks
+        private player_id: number,
+        private callbacks: GameClientCallbacks,
     ) {}
 
     async connect() {
@@ -87,7 +88,7 @@ export class GameClient {
     private handleMessage = async (event: MessageEvent) => {
         if (!this.gameState) {
             console.error(
-                "[ws] received message before game state initialized"
+                "[ws] received message before game state initialized",
             );
             return;
         }
@@ -96,7 +97,7 @@ export class GameClient {
         const array = await blob.arrayBuffer();
 
         try {
-            const update: ServerUpdate = decode_server_update(array);
+            const update = decode_server_update(array);
             if (!update) {
                 console.error("[client] couldn't parse update:", event.data);
                 return;
@@ -105,7 +106,7 @@ export class GameClient {
                 console.log(`[ws] ${array.byteLength}B game received:`, update);
                 if (update.hash && update.hash === this.hash) {
                     console.log(
-                        "[client] received a game that already matched hash"
+                        "[client] received a game that already matched hash",
                     );
                     return;
                 }
@@ -115,7 +116,7 @@ export class GameClient {
             if (update.action) {
                 console.log(
                     `[ws] ${array.byteLength}B move received:`,
-                    update.action.type
+                    update.action.type,
                 );
                 if (update.action.type === ShahrazadActionCase.GameTerminated) {
                     this.callbacks.onGameTermination();
@@ -125,7 +126,7 @@ export class GameClient {
 
                 if (update.action.type === ShahrazadActionCase.AddPlayer) {
                     this.callbacks.onPlayerJoin(
-                        update.action.player.display_name
+                        update.action.player.display_name,
                     );
                 }
 
@@ -133,23 +134,25 @@ export class GameClient {
             }
             if (update.hash && update.hash !== this.hash) {
                 console.error(
-                    "[client] move validation failed, requesting new state."
+                    "[client] move validation failed, requesting new state.",
+                    update.hash,
+                    this.hash,
                 );
                 this.broadcastAction({});
             }
         } catch (error) {
             console.error("[ws] message error:", error);
-            this.callbacks.onToast("Error processing action.");
+            this.callbacks.toast.error("Error processing action.");
         }
     };
 
     private handleError = (error: Event) => {
         console.log("[ws] error:", error, this.socket);
         if (this.reconnectAttempts === 1) {
-            this.callbacks.onToast("Game Disconnected.");
+            this.callbacks.toast.error("Game Disconnected.");
         }
         if (this.reconnectAttempts > 1) {
-            this.callbacks.onToast("Reconnect failed.");
+            this.callbacks.toast.error("Reconnect failed.");
         }
         if (this.socket?.OPEN) {
             this.socket?.close();
@@ -170,12 +173,12 @@ export class GameClient {
 
         const backoffMs = Math.min(
             1000 * Math.pow(2, this.reconnectAttempts),
-            10000
+            10000,
         );
         this.reconnectTimeout = setTimeout(() => {
             if (this.isCleanedUp) return;
             if (this.reconnectAttempts > 1) {
-                this.callbacks.onToast("Reconnecting...");
+                this.callbacks.toast("Reconnecting...");
             }
             if (this.reconnectTimeout) {
                 clearTimeout(this.reconnectTimeout);
@@ -187,7 +190,12 @@ export class GameClient {
 
     initializeGameState(initialState: string): ShahrazadGame {
         this.gameState = new GameState(initialState);
-        return this.gameState.get_state();
+        const state: ShahrazadGame = this.gameState.get_state();
+        this.callbacks.onPreloadCards(
+            state.cards.map((card) => card.card_name),
+            false,
+        );
+        return state;
     }
 
     private applyAction(action: ShahrazadAction): boolean {
@@ -195,7 +203,10 @@ export class GameClient {
             throw new Error("Game state not initialized");
         }
         if (action.type === ShahrazadActionCase.ZoneImport) {
-            this.callbacks.onPreloadCards(action.cards.map(({ str }) => str));
+            this.callbacks.onPreloadCards(
+                action.cards.map(({ str }) => str),
+                false,
+            );
         }
         if (
             action.type === ShahrazadActionCase.SetPlayer &&
@@ -206,9 +217,21 @@ export class GameClient {
             this.callbacks.onGameTermination("You were kicked from the lobby.");
         }
 
-        const newState: ShahrazadGame = this.gameState.apply_action(action);
+        const newState = this.gameState.apply_action(action);
         if (!newState) {
             return false;
+        }
+
+        if (
+            action.type === ShahrazadActionCase.Mulligan &&
+            action.player_id === this.player_id
+        ) {
+            this.callbacks.onPreloadCards(
+                Object.keys(newState.cards).map(
+                    (id) => newState.cards[id].card_name,
+                ),
+                true,
+            );
         }
         this.hash = this.gameState.get_hash();
         if (action.type === ShahrazadActionCase.Mulligan) {
@@ -223,16 +246,16 @@ export class GameClient {
                     mulligans < 0 ? "for free" : `to ${7 - mulligans}`
                 }.`;
             }
-            this.callbacks.onToast(message);
+            this.callbacks.toast.info(message);
         }
 
         if (action.type == ShahrazadActionCase.SetPlayer) {
             if (action.player) {
-                this.callbacks.onToast(
-                    `${action.player_id} has new name: ${action.player.display_name}`
+                this.callbacks.toast.info(
+                    `P${action.player_id} has new name: ${action.player.display_name}`,
                 );
             } else {
-                this.callbacks.onToast(`${action.player_id} has left.`);
+                this.callbacks.toast.info(`P${action.player_id} has left.`);
             }
         }
         if (action.type === ShahrazadActionCase.SendMessage) {
@@ -272,7 +295,7 @@ export class GameClient {
         if (!success) {
             console.log(
                 "[client] attempted to apply move that didn't update state.",
-                action.type
+                action.type,
             );
             return;
         }

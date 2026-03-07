@@ -3,6 +3,7 @@ use type_reflect::*;
 
 use crate::proto::action::shahrazad_action::Action;
 use crate::proto::{self};
+use crate::types::game::ShahrazadGameSettings;
 use crate::types::playmat::DeckTopReveal;
 
 use super::{
@@ -47,7 +48,7 @@ pub enum ShahrazadAction {
     },
     Shuffle {
         zone: ShahrazadZoneId,
-        seed: String,
+        seed: u64,
     },
     ZoneImport {
         zone: ShahrazadZoneId,
@@ -89,18 +90,21 @@ pub enum ShahrazadAction {
     },
     Mulligan {
         player_id: ShahrazadPlaymatId,
-        seed: String,
+        seed: u64,
     },
     SendMessage {
         messages: Vec<Message>,
         player_id: ShahrazadPlaymatId,
-        created_at: u32,
+        created_at: u64,
     },
     ResetPlaymat {
         player_id: ShahrazadPlaymatId,
-        seed: String,
+        seed: u64,
     },
     GameTerminated,
+    SetSettings {
+        settings: ShahrazadGameSettings,
+    },
 }
 
 impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
@@ -226,6 +230,9 @@ impl TryFrom<proto::action::ShahrazadAction> for ShahrazadAction {
                 seed: a.seed,
             },
             Action::GameTerminated(_) => ShahrazadAction::GameTerminated,
+            Action::SetSettings(set_settings) => ShahrazadAction::SetSettings {
+                settings: set_settings.settings.unwrap().into(),
+            },
         })
     }
 }
@@ -372,6 +379,11 @@ impl From<ShahrazadAction> for proto::action::ShahrazadAction {
                 }
                 ShahrazadAction::GameTerminated => {
                     Some(Action::GameTerminated(proto::action::GameTerminated {}))
+                }
+                ShahrazadAction::SetSettings { settings } => {
+                    Some(Action::SetSettings(proto::action::SetSettings {
+                        settings: Some(settings.into()),
+                    }))
                 }
             },
         }

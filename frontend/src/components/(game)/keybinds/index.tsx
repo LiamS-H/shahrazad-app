@@ -36,11 +36,11 @@ export function Keybinds() {
 
     const deckDraw = useCallback(() => {
         if (isDeckEmpty) {
-            toast("Can't draw from empty deck.");
+            toast.error("Can't draw from empty deck.");
             return;
         }
         if (active !== null) {
-            toast("Can't draw cards while searching.");
+            toast.error("Can't draw cards while searching.");
             return;
         }
         applyAction({
@@ -54,7 +54,7 @@ export function Keybinds() {
             },
         });
         setOpen(false);
-        toast("Drawing Card.");
+        toast.success("Drawing Card.");
     }, [
         playmat.library,
         playmat.hand,
@@ -66,7 +66,7 @@ export function Keybinds() {
 
     const deckSearch = useCallback(() => {
         if (isDeckEmpty) {
-            toast("Can't search empty deck.");
+            toast.error("Can't search empty deck.");
             return;
         }
         if (active === playmat.library) {
@@ -79,7 +79,7 @@ export function Keybinds() {
 
     const deckShuffle = useCallback(() => {
         if (isDeckEmpty) {
-            toast("Can't shuffle empty deck.");
+            toast.error("Can't shuffle empty deck.");
             return;
         }
         applyAction({
@@ -87,7 +87,7 @@ export function Keybinds() {
             seed: randomU64(),
             zone: playmat.library,
         });
-        toast("Deck shuffled.");
+        toast.success("Deck shuffled.");
     }, [playmat.library, isDeckEmpty, applyAction]);
 
     const deckImport = useCallback(() => {

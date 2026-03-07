@@ -24,7 +24,8 @@ export class MouseSensor extends LibMouseSensor {
         // skip for buttons
         while (cur && cur instanceof Element) {
             if (cur.tagName == "BUTTON") return false;
-            if (cur instanceof HTMLElement && cur.dataset.nodrag) return false;
+            if (cur instanceof HTMLElement && cur.dataset.nodrag !== undefined)
+                return false;
             cur = cur.parentElement;
         }
         cur = event.target;
@@ -33,13 +34,18 @@ export class MouseSensor extends LibMouseSensor {
         let id: ShahrazadCardId | null = null;
 
         while (cur && cur instanceof Element) {
-            if (cur instanceof HTMLElement && cur.dataset.shahcard) {
-                id = cur.dataset.shahcard;
-                shah_card = MouseSensor.ShahContext.getCard(id);
+            if (
+                cur instanceof HTMLElement &&
+                cur.dataset.shahcard !== undefined
+            ) {
+                id = parseInt(cur.dataset.shahcard);
+                if (!Number.isNaN(id)) {
+                    shah_card = MouseSensor.ShahContext.getCard(id);
+                }
             }
             cur = cur.parentElement;
         }
-        if (!shah_card || !id) return false;
+        if (shah_card === null || id === null) return false;
 
         // tapping
         if (event.detail >= 2 && event.detail % 2 == 0) {
@@ -62,7 +68,7 @@ export class MouseSensor extends LibMouseSensor {
         if (
             !shah_card.state.face_down ||
             shah_card.state.revealed?.includes(
-                MouseSensor.ShahContext.active_player
+                MouseSensor.ShahContext.active_player,
             )
         ) {
             MouseSensor.SelectedContext.setPreview(id);

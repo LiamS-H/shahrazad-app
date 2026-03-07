@@ -2,7 +2,7 @@ import { Button } from "@/components/(ui)/button";
 import { useFullscreen } from "@/contexts/fullscreen";
 import { Maximize2, Minimize2 } from "lucide-react";
 
-export default function FullscreenToggle() {
+export function FullscreenToggle() {
     const { isFullscreen, toggleFullscreen } = useFullscreen();
 
     return (

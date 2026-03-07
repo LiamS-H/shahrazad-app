@@ -4,10 +4,13 @@ import { BezierArrow, pos } from "./bezier-arrow";
 // import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { useDndContext } from "@dnd-kit/core";
 import { IArrowMessage } from "@/types/interfaces/message";
+import { ShahrazadZoneId } from "@/types/bindings/zone";
+import { ShahrazadCardId } from "@/types/bindings/card";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 
 export function getMessageCenter(
     type: MessageCaseArrow["arrow_type"],
-    id: string,
+    id: ShahrazadZoneId | ShahrazadCardId | ShahrazadPlaymatId,
     offset: pos,
 ): pos | null {
     let div;

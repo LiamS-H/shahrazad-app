@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::hash::Hasher;
 
 use serde::{Deserialize, Serialize};
@@ -6,11 +5,18 @@ use type_reflect::*;
 
 use crate::proto;
 
-use crate::branded_string;
+use crate::branded_u32;
 
 use super::zone::ShahrazadZoneId;
 
-branded_string!(ShahrazadPlaymatId);
+branded_u32!(ShahrazadPlaymatId);
+
+
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct CommandDammage {
+    pub playmat: ShahrazadPlaymatId,
+    pub damage: i32
+}
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct ShahrazadPlaymat {
@@ -23,7 +29,7 @@ pub struct ShahrazadPlaymat {
     pub sideboard: ShahrazadZoneId,
     pub life: i32,
     pub mulligans: i8,
-    pub command_damage: HashMap<ShahrazadPlaymatId, i32>,
+    pub command_damage: Vec<CommandDammage>,
     pub player: ShahrazadPlayer,
     pub reveal_deck_top: DeckTopReveal,
 }
@@ -99,11 +105,11 @@ impl std::hash::Hash for ShahrazadPlaymat {
         self.command.hash(state);
         self.life.hash(state);
         self.mulligans.hash(state);
-        let mut damages: Vec<_> = self.command_damage.iter().collect();
-        damages.sort_by(|a, b| a.0.cmp(b.0));
-        for damage in damages {
-            damage.0.hash(state);
-            damage.1.hash(state);
+        let mut damages: Vec<_> = self.command_damage.clone();
+        damages.sort_by(|a, b| a.playmat.cmp(&b.playmat));
+        for CommandDammage{damage,playmat:_} in damages {
+            damage.hash(state);
+            damage.hash(state);
         }
         self.player.hash(state);
 
@@ -128,7 +134,7 @@ impl TryFrom<proto::playmat::ShahrazadPlaymat> for ShahrazadPlaymat {
             command_damage: value
                 .command_damage
                 .iter()
-                .map(|(k, v)| (k.clone().into(), v.clone()))
+                .map(|(k, v)| CommandDammage { playmat: k.clone().into(), damage: v.clone().into() })
                 .collect(),
             player: value.player.unwrap().into(),
 
@@ -151,7 +157,7 @@ impl From<ShahrazadPlaymat> for proto::playmat::ShahrazadPlaymat {
             command_damage: value
                 .command_damage
                 .iter()
-                .map(|(k, v)| (k.clone().into(), v.clone()))
+                .map(|CommandDammage{playmat, damage}| (playmat.clone().into(), damage.clone()))
                 .collect(),
             player: Some(value.player.into()),
 

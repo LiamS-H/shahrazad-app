@@ -1,34 +1,14 @@
-import { Input } from "@/components/(ui)/input";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/(ui)/popover";
 import { useCard, useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
 import type { ShahrazadCardId } from "@/types/bindings/card";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { EditableText } from "@/components/(ui)/editable-text";
 
 export function Annotation({ id }: { id: ShahrazadCardId }) {
     const { applyAction } = useShahrazadGameContext();
     const shah_card = useCard(id);
-    const [annotation, setAnnotation] = useState(
-        shah_card.state.annotation ?? ""
-    );
 
-    const [open, setOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
-
-    const annotate = useCallback(() => {
-        if (annotation === shah_card.state.annotation) return;
-        applyAction({
-            type: ShahrazadActionCase.CardState,
-            cards: [id],
-            state: {
-                annotation,
-            },
-        });
-    }, [annotation, shah_card.state.annotation, applyAction, id]);
 
     const disp_text = useMemo(() => {
         if (!shah_card.state.annotation) return null;
@@ -42,42 +22,26 @@ export function Annotation({ id }: { id: ShahrazadCardId }) {
         if (!disp_text) return null;
         return (
             <div className="absolute top-8 w-full p-2 flex justify-center">
-                <Popover
-                    open={open}
-                    onOpenChange={(o) => {
-                        setOpen(o);
-                        if (o) {
-                            setAnnotation(shah_card.state.annotation ?? "");
-                        } else {
-                            annotate();
+                <EditableText
+                    value={shah_card.state.annotation ?? ""}
+                    onSave={(val) => {
+                        if (val !== shah_card.state.annotation) {
+                            applyAction({
+                                type: ShahrazadActionCase.CardState,
+                                cards: [id],
+                                state: {
+                                    annotation: val,
+                                },
+                            });
                         }
                     }}
+                    className="bg-secondary rounded-sm text-xs w-fit p-1 max-w-md cursor-pointer"
+                    onPointerLeave={() => setIsHovered(false)}
+                    onPointerOver={() => setIsHovered(true)}
                 >
-                    <PopoverTrigger
-                        className="bg-secondary rounded-sm text-xs w-fit p-1 max-w-md"
-                        onPointerLeave={() => setIsHovered(false)}
-                        onPointerOver={() => setIsHovered(true)}
-                    >
-                        {disp_text}
-                    </PopoverTrigger>
-                    <PopoverContent>
-                        <form
-                            onSubmit={(e) => {
-                                annotate();
-                                setOpen(false);
-                                e.preventDefault();
-                            }}
-                        >
-                            <Input
-                                value={annotation}
-                                onChange={(e) => {
-                                    setAnnotation(e.target.value);
-                                }}
-                            />
-                        </form>
-                    </PopoverContent>
-                </Popover>
+                    {disp_text}
+                </EditableText>
             </div>
         );
-    }, [open, annotate, annotation, shah_card.state.annotation, disp_text]);
+    }, [disp_text, shah_card.state.annotation, applyAction, id]);
 }

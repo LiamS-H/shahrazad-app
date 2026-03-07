@@ -1,3 +1,4 @@
+"use client";
 import { Input } from "@/components/(ui)/input";
 import { Textarea } from "@/components/(ui)/textarea";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
@@ -6,7 +7,7 @@ import { useRef, useState } from "react";
 import { importFromUrl } from "@/lib/client/import-deck/importFromUrl";
 import { toast } from "sonner";
 import { Label } from "@/components/(ui)/label";
-import { ShahrazadAction } from "@/types/bindings/action";
+import { ShahrazadActionCase } from "@/types/bindings/action";
 import {
     Dialog,
     DialogContent,
@@ -18,6 +19,11 @@ import {
 import { Button } from "@/components/(ui)/button";
 import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { useImportContext } from "@/contexts/(game)/import";
+import { SavedDecks } from "./saved-decks";
+import {
+    IParsedDeck,
+    toActionList,
+} from "@/lib/client/import-deck/toActionlist";
 
 export function ImportDialog({
     player,
@@ -25,14 +31,16 @@ export function ImportDialog({
     player: ShahrazadPlaymatId | null;
 }) {
     const { importFor } = useImportContext();
-    const { applyAction, getPlaymat, active_player, settings } =
+    const { applyAction, getPlaymat, getZone, active_player, settings } =
         useShahrazadGameContext();
     const [deckstr, setDeckstr] = useState<string>("");
     const [url, setUrl] = useState("");
+    const urlRef = useRef("");
     const [loading, _setLoading] = useState(false);
     const loadingRef = useRef(false);
 
     const open = player !== null;
+    const playmat = player !== null ? getPlaymat(player) : null;
 
     function close() {
         importFor(null);
@@ -43,53 +51,95 @@ export function ImportDialog({
         loadingRef.current = l;
     }
 
-    async function importDeck() {
-        if (!player) return false;
+    async function importDeck(url: string, reset = true) {
+        if (player === null) return false;
+        const playmat = getPlaymat(player);
+        if (!playmat) return false;
         if (loadingRef.current) {
             return false;
         }
-        const playmat = getPlaymat(player);
         loadingRef.current = true;
-        let actions: ShahrazadAction[] | null | undefined;
+        let deck: IParsedDeck | null | undefined;
         const sideboardId = settings.commander
             ? playmat.command
             : playmat.sideboard;
         setLoading(true);
+        const locations = {
+            deckId: playmat.library,
+            sideboardId,
+            commandId: playmat.command,
+            playerId: player,
+        };
         if (url) {
-            actions = await importFromUrl(url, {
-                deckId: playmat.library,
-                sideboardId,
-                playerId: player,
-                settings,
+            const deckPromise = importFromUrl(url).then((deck) => {
+                if (!deck) throw { message: "Couldn't fetch deck" };
+                return deck;
             });
-            if (actions === undefined) {
-                toast("Coudln't fetch deck.");
-                setLoading(false);
-                return;
-            }
+            toast.promise(deckPromise, {
+                loading: "Fetching deck...",
+                success: ({ deck_data: { name } }) =>
+                    `Imported deck "${name.substring(0, 20)}${name.length > 20 ? "..." : ""}"`,
+                error: "Couldn't fetch deck",
+            });
+            try {
+                deck = (await deckPromise).cards;
+            } catch {}
         } else if (deckstr) {
-            actions = importFromStr(deckstr, {
-                deckId: playmat.library,
-                sideboardId,
-                playerId: player,
-                settings,
-            });
-            if (actions === undefined) {
-                toast("Couldn't parse deck.");
-                setLoading(false);
+            deck = importFromStr(deckstr);
+            if (deck === undefined) {
+                toast.error("Couldn't parse deck.");
                 return;
             }
         }
-        if (!actions) {
-            toast("No cards to load.");
-            setLoading(false);
+        setLoading(false);
+        if (!deck) {
             return;
+        }
+
+        const actions = toActionList(deck, locations);
+        if (!actions) {
+            toast.error("No cards to load.");
+            return;
+        }
+        const hasCommander =
+            deck.commander.length !== 0 && deck.commander.length <= 2;
+        if (hasCommander && !settings.commander) {
+            const id = toast.warning("Detected commander.", {
+                description: "Change settings?",
+                action: (
+                    <Button
+                        className="h-9"
+                        onClick={() => {
+                            applyAction({
+                                type: ShahrazadActionCase.SetSettings,
+                                settings: { ...settings, commander: true },
+                            });
+                            toast.success("Switched to commander.", {
+                                id,
+                                description: null,
+                                action: null,
+                            });
+                        }}
+                    >
+                        Commander
+                    </Button>
+                ),
+            });
+        }
+
+        if (reset) {
+            applyAction({
+                type: ShahrazadActionCase.ClearBoard,
+                player_id: player,
+            });
         }
         actions.forEach((a) => applyAction(a));
         close();
         setLoading(false);
-        toast("Deck imported.");
     }
+
+    const isEmpty =
+        playmat !== null && getZone(playmat.library).cards.length === 0;
 
     return (
         <Dialog open={open} onOpenChange={close}>
@@ -103,34 +153,47 @@ export function ImportDialog({
                     </DialogTitle>
                     <DialogDescription className="flex flex-col">
                         <span>
-                            Deck string or{" "}
+                            Deck string,{" "}
                             <a
-                                className="font-bold text-highlight"
+                                className="font-bold"
                                 href="https://archidekt.com"
+                                target="_blank"
                             >
                                 Archidekt
                             </a>{" "}
-                            deck link supported.
-                        </span>
-                        <span className="italic text-destructive">
-                            Moxfield deck link blocked by their firewall.
+                            link, or{" "}
+                            <a
+                                className="font-bold"
+                                href="https://moxfield.com"
+                                target="_blank"
+                            >
+                                Moxfield
+                            </a>{" "}
+                            link supported.
                         </span>
                     </DialogDescription>
                 </DialogHeader>
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();
-                        importDeck();
+                        importDeck(urlRef.current);
                     }}
                 >
                     <Label htmlFor="deck-url">Link</Label>
                     <Input
                         id="deck-url"
-                        placeholder="https://archidekt.com/decks/XXXX/XXX"
-                        onChange={(e) => setUrl(e.target.value)}
+                        // placeholder="https://archidekt.com/decks/XXXX/XXXX"
+                        placeholder="https://moxfield.com/decks/XXXX"
+                        onChange={(e) => {
+                            setUrl(e.target.value);
+                            urlRef.current = e.target.value;
+                        }}
+                        onFocus={(e) => e.target.select()}
                         value={url}
                     />
                 </form>
+                <SavedDecks importDeck={importDeck} />
+
                 <div>
                     <Label htmlFor="deck-str">Deck String</Label>
                     <Textarea
@@ -141,12 +204,33 @@ export function ImportDialog({
                         onChange={(e) => setDeckstr(e.target.value)}
                     />
                 </div>
-                <Button
-                    disabled={(!url && !deckstr) || loading}
-                    onClick={importDeck}
-                >
-                    {loading ? "Loading..." : "Import"}
-                </Button>
+                <div className="flex gap-4">
+                    <Button
+                        className="grow"
+                        disabled={(!url && !deckstr) || loading}
+                        onClick={() => importDeck(urlRef.current, false)}
+                    >
+                        {loading
+                            ? "Loading..."
+                            : isEmpty
+                              ? "Import"
+                              : "Import Without Replacing"}
+                    </Button>
+                    {!isEmpty && (
+                        <Button
+                            className="grow"
+                            variant="destructive"
+                            disabled={(!url && !deckstr) || loading}
+                            onClick={() => {
+                                if (player === null) return;
+
+                                importDeck(urlRef.current);
+                            }}
+                        >
+                            {loading ? "Loading..." : "Clear + Import"}
+                        </Button>
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     );

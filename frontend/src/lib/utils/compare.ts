@@ -1,5 +1,5 @@
 import { ShahrazadCard } from "@/types/bindings/card";
-import { ShahrazadPlaymat } from "@/types/bindings/playmat";
+import { ShahrazadPlaymat, ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { ShahrazadZone } from "@/types/bindings/zone";
 
 /**
@@ -7,7 +7,7 @@ import { ShahrazadZone } from "@/types/bindings/zone";
  */
 export function comparePlaymats(
     playmat1: ShahrazadPlaymat,
-    playmat2: ShahrazadPlaymat
+    playmat2: ShahrazadPlaymat,
 ): boolean {
     if (playmat1.library !== playmat2.library) return false;
     if (playmat1.hand !== playmat2.hand) return false;
@@ -29,7 +29,11 @@ export function comparePlaymats(
     if (cd1Keys.length !== cd2Keys.length) return false;
 
     for (const key of cd1Keys) {
-        if (!Object.hasOwn(cd2, key) || cd1[key] !== cd2[key]) {
+        if (
+            !Object.hasOwn(cd2, key) ||
+            cd1[key as unknown as ShahrazadPlaymatId] !==
+                cd2[key as unknown as ShahrazadPlaymatId]
+        ) {
             return false;
         }
     }
@@ -42,7 +46,7 @@ export function comparePlaymats(
  */
 export function compareZones(
     zone1: ShahrazadZone,
-    zone2: ShahrazadZone
+    zone2: ShahrazadZone,
 ): boolean {
     if (!compareList(zone1.cards, zone2.cards)) return false;
 
@@ -54,7 +58,7 @@ export function compareZones(
  */
 export function compareCards(
     card1: ShahrazadCard,
-    card2: ShahrazadCard
+    card2: ShahrazadCard,
 ): boolean {
     if (card1.card_name !== card2.card_name) return false;
     if (card1.commander !== card2.commander) return false;

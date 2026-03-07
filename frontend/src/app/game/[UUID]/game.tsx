@@ -1,6 +1,7 @@
 "use client";
 import Game from "@/components/(game)/game";
-import { joinGame } from "@/lib/client/joinGame";
+import { joinGame } from "@/lib/api/joinGame";
+import { consumeJoinCache } from "@/lib/session";
 import {
     ShahrazadActionCase,
     type ShahrazadAction,
@@ -8,15 +9,18 @@ import {
 import type { ShahrazadGame } from "@/types/bindings/game";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrycardsContext } from "react-scrycards";
-import init from "shahrazad-wasm";
 import { GameClient, type GameClientOnMessage } from "@/lib/client";
 import GameError, { IErrorMessage } from "./error";
 import { toast } from "sonner";
-import ShareGameButton from "./ShareGameButton";
-import FullscreenToggle from "./FullscreenToggle";
-import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import { ShareGameButton } from "@/components/(game)/share-game-button";
+import { FullscreenToggle } from "@/components/(ui)/fullscreen-toggle";
+import { loadPlayer, savePlayer } from "@/lib/storage/localPlayer";
 import Loading from "./loading";
 import { UserProfile } from "@/components/(ui)/user-profile";
+import { init_wasm } from "@/lib/client/wasm-init";
+import { preloadCardImages } from "@/lib/client/preload-cards";
+import { JoinGameResponse } from "@/types/bindings/api";
+import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
 
 export default function GamePage(props: { game_id: string }) {
     const gameClientRef = useRef<GameClient | null>(null);
@@ -29,6 +33,7 @@ export default function GamePage(props: { game_id: string }) {
     }, []);
 
     const [loading, setLoading] = useState(true);
+    const [serverLoading, setServerLoading] = useState(true);
     const init_ref = useRef(false);
 
     const signalError = useCallback((error: IErrorMessage) => {
@@ -39,23 +44,57 @@ export default function GamePage(props: { game_id: string }) {
     }, []);
 
     const [playerUUID, setPlayerUUID] = useState<string | null>(null);
-    const [activePlayer, setActivePlayer] = useState<string | null>(null);
+    const [activePlaymat, setActivePlaymat] =
+        useState<ShahrazadPlaymatId | null>(null);
     const [gameCode, setGameCode] = useState<number | null>(null);
     const [isHost, setIsHost] = useState(false);
 
-    const { preloadCards } = useScrycardsContext();
+    const { preloadCards, requestCard } = useScrycardsContext();
 
     const initGame = useCallback(async () => {
         if (init_ref.current) return;
         init_ref.current = true;
-        const stored_player = loadPlayer();
 
-        const [joinResult] = await Promise.all([
-            joinGame(props.game_id, stored_player),
-            init(),
-        ]);
+        setServerLoading(true);
+        setLoading(true);
 
-        setLoading(false);
+        const cached = consumeJoinCache();
+        let joinResult: JoinGameResponse | null | undefined;
+
+        if (cached && cached.game_id === props.game_id) {
+            joinResult = cached;
+            setServerLoading(false);
+            await init_wasm();
+            setLoading(false);
+        } else {
+            const stored_player = loadPlayer();
+            const join_promise = joinGame(props.game_id, stored_player);
+            join_promise.then(() => setServerLoading(false));
+
+            toast.promise(
+                join_promise.then((data) => {
+                    if (data === null) throw { message: "Game doesn't exist." };
+                    if (!data || !("game" in data) || !("game_id" in data))
+                        throw { message: "Something went wrong." };
+                    return data as JoinGameResponse;
+                }),
+                {
+                    loading: "Joining Game...",
+                    success: ({ code }: JoinGameResponse) => (
+                        <>
+                            Joined Game
+                            <span className="ml-1.5 py-0.5 px-2 bg-accent text-accent-foreground">
+                                {code}
+                            </span>
+                        </>
+                    ),
+                    error: (e) => `${e.message}`,
+                },
+            );
+
+            [joinResult] = await Promise.all([join_promise, init_wasm()]);
+            setLoading(false);
+        }
 
         if (joinResult === undefined) {
             signalError({
@@ -76,16 +115,15 @@ export default function GamePage(props: { game_id: string }) {
 
         const {
             player_id,
-            player_name,
+            playmat_id,
             game: initialState,
             code,
             is_host,
         } = joinResult;
-        toast(`Joined game ${code}`);
 
         setIsHost(is_host);
         setPlayerUUID(player_id);
-        setActivePlayer(player_name);
+        setActivePlaymat(playmat_id);
         setGameCode(code);
         savePlayer(player_id);
         localStorage.setItem("saved-game", code.toString());
@@ -93,13 +131,16 @@ export default function GamePage(props: { game_id: string }) {
         const gameClient = new GameClient(
             props.game_id,
             player_id,
-            player_name,
+            playmat_id,
             {
                 onGameUpdate: setGame,
-                onPreloadCards: preloadCards,
-                onToast: (message) => {
-                    toast(message);
+                onPreloadCards: (cards, images) => {
+                    preloadCards(cards);
+                    if (images) {
+                        preloadCardImages(cards, requestCard);
+                    }
                 },
+                toast,
                 onGameTermination: (reason) => {
                     signalError({
                         status: 404,
@@ -109,8 +150,8 @@ export default function GamePage(props: { game_id: string }) {
                             "Games Close after 5 minutes of inactivity. This game no longer exists.",
                     });
                 },
-                onPlayerJoin: () => {
-                    toast("A new player joined.");
+                onPlayerJoin: (player) => {
+                    toast(`A new player "${player}" joined.`);
                 },
                 onMessage: (message) => {
                     onMessageRef.current?.(message);
@@ -124,11 +165,10 @@ export default function GamePage(props: { game_id: string }) {
         setGame(game);
 
         preloadCards(Object.values(game.cards).map((c) => c.card_name));
-    }, [props.game_id, preloadCards, signalError]);
+    }, [props.game_id, preloadCards, requestCard, signalError]);
 
     useEffect(() => {
-        // This is async and updating external state.
-        initGame(); //eslint-disable-line react-hooks/set-state-in-effect
+        initGame(); //eslint-disable-line react-hooks/set-state-in-effect -- async and updating internal state
 
         return () => {
             gameClientRef.current?.cleanup();
@@ -147,33 +187,31 @@ export default function GamePage(props: { game_id: string }) {
         return <GameError message={error} />;
     }
 
-    const isLoading = loading || !game || !playerUUID || !activePlayer;
+    const isLoading = loading || !game || !playerUUID || activePlaymat == null;
 
     return (
         <>
             {isLoading ? (
-                <Loading />
+                <Loading server_loading={serverLoading} />
             ) : (
                 <Game
                     registerOnMessage={registerOnMessage}
                     game={game}
-                    activePlayer={activePlayer}
+                    activePlayer={activePlaymat}
                     applyAction={handleAction}
                     isHost={isHost}
                 />
             )}
             <div className="absolute top-4 right-4 flex gap-4">
                 {isLoading && (
-                    // don't love rendering the profile here and within the game component,
-                    // but I want the player icon to appear before the game loads, and it has a dynamic width
                     <UserProfile
                         onChange={
-                            activePlayer
+                            activePlaymat !== null
                                 ? (p) => {
                                       handleAction({
                                           type: ShahrazadActionCase.SetPlayer,
                                           player: p,
-                                          player_id: activePlayer,
+                                          player_id: activePlaymat,
                                       });
                                   }
                                 : undefined

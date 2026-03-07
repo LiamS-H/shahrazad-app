@@ -22,7 +22,7 @@ export default function HorizontalZone(props: {
         const items = [...zone.cards];
         return (
             <SortableContext
-                id={props.id}
+                id={`HZone-${props.id}`}
                 items={items}
                 strategy={horizontalListSortingStrategy}
             >

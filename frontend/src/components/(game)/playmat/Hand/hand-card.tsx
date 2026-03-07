@@ -50,8 +50,7 @@ export default function HandCard(props: {
 
     return useMemo(() => {
         const display_eye =
-            !shah_card.state.face_down ||
-            (shah_card.state.revealed && shah_card.state.revealed.length > 1);
+            !shah_card.state.face_down || shah_card.state.revealed.length > 1;
         return (
             <SortableWrapper
                 id={props.id}

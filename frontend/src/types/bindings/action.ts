@@ -1,4 +1,5 @@
 import { ShahrazadCardId, ShahrazadCardStateTransform } from './card';
+import { ShahrazadGameSettings } from './game';
 import { Message } from './message';
 import { DeckTopReveal, ShahrazadPlayer, ShahrazadPlaymatId } from './playmat';
 import { ShahrazadZoneId } from './zone';
@@ -23,6 +24,7 @@ export enum ShahrazadActionCase {
     SendMessage = 'SendMessage',
     ResetPlaymat = 'ResetPlaymat',
     GameTerminated = 'GameTerminated',
+    SetSettings = 'SetSettings',
 }
 
 export type ShahrazadActionCaseDrawBottom = {
@@ -58,7 +60,7 @@ export type ShahrazadActionCaseCardZone = {
 export type ShahrazadActionCaseShuffle = {
     type: ShahrazadActionCase.Shuffle;
     zone: ShahrazadZoneId;
-    seed: string;
+    seed: number;
 };
 
 export type ShahrazadActionCaseZoneImport = {
@@ -120,7 +122,7 @@ export type ShahrazadActionCaseDeleteToken = {
 export type ShahrazadActionCaseMulligan = {
     type: ShahrazadActionCase.Mulligan;
     player_id: ShahrazadPlaymatId;
-    seed: string;
+    seed: number;
 };
 
 export type ShahrazadActionCaseSendMessage = {
@@ -133,11 +135,16 @@ export type ShahrazadActionCaseSendMessage = {
 export type ShahrazadActionCaseResetPlaymat = {
     type: ShahrazadActionCase.ResetPlaymat;
     player_id: ShahrazadPlaymatId;
-    seed: string;
+    seed: number;
 };
 
 export type ShahrazadActionCaseGameTerminated = {
     type: ShahrazadActionCase.GameTerminated;
+};
+
+export type ShahrazadActionCaseSetSettings = {
+    type: ShahrazadActionCase.SetSettings;
+    settings: ShahrazadGameSettings;
 };
 
 export type ShahrazadAction =
@@ -158,6 +165,7 @@ export type ShahrazadAction =
     | ShahrazadActionCaseMulligan
     | ShahrazadActionCaseSendMessage
     | ShahrazadActionCaseResetPlaymat
-    | ShahrazadActionCaseGameTerminated;
+    | ShahrazadActionCaseGameTerminated
+    | ShahrazadActionCaseSetSettings;
 
 export type CardImport = { str: string; amount?: number };

@@ -40,14 +40,12 @@ export function DraggingContextProvider({
             setCards(dragging);
             return;
         }
-        if (!dragging) {
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+            setCards([]);
             clearTimeout(timer.current);
-            timer.current = setTimeout(() => {
-                setCards([]);
-                clearTimeout(timer.current);
-                timer.current = undefined;
-            }, 0);
-        }
+            timer.current = undefined;
+        }, 0);
     }, [dragging]);
 
     return (

@@ -2,12 +2,12 @@
 use serde::{Deserialize, Serialize};
 use type_reflect::*;
 
-use crate::proto;
-use crate::{branded_string, types::zone::ShahrazadZoneId};
+use crate::{branded_string, proto};
+use crate::{branded_u32, types::zone::ShahrazadZoneId};
 
 use super::playmat::ShahrazadPlaymatId;
 
-branded_string!(ShahrazadCardId);
+branded_u32!(ShahrazadCardId);
 branded_string!(ShahrazadCardName);
 
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug, Default, PartialEq, Hash)]

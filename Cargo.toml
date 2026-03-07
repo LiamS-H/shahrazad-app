@@ -1,8 +1,6 @@
 [workspace]
-members = [
-    "backend",
-    "shared",
-    "wasm"
-]
+members = ["backend", "shared", "wasm"]
 
 resolver = "2"
+
+##![feature(let_chains)]

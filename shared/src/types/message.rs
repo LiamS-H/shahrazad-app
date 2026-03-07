@@ -38,8 +38,8 @@ pub enum Message {
         result: i32,
     },
     Arrow {
-        from: String,
-        to: String,
+        from: usize,
+        to: usize,
         arrow_type: ArrowType,
     },
 }
@@ -54,8 +54,8 @@ impl TryFrom<proto::message::Message> for Message {
                 result: dice_roll.result,
             }),
             Some(proto::message::message::Message::Arrow(arrow)) => Ok(Message::Arrow {
-                from: arrow.from,
-                to: arrow.to,
+                from: arrow.from as usize,
+                to: arrow.to as usize,
                 arrow_type: arrow.arrow_type.into(),
             }),
             None => Err("Message is empty"),
@@ -79,8 +79,8 @@ impl From<Message> for proto::message::Message {
                     to,
                     arrow_type,
                 } => Some(message::Message::Arrow(proto::message::Arrow {
-                    from,
-                    to,
+                    from: from.try_into().unwrap_or(0),
+                    to: to.try_into().unwrap_or(0),
                     arrow_type: arrow_type.into(),
                 })),
             },

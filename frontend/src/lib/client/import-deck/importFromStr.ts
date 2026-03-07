@@ -1,5 +1,5 @@
-import { CardImport, ShahrazadAction } from "@/types/bindings/action";
-import { IImportOptions, toActionList } from "./toActionlist";
+import { CardImport } from "@/types/bindings/action";
+import { IParsedDeck } from "./toActionlist";
 
 function parseLine(str: string): {
     amount: number;
@@ -24,10 +24,7 @@ function parseLine(str: string): {
     };
 }
 
-export function parseDeckstr(str: string): {
-    sideboard: CardImport[];
-    deck: CardImport[];
-} | null {
+export function parseDeckstr(str: string): IParsedDeck | null {
     const card_groups = str.split("\n\n");
 
     let deck_str = "";
@@ -62,14 +59,11 @@ export function parseDeckstr(str: string): {
     if (deck.length === 0 && sideboard.length === 0) {
         return null;
     }
-    return { deck, sideboard };
+    return { deck, sideboard, commander: sideboard };
 }
 
-export function importFromStr(
-    str: string,
-    locations: IImportOptions
-): ShahrazadAction[] | null | undefined {
+export function importFromStr(str: string): IParsedDeck | null | undefined {
     const deck = parseDeckstr(str);
     if (!deck) return undefined;
-    return toActionList(deck, locations);
+    return deck;
 }

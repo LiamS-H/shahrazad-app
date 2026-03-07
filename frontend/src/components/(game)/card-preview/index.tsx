@@ -1,7 +1,7 @@
 import { Button } from "@/components/(ui)/button";
 import { useSelection } from "@/contexts/(game)/selection";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { Expand, ExternalLink, EyeOff, ScanEye, Shrink } from "lucide-react";
+import { Expand, ExternalLink, EyeOff, ScanEye, Shrink, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { DraggableWrapper } from "./draggable-wrapper";
@@ -17,7 +17,7 @@ export function PreviewCard({
     onHide?: () => void;
 }) {
     const { getCard } = useShahrazadGameContext();
-    const [pos, setPos] = useState({ x: window.innerWidth - 300, y: 80 });
+    const [pos, setPos] = useState({ x: window.innerWidth - 500, y: 80 });
     const [size, setSize] = useState<number>(300);
     const { currentPreview: id } = useSelection();
     const { currentPreview, setPreview } = useSelection();
@@ -25,7 +25,7 @@ export function PreviewCard({
     const eleRef = useRef<HTMLDivElement | null>(null);
 
     const shah_card = useMemo(() => {
-        if (!id) return null;
+        if (id === null) return null;
         return getCard(id);
     }, [getCard, id]);
 
@@ -81,7 +81,7 @@ export function PreviewCard({
         return (
             <div
                 style={{ width: `${size}px`, background: "transparent" }}
-                className="scrycard group-hover:outline-dashed group-hover:outline-4 outline-secondary"
+                className="scrycard group-hover:outline-dashed group-hover:outline-4 group-[.is-dragging]:outline-dashed group-[.is-dragging]:outline-4 outline-secondary"
             />
         );
     }, [shah_card, size]);
@@ -99,11 +99,11 @@ export function PreviewCard({
                     setPreview(null);
                 }}
                 ref={eleRef}
-                className={shah_card ? "z-60" : "z-40"}
+                className={shah_card ? "z-40" : "z-20"}
             >
                 {card}
                 <Button
-                    className="absolute top-8 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+                    className="absolute -top-5 right-8 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100 text-foreground"
                     size="icon"
                     variant="ghost"
                     onClick={() => {
@@ -115,18 +115,18 @@ export function PreviewCard({
                 >
                     {size === 500 ? <Shrink /> : <Expand />}
                 </Button>
+                {shah_card?.card_name && (
+                    <CConfluenceLink id={shah_card?.card_name} />
+                )}
                 {onHide && (
                     <Button
-                        className="absolute top-20 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+                        className="absolute -top-5 -right-5 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100 text-foreground hover:bg-destructive"
                         size="icon"
                         variant="ghost"
                         onClick={onHide}
                     >
-                        <EyeOff />
+                        <X />
                     </Button>
-                )}
-                {shah_card?.card_name && (
-                    <CConfluenceLink id={shah_card?.card_name} />
                 )}
             </DraggableWrapper>
         </DndContext>
@@ -140,7 +140,7 @@ function CConfluenceLink({ id }: { id: string }) {
     }
     return (
         <Button
-            className="absolute top-32 -left-4 opacity-0 group-hover:opacity-100 text-foreground"
+            className="absolute -top-5 left-8 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100 text-foreground"
             size="icon"
             variant="ghost"
             asChild

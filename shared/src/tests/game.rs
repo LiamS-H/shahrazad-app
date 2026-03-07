@@ -20,7 +20,7 @@ fn add_player() {
     let mut game = create_sample_game();
     {
         let action = ShahrazadAction::AddPlayer {
-            player_id: "1".into(),
+            player_id: 0.into(),
             player: ShahrazadPlayer {
                 display_name: "Test".into(),
                 ..Default::default()
@@ -35,7 +35,7 @@ fn init_game() {
     let mut game = create_sample_game();
     {
         let action = ShahrazadAction::AddPlayer {
-            player_id: "1".into(),
+            player_id: 0.into(),
             player: ShahrazadPlayer {
                 display_name: "Test".into(),
                 ..Default::default()
@@ -50,7 +50,12 @@ fn init_game() {
             "zone_count": 7,
             "card_count": 0,
             "cards": {},
+            "stack": "Z0",
             "zones": {
+                "Z0": {
+                    "cards":[],
+                    "name": "STACK"
+                },
                 "Z1": {
                     "cards":[],
                     "name": "LIBRARY"
@@ -100,7 +105,7 @@ fn init_game() {
             },
             "players": ["1"],
             "settings": {
-                "free_mulligans": "",
+                "free_mulligans": 0,
                 "scry_rule": true,
                 "starting_life": 20,
                 "commander": true
@@ -116,13 +121,13 @@ fn init_game() {
     }
     {
         let action = ShahrazadAction::ZoneImport {
-            zone: "Z1".into(),
+            zone: 1.into(),
             cards: [CardImport {
                 str: "Opt".into(),
                 amount: None,
             }]
             .into(),
-            player_id: "1".into(),
+            player_id: 0.into(),
             token: false,
             state: ShahrazadCardStateTransform::reset(),
         };
@@ -154,7 +159,12 @@ fn init_game() {
                     "location":"Z1"
                 }
             },
+            "stack": "Z0",
             "zones": {
+                "Z0": {
+                    "cards":[],
+                    "name": "STACK"
+                },
                 "Z1": {
                     "cards":["C1"],
                     "name": "LIBRARY"
@@ -204,7 +214,7 @@ fn init_game() {
             },
             "players": ["1"],
             "settings": {
-                "free_mulligans": "",
+                "free_mulligans": 0,
                 "scry_rule": true,
                 "starting_life": 20,
                 "commander": true
@@ -227,27 +237,27 @@ fn reproducibility() {
 
     let actions: Vec<ShahrazadAction> = [
         ShahrazadAction::AddPlayer {
-            player_id: "1".into(),
+            player_id: 0.into(),
             player: ShahrazadPlayer {
                 display_name: "Test".into(),
                 ..Default::default()
             },
         },
         ShahrazadAction::ZoneImport {
-            zone: "Z1".into(),
+            zone: 1.into(),
             cards: [CardImport {
                 str: "Opt".into(),
                 amount: Some(6),
             }]
             .into(),
-            player_id: "1".into(),
+            player_id: 0.into(),
             token: false,
             state: ShahrazadCardStateTransform {
                 ..Default::default()
             },
         },
         ShahrazadAction::SetPlayer {
-            player_id: "1".into(),
+            player_id: 0.into(),
             player: Some(ShahrazadPlayer {
                 display_name: "test".into(),
                 ..Default::default()
@@ -255,12 +265,12 @@ fn reproducibility() {
         },
         ShahrazadAction::CardZone {
             cards: [
-                "C1".into(),
-                "C2".into(),
-                "C3".into(),
-                "C4".into(),
-                "C5".into(),
-                "C6".into(),
+                0.into(),
+                1.into(),
+                2.into(),
+                3.into(),
+                4.into(),
+                5.into(),
             ]
             .into(),
             state: ShahrazadCardStateTransform {
@@ -268,17 +278,17 @@ fn reproducibility() {
                 flipped: Some(true),
                 tapped: Some(true),
                 face_down: Some(true),
-                revealed: Some(["1".into()].into()),
+                revealed: Some([0.into()].into()),
                 x: Some(0),
                 y: Some(0),
                 counters: Some([ShahrazadCounter { amount: 1 }].into()),
                 annotation: Some("test".into()),
             },
-            destination: "Z2".into(),
+            destination: 2.into(),
             index: 0,
         },
         ShahrazadAction::CardState {
-            cards: ["C1".into()].into(),
+            cards: [0.into()].into(),
             state: ShahrazadCardStateTransform {
                 inverted: Some(false),
                 flipped: Some(false),

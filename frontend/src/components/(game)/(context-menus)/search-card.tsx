@@ -158,8 +158,8 @@ export default function SearchCardContextMenu({
     cardId,
     children,
 }: {
-    zoneId: string;
-    cardId: string;
+    zoneId: ShahrazadZoneId;
+    cardId: ShahrazadCardId;
     children: ReactNode;
 }) {
     return (

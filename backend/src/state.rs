@@ -15,7 +15,7 @@ use uuid::Uuid;
 pub struct GameInfo {
     pub host_id: Uuid,
     pub game_id: Uuid,
-    pub name: String,
+    pub playmat_id: ShahrazadPlaymatId,
     pub game: ShahrazadGame,
     pub hash: u64,
     pub code: u32,
@@ -36,7 +36,7 @@ pub struct GameState {
 #[derive(Clone)]
 struct Player {
     connected: bool,
-    name: String,
+    id: ShahrazadPlaymatId,
 }
 
 pub struct GameStateManager {
@@ -143,18 +143,18 @@ impl GameStateManager {
 
         self.codes.insert(code, game_id);
 
-        let player_name: String = "P0".into();
+        let playmat_id: ShahrazadPlaymatId = 0.into();
 
         game_state.players.insert(
             host_id,
             Player {
                 connected: false,
-                name: player_name.clone(),
+                id: playmat_id.clone(),
             },
         );
 
         let add_player = ShahrazadAction::AddPlayer {
-            player_id: ShahrazadPlaymatId::new(player_name.clone()),
+            player_id: playmat_id.clone(),
             player,
         };
 
@@ -177,7 +177,7 @@ impl GameStateManager {
         Ok(GameInfo {
             host_id,
             game_id,
-            name: player_name.clone(),
+            playmat_id,
             game: game_state.game.clone(),
             code: game_state.code,
             hash: game_state.hash,
@@ -192,7 +192,8 @@ impl GameStateManager {
     ) -> Result<GameInfo, String> {
         let mut game_state = self.games.get_mut(&game_id).ok_or("Game not found")?;
 
-        let player_name: String = format!("P{}", game_state.players.len());
+        let playmat_id: ShahrazadPlaymatId = game_state.players.len().into();
+        let player_name: String = format!("P{}", playmat_id);
         let player = match player {
             Some(p) => p,
             None => ShahrazadPlayer {
@@ -205,12 +206,12 @@ impl GameStateManager {
             player_id,
             Player {
                 connected: false,
-                name: player_name.clone(),
+                id: playmat_id.clone(),
             },
         );
 
         let add_player = ShahrazadAction::AddPlayer {
-            player_id: ShahrazadPlaymatId::new(player_name.clone()),
+            player_id: playmat_id.clone(),
             player,
         };
 
@@ -228,7 +229,7 @@ impl GameStateManager {
         let _ = game_state.tx.send(update);
 
         Ok(GameInfo {
-            name: player_name.clone(),
+            playmat_id,
             game_id,
             host_id: game_state.host_id,
             game: game_state.game.clone(),
@@ -251,7 +252,7 @@ impl GameStateManager {
         player.connected = true;
 
         Ok(GameInfo {
-            name: player.name.clone(),
+            playmat_id: player.id.clone(),
             game_id,
             host_id: game_state.host_id,
             game: game_state.game.clone(),

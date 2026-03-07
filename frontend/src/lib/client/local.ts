@@ -8,14 +8,31 @@ export class LocalGameClient {
 
     constructor(private callbacks: GameClientCallbacks) {}
 
-    beginGame(settings?: ShahrazadGameSettings): ShahrazadGame {
-        // this.gameState = new GameState(null);
-        this.gameState = GameState.new_local(
+    beginGame(
+        settings?: ShahrazadGameSettings,
+        game_state?: string,
+    ): ShahrazadGame | null {
+        const state = GameState.new_local(
             settings,
-            Math.floor(Date.now() / 1000)
+            Math.floor(Date.now() / 1000),
+            game_state,
         );
-        const game = this.gameState.get_state();
-        console.log("[local]", game);
+
+        if (!state) {
+            console.error("[local] parse base64 of game");
+            return null;
+        }
+        const game: ShahrazadGame = state.get_state();
+        if (game.players.length === 0 && game_state) {
+            console.error("[local] failed to load empty game");
+            console.log("[local] empty game:", game);
+            return null;
+        }
+        this.gameState = state;
+        this.callbacks.onPreloadCards(
+            game.cards.map((card) => card.card_name),
+            false,
+        );
         this.callbacks.onGameUpdate(game);
         return game;
     }
@@ -25,14 +42,23 @@ export class LocalGameClient {
             throw new Error("Game state not initialized");
         }
         if (action.type === ShahrazadActionCase.ZoneImport) {
-            this.callbacks.onPreloadCards(action.cards.map(({ str }) => str));
+            this.callbacks.onPreloadCards(
+                action.cards.map(({ str }) => str),
+                false,
+            );
         }
 
-        const newState: ShahrazadGame = this.gameState.apply_action(action);
+        const newState = this.gameState.apply_action(action);
         if (!newState) {
             return false;
         }
         if (action.type === ShahrazadActionCase.Mulligan) {
+            this.callbacks.onPreloadCards(
+                Object.keys(newState.cards).map(
+                    (id) => newState.cards[id].card_name,
+                ),
+                true,
+            );
             const playmat = newState.playmats[action.player_id];
             const mulligans = playmat.mulligans;
             const name = playmat.player.display_name;
@@ -44,16 +70,16 @@ export class LocalGameClient {
                     mulligans < 0 ? "for free" : `to ${7 - mulligans}`
                 }.`;
             }
-            this.callbacks.onToast(message);
+            this.callbacks.toast.info(message);
         }
 
         if (action.type == ShahrazadActionCase.SetPlayer) {
             if (action.player) {
-                this.callbacks.onToast(
-                    `${action.player_id} has new name: ${action.player.display_name}`
+                this.callbacks.toast.info(
+                    `P${action.player_id} has new name: ${action.player.display_name}`,
                 );
             } else {
-                this.callbacks.onToast(`${action.player_id} has left.`);
+                this.callbacks.toast.info(`P${action.player_id} has left.`);
             }
         }
         if (action.type === ShahrazadActionCase.SendMessage) {
@@ -78,10 +104,14 @@ export class LocalGameClient {
         if (!success) {
             console.log(
                 "[local] attempted to apply move that didn't update state.",
-                action.type
+                action.type,
             );
             return;
         }
+    }
+
+    public encode() {
+        return this.gameState?.get_bytes_str() ?? null;
     }
 
     public cleanup() {

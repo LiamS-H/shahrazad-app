@@ -26,7 +26,7 @@ export default function SearchDrawer() {
                     controller.abort();
                 }
             },
-            { signal: controller.signal }
+            { signal: controller.signal },
         );
 
         return () => controller.abort();
@@ -41,7 +41,7 @@ export default function SearchDrawer() {
                 }
             }}
         >
-            {lastActive && <SearchZone id={lastActive} />}
+            {lastActive !== null && <SearchZone id={lastActive} />}
         </Drawer2>
     );
 }

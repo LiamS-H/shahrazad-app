@@ -1,3 +1,5 @@
+type usize = number;
+
 export enum MessageCase {
     DiceRoll = 'DiceRoll',
     Arrow = 'Arrow',
@@ -11,8 +13,8 @@ export type MessageCaseDiceRoll = {
 
 export type MessageCaseArrow = {
     type: MessageCase.Arrow;
-    from: string;
-    to: string;
+    from: usize;
+    to: usize;
     arrow_type: ArrowType;
 };
 

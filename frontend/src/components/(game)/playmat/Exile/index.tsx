@@ -28,7 +28,11 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
             const top = zone.cards.at(-1);
             return (
                 <Scrydeck count={zone.cards.length}>
-                    {top ? <Card id={top} /> : <Scrycard card={undefined} />}
+                    {top !== undefined ? (
+                        <Card id={top} />
+                    ) : (
+                        <Scrycard card={undefined} />
+                    )}
                 </Scrydeck>
             );
         }
@@ -43,7 +47,7 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
                     pos={{ x: window.innerWidth - 859, y: 80 }}
                 />
                 <ExileContextMenu
-                    cardId={zone.cards.at(-1) ?? ""}
+                    cardId={zone.cards.at(-1) ?? -1}
                     zoneId={props.id}
                     onPopOut={() => setPoppedOut((o) => !o)}
                     poppedOut={poppedOut}
@@ -71,7 +75,7 @@ export default function Exile(props: { id: ShahrazadZoneId }) {
                                 <VerticalZone
                                     id={props.id}
                                     hidden={zone.cards.length == 0 || !opened}
-                                    emptyMessage="exile"
+                                    emptyMessage="Exile"
                                 />
                             </div>
                             {opened && zone.cards.length > 1 && (

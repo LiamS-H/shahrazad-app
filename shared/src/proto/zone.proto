@@ -12,6 +12,6 @@ enum ZoneName {
 }
 
 message ShahrazadZone {
-    repeated string cards = 1;
+    repeated uint32 cards = 1;
     ZoneName name = 2;
 }

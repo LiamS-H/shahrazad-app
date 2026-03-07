@@ -21,6 +21,8 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
 
     const playmat = getPlaymat(player);
 
+    const sidebaord = useZone(playmat.sideboard);
+
     const onOpenChange = useCallback(
         (o: boolean) => {
             setModalOpen(o);
@@ -65,7 +67,7 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
                 <VerticalZone
                     id={props.id}
                     hidden={zone.cards.length == 0 || !opened}
-                    emptyMessage="sideboard"
+                    emptyMessage="Sideboard"
                 />
                 {opened && zone.cards.length > 1 && (
                     <Button
@@ -84,6 +86,7 @@ export default function Sideboard(props: { id: ShahrazadZoneId }) {
                     size="icon"
                     variant="outline"
                     className="absolute -top-2 -right-2 z-10"
+                    disabled={sidebaord.cards.length === 0}
                     onClick={(e) => {
                         e.stopPropagation();
                         onOpenChange(true);

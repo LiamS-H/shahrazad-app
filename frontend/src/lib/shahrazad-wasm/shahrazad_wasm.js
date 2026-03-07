@@ -239,17 +239,6 @@ export class GameState {
         wasm.__wbg_gamestate_free(ptr, 0);
     }
     /**
-     * @param {any} action
-     * @returns {any}
-     */
-    apply_action(action) {
-        const ret = wasm.gamestate_apply_action(this.__wbg_ptr, action);
-        if (ret[2]) {
-            throw takeFromExternrefTable0(ret[1]);
-        }
-        return takeFromExternrefTable0(ret[0]);
-    }
-    /**
      * @param {any} game
      */
     constructor(game) {
@@ -259,10 +248,33 @@ export class GameState {
         return this;
     }
     /**
+     * @param {any} settings
+     * @param {any} time
+     * @param {any} code
+     * @returns {GameState}
+     */
+    static new_local(settings, time, code) {
+        const ret = wasm.gamestate_new_local(settings, time, code);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return GameState.__wrap(ret[0]);
+    }
+    /**
      * @returns {any}
      */
     get_hash() {
         const ret = wasm.gamestate_get_hash(this.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @returns {string}
+     */
+    get_bytes_str() {
+        const ret = wasm.gamestate_get_bytes_str(this.__wbg_ptr);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -279,13 +291,15 @@ export class GameState {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
-     * @param {any} settings
-     * @param {any} time
-     * @returns {GameState}
+     * @param {any} action
+     * @returns {any}
      */
-    static new_local(settings, time) {
-        const ret = wasm.gamestate_new_local(settings, time);
-        return GameState.__wrap(ret);
+    apply_action(action) {
+        const ret = wasm.gamestate_apply_action(this.__wbg_ptr, action);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
     }
     /**
      * @param {any} game
@@ -424,10 +438,6 @@ function __wbg_get_imports() {
         const ret = new Object();
         return ret;
     };
-    imports.wbg.__wbg_new_3c48ee6a683248da = function() {
-        const ret = new Map();
-        return ret;
-    };
     imports.wbg.__wbg_new_d6b08dae7359cebb = function(arg0) {
         const ret = new Uint8Array(arg0);
         return ret;
@@ -456,10 +466,6 @@ function __wbg_get_imports() {
     };
     imports.wbg.__wbg_set_3f1d0b984ed272ed = function(arg0, arg1, arg2) {
         arg0[arg1] = arg2;
-    };
-    imports.wbg.__wbg_set_a15b7b524330d4f1 = function(arg0, arg1, arg2) {
-        const ret = arg0.set(arg1, arg2);
-        return ret;
     };
     imports.wbg.__wbg_value_4ae21701b6f5c482 = function(arg0) {
         const ret = arg0.value;

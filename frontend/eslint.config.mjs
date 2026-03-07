@@ -11,6 +11,26 @@ const eslintConfig = [
     ...nextTypescript,
     {
         ignores: ["src/lib/shahrazad-wasm/"],
+        languageOptions: {
+            parserOptions: {
+                projectService: true, // Recommended for performance in v8+
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+        rules: {
+            "@next/next/no-img-element": "off",
+            // "@typescript-eslint/strict-boolean-expressions": [
+            //     "warn",
+            //     {
+            //         allowNumber: false,
+            //         allowNullableNumber: false,
+            //         allowString: true,
+            //         allowNullableString: true,
+            //         allowNullableBoolean: true,
+            //         allowAny: true,
+            //     },
+            // ],
+        },
     },
 ];
 

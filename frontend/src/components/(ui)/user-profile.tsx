@@ -5,22 +5,26 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/(ui)/popover";
-import { loadPlayer, savePlayer } from "@/lib/client/localPlayer";
+import { loadPlayer, savePlayer } from "@/lib/storage/localPlayer";
 import { ShahrazadPlayer } from "@/types/bindings/playmat";
-import { User, UserPen } from "lucide-react";
-import { useEffect, useState } from "react";
+import { LoaderCircle, User, UserPen } from "lucide-react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 export function UserProfile({
     onChange,
+    children,
+    hoverIcon,
 }: {
     onChange?: (player: ShahrazadPlayer) => void;
+    children?: ReactNode;
+    hoverIcon?: ReactNode;
 }) {
     const [player, setPlayer] = useState<ShahrazadPlayer | null>(null);
     const [open, setOpen] = useState(false);
-    const [nameInput, setNameInput] = useState(player?.display_name || "");
+    const [nameInput, setNameInput] = useState(player?.display_name ?? "");
 
     function updatePlayer(
-        new_player: Omit<ShahrazadPlayer, "reveal_deck_top"> | null
+        new_player: Omit<ShahrazadPlayer, "reveal_deck_top"> | null,
     ) {
         if (player?.display_name === new_player?.display_name) return;
         if (new_player === null) return;
@@ -28,19 +32,55 @@ export function UserProfile({
             ...new_player,
         };
         if (onChange) onChange(player_updated);
-        setPlayer(player_updated);
+        setPlayer(new_player);
     }
 
     useEffect(() => {
-        const stored = loadPlayer();
-        updatePlayer(stored?.player || null);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPlayer(loadPlayer()?.player ?? { display_name: "" });
+    }, []);
 
     useEffect(() => {
         if (player) {
             savePlayer(undefined, player);
         }
     }, [player]);
+
+    const triggerButton = useMemo(() => {
+        if (player === null) {
+            return (
+                <Button variant="outline" size="icon">
+                    <LoaderCircle className="animate-spin" />
+                </Button>
+            );
+        }
+        if (player.display_name === "") {
+            return (
+                <Button variant="outline" size="icon">
+                    <UserPen />
+                </Button>
+            );
+        }
+        return (
+            <Button className="group" variant="outline">
+                <div className="h-full w-4 relative">
+                    <User
+                        className={`absolute ${
+                            open ? "hidden" : "group-hover:hidden"
+                        }`}
+                    />
+                    <div
+                        className={`absolute ${
+                            open ? "" : "hidden group-hover:block"
+                        }`}
+                    >
+                        {hoverIcon ? hoverIcon : <UserPen />}
+                    </div>
+                </div>
+                {player.display_name}
+            </Button>
+        );
+    }, [open, player, hoverIcon]);
 
     return (
         <Popover
@@ -54,30 +94,10 @@ export function UserProfile({
                 setOpen(open);
             }}
         >
-            <PopoverTrigger asChild>
-                {player === null || !player.display_name ? (
-                    <Button variant="outline" size="icon">
-                        <UserPen />
-                    </Button>
-                ) : (
-                    <Button className="group" variant="outline">
-                        <div className="h-full w-4 relative">
-                            <User
-                                className={`absolute ${
-                                    open ? "hidden" : "group-hover:hidden"
-                                }`}
-                            />
-                            <UserPen
-                                className={`absolute ${
-                                    open ? "" : "hidden group-hover:block"
-                                }`}
-                            />
-                        </div>
-                        {player.display_name}
-                    </Button>
-                )}
+            <PopoverTrigger className="text-highlight" asChild>
+                {triggerButton}
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent className="flex flex-col gap-2 w-40">
                 <form
                     onSubmit={(e) => {
                         updatePlayer({ ...player, display_name: nameInput });
@@ -86,10 +106,12 @@ export function UserProfile({
                     }}
                 >
                     <Input
+                        placeholder="Display Name"
                         value={nameInput}
                         onChange={(e) => setNameInput(e.target.value)}
                     />
                 </form>
+                {children}
             </PopoverContent>
         </Popover>
     );

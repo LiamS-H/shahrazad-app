@@ -85,6 +85,7 @@ export function useCard(id: ShahrazadCardId) {
 
     useEffect(() => {
         // TODO: Avoid recomparison somehow, ie. a draggable board card with check 4 times on the same id wether it has change in the various wrappers
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCard((old) => {
             const card = getCard(id);
             if (compareCards(card, old)) return old;
@@ -101,6 +102,7 @@ export function useZone(id: ShahrazadZoneId) {
 
     useEffect(() => {
         // recomparison check would not be necessary since duped invocation shouldn't occur
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setZone((old) => {
             const zone = getZone(id);
             if (compareZones(zone, old)) return old;

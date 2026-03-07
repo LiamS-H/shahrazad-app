@@ -6,25 +6,24 @@ import {
     PopoverTrigger,
 } from "@/components/(ui)/popover";
 
-import { Tooltip } from "@/components/(ui)/tooltip";
 import { useShahrazadGameContext } from "@/contexts/(game)/game";
 import { ShahrazadActionCase } from "@/types/bindings/action";
-import { ShahrazadPlaymatId } from "@/types/bindings/playmat";
-import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { CommandDammage, ShahrazadPlaymatId } from "@/types/bindings/playmat";
 import { Minus, Plus } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 export default function CommandDamageButton({
-    command_id,
+    command_damage,
     player_id,
 }: {
-    command_id: ShahrazadPlaymatId;
+    command_damage: CommandDammage;
     player_id: ShahrazadPlaymatId;
 }) {
     const { applyAction, getPlaymat } = useShahrazadGameContext();
-    const playmat = getPlaymat(player_id);
-    const command_playmat = getPlaymat(command_id);
-    const damage = playmat.command_damage[command_id];
+    const { playmat: command_id, damage } = command_damage;
+    const {
+        player: { display_name: command_name },
+    } = getPlaymat(command_id);
 
     const [open, setOpen] = useState(false);
     const [damageInput, setDamageInput] = useState(damage.toString());
@@ -61,54 +60,39 @@ export default function CommandDamageButton({
                     }
                 }}
             >
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <PopoverTrigger asChild>
-                            <Button
-                                className={
-                                    player_id !== command_id
-                                        ? "text-accent-foreground"
-                                        : undefined
-                                }
-                                variant="outline"
-                                size="icon"
-                                key={command_id}
-                                onClick={() => {
-                                    if (open) {
-                                        setOpen(false);
-                                        return;
-                                    }
-                                    setDamage(damage + 1);
-                                }}
-                                onContextMenu={(e) => {
-                                    e.preventDefault();
-                                    if (!open) {
-                                        setDamageInput(damage.toString());
-                                        setOpen(!open);
-                                    }
-                                }}
-                            >
-                                {damage}
-                            </Button>
-                        </PopoverTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent className="text-foreground">
-                        {command_playmat.player.display_name}
-                    </TooltipContent>
-                </Tooltip>
-
-                <PopoverContent className="w-44 flex gap-1">
+                <PopoverTrigger asChild>
                     <Button
-                        size="icon"
-                        variant="outline"
+                        className={`px-1 py-2 h-4 ${damage === 0 && !open ? "hidden group-hover:flex" : ""} ${
+                            player_id !== command_id
+                                ? "text-accent-foreground"
+                                : undefined
+                        }`}
+                        variant="ghost"
+                        key={command_id}
                         onClick={() => {
-                            setDamage(damage - 1);
-                            setDamageInput((damage - 1).toString());
+                            if (open) {
+                                setOpen(false);
+                                return;
+                            }
+                            setDamage(damage + 1);
+                        }}
+                        onContextMenu={(e) => {
+                            e.preventDefault();
+                            if (!open) {
+                                setDamageInput(damage.toString());
+                                setOpen(!open);
+                            }
                         }}
                     >
-                        <Minus />
+                        {command_id !== player_id
+                            ? command_name.substring(0, 4)
+                            : "Self"}
+                        :{damage}
                     </Button>
-                    <form onSubmit={onSubmit}>
+                </PopoverTrigger>
+
+                <PopoverContent className="w-fit flex gap-2">
+                    <form className="order-1" onSubmit={onSubmit}>
                         <Input
                             className="w-16"
                             value={damageInput}
@@ -119,8 +103,18 @@ export default function CommandDamageButton({
                             }}
                         />
                     </form>
-
                     <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => {
+                            setDamage(damage - 1);
+                            setDamageInput((damage - 1).toString());
+                        }}
+                    >
+                        <Minus />
+                    </Button>
+                    <Button
+                        className="order-2"
                         size="icon"
                         variant="outline"
                         onClick={() => {

@@ -31,24 +31,21 @@ export function Card({
                     animated
                 />
                 {isFlippable(scrycard) && (
-                    <div className="absolute -top-4 left-8">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                                setFlipped((f) => !f);
+                    <Button
+                        className="absolute -bottom-5 -left-5 opacity-0 group-hover:opacity-100 group-[.is-dragging]:opacity-100"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                            setFlipped((f) => !f);
+                        }}
+                    >
+                        <FlipHorizontal
+                            style={{
+                                transform: flipped ? "scaleX(-1)" : "scaleX(1)",
+                                transition: "transform 0.3s ease",
                             }}
-                        >
-                            <FlipHorizontal
-                                style={{
-                                    transform: flipped
-                                        ? "scaleX(-1)"
-                                        : "scaleX(1)",
-                                    transition: "transform 0.3s ease",
-                                }}
-                            />
-                        </Button>
-                    </div>
+                        />
+                    </Button>
                 )}
                 {/* <div className="absolute w-full top-0 -left-full">
                     <pre className="text-foreground">
@@ -57,5 +54,5 @@ export function Card({
                 </div> */}
             </div>
         );
-    }, [shah_card.card_name, flipped, size, scrycard]);
+    }, [size, shah_card.card_name, flipped, scrycard]);
 }

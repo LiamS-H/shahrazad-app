@@ -22,7 +22,7 @@ export function CodeInput({
             const num = Number(e);
             if (num || e === "") setCode(e);
         },
-        [setCode]
+        [setCode],
     );
 
     useEffect(() => {
