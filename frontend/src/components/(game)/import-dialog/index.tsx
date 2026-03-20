@@ -60,13 +60,10 @@ export function ImportDialog({
         }
         loadingRef.current = true;
         let deck: IParsedDeck | null | undefined;
-        const sideboardId = settings.commander
-            ? playmat.command
-            : playmat.sideboard;
         setLoading(true);
         const locations = {
             deckId: playmat.library,
-            sideboardId,
+            sideboardId: playmat.sideboard,
             commandId: playmat.command,
             playerId: player,
         };
