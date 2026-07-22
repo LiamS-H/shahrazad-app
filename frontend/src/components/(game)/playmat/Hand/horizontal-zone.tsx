@@ -7,7 +7,7 @@ import {
 import HandCard from "./hand-card";
 import { useDroppable } from "@dnd-kit/core";
 import { IDroppableData } from "@/types/interfaces/dnd";
-import { LayoutGroup } from "framer-motion";
+import { LayoutGroup, motion } from "framer-motion";
 import { useMemo } from "react";
 
 export default function HorizontalZone(props: {
@@ -26,16 +26,17 @@ export default function HorizontalZone(props: {
                 items={items}
                 strategy={horizontalListSortingStrategy}
             >
-                <div
-                    ref={setNodeRef}
-                    className="w-full h-full flex flex-row flex-nowrap overflow-x-auto"
-                >
-                    <LayoutGroup>
+                <LayoutGroup>
+                    <motion.div
+                        animate={true}
+                        ref={setNodeRef}
+                        className="w-full h-full flex flex-row flex-nowrap overflow-x-auto overflow-y-hidden"
+                    >
                         {zone.cards.map((id, idx) => (
                             <HandCard id={id} key={id} index={idx} />
                         ))}
-                    </LayoutGroup>
-                </div>
+                    </motion.div>
+                </LayoutGroup>
             </SortableContext>
         );
     }, [zone, setNodeRef, props.id]);
