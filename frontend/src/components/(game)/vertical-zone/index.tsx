@@ -13,7 +13,7 @@ export default function VerticalZone(props: {
     emptyMessage: string;
 }) {
     const [hoveredItem, setHoveredItem] = useState<ShahrazadCardId | null>(
-        null
+        null,
     );
     const hover_timeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -30,7 +30,7 @@ export default function VerticalZone(props: {
                 setHoveredItem(id);
             }, 100);
         },
-        [setHoveredItem, hoveredItem]
+        [setHoveredItem, hoveredItem],
     );
 
     const zone = useZone(props.id);
@@ -89,6 +89,6 @@ export default function VerticalZone(props: {
             setHover,
             setNodeRef,
             zone.cards,
-        ]
+        ],
     );
 }

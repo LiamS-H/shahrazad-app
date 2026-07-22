@@ -73,7 +73,7 @@ function InactiveHand({ id }: { id: ShahrazadCardId }) {
                 }
             />
         ),
-        [shah_card, active_player, id]
+        [shah_card, active_player, id],
     );
 }
 

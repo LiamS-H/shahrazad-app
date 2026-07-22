@@ -12,7 +12,7 @@ export function OutlineButton({
     return (
         <button
             className={cx(
-                `group relative overflow-hidden border border-muted-foreground text-muted-foreground px-8 py-3.5 text-sm tracking-wide transition-all hover:border-highlight/40 hover:text-highlight active:scale-[0.98] `,
+                `group cursor-pointer relative overflow-hidden border border-muted-foreground text-muted-foreground px-8 py-3.5 text-sm tracking-wide transition-all hover:border-highlight/40 hover:text-highlight active:scale-[0.98] `,
                 className,
             )}
         >
