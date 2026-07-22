@@ -101,27 +101,44 @@ export function ImportDialog({
         const hasCommander =
             deck.commander.length !== 0 && deck.commander.length <= 2;
         if (hasCommander && !settings.commander) {
-            const id = toast.warning("Detected commander.", {
-                description: "Change settings?",
-                action: (
-                    <Button
-                        className="h-9"
-                        onClick={() => {
-                            applyAction({
-                                type: ShahrazadActionCase.SetSettings,
-                                settings: { ...settings, commander: true },
-                            });
-                            toast.success("Switched to commander.", {
-                                id,
-                                description: null,
-                                action: null,
-                            });
-                        }}
-                    >
-                        Commander
-                    </Button>
-                ),
-            });
+            // eslint-disable-next-line prefer-const
+            let id: string | number;
+            const change = () => {
+                applyAction({
+                    type: ShahrazadActionCase.SetSettings,
+                    settings: { ...settings, commander: true },
+                });
+                toast.success("Switched to commander.", {
+                    id,
+                    description: null,
+                    action: (
+                        <Button
+                            className="h-9"
+                            variant="destructive"
+                            onClick={() => {
+                                applyAction({
+                                    type: ShahrazadActionCase.SetSettings,
+                                    settings: { ...settings, commander: false },
+                                });
+                                warn();
+                            }}
+                        >
+                            Undo
+                        </Button>
+                    ),
+                });
+            };
+            const warn = () =>
+                toast.warning("Detected commander.", {
+                    description: "Change settings?",
+                    action: (
+                        <Button className="h-9" onClick={change}>
+                            Commander
+                        </Button>
+                    ),
+                });
+
+            id = warn();
         }
 
         if (reset) {
