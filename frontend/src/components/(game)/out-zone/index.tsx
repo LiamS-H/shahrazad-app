@@ -119,7 +119,7 @@ export function PoppedOutZone(props: {
                             size="icon"
                             variant="ghost"
                             className="hover:bg-destructive"
-                            onMouseDown={props.onClose}
+                            onClick={props.onClose}
                         >
                             <X />
                         </Button>
